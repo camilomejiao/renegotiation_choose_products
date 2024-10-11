@@ -1,0 +1,98 @@
+.sidebar.open {
+    width: 150px; /* Ancho cuando está expandido */
+}
+
+.sidebar-content {
+    margin-top: 20px;
+}
+
+/* Iconos y texto en el Sidebar */
+.sidebar-icon {
+    font-size: 24px;
+    color: white;
+}
+
+.sidebar-text {
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+/* Grupo de textos cuando el Sidebar está expandido */
+.sidebar-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+/* Botón de colapso/expansión del Sidebar */
+.sidebar-toggle {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.toggle-icon {
+    font-size: 24px;
+    color: white;
+}
+
+.application {
+    cursor: pointer;
+}
+
+.reports {
+    cursor: pointer;
+}
+
+.logout {
+    position: absolute;
+    bottom: 80px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px; /* Mantén el Sidebar visible en todas las resoluciones */
+    }
+
+    .sidebar.open {
+        width: 150px; /* Ancho cuando está expandido en pantallas pequeñas */
+    }
+
+    .sidebar-text {
+        display: none; /* Ocultar el texto por defecto en pantallas pequeñas */
+    }
+
+    .sidebar.open .sidebar-text {
+        display: inline; /* Mostrar el texto cuando está expandido */
+    }
+}
+
+/* Estilos adicionales para pantallas extra pequeñas (425px y menores) */
+@media (max-width: 425px) {
+    .sidebar {
+        width: 60px; /* Mantén el Sidebar visible en todas las resoluciones */
+    }
+
+    .sidebar.open {
+        width: 150px; /* Ancho cuando está expandido en pantallas extra pequeñas */
+    }
+
+    .sidebar-text {
+        display: none; /* Ocultar el texto por defecto en pantallas extra pequeñas */
+    }
+
+    .sidebar.open .sidebar-text {
+        display: inline; /* Mostrar el texto cuando está expandido */
+    }
+}

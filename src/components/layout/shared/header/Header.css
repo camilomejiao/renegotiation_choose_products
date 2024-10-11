@@ -1,0 +1,18 @@
+.portal-title {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 60px;
+    font-weight: 400;
+    line-height: 95.48px;
+    color: #046999;
+    text-align: center;
+    margin: 0; /* Eliminamos márgenes adicionales */
+    width: 100%; /* Aseguramos que ocupe todo el espacio del Col */
+}
+
+.portal-title-highlight {
+    color: #2E7D32;
+}
+
+.header-logo {
+    height: 50px;
+}
