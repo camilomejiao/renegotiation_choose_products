@@ -1,0 +1,40 @@
+/**/
+.header-image {
+    position: relative;
+    height: 200px;
+}
+
+.background-image {
+    object-fit: cover;
+    height: 100%;
+}
+
+.overlay-text {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    color: white;
+}
+
+/**/
+.icon-wrapper {
+    background-color: #ff5722; /* Color de fondo naranja para el ícono */
+    border-radius: 50%;
+    padding: 10px;
+    z-index: 1; /* Asegura que el ícono esté por encima del banner */
+}
+
+.icon-large {
+    width: 90px; /* Tamaño del ícono */
+    height: 90px;
+}
+
+.small-banner {
+    background-color: #0056b3;
+    border-radius: 5px;
+    margin-top: -70px;
+    padding-left: 60px;
+    position: relative;
+    width: 35%;
+    font-size: 18px;
+}

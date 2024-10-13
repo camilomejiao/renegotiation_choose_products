@@ -70,12 +70,3 @@
     padding-left: 40px; /* Ajusta para alinear con el input */
     margin-top: -5px; /* Ajusta para acercar al input */
 }
-
-.footer-image-container {
-    text-align: center;
-}
-
-.footer-image {
-    width: 100%;
-    max-width: 1353px;
-}

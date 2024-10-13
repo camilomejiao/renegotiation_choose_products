@@ -1,32 +1,36 @@
 import {Button, Col, Container, Form, Row} from "react-bootstrap";
 import magnifyingGlass from '../../../../assets/image/icons/magnifying_glass.png';
-import imgFooter from '../../../../assets/image/footer/footer.png';
 import {useState} from "react";
 import Swal from "sweetalert2";
 
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useOutletContext} from "react-router-dom";
 
 //css
 import './Dashboard.css';
 
 //
 import {userService} from "../../../../helpers/services/UserServices";
+import {Footer} from "../footer/Footer";
 
 export const Dashboard = () => {
+
+    const { userAuth } = useOutletContext();
+
     const [searchValue, setSearchValue] = useState("");
     const navigate = useNavigate();
 
     const handleSearch = async (e) => {
         e.preventDefault();
 
-        //Verificar que searchValue no esté vacío y sea un número positivo
         if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
             await userService.searchUser(searchValue).then((data) => {
                 if(data.length === 0) {
                     Swal.fire({title: 'Oops...', html: 'Usuario no existe en el sistema', icon: 'error', width: 300, heightAuto: true});
                 } else {
                     Swal.fire({title: 'Bien hecho!', html: 'Usuario encontrado', icon: 'success', width: 300, heightAuto: true});
-                    navigate(`/admin/add_products/${data[0].id}`);
+                    userAuth.rol_id === 3
+                        ? navigate(`/admin/add_products/${data[0].id}`)
+                        : navigate(`/admin/reports/${data[0].id}`)
                 }
             });
         }
@@ -63,11 +67,8 @@ export const Dashboard = () => {
                         <p className="search-helper-text mt-2">Ingrese número de C.C. o CUP</p>
                     </Col>
                 </Row>
-                <Row className="footer-image-container mt-5">
-                    <Col>
-                        <img src={imgFooter} alt="Footer" className="footer-image" />
-                    </Col>
-                </Row>
+
+                <Footer />
             </Container>
         </>
     );

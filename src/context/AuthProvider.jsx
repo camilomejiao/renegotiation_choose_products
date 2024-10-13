@@ -21,6 +21,7 @@ export const AuthProvider = ({children}) => {
             const userObj = JSON.parse(user);
             setAuth({
                 id: userObj?.seg_usuario,
+                rol_id: userObj?.rol
             });
             setLoading(false);
         }

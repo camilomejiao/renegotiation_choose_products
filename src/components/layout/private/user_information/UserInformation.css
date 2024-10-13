@@ -1,0 +1,35 @@
+.user-info-container {
+    background-color: #F1FFFA;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.user-icon {
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.user-name-container {
+    width: 50%;
+}
+
+.user-name {
+    border-radius: 5px;
+}
+
+.user-id-container {
+    width: 45%;
+}
+
+.user-id {
+    border-radius: 5px;
+}
+
+.user-details {
+    margin-top: 20px;
+}
+
+.user-details .col {
+    font-size: 14px;
+    color: #555;
+}

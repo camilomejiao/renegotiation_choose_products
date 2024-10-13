@@ -4,7 +4,7 @@ import {FaBars, FaStore, FaClipboardList, FaSignOutAlt} from 'react-icons/fa';
 import './Sidebar.css';
 import {useNavigate} from "react-router-dom";
 
-export const Sidebar = () => {
+export const Sidebar = ({userAuth}) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 

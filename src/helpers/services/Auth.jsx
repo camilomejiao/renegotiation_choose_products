@@ -29,7 +29,6 @@ class Auth {
         } else {
             console.error('Error: Los tokens no están presentes en la respuesta');
         }
-
         return resp;
     }
 
@@ -39,6 +38,7 @@ class Auth {
         localStorage.setItem('token', token.access);
         localStorage.setItem('refresh', token.refresh);
         localStorage.setItem('user', JSON.stringify(decodeToken));
+        localStorage.setItem('rol_id', decodeToken.rol);
     }
 
     async getUserId() {
@@ -50,7 +50,6 @@ class Auth {
         console.log(decodedToken);
         return decodedToken;
     }
-
 }
 
 export const authService = new Auth();

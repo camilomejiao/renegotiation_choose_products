@@ -6,6 +6,8 @@ import {Header} from "../shared/header/Header";
 export const PrivateLayout = () => {
     const {auth, loading} = useAuth();
 
+    console.log('auth: ', auth);
+
     return (
         <>
             {
@@ -15,10 +17,10 @@ export const PrivateLayout = () => {
                 :
                 <div className="app">
                     <Header />
-                    <Sidebar />
+                    <Sidebar userAuth={auth} />
                     <main className="content">
                         {
-                            auth.id ? <Outlet /> : <Navigate to="/login" />
+                            auth.id ? <Outlet context={{ userAuth: auth }} /> : <Navigate to="/login" />
                         }
                     </main>
                 </div>
