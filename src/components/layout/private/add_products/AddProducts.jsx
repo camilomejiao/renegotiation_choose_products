@@ -5,41 +5,72 @@ import imgAdd from '../../../../assets/image/addProducts/imgAdd.png';
 import frame from '../../../../assets/image/addProducts/Frame.png';
 import {useEffect, useState} from "react";
 import Select from "react-select";
-import {useParams} from "react-router-dom";
-import {userService} from "../../../../helpers/services/UserServices";
-import {FaTrashAlt} from "react-icons/fa";
-import {Footer} from "../footer/Footer";
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {UserInformation} from "../user_information/UserInformation";
+import { useParams} from "react-router-dom";
+import { userService} from "../../../../helpers/services/UserServices";
+import { FaTrashAlt} from "react-icons/fa";
+import { Footer} from "../footer/Footer";
+import { HeaderImage} from "../../shared/header-image/HeaderImage";
+import { UserInformation} from "../user_information/UserInformation";
+import { productsServices} from "../../../../helpers/services/ProductsServices";
 
 export const AddProducts = () => {
 
     const params = useParams();
 
     const [userData, setUserData] = useState({});
+    const [options, setOption] = useState([]);
     const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [subtotal, setSubtotal] = useState(0);
     const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
 
-    const options = [
-        { value: 'Semilla YIL8 X kg', label: 'Semilla YIL8 X kg', cod: 'CT567', price: 60000 },
-        { value: 'Semilla df8 X kg', label: 'Semilla df8 X kg', cod: 'CT568', price: 60000 },
-        { value: 'Semilla ghj56 X kg', label: 'Semilla ghj56 X kg', cod: 'CT569', price: 60000 },
-    ];
+    const getOptionsProducts = async (searchWord) => {
+        if (!searchWord) {
+            setOption([]);
+            return;
+        }
+
+        try {
+            const data = await productsServices.searchProduct(searchWord);
+            console.log('data: ', data);
+            const formattedOptions = data.map(product => ({
+                value: product.id, // Ajusta según la estructura de tu producto
+                label: product.nombre // Ajusta según el campo que representa el nombre del producto
+            }));
+            setOption(formattedOptions);
+        } catch (error) {
+            console.error('Error buscando productos:', error);
+        }
+    }
 
     const getUserInformation = async (cubId) => {
         await userService.userInformation(cubId).then((data) => {
-            console.log(data)
+            console.log(data);
             setUserData(data);
         });
     }
 
-    const addItemToTable = () => {
+    const addItemToTable = async () => {
         if (selectedItem) {
-            setItems([...items, { ...selectedItem, quantity: 1, discount: '0%' }]);
-            setSelectedItem(null); // Reset the select
+            try {
+                //Obtener los datos completos del producto desde el servicio
+                const data = await productsServices.getProductId(selectedItem.value);
+
+                // Agregar el producto con los datos
+                setItems([...items, {
+                    id: data.id,
+                    nombre: data.nombre,
+                    valor_unitario: parseInt(data.valor_unitario),
+                    quantity: 1,
+                    discount: '0%'
+                }]);
+
+                // Reset the select
+                setSelectedItem(null);
+            } catch (error) {
+                console.error('Error agregando producto a la tabla:', error);
+            }
         }
     };
 
@@ -60,30 +91,53 @@ export const AddProducts = () => {
         setItems(newItems);
     };
 
-    const handleSaveProduct = () => {
-        console.log(items);
+    const handleSaveProduct = async () => {
+        // Mapeamos los items y calculamos el total para cada uno
+        const itemsWithTotal = items.map((item) => {
+            const totalByItem = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
+            return {
+                id: item.id,
+                discount: item.discount,
+                nombre: item.nombre,
+                quantity: item.quantity,
+                valor_unitario: parseFloat(item.valor_unitario),
+                total: totalByItem
+            };
+        });
+
+        // Creamos la estructura final
+        const dataToSend = {
+            total_value: total, // Aseguramos que sea un número flotante
+            items: itemsWithTotal
+        };
+
+        // Simulamos el envío de datos (puedes reemplazar esto con una llamada a tu API)
+        console.log(dataToSend);
+        await productsServices.saveProducts(dataToSend).then((data) => {
+            console.log(data);
+
+        });
     }
 
     useEffect(() => {
-        const newSubtotal = items.reduce((acc, item) => {
-            const itemTotal = item.price * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
+        const subtotal = items.reduce((acc, item) => {
+            const itemTotal = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
             return acc + itemTotal;
         }, 0);
 
-        //const newIva = newSubtotal * 0.19; // Suponiendo que el IVA es del 19%
-        const newIva = 0; // Suponiendo que el IVA es del 19%
-        const newTotal = newSubtotal + newIva;
+        const iva = 0;
+        const total = subtotal + iva;
 
-        setSubtotal(newSubtotal);
-        setIva(newIva);
-        setTotal(newTotal);
+        setSubtotal(subtotal);
+        setIva(iva);
+        setTotal(total);
     }, [items]);
 
     useEffect(() => {
         if(params.id){
             getUserInformation(params.id);
         }
-    }, []);
+    },[]);
 
     return (
         <>
@@ -111,6 +165,11 @@ export const AddProducts = () => {
                                         value={selectedItem}
                                         onChange={setSelectedItem}
                                         options={options}
+                                        onInputChange={(inputValue, { action }) => {
+                                            if (action === "input-change") {
+                                                getOptionsProducts(inputValue);
+                                            }
+                                        }}
                                         placeholder="Buscar productos..."
                                     />
                                     <Button variant="success" onClick={addItemToTable} className="addProductButton ms-2">
@@ -161,9 +220,9 @@ export const AddProducts = () => {
                                 <tbody>
                                 {items.map((item, index) => (
                                     <tr key={index}>
-                                        <td>{item.cod}</td>
-                                        <td>{item.label}</td>
-                                        <td>${item.price.toLocaleString()}</td>
+                                        <td>{item.id}</td>
+                                        <td>{item.nombre}</td>
+                                        <td>${item.valor_unitario.toLocaleString()}</td>
                                         <td>
                                             <Form.Control
                                                 type="number"
@@ -181,7 +240,7 @@ export const AddProducts = () => {
                                                 onChange={(e) => handleDiscountChange(index, e.target.value)}
                                             />
                                         </td>
-                                        <td>${(item.price * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
+                                        <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
                                         <td>
                                             <Button variant="danger" size="sm" onClick={() => handleDeleteItem(index)}>
                                                 <FaTrashAlt />
