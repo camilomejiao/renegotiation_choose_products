@@ -28,7 +28,7 @@ export const Dashboard = () => {
                     Swal.fire({title: 'Oops...', html: 'Usuario no existe en el sistema', icon: 'error', width: 300, heightAuto: true});
                 } else {
                     Swal.fire({title: 'Bien hecho!', html: 'Usuario encontrado', icon: 'success', width: 300, heightAuto: true});
-                    userAuth.rol_id === 3
+                    userAuth.rol_id === 2
                         ? navigate(`/admin/add_products/${data[0].id}`)
                         : navigate(`/admin/reports/${data[0].id}`)
                 }
