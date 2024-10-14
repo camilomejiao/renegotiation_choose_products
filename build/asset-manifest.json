@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/static/css/main.190725f7.css",
+    "main.js": "/static/js/main.8f2ab2ab.js",
+    "static/media/principal-image.png": "/static/media/principal-image.c02fa117d75e4337a191.png",
+    "static/media/footer.png": "/static/media/footer.db4c4f4f20125032e3fb.png",
+    "static/media/imgDSCIPeople.png": "/static/media/imgDSCIPeople.dc60c39c3c239b339d68.png",
+    "static/media/people1.jpg": "/static/media/people1.e6b6ee084becc6c44e45.jpg",
+    "static/media/404.png": "/static/media/404.fb69089629a542a147c3.png",
+    "static/media/logo-DSCI.png": "/static/media/logo-DSCI.92af3de7c106e6f45dca.png",
+    "index.html": "/index.html",
+    "main.190725f7.css.map": "/static/css/main.190725f7.css.map",
+    "main.8f2ab2ab.js.map": "/static/js/main.8f2ab2ab.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.190725f7.css",
+    "static/js/main.8f2ab2ab.js"
+  ]
+}
