@@ -24,13 +24,14 @@ export const Dashboard = () => {
 
         if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
             await userService.searchUser(searchValue).then((data) => {
+                console.log(data);
                 if(data.length === 0) {
                     Swal.fire({title: 'Oops...', html: 'Usuario no existe en el sistema', icon: 'error', width: 300, heightAuto: true});
                 } else {
                     Swal.fire({title: 'Bien hecho!', html: 'Usuario encontrado', icon: 'success', width: 300, heightAuto: true});
                     userAuth.rol_id === 2
-                        ? navigate(`/admin/add_products/${data[0].id}`)
-                        : navigate(`/admin/reports/${data[0].id}`)
+                        ? navigate(`/admin/add_products/${data.id}`)
+                        : navigate(`/admin/reports/${data.id}`)
                 }
             });
         }
