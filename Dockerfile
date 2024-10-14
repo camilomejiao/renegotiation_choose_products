@@ -3,7 +3,7 @@ WORKDIR /source
 COPY package.json /source/
 RUN npm install
 # COPY .env /source/
-COPY ../../../../Downloads /source/
+COPY . /source/
 RUN npm run build
 
 FROM nginx:stable-alpine
