@@ -22,27 +22,32 @@ export const Sidebar = ({userAuth}) => {
         navigate("/admin/logout");
     };
 
+    const handleReport = () => {
+        navigate(`/admin/reports/${userAuth.id}`)
+    };
+
     return (
         <div className={`sidebar ${isOpen ? 'open' : ''}`}>
             <Container fluid className="sidebar-content">
+
                 <Row className="justify-content-center mt-3">
                     <Col xs={12} className="d-flex justify-content-center align-items-center application" onClick={handleApplication}>
                         <FaStore className="sidebar-icon" />
                         {isOpen && <span className="sidebar-text">Solicitud</span>}
                     </Col>
                 </Row>
-                <Row className="justify-content-center mt-3">
-                    <Col xs={12} className="d-flex justify-content-center align-items-center reports">
-                        <FaClipboardList className="sidebar-icon" />
-                        {isOpen && <span className="sidebar-text">Reportes general</span>}
-                    </Col>
-                </Row>
-                <Row className="justify-content-center mt-3">
-                    <Col xs={12} className="d-flex justify-content-center align-items-center">
-                        <FaClipboardList className="sidebar-icon" />
-                        {isOpen && <span className="sidebar-text">Reporte unico</span>}
-                    </Col>
-                </Row>
+                {userAuth.rol_id === 2 && (
+                    <Row className="justify-content-center mt-3">
+                        <Col onClick={handleReport}
+                             xs={12}
+                             className="d-flex justify-content-center align-items-center reports"
+                        >
+                            <FaClipboardList className="sidebar-icon" />
+                            {isOpen && <span className="sidebar-text">Reportes general</span>}
+                        </Col>
+                    </Row>
+                )}
+
             </Container>
             <div className="logout" onClick={handleLogout}>
                 <FaSignOutAlt className="logout-icon" />

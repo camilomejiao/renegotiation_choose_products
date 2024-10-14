@@ -33,8 +33,21 @@ class ProductsServices {
         return await request.json();
     }
 
-    async saveProducts(products) {
+    async saveProducts(products, cubId) {
+        let params = JSON.stringify(products);
+        let url = Global.url + "orden/";
+        let headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        };
 
+        const request = await fetch(url, {
+            method: "POST",
+            body: params,
+            headers,
+        });
+
+        return await request.json();
     }
 
 }

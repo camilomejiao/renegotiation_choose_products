@@ -1,29 +1,44 @@
-import {Button, Col, Container, Form, Row, Table} from "react-bootstrap";
-import './AddProducts.css';
+import { useEffect, useRef, useState } from "react";
+import Select from "react-select";
+import { useParams}  from "react-router-dom";
+import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { FaTrashAlt} from "react-icons/fa";
+import Swal from "sweetalert2";
+import printJS from "print-js";
+
+//Img
 import imgPeople from '../../../../assets/image/addProducts/people1.jpg';
 import imgAdd from '../../../../assets/image/addProducts/imgAdd.png';
 import frame from '../../../../assets/image/addProducts/Frame.png';
-import {useEffect, useState} from "react";
-import Select from "react-select";
-import { useParams} from "react-router-dom";
-import { userService} from "../../../../helpers/services/UserServices";
-import { FaTrashAlt} from "react-icons/fa";
+
+//Css
+import './AddProducts.css';
+
+
+//Components
 import { Footer} from "../footer/Footer";
 import { HeaderImage} from "../../shared/header-image/HeaderImage";
 import { UserInformation} from "../user_information/UserInformation";
-import { productsServices} from "../../../../helpers/services/ProductsServices";
+import { Report } from "../reports/ReportUser/Report";
+
+//Services
+import { userService } from "../../../../helpers/services/UserServices";
+import { productsServices } from "../../../../helpers/services/ProductsServices";
 
 export const AddProducts = () => {
 
     const params = useParams();
+    const headlineReportRef = useRef();
 
-    const [userData, setUserData] = useState({});
-    const [options, setOption] = useState([]);
-    const [items, setItems] = useState([]);
+    const [userData, setUserData] = useState({}); //dataUser
+    const [options, setOption] = useState([]); //OPtions of select
+    const [items, setItems] = useState([]); //Items seleccionados
     const [selectedItem, setSelectedItem] = useState(null);
     const [subtotal, setSubtotal] = useState(0);
     const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
+    const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
+    const [headLineInformation, setHeadLineInformation] = useState({});
 
     const getOptionsProducts = async (searchWord) => {
         if (!searchWord) {
@@ -96,26 +111,60 @@ export const AddProducts = () => {
         const itemsWithTotal = items.map((item) => {
             const totalByItem = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
             return {
-                id: item.id,
+                producto: item.id,
                 discount: item.discount,
-                nombre: item.nombre,
-                quantity: item.quantity,
+                cantidad: item.quantity,
                 valor_unitario: parseFloat(item.valor_unitario),
-                total: totalByItem
+                valor_final: totalByItem
             };
         });
 
         // Creamos la estructura final
         const dataToSend = {
-            total_value: total, // Aseguramos que sea un número flotante
+            persona_cub_id: params.id,
+            valor_total: total, // Aseguramos que sea un número flotante
             items: itemsWithTotal
         };
 
-        // Simulamos el envío de datos (puedes reemplazar esto con una llamada a tu API)
         console.log(dataToSend);
-        await productsServices.saveProducts(dataToSend).then((data) => {
+        await productsServices.saveProducts(dataToSend, params.id).then((data) => {
             console.log(data);
+            if(data.length === 0) {
+                Swal.fire({title: 'Oops...', html: 'Erro al guardar los productos', icon: 'error', width: 300, heightAuto: true});
+            } else {
+                Swal.fire({title: 'Bien hecho!', html: 'Producto guardados exitosamente', icon: 'success', width: 300, heightAuto: true});
+                getHeadlineReport(params.id)
+                setShowPrintButton(true);  // Mostramos el botón de impresión
+            }
+        });
+    }
 
+    const getHeadlineReport = async (cubId) => {
+        setHeadLineInformation({});
+    }
+
+    const handlePrintOrder = () => {
+        const printContent = `
+        <html>
+        <head>
+          <style>           
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              font-size: 10px;
+            }           
+          </style>
+        </head>
+        <body>
+          <!-- Inyectamos el HTML del componente -->
+          ${headlineReportRef.current.innerHTML} 
+        </body>
+        </html>`;
+
+        printJS({
+            printable: printContent,
+            type: 'raw-html',
+            documentTitle: 'Reporte Beneficiario',
         });
     }
 
@@ -265,6 +314,12 @@ export const AddProducts = () => {
                     {/* Botón Guardar */}
                     <Row className="mt-3">
                         <Col className="text-end">
+                            {showPrintButton && (
+                                <Button variant="info" size="lg" onClick={handlePrintOrder}
+                                        style={{ backgroundColor: "#2148C0", borderColor: "#007BFF", fontWeight: "bold", color: "white", marginRight: "10px" }}>
+                                    <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
+                                </Button>
+                            )}
                             <Button variant="success" size="lg" onClick={handleSaveProduct}
                                     style={{ backgroundColor: "#BFD732", borderColor: "#BFD732", fontWeight: "bold" }}>
                                 <i className="fas fa-save me-2"></i>GUARDAR
@@ -272,8 +327,13 @@ export const AddProducts = () => {
                         </Col>
                     </Row>
                 </Container>
-
                 <Footer />
+            </div>
+
+            <div style={{ display: 'none' }}>
+                <div ref={headlineReportRef}>
+                    <Report dataReport={headLineInformation} />
+                </div>
             </div>
         </>
     )

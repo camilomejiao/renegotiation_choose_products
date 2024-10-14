@@ -1,26 +1,39 @@
 import { useOutletContext, useParams } from "react-router-dom";
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { useEffect, useRef, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
+import printJS from "print-js";
+
+//img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
 import imgFrame1 from "../../../../assets/image/icons/frame.png";
 import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
+
+//Components
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { Footer } from "../footer/Footer";
 import { UserInformation } from "../user_information/UserInformation";
-import {useEffect, useRef, useState} from "react";
+import { Authorization } from "./Authorization/Authorization";
+import { Report } from "./ReportUser/Report";
+
+//Services
 import { userService } from "../../../../helpers/services/UserServices";
-import { Col, Container, Row } from "react-bootstrap";
 
-//
+//Css
 import './Reports.css';
-import {Authorization} from "./Authorization/Authorization";
-import printJS from "print-js";
-
 
 export const Reports = () => {
     const { userAuth } = useOutletContext();
     const params = useParams();
 
+    //
+    const authorizationRef = useRef();
+    const headlineReportRef = useRef();
+
+    //
     const [userData, setUserData] = useState({});
+    const [headLineInformation, setHeadLineInformation] = useState({});
+    const [companyInformation, setCompanyInformation] = useState({});
 
     const getUserInformation = async (cubId) => {
         await userService.userInformation(cubId).then((data) => {
@@ -29,7 +42,13 @@ export const Reports = () => {
         });
     }
 
-    const authorizationRef = useRef();
+    const getHeadlineReport = async (cubId) => {
+        setHeadLineInformation({});
+    }
+
+    const getCompanyReport = async (companyId) => {
+        setCompanyInformation({});
+    }
 
     const handlePrintAuthorization = () => {
         // Agregar los estilos CSS al contenido que se imprimirá
@@ -50,7 +69,6 @@ export const Reports = () => {
         </body>
         </html>`;
 
-        // Usamos printJS con el contenido modificado
         printJS({
             printable: printContent,
             type: 'raw-html',
@@ -58,9 +76,68 @@ export const Reports = () => {
         });
     }
 
+    const handlePrintHeadlineReport = () => {
+        const printContent = `
+        <html>
+        <head>
+          <style>           
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              font-size: 10px;
+            }           
+          </style>
+        </head>
+        <body>
+          <!-- Inyectamos el HTML del componente -->
+          ${headlineReportRef.current.innerHTML} 
+        </body>
+        </html>`;
+
+        printJS({
+            printable: printContent,
+            type: 'raw-html',
+            documentTitle: 'Reporte Beneficiario',
+        });
+
+    }
+
+    const handlePrintCompanyReport = () => {
+        const printContent = `
+        <html>
+        <head>
+          <style>           
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              font-size: 10px;
+            }           
+          </style>
+        </head>
+        <body>
+          <!-- Inyectamos el HTML del componente -->
+          ${headlineReportRef.current.innerHTML} 
+        </body>
+        </html>`;
+
+        printJS({
+            printable: printContent,
+            type: 'raw-html',
+            documentTitle: 'Reporte Proveedor',
+        });
+
+    }
+
     useEffect(() => {
         if(params.id){
-            getUserInformation(params.id);
+            if(userAuth.rol_id === 3) {
+                getUserInformation(params.id);
+                getHeadlineReport(params.id);
+            }
+
+            if(userAuth.rol_id === 2) {
+                getCompanyReport(params.id);
+            }
         }
     }, []);
 
@@ -74,33 +151,46 @@ export const Reports = () => {
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
                 />
 
-                {/* Contenedor de la información del usuario */}
-                <UserInformation userData={userData} />
+                {userAuth.rol_id === 3 && (
+                    <>
+                        {/* Contenedor de la información del usuario */}
+                        <UserInformation userData={userData} />
+                    </>
+                )}
 
                 <div className="search-banner-reports">
                     <Container>
                         <Row className="justify-content-center">
                             <Col md={12} className="d-flex justify-content-around">
                                 {userAuth.rol_id === 2 && (
-                                    <button className="report-button general">
+                                    <button onClick={handlePrintCompanyReport} className="report-button general">
                                         <img src={imgFrame1} alt="icono general" className="button-icon" />
                                         REPORTE GENERAL
                                     </button>
                                 )}
-                                <button className="report-button unique">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    REPORTE POR BENEFICIARIOS
-                                </button>
-                                {userAuth.rol_id === 2 && (
-                                    <button onClick={handlePrintAuthorization} className="report-button general">
-                                        <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                        AUTORIZACIÓN
-                                    </button>
+                                {userAuth.rol_id === 3 && (
+                                    <>
+                                        <button onClick={handlePrintHeadlineReport} className="report-button unique">
+                                            <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                            REPORTE POR BENEFICIARIOS
+                                        </button>
+
+                                        <button onClick={handlePrintAuthorization} className="report-button general">
+                                            <img src={imgFrame1} alt="icono general" className="button-icon" />
+                                            AUTORIZACIÓN
+                                        </button>
+                                    </>
                                 )}
                                 {/* Aquí renderizas el componente pero lo ocultas */}
                                 <div style={{ display: 'none' }}>
                                     <div ref={authorizationRef}>
                                         <Authorization userData={userData} />
+                                    </div>
+                                    <div ref={headlineReportRef}>
+                                        <Report dataReport={headLineInformation} />
+                                    </div>
+                                    <div ref={headlineReportRef}>
+                                        <Report dataReport={companyInformation} />
                                     </div>
                                 </div>
                             </Col>
