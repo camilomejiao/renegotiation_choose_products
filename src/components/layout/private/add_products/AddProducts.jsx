@@ -39,7 +39,7 @@ export const AddProducts = () => {
     const [subtotal, setSubtotal] = useState(0);
     const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
-    const [showPrintButton, setShowPrintButton] = useState(true); //Mostrar boton
+    const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
 
     const getOptionsProducts = async (searchWord) => {
