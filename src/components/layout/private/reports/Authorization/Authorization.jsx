@@ -1,4 +1,4 @@
-export const Authorization = ({ userData }) => {
+export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
 
     // Obtener la fecha actual
     const currentDate = new Date();
@@ -22,7 +22,7 @@ export const Authorization = ({ userData }) => {
                                 <img src={img1} alt="" style={{height:'60px'}} />
                             </td>
                             <td style={{width:'30%', borderTop: '1px solid black', textAlign:'center'}}>
-                                <h6>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN</h6>
+                                <h6>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN ACTUALIZADO</h6>
                             </td>
                             <td style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', }}>
                                 <img src={img2} alt="" style={{height:'60px'}} />
@@ -111,13 +111,13 @@ export const Authorization = ({ userData }) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>&nbsp;</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt1?.label || '\u00A0'}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>&nbsp;</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt2.label || '\u00A0'}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>&nbsp;</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt3.label || '\u00A0'}</td>
                                     </tr>
                                 </table>
                             </td>

@@ -49,7 +49,7 @@ class ProductsServices {
 
         if(request.status === 400) {
             const errorData = await request.json(); // Obtener el mensaje de error del servidor
-            throw new Error(errorData.message); // Lanzamos el error para que sea capturado
+            throw new Error(errorData); // Lanzamos el error para que sea capturado
         }
 
         return await request.json();

@@ -23,6 +23,7 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //Css
 import './Reports.css';
+import Select from "react-select";
 
 export const Reports = () => {
     const { userAuth } = useOutletContext();
@@ -37,6 +38,19 @@ export const Reports = () => {
     const [userData, setUserData] = useState({});
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [companyInformation, setCompanyInformation] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [option1, setOption1] = useState('');
+    const [option2, setOption2] = useState('');
+    const [option3, setOption3] = useState('');
+
+    const options = [
+        ' ',
+        'Imposibilidad jurídica',
+        'Imposibilidad fáctica',
+        'Mayor impacto productivo',
+        'Otros componentes no incluidos en el plan de inversión'
+    ];
 
     const getUserInformation = async (cubId) => {
         await userService.userInformation(cubId).then((data) => {
@@ -53,13 +67,19 @@ export const Reports = () => {
     }
 
     const getCompanyReport = async () => {
-        await reportServices.companyReport().then((data) => {
+        setIsLoading(true);
+        try {
+            const data = await reportServices.companyReport();
+            console.log('setCompanyInformation: ', data);
             setCompanyInformation(data);
-        });
+        } catch (error) {
+            console.error('Error fetching company report:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const handlePrintAuthorization = () => {
-        // Agregar los estilos CSS al contenido que se imprimirá
         const printContent = `
         <html>
         <head>
@@ -111,6 +131,9 @@ export const Reports = () => {
     }
 
     const handlePrintCompanyReport = () => {
+        if (isLoading || !companyInformation) {
+            return;
+        }
         const printContent = `
         <html>
         <head>
@@ -133,7 +156,6 @@ export const Reports = () => {
             type: 'raw-html',
             documentTitle: 'Reporte Proveedor',
         });
-
     }
 
     useEffect(() => {
@@ -144,7 +166,7 @@ export const Reports = () => {
             }
 
             if(userAuth.rol_id === 2) {
-                getCompanyReport(params.id);
+                getCompanyReport();
             }
         }
     }, []);
@@ -171,7 +193,15 @@ export const Reports = () => {
                         <Row className="justify-content-center">
                             <Col md={12} className="d-flex justify-content-around">
                                 {userAuth.rol_id === 2 && (
-                                    <button onClick={handlePrintCompanyReport} className="report-button general">
+                                    <button
+                                        onClick={handlePrintCompanyReport}
+                                        className="report-button general"
+                                        disabled={isLoading}
+                                        style={{
+                                            cursor: isLoading ? "not-allowed" : "pointer",
+                                            opacity: isLoading ? 0.6 : 1,
+                                        }}
+                                    >
                                         <img src={imgFrame1} alt="icono general" className="button-icon" />
                                         REPORTE GENERAL
                                     </button>
@@ -189,27 +219,67 @@ export const Reports = () => {
                                         </button>
                                     </>
                                 )}
-                                {/* Aquí renderizas el componente pero lo ocultas */}
-                                <div style={{ display: 'none' }}>
-                                    {userAuth.rol_id === 2 && (
-                                        <div ref={companyReportRef}>
-                                            <ReportCompany dataReport={companyInformation} />
-                                        </div>
-                                    )}
-                                    {userAuth.rol_id === 3 && (
-                                        <>
-                                            <div ref={authorizationRef}>
-                                                <Authorization userData={userData} />
-                                            </div>
-                                            <div ref={headlineReportRef}>
-                                                <ReportHeadLine dataReport={headLineInformation} />
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
                             </Col>
                         </Row>
                     </Container>
+                </div>
+                <div>
+                    <Container>
+                        {/* Selects alineados en una nueva fila */}
+                        <Row className="justify-content-end mt-4">
+                            <Col md={6}>
+                                {userAuth.rol_id === 3 && (
+                                    <div className="authorization-options">
+                                        <h4 style={{ fontWeight: "bold", color: "#2148C0", textAlign: 'left' }}>Selecciona las opciones para la autorización:</h4>
+                                        <p style={{ fontWeight: "bold", color: "#2148C0", textAlign: 'center'}}>Que la presente solicitud de actualización se fundamenta en: </p>
+                                        <Select
+                                            value={option1}
+                                            onChange={setOption1}
+                                            options={options.map((opt) => ({ value: opt, label: opt }))}
+                                            placeholder="Selecciona la primera opción"
+                                            classNamePrefix="custom-select"
+                                            className="custom-select"
+                                        />
+                                        <Select
+                                            value={option2}
+                                            onChange={setOption2}
+                                            options={options.map((opt) => ({ value: opt, label: opt }))}
+                                            placeholder="Selecciona la segunda opción"
+                                            classNamePrefix="custom-select"
+                                            className="custom-select"
+                                        />
+                                        <Select
+                                            value={option3}
+                                            onChange={setOption3}
+                                            options={options.map((opt) => ({ value: opt, label: opt }))}
+                                            placeholder="Selecciona la tercera opción"
+                                            classNamePrefix="custom-select"
+                                            className="custom-select"
+                                        />
+                                    </div>
+                                )}
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
+
+                {/* Aquí renderizas el componente pero lo ocultas */}
+                <div style={{ display: 'none' }}>
+                    {userAuth.rol_id === 2 && (
+                        <div ref={companyReportRef}>
+                            <ReportCompany titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} />
+                        </div>
+                    )}
+                    {userAuth.rol_id === 3 && (
+                        <>
+                            <div ref={authorizationRef}>
+                                <Authorization userData={userData} opt1={option1} opt2={option2} opt3={option3} />
+                            </div>
+                            <div ref={headlineReportRef}>
+                                <ReportHeadLine dataReport={headLineInformation} />
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <Footer />

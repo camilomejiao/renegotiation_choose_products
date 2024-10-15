@@ -19,7 +19,6 @@ import './AddProducts.css';
 import { Footer} from "../footer/Footer";
 import { HeaderImage} from "../../shared/header-image/HeaderImage";
 import { UserInformation} from "../user_information/UserInformation";
-import { ReportHeadLine } from "../reports/ReportUser/ReportHeadLine";
 
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
@@ -36,6 +35,7 @@ export const AddProducts = () => {
     const [options, setOption] = useState([]); //OPtions of select
     const [items, setItems] = useState([]); //Items seleccionados
     const [selectedItem, setSelectedItem] = useState(null);
+    const [saldoRestante, setSaldoRestante] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
     const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
@@ -50,7 +50,7 @@ export const AddProducts = () => {
 
         try {
             const data = await productsServices.searchProduct(searchWord);
-            console.log('data: ', data);
+            //console.log('data: ', data);
             const formattedOptions = data.map(product => ({
                 value: product.id, // Ajusta según la estructura de tu producto
                 label: product.nombre // Ajusta según el campo que representa el nombre del producto
@@ -65,6 +65,7 @@ export const AddProducts = () => {
         await userService.userInformation(cubId).then((data) => {
             console.log(data);
             setUserData(data);
+            setSaldoRestante(data.deuda_componente);
         });
     }
 
@@ -73,11 +74,13 @@ export const AddProducts = () => {
             try {
                 //Obtener los datos completos del producto desde el servicio
                 const data = await productsServices.getProductId(selectedItem.value);
+                console.log(data);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
                     id: data.id,
                     nombre: data.nombre,
+                    unidad: data.unidad,
                     valor_unitario: parseInt(data.valor_unitario),
                     quantity: 1,
                     discount: '0%'
@@ -131,7 +134,7 @@ export const AddProducts = () => {
         try {
             // Hacemos la llamada para guardar los productos
             const data = await productsServices.saveProducts(dataToSend, params.id);
-            console.log('data: ', data);
+            console.log('saveProducts: ', data);
 
             // Si la llamada fue exitosa
             Swal.fire({
@@ -147,10 +150,12 @@ export const AddProducts = () => {
             getHeadlineReport(params.id);  // Actualizar el reporte
 
         } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
+
             // Aquí mostramos el mensaje de error en caso de que algo salga mal
             Swal.fire({
-                title: 'Oops...',
-                text: 'Error al guardar los productos',
+                title: 'Error al guardar los productos',
+                text: `${errorMessage}`,
                 icon: 'error',
                 width: 300,
                 heightAuto: true
@@ -199,9 +204,13 @@ export const AddProducts = () => {
         const iva = 0;
         const total = subtotal + iva;
 
+        const saldoInicial = parseFloat(userData?.deuda_componente || 0);
+        const nuevoSaldo = saldoInicial - total;
+
         setSubtotal(subtotal);
         setIva(iva);
         setTotal(total);
+        setSaldoRestante(nuevoSaldo);
     }, [items]);
 
     useEffect(() => {
@@ -267,8 +276,10 @@ export const AddProducts = () => {
                         <Col sm={3}>
                             {/* Contenedor del saldo */}
                             <div className="d-flex justify-content-center align-items-center mt-1"
-                                 style={{ backgroundColor: "#AECA13", padding: "10px", borderRadius: "5px" }}>
-                                <span style={{ fontSize: "25px", fontWeight: "bold", color: "#FFF" }}>Saldo: ${parseFloat(userData?.deuda_componente).toFixed(2)}</span>
+                                style={{ backgroundColor: "#AECA13", padding: "10px", borderRadius: "5px" }}>
+                                <span style={{ fontSize: "25px", fontWeight: "bold", color: "#FFF" }}>
+                                    Saldo: ${parseFloat(saldoRestante).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                </span>
                             </div>
                         </Col>
                     </Row>
@@ -282,6 +293,7 @@ export const AddProducts = () => {
                                     <th>COD</th>
                                     <th>Nombre</th>
                                     <th>Vr. Unitario</th>
+                                    <th>Unidad</th>
                                     <th>Cantidad</th>
                                     <th>Dto</th>
                                     <th>Total</th>
@@ -294,6 +306,7 @@ export const AddProducts = () => {
                                         <td>{item.id}</td>
                                         <td>{item.nombre}</td>
                                         <td>${item.valor_unitario.toLocaleString()}</td>
+                                        <td>{item.unidad}</td>
                                         <td>
                                             <Form.Control
                                                 type="number"
@@ -328,7 +341,7 @@ export const AddProducts = () => {
                     <Row className="mt-2">
                         <Col className="text-end">
                             <p><strong>SUBTOTAL:</strong> ${subtotal.toLocaleString()}</p>
-                            <p><strong>IVA:</strong> ${iva.toLocaleString()}</p>
+                            {/*<p><strong>IVA:</strong> ${iva.toLocaleString()}</p>*/}
                             <p style={{ fontSize: "18px", fontWeight: "bold", color: "#2E7D32" }}>TOTAL: ${total.toLocaleString()}</p>
                         </Col>
                     </Row>
@@ -342,8 +355,17 @@ export const AddProducts = () => {
                                     <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
                                 </Button>
                             )}
-                            <Button variant="success" size="lg" onClick={handleSaveProduct}
-                                    style={{ backgroundColor: "#BFD732", borderColor: "#BFD732", fontWeight: "bold" }}>
+                            <Button
+                                variant="success"
+                                size="lg"
+                                onClick={handleSaveProduct}
+                                disabled={items.length === 0} // Deshabilitar si no hay productos en la tabla
+                                style={{
+                                    backgroundColor: items.length === 0 ? "#ccc" : "#BFD732", // Cambiar color si está deshabilitado
+                                    borderColor: "#BFD732",
+                                    fontWeight: "bold"
+                                }}
+                            >
                                 <i className="fas fa-save me-2"></i>GUARDAR
                             </Button>
                         </Col>
@@ -354,7 +376,7 @@ export const AddProducts = () => {
 
             <div style={{ display: 'none' }}>
                 <div ref={headlineReportRef}>
-                    <ReportCompany dataReport={headLineInformation} />
+                    <ReportCompany titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} />
                 </div>
             </div>
         </>

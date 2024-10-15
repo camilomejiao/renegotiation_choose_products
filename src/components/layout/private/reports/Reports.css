@@ -6,6 +6,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    padding-bottom: 20px; /* Espacio adicional para los selects */
 }
 
 .report-button {
@@ -36,4 +37,30 @@
 
 .report-button:hover {
     background-color: #f0f0f0;
+}
+
+
+/* Estilos para el select personalizado */
+.authorization-options {
+    background-color: #fff; /* Fondo blanco para diferenciar */
+    border: 1px solid #2148C0; /* Borde azul */
+    padding: 20px;
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select__control {
+    border-color: #2148C0 !important;
+    box-shadow: none !important;
+    min-height: 30px !important;
+    font-size: 14px !important;
+    margin-top: 10px !important;
+}
+
+.custom-select__control:hover {
+    border-color: #2148C0 !important;
+}
+
+.custom-select__placeholder {
+    color: #2148C0 !important;
 }

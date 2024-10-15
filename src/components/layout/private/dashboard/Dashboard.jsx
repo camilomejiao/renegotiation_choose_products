@@ -24,14 +24,30 @@ export const Dashboard = () => {
 
         if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
             await userService.searchUser(searchValue).then((data) => {
-                console.log(data);
-                if(data.length === 0) {
-                    Swal.fire({title: 'Oops...', html: 'Usuario no existe en el sistema', icon: 'error', width: 300, heightAuto: true});
+                console.log('searchValue: ', data);
+
+                // Verificar si el objeto está vacío
+                if (Object.keys(data).length === 0) {
+                    Swal.fire({
+                        title: 'Oops...',
+                        html: 'Usuario no existe en el sistema',
+                        icon: 'error',
+                        width: 300,
+                        heightAuto: true
+                    });
                 } else {
-                    Swal.fire({title: 'Bien hecho!', html: 'Usuario encontrado', icon: 'success', width: 300, heightAuto: true});
+                    Swal.fire({
+                        title: 'Bien hecho!',
+                        html: 'Usuario encontrado',
+                        icon: 'success',
+                        width: 300,
+                        heightAuto: true
+                    });
+
+                    // Redirigir según el rol del usuario
                     userAuth.rol_id === 2
                         ? navigate(`/admin/add_products/${data.id}`)
-                        : navigate(`/admin/reports/${data.id}`)
+                        : navigate(`/admin/reports/${data.id}`);
                 }
             });
         }

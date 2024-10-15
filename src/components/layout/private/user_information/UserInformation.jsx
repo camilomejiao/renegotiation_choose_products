@@ -17,7 +17,7 @@ export const UserInformation = ({userData}) => {
                                 </div>
                                 <div className="user-id-container d-flex justify-content-center">
                                     <div className="user-id px-2 py-1 rounded" style={{ backgroundColor: '#0056b3', color: 'white', fontSize: '14px' }}>
-                                        <strong>C.C:</strong> {userData.identificacion} <span className="ms-3"><strong>CUP:</strong> {userData.id}</span>
+                                        <strong>C.C:</strong> {userData.identificacion} <span className="ms-3"><strong>CUB:</strong> {userData.id}</span>
                                     </div>
                                 </div>
                             </div>
