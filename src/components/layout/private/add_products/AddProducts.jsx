@@ -41,7 +41,6 @@ export const AddProducts = () => {
     const [total, setTotal] = useState(0);
     const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
-    const [activeAddButton, setActiveAddButton] = useState(false);
 
     const getOptionsProducts = async (searchWord) => {
         if (!searchWord) {
