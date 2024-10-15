@@ -2,8 +2,6 @@
 
 export const ReportHeadLine = ({dataReport}) => {
 
-    console.log('dataReport: ', dataReport);
-
     const totalSum = Object.keys(dataReport?.proveedores || {}).reduce((acc, key) => {
         const proveedor = dataReport.proveedores[key];
         const totalProductos = Object.keys(proveedor.productos).reduce((productoAcc, productoKey) => {

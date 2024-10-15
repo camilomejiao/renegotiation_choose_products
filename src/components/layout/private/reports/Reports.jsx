@@ -52,8 +52,8 @@ export const Reports = () => {
         });
     }
 
-    const getCompanyReport = async (companyId) => {
-        await reportServices.companyReport(companyId).then((data) => {
+    const getCompanyReport = async () => {
+        await reportServices.companyReport().then((data) => {
             setCompanyInformation(data);
         });
     }

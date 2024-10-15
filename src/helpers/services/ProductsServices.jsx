@@ -47,6 +47,11 @@ class ProductsServices {
             headers,
         });
 
+        if(request.status === 400) {
+            const errorData = await request.json(); // Obtener el mensaje de error del servidor
+            throw new Error(errorData.message); // Lanzamos el error para que sea capturado
+        }
+
         return await request.json();
     }
 

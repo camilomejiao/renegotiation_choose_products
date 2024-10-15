@@ -24,6 +24,8 @@ import { ReportHeadLine } from "../reports/ReportUser/ReportHeadLine";
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
 import { productsServices } from "../../../../helpers/services/ProductsServices";
+import {reportServices} from "../../../../helpers/services/ReportServices";
+import {ReportCompany} from "../reports/ReportCompany/ReportCompany";
 
 export const AddProducts = () => {
 
@@ -37,7 +39,7 @@ export const AddProducts = () => {
     const [subtotal, setSubtotal] = useState(0);
     const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
-    const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
+    const [showPrintButton, setShowPrintButton] = useState(true); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
 
     const getOptionsProducts = async (searchWord) => {
@@ -126,26 +128,44 @@ export const AddProducts = () => {
             items: itemsWithTotal
         };
 
-        console.log(dataToSend);
-        await productsServices.saveProducts(dataToSend, params.id).then((data) => {
+        try {
+            // Hacemos la llamada para guardar los productos
+            const data = await productsServices.saveProducts(dataToSend, params.id);
             console.log('data: ', data);
-            if(data.length === 0) {
-                Swal.fire({title: 'Oops...', html: 'Error al guardar los productos', icon: 'error', width: 300, heightAuto: true});
-            } else {
-                Swal.fire({title: 'Bien hecho!', html: 'Producto guardados exitosamente', icon: 'success', width: 300, heightAuto: true});
-                getHeadlineReport(params.id)
-                setShowPrintButton(true);  // Mostramos el botón de impresión
-                setItems([]);
-                setSelectedItem(null);
-            }
-        });
+
+            // Si la llamada fue exitosa
+            Swal.fire({
+                title: 'Bien hecho!',
+                html: 'Productos guardados exitosamente',
+                icon: 'success',
+                width: 300,
+                heightAuto: true
+            });
+            setShowPrintButton(true);
+            setItems([]);  // Limpiar la lista de productos
+            setSelectedItem(null);  // Limpiar el select
+            getHeadlineReport(params.id);  // Actualizar el reporte
+
+        } catch (error) {
+            // Aquí mostramos el mensaje de error en caso de que algo salga mal
+            Swal.fire({
+                title: 'Oops...',
+                text: 'Error al guardar los productos',
+                icon: 'error',
+                width: 300,
+                heightAuto: true
+            });
+        }
     }
 
     const getHeadlineReport = async (cubId) => {
-        setHeadLineInformation({});
+        await reportServices.companyAndUserReport(cubId).then((data) => {
+            setHeadLineInformation(data);
+        });
     }
 
     const handlePrintOrder = () => {
+        getHeadlineReport(params.id)
         const printContent = `
         <html>
         <head>
@@ -248,7 +268,7 @@ export const AddProducts = () => {
                             {/* Contenedor del saldo */}
                             <div className="d-flex justify-content-center align-items-center mt-1"
                                  style={{ backgroundColor: "#AECA13", padding: "10px", borderRadius: "5px" }}>
-                                <span style={{ fontSize: "25px", fontWeight: "bold", color: "#FFF" }}>Saldo: $350.000</span>
+                                <span style={{ fontSize: "25px", fontWeight: "bold", color: "#FFF" }}>Saldo: ${parseFloat(userData?.deuda_componente).toFixed(2)}</span>
                             </div>
                         </Col>
                     </Row>
@@ -334,7 +354,7 @@ export const AddProducts = () => {
 
             <div style={{ display: 'none' }}>
                 <div ref={headlineReportRef}>
-                    <ReportHeadLine dataReport={headLineInformation} />
+                    <ReportCompany dataReport={headLineInformation} />
                 </div>
             </div>
         </>
