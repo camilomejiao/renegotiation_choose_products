@@ -61,7 +61,6 @@ export const Reports = () => {
 
     const getHeadlineReport = async (cubId) => {
         await reportServices.headlineReport(cubId).then((data) => {
-            console.log('getHeadlineReport: ', data);
             setHeadLineInformation(data);
         });
     }
@@ -70,7 +69,6 @@ export const Reports = () => {
         setIsLoading(true);
         try {
             const data = await reportServices.companyReport();
-            console.log('setCompanyInformation: ', data);
             setCompanyInformation(data);
         } catch (error) {
             console.error('Error fetching company report:', error);

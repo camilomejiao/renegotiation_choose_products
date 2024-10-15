@@ -41,6 +41,7 @@ export const AddProducts = () => {
     const [total, setTotal] = useState(0);
     const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
+    const [activeAddButton, setActiveAddButton] = useState(false);
 
     const getOptionsProducts = async (searchWord) => {
         if (!searchWord) {
@@ -65,7 +66,7 @@ export const AddProducts = () => {
         await userService.userInformation(cubId).then((data) => {
             console.log(data);
             setUserData(data);
-            setSaldoRestante(data.deuda_componente);
+            setSaldoRestante(data.monto_proveedores);
         });
     }
 
@@ -74,7 +75,6 @@ export const AddProducts = () => {
             try {
                 //Obtener los datos completos del producto desde el servicio
                 const data = await productsServices.getProductId(selectedItem.value);
-                console.log(data);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
@@ -148,6 +148,7 @@ export const AddProducts = () => {
             setItems([]);  // Limpiar la lista de productos
             setSelectedItem(null);  // Limpiar el select
             getHeadlineReport(params.id);  // Actualizar el reporte
+            getUserInformation(params.id);
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
@@ -204,7 +205,7 @@ export const AddProducts = () => {
         const iva = 0;
         const total = subtotal + iva;
 
-        const saldoInicial = parseFloat(userData?.deuda_componente || 0);
+        const saldoInicial = parseFloat(userData?.monto_proveedores || 0);
         const nuevoSaldo = saldoInicial - total;
 
         setSubtotal(subtotal);
@@ -252,7 +253,11 @@ export const AddProducts = () => {
                                         }}
                                         placeholder="Buscar productos..."
                                     />
-                                    <Button variant="success" onClick={addItemToTable} className="addProductButton ms-2">
+                                    <Button variant="success"
+                                            disabled={parseFloat(saldoRestante) === 0}
+                                            onClick={addItemToTable}
+                                            className="addProductButton ms-2"
+                                    >
                                         Agregar
                                     </Button>
                                 </div>
