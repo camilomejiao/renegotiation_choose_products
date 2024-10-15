@@ -25,15 +25,15 @@ export const UserInformation = ({userData}) => {
                         <Col xs={12} className="user-details mt-5">
                             <Row>
                                 <Col xs={4}><strong>Municipio:</strong> {userData.municipio}</Col>
-                                <Col xs={4}><strong>Actividad:</strong> Actividad</Col>
+                                <Col xs={4}><strong>Actividad:</strong> {userData?.actividad}</Col>
                                 <Col xs={4}><strong>Plan:</strong> {userData.municipio}</Col>
                                 <Col xs={4}><strong>Vereda:</strong> {userData.vereda}</Col>
                                 <Col xs={4}><strong>Estado:</strong> {userData.estado_cub}</Col>
-                                <Col xs={4}><strong>Línea:</strong> Café tradicional, siembra o sostenimiento</Col>
-                                <Col xs={4}><strong>Tipo de persona:</strong> Titular</Col>
-                                <Col xs={8}><strong>Restricción:</strong> Resguardado 2022</Col>
-                                <Col xs={4}><strong>Teléfono:</strong> 3028974444</Col>
-                                <Col xs={4}><strong>Etnia:</strong> Resguardo indígena Jambaló</Col>
+                                <Col xs={4}><strong>Línea:</strong> {userData?.plan}</Col>
+                                <Col xs={4}><strong>Tipo de persona:</strong> {userData?.tipo}</Col>
+                                <Col xs={8}><strong>Restricción:</strong> {userData?.restriccion}</Col>
+                                <Col xs={4}><strong>Teléfono:</strong>{userData?.telefono}</Col>
+                                <Col xs={4}><strong>Etnia:</strong> {userData?.etnia}</Col>
                             </Row>
                         </Col>
                     </Row>

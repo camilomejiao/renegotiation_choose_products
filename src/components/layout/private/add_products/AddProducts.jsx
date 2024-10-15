@@ -19,7 +19,7 @@ import './AddProducts.css';
 import { Footer} from "../footer/Footer";
 import { HeaderImage} from "../../shared/header-image/HeaderImage";
 import { UserInformation} from "../user_information/UserInformation";
-import { Report } from "../reports/ReportUser/Report";
+import { ReportHeadLine } from "../reports/ReportUser/ReportHeadLine";
 
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
@@ -332,7 +332,7 @@ export const AddProducts = () => {
 
             <div style={{ display: 'none' }}>
                 <div ref={headlineReportRef}>
-                    <Report dataReport={headLineInformation} />
+                    <ReportHeadLine dataReport={headLineInformation} />
                 </div>
             </div>
         </>

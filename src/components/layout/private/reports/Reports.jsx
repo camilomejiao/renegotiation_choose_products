@@ -14,10 +14,12 @@ import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { Footer } from "../footer/Footer";
 import { UserInformation } from "../user_information/UserInformation";
 import { Authorization } from "./Authorization/Authorization";
-import { Report } from "./ReportUser/Report";
+import { ReportHeadLine } from "./ReportUser/ReportHeadLine";
+import { ReportCompany } from "./ReportCompany/ReportCompany";
 
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
+import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //Css
 import './Reports.css';
@@ -29,6 +31,7 @@ export const Reports = () => {
     //
     const authorizationRef = useRef();
     const headlineReportRef = useRef();
+    const companyReportRef = useRef();
 
     //
     const [userData, setUserData] = useState({});
@@ -37,17 +40,23 @@ export const Reports = () => {
 
     const getUserInformation = async (cubId) => {
         await userService.userInformation(cubId).then((data) => {
-            console.log(data)
+            //console.log(data)
             setUserData(data);
         });
     }
 
     const getHeadlineReport = async (cubId) => {
-        setHeadLineInformation({});
+        await reportServices.headlineReport(cubId).then((data) => {
+            //console.log('getHeadlineReport: ', typeof(data), data);
+            setHeadLineInformation(data);
+        });
     }
 
     const getCompanyReport = async (companyId) => {
-        setCompanyInformation({});
+        await reportServices.companyReport(companyId).then((data) => {
+            //console.log('getCompanyReport: ', data);
+            setCompanyInformation(data);
+        });
     }
 
     const handlePrintAuthorization = () => {
@@ -116,7 +125,7 @@ export const Reports = () => {
         </head>
         <body>
           <!-- Inyectamos el HTML del componente -->
-          ${headlineReportRef.current.innerHTML} 
+          ${companyReportRef.current.innerHTML} 
         </body>
         </html>`;
 
@@ -187,10 +196,10 @@ export const Reports = () => {
                                         <Authorization userData={userData} />
                                     </div>
                                     <div ref={headlineReportRef}>
-                                        <Report dataReport={headLineInformation} />
+                                        <ReportHeadLine dataReport={headLineInformation} />
                                     </div>
-                                    <div ref={headlineReportRef}>
-                                        <Report dataReport={companyInformation} />
+                                    <div ref={companyReportRef}>
+                                        <ReportCompany dataReport={companyInformation} />
                                     </div>
                                 </div>
                             </Col>

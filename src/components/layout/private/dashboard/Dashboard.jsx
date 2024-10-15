@@ -65,7 +65,7 @@ export const Dashboard = () => {
                                 <img src={magnifyingGlass} alt="Buscar" style={{ width: "20px", height: "20px" }} />
                             </Button>
                         </Form>
-                        <p className="search-helper-text mt-2">Ingrese número de C.C. o CUB</p>
+                        <p className="search-helper-text mt-2">Ingrese número de C.C</p>
                     </Col>
                 </Row>
 
