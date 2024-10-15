@@ -135,6 +135,8 @@ export const AddProducts = () => {
                 Swal.fire({title: 'Bien hecho!', html: 'Producto guardados exitosamente', icon: 'success', width: 300, heightAuto: true});
                 getHeadlineReport(params.id)
                 setShowPrintButton(true);  // Mostramos el botón de impresión
+                setItems([]);
+                setSelectedItem(null);
             }
         });
     }
