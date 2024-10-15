@@ -20,7 +20,7 @@ export const AuthProvider = ({children}) => {
         } else {
             const userObj = JSON.parse(user);
             setAuth({
-                id: userObj?.seg_usuario,
+                id: userObj?.proveedor ?? userObj?.user_id,
                 rol_id: userObj?.rol
             });
             setLoading(false);

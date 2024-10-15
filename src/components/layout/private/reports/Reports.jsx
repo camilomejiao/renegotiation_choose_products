@@ -47,14 +47,13 @@ export const Reports = () => {
 
     const getHeadlineReport = async (cubId) => {
         await reportServices.headlineReport(cubId).then((data) => {
-            //console.log('getHeadlineReport: ', typeof(data), data);
+            console.log('getHeadlineReport: ', data);
             setHeadLineInformation(data);
         });
     }
 
     const getCompanyReport = async (companyId) => {
         await reportServices.companyReport(companyId).then((data) => {
-            //console.log('getCompanyReport: ', data);
             setCompanyInformation(data);
         });
     }
@@ -192,15 +191,21 @@ export const Reports = () => {
                                 )}
                                 {/* Aquí renderizas el componente pero lo ocultas */}
                                 <div style={{ display: 'none' }}>
-                                    <div ref={authorizationRef}>
-                                        <Authorization userData={userData} />
-                                    </div>
-                                    <div ref={headlineReportRef}>
-                                        <ReportHeadLine dataReport={headLineInformation} />
-                                    </div>
-                                    <div ref={companyReportRef}>
-                                        <ReportCompany dataReport={companyInformation} />
-                                    </div>
+                                    {userAuth.rol_id === 2 && (
+                                        <div ref={companyReportRef}>
+                                            <ReportCompany dataReport={companyInformation} />
+                                        </div>
+                                    )}
+                                    {userAuth.rol_id === 3 && (
+                                        <>
+                                            <div ref={authorizationRef}>
+                                                <Authorization userData={userData} />
+                                            </div>
+                                            <div ref={headlineReportRef}>
+                                                <ReportHeadLine dataReport={headLineInformation} />
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </Col>
                         </Row>

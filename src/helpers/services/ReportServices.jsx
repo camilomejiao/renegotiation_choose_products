@@ -18,7 +18,7 @@ class ReportServices {
     }
 
     async companyReport(companyId) {
-        let url = Global.url + "orden/reporte/proveedor/"+companyId+"/";
+        let url = Global.url + "orden/reporte/proveedor/";
         let headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('token')

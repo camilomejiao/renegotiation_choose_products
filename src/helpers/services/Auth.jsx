@@ -34,7 +34,7 @@ class Auth {
 
     //
     async saveStorage (token, decodeToken) {
-        localStorage.setItem('id', decodeToken.seg_usuario);
+        localStorage.setItem('id', decodeToken.proveedor);
         localStorage.setItem('token', token.access);
         localStorage.setItem('refresh', token.refresh);
         localStorage.setItem('user', JSON.stringify(decodeToken));

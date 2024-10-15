@@ -128,9 +128,9 @@ export const AddProducts = () => {
 
         console.log(dataToSend);
         await productsServices.saveProducts(dataToSend, params.id).then((data) => {
-            console.log(data);
+            console.log('data: ', data);
             if(data.length === 0) {
-                Swal.fire({title: 'Oops...', html: 'Erro al guardar los productos', icon: 'error', width: 300, heightAuto: true});
+                Swal.fire({title: 'Oops...', html: 'Error al guardar los productos', icon: 'error', width: 300, heightAuto: true});
             } else {
                 Swal.fire({title: 'Bien hecho!', html: 'Producto guardados exitosamente', icon: 'success', width: 300, heightAuto: true});
                 getHeadlineReport(params.id)
