@@ -27,7 +27,7 @@ export const ReportHeadLine = ({dataReport}) => {
                                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                                     <tbody>
                                     <tr>
-                                        <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>PLAN DE INVERSIÓN - ORDEN DE COMPRA</td>
+                                        <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>PLAN DE INVERSIÓN ACTUALIZADO - ORDEN DE COMPRA</td>
                                     </tr>
                                     <tr>
                                         <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
