@@ -173,35 +173,50 @@ export const AddProducts = () => {
     }
 
     const getHeadlineReport = async (cubId) => {
-        await reportServices.companyAndUserReport(cubId).then((data) => {
+        try {
+            const data = await reportServices.companyAndUserReport(cubId);
             setHeadLineInformation(data);
-        });
-    }
+        } catch (error) {
+            console.error('Error al obtener el reporte:', error);
+        }
+    };
 
-    const handlePrintOrder = () => {
-        const printContent = `
-        <html>
-        <head>
-          <style>           
-            body {
-              font-family: Arial, sans-serif;
-              margin: 20px;
-              font-size: 10px;
-            }           
-          </style>
-        </head>
-        <body>
-          <!-- Inyectamos el HTML del componente -->
-          ${headlineReportRef.current.innerHTML} 
-        </body>
-        </html>`;
+    const handlePrintOrder = async () => {
+        setIsReportLoading(true); // Comienza la carga
 
-        printJS({
-            printable: printContent,
-            type: 'raw-html',
-            documentTitle: 'Reporte Beneficiario',
-        });
-    }
+        try {
+            await getHeadlineReport(params.id);
+
+            // Después de obtener la información, generar el contenido a imprimir
+            const printContent = `
+                <html>
+                <head>
+                  <style>           
+                    body {
+                      font-family: Arial, sans-serif;
+                      margin: 20px;
+                      font-size: 10px;
+                    }           
+                  </style>
+                </head>
+                <body>
+                  <!-- Inyectamos el HTML del componente -->
+                  ${headlineReportRef.current.innerHTML} 
+                </body>
+                </html>`;
+
+            printJS({
+                printable: printContent,
+                type: 'raw-html',
+                documentTitle: 'Reporte Beneficiario',
+            });
+
+        } catch (error) {
+            console.error("Error al obtener el reporte:", error);
+        } finally {
+            setIsReportLoading(false); // Termina la carga
+        }
+    };
 
     useEffect(() => {
         const subtotal = items.reduce((acc, item) => {
@@ -361,23 +376,27 @@ export const AddProducts = () => {
                     {/* Botón Guardar */}
                     <Row className="mt-3">
                         <Col className="text-end">
-                            {showPrintButton && (
-                                <Button variant="info" size="lg"
-                                        onClick={handlePrintOrder}
-                                        disabled={isReportLoading}
-                                        style={{
-                                            backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
-                                            borderColor: "#007BFF",
-                                            fontWeight: "bold",
-                                            color: "white",
-                                            cursor: isReportLoading ? "not-allowed" : "pointer",
-                                            opacity: isReportLoading ? 0.6 : 1,
-                                            marginRight: "10px"
-                                        }}
-                                >
-                                    <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
-                                </Button>
-                            )}
+                            <Button variant="info" size="lg"
+                                    onClick={handlePrintOrder}
+                                    disabled={isReportLoading}
+                                    style={{
+                                        backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
+                                        borderColor: "#007BFF",
+                                        fontWeight: "bold",
+                                        color: "white",
+                                        cursor: isReportLoading ? "not-allowed" : "pointer",
+                                        opacity: isReportLoading ? 0.6 : 1,
+                                        marginRight: "10px"
+                                    }}
+                            >
+                                {isReportLoading ? (
+                                    <span>Cargando...</span> // Mostrar texto de carga
+                                ) : (
+                                    <>
+                                        <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
+                                    </>
+                                )}
+                            </Button>
                             <Button
                                 variant="success"
                                 size="lg"
