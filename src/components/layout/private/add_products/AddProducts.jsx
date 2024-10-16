@@ -41,6 +41,7 @@ export const AddProducts = () => {
     const [total, setTotal] = useState(0);
     const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
+    const [isReportLoading, setIsReportLoading] = useState(false);
 
     const getOptionsProducts = async (searchWord) => {
         if (!searchWord) {
@@ -143,11 +144,19 @@ export const AddProducts = () => {
                 width: 300,
                 heightAuto: true
             });
+
+            setIsReportLoading(true);
             setShowPrintButton(true);
-            setItems([]);  // Limpiar la lista de productos
-            setSelectedItem(null);  // Limpiar el select
-            getHeadlineReport(params.id);  // Actualizar el reporte
-            getUserInformation(params.id);
+
+            // Limpiar la lista de productos
+            setItems([]);
+            setSelectedItem(null);
+
+            // Obtener el reporte y la información del usuario
+            await getHeadlineReport(params.id);
+            await getUserInformation(params.id);
+
+            setIsReportLoading(false);
 
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
@@ -170,7 +179,6 @@ export const AddProducts = () => {
     }
 
     const handlePrintOrder = () => {
-        getHeadlineReport(params.id)
         const printContent = `
         <html>
         <head>
@@ -354,8 +362,19 @@ export const AddProducts = () => {
                     <Row className="mt-3">
                         <Col className="text-end">
                             {showPrintButton && (
-                                <Button variant="info" size="lg" onClick={handlePrintOrder}
-                                        style={{ backgroundColor: "#2148C0", borderColor: "#007BFF", fontWeight: "bold", color: "white", marginRight: "10px" }}>
+                                <Button variant="info" size="lg"
+                                        onClick={handlePrintOrder}
+                                        disabled={isReportLoading}
+                                        style={{
+                                            backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
+                                            borderColor: "#007BFF",
+                                            fontWeight: "bold",
+                                            color: "white",
+                                            cursor: isReportLoading ? "not-allowed" : "pointer",
+                                            opacity: isReportLoading ? 0.6 : 1,
+                                            marginRight: "10px"
+                                        }}
+                                >
                                     <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
                                 </Button>
                             )}
@@ -380,7 +399,7 @@ export const AddProducts = () => {
 
             <div style={{ display: 'none' }}>
                 <div ref={headlineReportRef}>
-                    <ReportCompany titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} />
+                    <ReportCompany titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} />
                 </div>
             </div>
         </>

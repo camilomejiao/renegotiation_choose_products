@@ -26,18 +26,18 @@ export const ReportHeadLine = ({dataReport}) => {
                             <td style={{ width: '70%', borderTop: '1px solid black', textAlign: 'center' }}>
                                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                                     <tbody>
-                                    <tr>
-                                        <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>PLAN DE INVERSIÓN ACTUALIZADO - ORDEN DE COMPRA</td>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                        <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
-                                        <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
-                                        <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
-                                    </tr>
+                                        <tr>
+                                            <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>PLAN DE INVERSIÓN ACTUALIZADO - ORDEN DE COMPRA</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
+                                            <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
+                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
+                                            <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </td>
