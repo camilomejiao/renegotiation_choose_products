@@ -149,7 +149,7 @@ export const AddProducts = () => {
             console.log('dataToSend: ', dataToSend);
             // Hacemos la llamada para guardar los productos
             const data = await productsServices.saveProducts(dataToSend, params.id);
-            //console.log('saveProducts: ', data);
+            console.log('saveProducts: ', data);
 
             // Si la llamada fue exitosa
             Swal.fire({

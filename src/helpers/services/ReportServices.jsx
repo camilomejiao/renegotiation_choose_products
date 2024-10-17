@@ -1,50 +1,27 @@
 import { Global } from "../Global.jsx";
+import { authTokenService } from "./AuthTokenService";
 
 class ReportServices {
 
     async headlineReport(cubId) {
         let url = Global.url + "orden/reporte/cub/"+cubId+"/";
-        let headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('token')
-        };
-
-        const request = await fetch(url, {
-            method: "GET",
-            headers
+        return await authTokenService.fetchWithAuth(url, {
+            method: "GET"
         });
-
-        return await request.json();
     }
 
     async companyReport() {
         let url = Global.url + "orden/reporte/proveedor/";
-        let headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('token')
-        };
-
-        const request = await fetch(url, {
-            method: "GET",
-            headers
+        return await authTokenService.fetchWithAuth(url, {
+            method: "GET"
         });
-
-        return await request.json();
     }
 
     async companyAndUserReport(cubId) {
         let url = Global.url + "orden/reporte/proveedor/"+cubId+"/";
-        let headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('token')
-        };
-
-        const request = await fetch(url, {
-            method: "GET",
-            headers
+        return await authTokenService.fetchWithAuth(url, {
+            method: "GET"
         });
-
-        return await request.json();
     }
 
 }

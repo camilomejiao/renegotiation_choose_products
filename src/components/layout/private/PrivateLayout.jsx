@@ -6,8 +6,6 @@ import {Header} from "../shared/header/Header";
 export const PrivateLayout = () => {
     const {auth, loading} = useAuth();
 
-    console.log('auth: ', auth);
-
     return (
         <>
             {

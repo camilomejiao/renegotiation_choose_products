@@ -25,7 +25,6 @@ class Auth {
         if (resp.access && resp.refresh) {
             const decodeToken = await this.getTokenCode(resp.access);
             await this.saveStorage(resp, decodeToken);
-            console.log('Tokens guardados correctamente');
         } else {
             console.error('Error: Los tokens no están presentes en la respuesta');
         }
