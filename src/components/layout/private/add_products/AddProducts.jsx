@@ -111,10 +111,24 @@ export const AddProducts = () => {
         setItems(newItems);
     };
 
+    const limitToFourDecimals = (value) => {
+        // Utilizamos una expresión regular para permitir números con hasta 4 decimales
+        const regex = /^\d*\.?\d{0,4}$/;
+
+        // Si el valor coincide con la expresión regular, lo devolvemos tal cual
+        if (regex.test(value)) {
+            return value;
+        }
+
+        // Si no coincide (tiene más de 4 decimales), truncamos a 4 decimales
+        const truncatedValue = parseFloat(value).toFixed(4);
+        return truncatedValue;
+    };
+
     const handleSaveProduct = async () => {
         // Mapeamos los items y calculamos el total para cada uno
         const itemsWithTotal = items.map((item) => {
-            const totalByItem = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
+            const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100));
             return {
                 producto: item.id,
                 discount: item.discount,
@@ -127,14 +141,15 @@ export const AddProducts = () => {
         // Creamos la estructura final
         const dataToSend = {
             persona_cub_id: params.id,
-            valor_total: total, // Aseguramos que sea un número flotante
+            valor_total: Math.ceil(total), // Aseguramos que sea un número flotante
             items: itemsWithTotal
         };
 
         try {
+            console.log('dataToSend: ', dataToSend);
             // Hacemos la llamada para guardar los productos
             const data = await productsServices.saveProducts(dataToSend, params.id);
-            console.log('saveProducts: ', data);
+            //console.log('saveProducts: ', data);
 
             // Si la llamada fue exitosa
             Swal.fire({
@@ -175,6 +190,7 @@ export const AddProducts = () => {
     const getHeadlineReport = async (cubId) => {
         try {
             const data = await reportServices.companyAndUserReport(cubId);
+            console.log('setHeadLineInformation: ', data);
             setHeadLineInformation(data);
         } catch (error) {
             console.error('Error al obtener el reporte:', error);
@@ -348,7 +364,7 @@ export const AddProducts = () => {
                                                 type="text"
                                                 className="small-input form-control-sm"
                                                 value={item.discount}
-                                                onChange={(e) => handleDiscountChange(index, e.target.value)}
+                                                onChange={(e) => handleDiscountChange(index, limitToFourDecimals(e.target.value))}
                                             />
                                         </td>
                                         <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
