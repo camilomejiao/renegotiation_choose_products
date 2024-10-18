@@ -2,7 +2,6 @@ export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
 
     // Obtener la fecha actual
     const currentDate = new Date();
-    // Formatear la fecha (por ejemplo: "13/10/2024")
     const formattedDate = currentDate.toLocaleDateString('es-ES', {
         day: '2-digit',
         month: '2-digit',

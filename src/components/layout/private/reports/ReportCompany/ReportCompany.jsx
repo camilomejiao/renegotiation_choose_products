@@ -70,7 +70,7 @@ export const ReportCompany = ({titleReport, dataReport, userData}) => {
                         <td style={{ width: '30%', textAlign: 'center', border: '1px solid black' }}>DESCRIPCIÓN TÉCNICA DEL PRODUCTO</td>
                         <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DE PRODUCTO</td>
                         <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>MARCA DEL PRODUCTO</td>
-                        <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DEL BENEFICIARIO</td>
+                        <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DEL TITULAR</td>
                         <td style={{ width: '9%', textAlign: 'center', border: '1px solid black' }}>IDENTIFICACIÓN Y CUB</td>
                         <td style={{ width: '5%', textAlign: 'center', border: '1px solid black' }}>UNIDAD DE MEDIDA</td>
                         <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLUÍDO IVA</td>
@@ -143,12 +143,12 @@ export const ReportCompany = ({titleReport, dataReport, userData}) => {
                             <td
                                 style={{width: '10%', textAlign: 'left', border: '1px solid black', verticalAlign: 'top'}}
                             >
-                                Nombre del titular o beneficiario
+                                Nombre del titular
                             </td>
                             <td
                                 style={{width: '10%', textAlign: 'left', border: '1px solid black', verticalAlign: 'top'}}
                             >
-                                Firma del titular o beneficiario
+                                Firma del titular
                             </td>
                         </tr>
                         <tr>
