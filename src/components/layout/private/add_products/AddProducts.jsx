@@ -24,7 +24,7 @@ import { UserInformation} from "../user_information/UserInformation";
 import { userService } from "../../../../helpers/services/UserServices";
 import { productsServices } from "../../../../helpers/services/ProductsServices";
 import {reportServices} from "../../../../helpers/services/ReportServices";
-import {ReportCompany} from "../reports/ReportCompany/ReportCompany";
+import {ReportCompany} from "../ReportsCompany/ReportCompany/ReportCompany";
 
 export const AddProducts = () => {
 

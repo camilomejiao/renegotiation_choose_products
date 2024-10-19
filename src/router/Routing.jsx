@@ -10,6 +10,7 @@ import {AddProducts} from "../components/layout/private/add_products/AddProducts
 
 import { RouterEnum } from "./RouterEnum";
 import {Reports} from "../components/layout/private/reports/Reports";
+import {ReportsCompany} from "../components/layout/private/ReportsCompany/ReportsCompany";
 
 export const Routing = () => {
     return (
@@ -27,6 +28,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.AddProducts }  element={ <AddProducts /> }  />
 
                         <Route path={ RouterEnum.Reports }  element={ <Reports /> }  />
+                        <Route path={ RouterEnum.ReportCompany }  element={ <ReportsCompany /> }  />
 
                         <Route path={ RouterEnum.Logout } element={ <Logout /> }         />
                     </Route>

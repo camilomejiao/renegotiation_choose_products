@@ -1,0 +1,73 @@
+.search-banner-reports {
+    background-color: #0094D1;
+    padding: 20px 0; /* Ajustamos el padding para centrar los elementos verticalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.date-picker-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px; /* Espaciado entre selects */
+}
+
+.calendar-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #007bff;
+    font-size: 18px;
+}
+
+.custom-date-picker {
+    padding-left: 40px; /* Deja espacio para el ícono */
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #007bff;
+    background-color: #ffffff;
+    font-size: 16px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease-in-out;
+}
+
+.custom-date-picker:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.custom-date-picker::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.report-button.general {
+    background-color: #00bfff;
+    color: white;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 12px;
+    transition: background-color 0.3s ease-in-out;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .search-banner-reports {
+        flex-direction: column;
+        padding: 10px 0;
+    }
+
+    .date-picker-wrapper {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .report-button.general {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

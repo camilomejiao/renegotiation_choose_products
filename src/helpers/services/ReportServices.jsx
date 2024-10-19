@@ -10,8 +10,8 @@ class ReportServices {
         });
     }
 
-    async companyReport() {
-        let url = Global.url + "orden/reporte/proveedor/";
+    async companyReport(startDate, endDate) {
+        let url = Global.url + `orden/reporte/proveedor/?fecha_ini=${startDate}&fecha_fin=${endDate}`;
         return await authTokenService.fetchWithAuth(url, {
             method: "GET"
         });

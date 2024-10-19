@@ -5,6 +5,7 @@ export const RouterEnum = {
     AddProducts: 'add_products/:id',
 
     Reports: 'reports/:id',
+    ReportCompany: 'reports-company',
 
     //
     Logout: 'logout',

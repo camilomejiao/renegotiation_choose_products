@@ -15,7 +15,6 @@ import { Footer } from "../footer/Footer";
 import { UserInformation } from "../user_information/UserInformation";
 import { Authorization } from "./Authorization/Authorization";
 import { ReportHeadLine } from "./ReportUser/ReportHeadLine";
-import { ReportCompany } from "./ReportCompany/ReportCompany";
 
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
@@ -32,13 +31,10 @@ export const Reports = () => {
     //
     const authorizationRef = useRef();
     const headlineReportRef = useRef();
-    const companyReportRef = useRef();
 
     //
     const [userData, setUserData] = useState({});
     const [headLineInformation, setHeadLineInformation] = useState({});
-    const [companyInformation, setCompanyInformation] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
 
     const [option1, setOption1] = useState('');
     const [option2, setOption2] = useState('');
@@ -54,7 +50,6 @@ export const Reports = () => {
 
     const getUserInformation = async (cubId) => {
         await userService.userInformation(cubId).then((data) => {
-            //console.log(data)
             setUserData(data);
         });
     }
@@ -63,18 +58,6 @@ export const Reports = () => {
         await reportServices.headlineReport(cubId).then((data) => {
             setHeadLineInformation(data);
         });
-    }
-
-    const getCompanyReport = async () => {
-        setIsLoading(true);
-        try {
-            const data = await reportServices.companyReport();
-            setCompanyInformation(data);
-        } catch (error) {
-            console.error('Error fetching company report:', error);
-        } finally {
-            setIsLoading(false);
-        }
     }
 
     const handlePrintAuthorization = () => {
@@ -125,35 +108,6 @@ export const Reports = () => {
             type: 'raw-html',
             documentTitle: 'Reporte Beneficiario',
         });
-
-    }
-
-    const handlePrintCompanyReport = () => {
-        if (isLoading || !companyInformation) {
-            return;
-        }
-        const printContent = `
-        <html>
-        <head>
-          <style>           
-            body {
-              font-family: Arial, sans-serif;
-              margin: 20px;
-              font-size: 10px;
-            }           
-          </style>
-        </head>
-        <body>
-          <!-- Inyectamos el HTML del componente -->
-          ${companyReportRef.current.innerHTML} 
-        </body>
-        </html>`;
-
-        printJS({
-            printable: printContent,
-            type: 'raw-html',
-            documentTitle: 'Reporte Proveedor',
-        });
     }
 
     useEffect(() => {
@@ -161,10 +115,6 @@ export const Reports = () => {
             if(userAuth.rol_id === 3) {
                 getUserInformation(params.id);
                 getHeadlineReport(params.id);
-            }
-
-            if(userAuth.rol_id === 2) {
-                getCompanyReport();
             }
         }
     }, []);
@@ -190,20 +140,6 @@ export const Reports = () => {
                     <Container>
                         <Row className="justify-content-center">
                             <Col md={12} className="d-flex justify-content-around">
-                                {userAuth.rol_id === 2 && (
-                                    <button
-                                        onClick={handlePrintCompanyReport}
-                                        className="report-button general"
-                                        disabled={isLoading}
-                                        style={{
-                                            cursor: isLoading ? "not-allowed" : "pointer",
-                                            opacity: isLoading ? 0.6 : 1,
-                                        }}
-                                    >
-                                        <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                        REPORTE GENERAL
-                                    </button>
-                                )}
                                 {userAuth.rol_id === 3 && (
                                     <>
                                         <button onClick={handlePrintHeadlineReport} className="report-button unique">
@@ -263,11 +199,6 @@ export const Reports = () => {
 
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
-                    {userAuth.rol_id === 2 && (
-                        <div ref={companyReportRef}>
-                            <ReportCompany titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} />
-                        </div>
-                    )}
                     {userAuth.rol_id === 3 && (
                         <>
                             <div ref={authorizationRef}>

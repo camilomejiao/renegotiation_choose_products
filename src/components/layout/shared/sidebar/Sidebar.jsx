@@ -23,7 +23,7 @@ export const Sidebar = ({userAuth}) => {
     };
 
     const handleReport = () => {
-        navigate(`/admin/reports/${userAuth.id}`)
+        navigate(`/admin/reports-company`)
     };
 
     return (
