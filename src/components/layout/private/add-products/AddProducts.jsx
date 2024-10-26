@@ -83,7 +83,7 @@ export const AddProducts = () => {
         if (selectedItem) {
             try {
                 //Obtener los datos completos del producto desde el servicio
-                const {data, status} = await productsServices.getProductId(selectedItem.value);
+                const { data } = await productsServices.getProductId(selectedItem.value);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
@@ -154,9 +154,7 @@ export const AddProducts = () => {
         };
 
         try {
-            //console.log('dataToSend: ', dataToSend);
-            // Hacemos la llamada para guardar los productos
-            const {data, status} = await productsServices.saveProducts(dataToSend, params.id);
+            const { status} = await productsServices.saveProducts(dataToSend, params.id);
             //console.log('saveProducts: ', data);
 
             if(status === StatusEnum.OK) {
@@ -447,9 +445,11 @@ export const AddProducts = () => {
             </div>
 
             <div style={{ display: 'none' }}>
-                <div ref={headlineReportRef}>
-                    <CompanyReportPrinting titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} />
-                </div>
+                {headLineInformation && (
+                    <div ref={headlineReportRef}>
+                        <CompanyReportPrinting titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} isCompanyReport={false}/>
+                    </div>
+                )}
             </div>
         </>
     )

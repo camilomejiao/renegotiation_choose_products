@@ -11,7 +11,6 @@
 .date-picker-wrapper {
     position: relative;
     width: 100%;
-    margin-bottom: 20px; /* Espaciado entre selects */
 }
 
 .calendar-icon {
@@ -21,6 +20,7 @@
     transform: translateY(-50%);
     color: #007bff;
     font-size: 18px;
+    z-index: 2;
 }
 
 .custom-date-picker {
@@ -53,6 +53,11 @@
     border-radius: 12px;
     transition: background-color 0.3s ease-in-out;
     border: none;
+}
+
+.report-button.general img.button-icon {
+    margin-right: 10px;
+    width: 30px;
 }
 
 @media (max-width: 768px) {

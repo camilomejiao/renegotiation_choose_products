@@ -78,10 +78,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaHome className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Solicitud</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleOrderReport}>
+                                        {/*<div className="dropdown-item" onClick={handleOrderReport}>
                                             <FaReceipt className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
-                                        </div>
+                                        </div>*/}
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaClipboardList className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}

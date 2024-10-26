@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Select from "react-select";
 import { Button, Col, Container, Row, Table, Form, Spinner } from "react-bootstrap";
 import { FaFilePdf } from "react-icons/fa";
@@ -34,7 +34,6 @@ const deliveryStatus = [
 export const Deliveries = () => {
 
     const params = useParams();
-    const navigate = useNavigate();
     const deliveryReportRef = useRef();
 
     const [suppliers, setSuppliers] = useState([]);

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import {Col, Container, Row, Spinner} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -31,7 +31,7 @@ export const CompanyReport = () => {
     const [companyInformation, setCompanyInformation] = useState({});
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isReadyToPrint, setIsReadyToPrint] = useState(false);
 
     const handleStartDateChange = (date) => {
@@ -80,7 +80,7 @@ export const CompanyReport = () => {
         const formattedEndDate = format(endDate, 'yyyy-MM-dd');
 
         try {
-            const data = await reportServices.companyReport(formattedStartDate, formattedEndDate);
+            const { data } = await reportServices.companyReport(formattedStartDate, formattedEndDate);
             console.log("Datos del reporte:", data);
             setCompanyInformation(data);
             setIsReadyToPrint(true);
@@ -132,6 +132,13 @@ export const CompanyReport = () => {
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
                 />
 
+                {isLoading && (
+                    <div className="spinner-container">
+                        <Spinner animation="border" variant="success" />
+                        <span>Cargando...</span>
+                    </div>
+                )}
+
                 <div className="banner-reports">
                     <Container>
                         <Row className="justify-content-center align-items-center">
@@ -165,10 +172,9 @@ export const CompanyReport = () => {
                                 <button
                                     onClick={handlePrintCompanyReport}
                                     className="report-button general"
-                                    style={{ cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.6 : 1 }}
                                 >
                                     <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                    {isLoading ? 'Cargando...' : 'REPORTE GENERAL'}
+                                    REPORTE GENERAL
                                 </button>
                             </Col>
                         </Row>
@@ -177,9 +183,11 @@ export const CompanyReport = () => {
 
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
-                    <div ref={companyReportRef}>
-                        <CompanyReportPrinting titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} userData={''} />
-                    </div>
+                    {companyInformation && (
+                        <div ref={companyReportRef}>
+                            <CompanyReportPrinting titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} userData={''} isCompanyReport={true} />
+                        </div>
+                    )}
                 </div>
 
                 <Footer />

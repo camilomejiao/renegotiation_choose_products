@@ -99,7 +99,7 @@ export const ReportingSystem = () => {
     const handleHeadlineInformationToReport = async (cubId) => {
         setIsLoading(true);
         try {
-            const {data, status, statusText} = await reportServices.headlineReport(cubId);
+            const {data, status} = await reportServices.headlineReport(cubId);
             if(status === StatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReadyToPrintHeadLineInformation(true);
