@@ -6,11 +6,13 @@ import { Dashboard } from "../components/layout/private/dashboard/Dashboard.jsx"
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
-import {AddProducts} from "../components/layout/private/add_products/AddProducts";
+import {AddProducts} from "../components/layout/private/add-products/AddProducts";
 
 import { RouterEnum } from "./RouterEnum";
-import {Reports} from "../components/layout/private/reports/Reports";
-import {ReportsCompany} from "../components/layout/private/ReportsCompany/ReportsCompany";
+import {ReportingSystem} from "../components/layout/private/reporting-system/ReportingSystem";
+import {CompanyReport} from "../components/layout/private/ReportsCompany/CompanyReport";
+import {OrderReport} from "../components/layout/private/order-report/OrderReport";
+import {Deliveries} from "../components/layout/private/deliveries/Deliveries";
 
 export const Routing = () => {
     return (
@@ -26,9 +28,11 @@ export const Routing = () => {
                         <Route index element={ <Dashboard /> } />
 
                         <Route path={ RouterEnum.AddProducts }  element={ <AddProducts /> }  />
+                        <Route path={ RouterEnum.deliveries }  element={ <Deliveries /> }  />
 
-                        <Route path={ RouterEnum.Reports }  element={ <Reports /> }  />
-                        <Route path={ RouterEnum.ReportCompany }  element={ <ReportsCompany /> }  />
+                        <Route path={ RouterEnum.Reports }  element={ <ReportingSystem /> }  />
+                        <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
+                        <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
 
                         <Route path={ RouterEnum.Logout } element={ <Logout /> }         />
                     </Route>

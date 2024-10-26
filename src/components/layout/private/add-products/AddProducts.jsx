@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useParams}  from "react-router-dom";
-import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
+import {Button, Col, Container, Form, Row, Spinner, Table} from "react-bootstrap";
 import { FaTrashAlt} from "react-icons/fa";
 import Swal from "sweetalert2";
 import printJS from "print-js";
@@ -18,31 +18,32 @@ import './AddProducts.css';
 //Components
 import { Footer} from "../footer/Footer";
 import { HeaderImage} from "../../shared/header-image/HeaderImage";
-import { UserInformation} from "../user_information/UserInformation";
+import { UserInformation} from "../user-information/UserInformation";
+import { CompanyReportPrinting } from "../ReportsCompany/report/CompanyReportPrinting";
 
 //Services
 import { userService } from "../../../../helpers/services/UserServices";
 import { productsServices } from "../../../../helpers/services/ProductsServices";
-import {reportServices} from "../../../../helpers/services/ReportServices";
-import {ReportCompany} from "../ReportsCompany/ReportCompany/ReportCompany";
+import { reportServices } from "../../../../helpers/services/ReportServices";
+import {StatusEnum} from "../../../../helpers/GlobalEnum";
 
 export const AddProducts = () => {
 
     const params = useParams();
     const headlineReportRef = useRef();
 
-    const [userData, setUserData] = useState({}); //dataUser
-    const [options, setOption] = useState([]); //OPtions of select
-    const [items, setItems] = useState([]); //Items seleccionados
+    const [userData, setUserData] = useState({});
+    const [options, setOption] = useState([]);
+    const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [saldoRestante, setSaldoRestante] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
-    const [iva, setIva] = useState(0);
     const [total, setTotal] = useState(0);
-    const [showPrintButton, setShowPrintButton] = useState(false); //Mostrar boton
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [isReportLoading, setIsReportLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
+    //
     const getOptionsProducts = async (searchWord) => {
         if (!searchWord) {
             setOption([]);
@@ -50,31 +51,39 @@ export const AddProducts = () => {
         }
 
         try {
-            const data = await productsServices.searchProduct(searchWord);
+            const {data, status} = await productsServices.searchProduct(searchWord);
             //console.log('data: ', data);
-            const formattedOptions = data.map(product => ({
-                value: product.id, // Ajusta según la estructura de tu producto
-                label: product.nombre // Ajusta según el campo que representa el nombre del producto
-            }));
-            setOption(formattedOptions);
+            if(status === StatusEnum.OK) {
+                const formattedOptions = data.map(product => ({
+                    value: product.id, // Ajusta según la estructura de tu producto
+                    label: product.nombre // Ajusta según el campo que representa el nombre del producto
+                }));
+                setOption(formattedOptions);
+            }
+
         } catch (error) {
             console.error('Error buscando productos:', error);
         }
     }
 
     const getUserInformation = async (cubId) => {
-        await userService.userInformation(cubId).then((data) => {
-            console.log(data);
-            setUserData(data);
-            setSaldoRestante(data.monto_proveedores);
-        });
+        try {
+            const {data, status} = await userService.userInformation(cubId);
+
+            if(status === StatusEnum.OK) {
+                setUserData(data);
+                setSaldoRestante(data.monto_proveedores);
+            }
+        } catch (error) {
+            console.error('Error buscando productos:', error);
+        }
     }
 
     const addItemToTable = async () => {
         if (selectedItem) {
             try {
                 //Obtener los datos completos del producto desde el servicio
-                const data = await productsServices.getProductId(selectedItem.value);
+                const {data, status} = await productsServices.getProductId(selectedItem.value);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
@@ -85,7 +94,6 @@ export const AddProducts = () => {
                     quantity: 1,
                     discount: '0%'
                 }]);
-
                 // Reset the select
                 setSelectedItem(null);
             } catch (error) {
@@ -146,36 +154,35 @@ export const AddProducts = () => {
         };
 
         try {
-            console.log('dataToSend: ', dataToSend);
+            //console.log('dataToSend: ', dataToSend);
             // Hacemos la llamada para guardar los productos
-            const data = await productsServices.saveProducts(dataToSend, params.id);
-            console.log('saveProducts: ', data);
+            const {data, status} = await productsServices.saveProducts(dataToSend, params.id);
+            //console.log('saveProducts: ', data);
 
-            // Si la llamada fue exitosa
-            Swal.fire({
-                title: 'Bien hecho!',
-                html: 'Productos guardados exitosamente',
-                icon: 'success',
-                width: 300,
-                heightAuto: true
-            });
+            if(status === StatusEnum.OK) {
+                // Si la llamada fue exitosa
+                Swal.fire({
+                    title: 'Bien hecho!',
+                    html: 'Productos guardados exitosamente',
+                    icon: 'success',
+                    width: 300,
+                    heightAuto: true
+                });
 
-            setIsReportLoading(true);
-            setShowPrintButton(true);
+                setIsReportLoading(true);
 
-            // Limpiar la lista de productos
-            setItems([]);
-            setSelectedItem(null);
+                // Limpiar la lista de productos
+                setItems([]);
+                setSelectedItem(null);
 
-            // Obtener el reporte y la información del usuario
-            await getHeadlineReport(params.id);
-            await getUserInformation(params.id);
+                // Obtener el reporte y la información del usuario
+                await getHeadlineReport(params.id);
+                await getUserInformation(params.id);
 
-            setIsReportLoading(false);
-
+                setIsReportLoading(false);
+            }
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-
             // Aquí mostramos el mensaje de error en caso de que algo salga mal
             Swal.fire({
                 title: 'Error al guardar los productos',
@@ -188,50 +195,45 @@ export const AddProducts = () => {
     }
 
     const getHeadlineReport = async (cubId) => {
+        setIsLoading(true);
         try {
-            const data = await reportServices.companyAndUserReport(cubId);
+            const {data, status} = await reportServices.companyAndUserReport(cubId);
             console.log('setHeadLineInformation: ', data);
-            setHeadLineInformation(data);
+            if(status === StatusEnum.OK) {
+                setHeadLineInformation(data);
+                setIsReportLoading(true);
+            }
         } catch (error) {
             console.error('Error al obtener el reporte:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handlePrintOrder = async () => {
-        setIsReportLoading(true); // Comienza la carga
+        // Después de obtener la información, generar el contenido a imprimir
+        const printContent = `
+            <html>
+            <head>
+              <style>           
+                body {
+                  font-family: Arial, sans-serif;
+                  margin: 20px;
+                  font-size: 10px;
+                }           
+              </style>
+            </head>
+            <body>
+              <!-- Inyectamos el HTML del componente -->
+              ${headlineReportRef.current.innerHTML} 
+            </body>
+            </html>`;
 
-        try {
-            await getHeadlineReport(params.id);
-
-            // Después de obtener la información, generar el contenido a imprimir
-            const printContent = `
-                <html>
-                <head>
-                  <style>           
-                    body {
-                      font-family: Arial, sans-serif;
-                      margin: 20px;
-                      font-size: 10px;
-                    }           
-                  </style>
-                </head>
-                <body>
-                  <!-- Inyectamos el HTML del componente -->
-                  ${headlineReportRef.current.innerHTML} 
-                </body>
-                </html>`;
-
-            printJS({
-                printable: printContent,
-                type: 'raw-html',
-                documentTitle: 'Reporte Beneficiario',
-            });
-
-        } catch (error) {
-            console.error("Error al obtener el reporte:", error);
-        } finally {
-            setIsReportLoading(false); // Termina la carga
-        }
+        printJS({
+            printable: printContent,
+            type: 'raw-html',
+            documentTitle: 'Reporte Beneficiario',
+        });
     };
 
     useEffect(() => {
@@ -240,14 +242,12 @@ export const AddProducts = () => {
             return acc + itemTotal;
         }, 0);
 
-        const iva = 0;
-        const total = subtotal + iva;
+        const total = subtotal;
 
         const saldoInicial = parseFloat(userData?.monto_proveedores || 0);
         const nuevoSaldo = saldoInicial - total;
 
         setSubtotal(subtotal);
-        setIva(iva);
         setTotal(total);
         setSaldoRestante(nuevoSaldo);
     }, [items]);
@@ -257,6 +257,14 @@ export const AddProducts = () => {
             getUserInformation(params.id);
         }
     },[]);
+
+    useEffect(() => {
+        if(isReportLoading) {
+            handlePrintOrder();
+            setIsReportLoading(false);
+        }
+    }, [isReportLoading]);
+
 
     return (
         <>
@@ -327,6 +335,13 @@ export const AddProducts = () => {
                         </Col>
                     </Row>
 
+                    {isLoading && (
+                        <div className="spinner-container">
+                            <Spinner animation="border" variant="success" />
+                            <span>Cargando...</span>
+                        </div>
+                    )}
+
                     {/* Tabla */}
                     <Row className="mt-3">
                         <Col>
@@ -384,7 +399,6 @@ export const AddProducts = () => {
                     <Row className="mt-2">
                         <Col className="text-end">
                             <p><strong>SUBTOTAL:</strong> ${subtotal.toLocaleString()}</p>
-                            {/*<p><strong>IVA:</strong> ${iva.toLocaleString()}</p>*/}
                             <p style={{ fontSize: "18px", fontWeight: "bold", color: "#2E7D32" }}>TOTAL: ${total.toLocaleString()}</p>
                         </Col>
                     </Row>
@@ -393,7 +407,7 @@ export const AddProducts = () => {
                     <Row className="mt-3">
                         <Col className="text-end">
                             <Button variant="info" size="lg"
-                                    onClick={handlePrintOrder}
+                                    onClick={() => getHeadlineReport(params.id)}
                                     disabled={isReportLoading}
                                     style={{
                                         backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
@@ -434,7 +448,7 @@ export const AddProducts = () => {
 
             <div style={{ display: 'none' }}>
                 <div ref={headlineReportRef}>
-                    <ReportCompany titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} />
+                    <CompanyReportPrinting titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} />
                 </div>
             </div>
         </>

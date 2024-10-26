@@ -24,7 +24,19 @@ class AuthTokenService {
             return;
         }
 
-        return response.json();
+        // Obtén el estado y el texto del estado
+        const status = response.status;
+        const statusText = response.statusText;
+
+        // Intenta parsear la respuesta a JSON
+        let data;
+        try {
+            data = await response.json();
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+        }
+
+        return { data, status, statusText }; // Retorna los datos, estado y texto de estado
     }
 }
 

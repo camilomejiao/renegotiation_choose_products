@@ -27,7 +27,7 @@ body,
   top: 80px; /* Ajusta según la altura del header */
   left: 0;
   height: calc(100vh - 80px); /* Altura del viewport menos la altura del header */
-  width: 60px;
+  width: 80px;
   background-color: #2E7D32;
   transition: width 0.3s;
   overflow: hidden;
@@ -40,6 +40,18 @@ body,
   height: calc(100vh - 80px); /* Para ajustar el contenido y permitir scroll */
   overflow-y: auto;
   background-color: #f9f9f9; /* Ejemplo de fondo para el contenido */
+}
+
+/* spinner */
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.spinner-container span {
+  margin-left: 10px;
 }
 
 ::-webkit-scrollbar {

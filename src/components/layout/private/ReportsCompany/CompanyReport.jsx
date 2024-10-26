@@ -1,14 +1,14 @@
-import {useEffect, useRef, useState} from "react";
-import {Col, Container, Row} from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {FaCalendarAlt} from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 
 //Components
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {ReportCompany} from "./ReportCompany/ReportCompany";
-import {Footer} from "../footer/Footer";
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
+import { Footer } from "../footer/Footer";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -16,15 +16,15 @@ import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
 import imgFrame1 from "../../../../assets/image/icons/frame.png";
 
 //Services
-import {reportServices} from "../../../../helpers/services/ReportServices";
+import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //
-import "./ReportsCompany.css";
-import {format} from "date-fns";
+import "./CompanyReport.css";
+import { format } from "date-fns";
 import Swal from "sweetalert2";
 
 
-export const ReportsCompany = () => {
+export const CompanyReport = () => {
 
     const companyReportRef = useRef();
 
@@ -132,7 +132,7 @@ export const ReportsCompany = () => {
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
                 />
 
-                <div className="search-banner-reports">
+                <div className="banner-reports">
                     <Container>
                         <Row className="justify-content-center align-items-center">
                             {/* Selectores de Fecha */}
@@ -178,7 +178,7 @@ export const ReportsCompany = () => {
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
                     <div ref={companyReportRef}>
-                        <ReportCompany titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} />
+                        <CompanyReportPrinting titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} userData={''} />
                     </div>
                 </div>
 

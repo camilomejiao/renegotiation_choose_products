@@ -1,4 +1,4 @@
-.search-banner-reports {
+.banner-reports {
     background-color: #0094D1;
     padding: 20px 0; /* Ajustamos el padding para centrar los elementos verticalmente */
     display: flex;
@@ -56,7 +56,7 @@
 }
 
 @media (max-width: 768px) {
-    .search-banner-reports {
+    .banner-reports {
         flex-direction: column;
         padding: 10px 0;
     }

@@ -2,6 +2,7 @@
     width: 150px; /* Ancho cuando está expandido */
 }
 
+/* Estilos para el contenido del sidebar */
 .sidebar-content {
     margin-top: 20px;
 }
@@ -9,27 +10,66 @@
 /* Iconos y texto en el Sidebar */
 .sidebar-icon {
     font-size: 24px;
-    color: white;
+    color: white; /* Color blanco para los iconos */
 }
 
 .sidebar-text {
-    color: white;
+    color: white; /* Color blanco para el texto */
     font-size: 16px;
     margin-left: 10px;
+    display: inline;
 }
 
-/* Grupo de textos cuando el Sidebar está expandido */
-.sidebar-text-group {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
+/* Estilos del acordeón */
+.accordion {
+    background-color: transparent !important; /* Sin fondo en el acordeón */
 }
+
+.accordion .accordion-card {
+    background-color: transparent !important; /* Sin fondo en cada card */
+    border: none !important; /* Sin borde */
+}
+
+.accordion .accordion-header {
+    background-color: transparent !important; /* Sin fondo en el encabezado */
+}
+
+.accordion .accordion-button {
+    background-color: transparent !important; /* Sin fondo en el botón */
+    color: white !important; /* Color del texto */
+    border: none !important; /* Sin borde */
+    padding: 10px !important; /* Espaciado interno */
+    width: 100% !important; /* Ancho completo */
+    text-align: left !important; /* Alinear texto a la izquierda */
+}
+
+.accordion .accordion-body {
+    background-color: transparent !important; /* Sin fondo en el cuerpo */
+}
+
+/* Estilo para los items del dropdown */
+.dropdown-content {
+    display: flex !important;
+    flex-direction: column !important; /* Para que los elementos se apilen verticalmente */
+}
+
+.dropdown-item {
+    color: white !important; /* Color del texto de los elementos del dropdown */
+    padding: 5px !important; /* Espaciado interno */
+    cursor: pointer !important; /* Cambia el cursor a manito al pasar sobre la opción */
+    white-space: normal !important;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Efecto hover */
+}
+
 
 /* Botón de colapso/expansión del Sidebar */
 .sidebar-toggle {
     position: absolute;
-    bottom: 20px;
-    width: 100%;
+    bottom: 20px; /* Posición en la parte inferior */
+    width: 100%; /* Ancho completo */
     display: flex;
     justify-content: center;
     cursor: pointer;
@@ -37,32 +77,25 @@
 
 .toggle-icon {
     font-size: 24px;
-    color: white;
+    color: white; /* Color blanco para el icono de toggle */
 }
 
-.application {
-    cursor: pointer;
-}
-
-.reports {
-    cursor: pointer;
-}
-
+/* Logout */
 .logout {
     position: absolute;
-    bottom: 80px;
+    bottom: 80px; /* Ajusta según sea necesario */
     width: 100%;
     display: flex;
     justify-content: center;
     cursor: pointer;
     font-size: 24px;
-    color: white;
+    color: white; /* Color blanco para el texto de logout */
 }
 
 /* Estilos responsivos para pantallas pequeñas */
 @media (max-width: 768px) {
     .sidebar {
-        width: 60px; /* Mantén el Sidebar visible en todas las resoluciones */
+        width: 60px; /* Ancho más estrecho en pantallas pequeñas */
     }
 
     .sidebar.open {
@@ -81,7 +114,7 @@
 /* Estilos adicionales para pantallas extra pequeñas (425px y menores) */
 @media (max-width: 425px) {
     .sidebar {
-        width: 60px; /* Mantén el Sidebar visible en todas las resoluciones */
+        width: 60px; /* Mantener el Sidebar visible en todas las resoluciones */
     }
 
     .sidebar.open {

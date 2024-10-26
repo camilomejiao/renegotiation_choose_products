@@ -9,8 +9,13 @@ import {useNavigate, useOutletContext} from "react-router-dom";
 import './Dashboard.css';
 
 //
-import {userService} from "../../../../helpers/services/UserServices";
-import {Footer} from "../footer/Footer";
+import { userService } from "../../../../helpers/services/UserServices";
+
+//Component
+import { Footer } from "../footer/Footer";
+
+//Enum
+import { StatusEnum } from "../../../../helpers/GlobalEnum";
 
 export const Dashboard = () => {
 
@@ -23,33 +28,33 @@ export const Dashboard = () => {
         e.preventDefault();
 
         if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
-            await userService.searchUser(searchValue).then((data) => {
-                console.log('searchValue: ', data);
+            const resp = await userService.searchUser(searchValue);
 
-                // Verificar si el objeto está vacío
-                if (Object.keys(data).length === 0) {
-                    Swal.fire({
-                        title: 'Oops...',
-                        html: 'Usuario no existe en el sistema',
-                        icon: 'error',
-                        width: 300,
-                        heightAuto: true
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Bien hecho!',
-                        html: 'Usuario encontrado',
-                        icon: 'success',
-                        width: 300,
-                        heightAuto: true
-                    });
+                if(resp.status === StatusEnum.OK) {
+                    // Verificar si el objeto está vacío
+                    if (Object.keys(resp.data).length === 0) {
+                        Swal.fire({
+                            title: 'Oops...',
+                            html: 'Usuario no existe en el sistema',
+                            icon: 'error',
+                            width: 300,
+                            heightAuto: true
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Bien hecho!',
+                            html: 'Usuario encontrado',
+                            icon: 'success',
+                            width: 300,
+                            heightAuto: true
+                        });
 
-                    // Redirigir según el rol del usuario
-                    userAuth.rol_id === 2
-                        ? navigate(`/admin/add_products/${data.id}`)
-                        : navigate(`/admin/reports/${data.id}`);
+                        // Redirigir según el rol del usuario
+                        userAuth.rol_id === 2
+                            ? navigate(`/admin/add_products/${resp.data.id}`)
+                            : navigate(`/admin/reports/${resp.data.id}`);
+                    }
                 }
-            });
         }
     };
 

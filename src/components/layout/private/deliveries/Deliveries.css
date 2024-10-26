@@ -1,0 +1,58 @@
+.deliveries-banner {
+    background-color: #0094D1;
+    height: 110px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding-bottom: 20px; /* Espacio adicional para los selects */
+}
+
+.deliveries-button {
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deliveries-button img.button-icon {
+    margin-right: 10px;
+    width: 30px;
+}
+
+.deliveries-button.deliveries {
+    color: #e5e5d1;
+    background-color: brown;
+}
+
+.deliveries-info {
+    background-color: #F1FFFA;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/**/
+.custom-file-input {
+    display: none; /* Oculta el input file original */
+}
+
+.custom-file-label {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #1abcd9; /* Color de fondo */
+    color: white; /* Color del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    margin-right: 5px; /* Espaciado entre los botones */
+}
+
+.custom-file-label:hover {
+    background-color: #0056b3; /* Color al pasar el mouse */
+}

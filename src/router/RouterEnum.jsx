@@ -4,8 +4,13 @@ export const RouterEnum = {
 
     AddProducts: 'add_products/:id',
 
+    //Entregas
+    deliveries: 'deliveries/:id',
+
+    //Reportes
     Reports: 'reports/:id',
-    ReportCompany: 'reports-company',
+    CompanyReport: 'company-reports',
+    OrderReport: 'order-report',
 
     //
     Logout: 'logout',

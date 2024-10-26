@@ -9,7 +9,7 @@
     padding-bottom: 20px; /* Espacio adicional para los selects */
 }
 
-.report-button {
+.reporting-system-button {
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -22,23 +22,26 @@
     transition: background-color 0.3s ease;
 }
 
-.report-button img.button-icon {
+.reporting-system-button img.button-icon {
     margin-right: 10px;
     width: 30px;
 }
 
-.report-button.general {
+.reporting-system-button.general {
     color: #0094D1;
 }
 
-.report-button.unique {
+.reporting-system-button.unique {
     color: #BFD732;
 }
 
-.report-button:hover {
-    background-color: #f0f0f0;
+.reporting-system-button.deliveries {
+    color: #e0db48;
 }
 
+.reporting-system-button:hover {
+    background-color: #f0f0f0;
+}
 
 /* Estilos para el select personalizado */
 .authorization-options {
