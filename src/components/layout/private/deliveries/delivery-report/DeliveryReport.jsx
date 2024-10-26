@@ -151,10 +151,10 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             pertenece:
                         </td>
                         <td style={{
-                            textAlign: 'center',
+                            textAlign: 'left',
                             borderTop: '1px solid black',
                             borderBottom: '1px solid black'
-                        }}>&nbsp;</td>
+                        }}>{deliveryInformation?.cub?.etnia}</td>
                         <td style={{textAlign: 'left', borderRight: '1px solid black'}}>Otro: ¿Cuál?</td>
                     </tr>
                     <tr>
