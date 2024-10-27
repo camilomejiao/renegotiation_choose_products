@@ -11,7 +11,7 @@
     "date-fns": "^4.1.0",
     "formik": "^2.4.6",
     "jwt-decode": "^4.0.0",
-    "num-words": "^1.2.3",
+    "numero-a-letras": "^1.0.6",
     "print-js": "^1.6.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",

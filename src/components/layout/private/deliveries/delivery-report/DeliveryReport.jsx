@@ -1,3 +1,4 @@
+import { NumerosALetras } from 'numero-a-letras';
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -17,6 +18,33 @@ export const DeliveryReport = ({deliveryInformation}) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
+
+    //
+    const valorNumerico = parseFloat(deliveryInformation?.cub?.deuda_componente) || 0;
+
+    //Formatear el número como pesos colombianos
+    const valorEnPesos = valorNumerico.toLocaleString('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+    });
+
+    const limpiarMillones = (valorEnLetras) => {
+        valorEnLetras = valorEnLetras.replace(/\s+/g, ' ').trim(); // Paso 1: Normalizar espacios adicionales
+
+        // Paso 2: Detectar si "DE" es necesario o no // Caso donde hay una secuencia numérica compleja después de "MILLONES DE", quitar "DE"
+        if (/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi.test(valorEnLetras)) {
+            valorEnLetras = valorEnLetras.replace(/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi, 'MILLONES ');
+        } else if (/MILLONES DE PESOS/gi.test(valorEnLetras)) { // Mantener el "DE" si es simplemente "MILLONES DE PESOS"
+            valorEnLetras = valorEnLetras.replace(/MILLONES DE PESOS/gi, 'MILLONES DE PESOS');
+        }
+        valorEnLetras = valorEnLetras.replace('00/100 M.N.', 'MCTE').trim();
+
+        return valorEnLetras.toUpperCase();
+    };
+
+    // Convertir el valor numérico a letras
+    let valorEnLetras  =  NumerosALetras(valorNumerico);
+    valorEnLetras = limpiarMillones(valorEnLetras);
 
     const products = deliveryInformation?.items;
 
@@ -117,9 +145,9 @@ export const DeliveryReport = ({deliveryInformation}) => {
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td style={{borderRight: '1px solid black'}}>{day}</td>
-                                    <td style={{borderRight: '1px solid black'}}>{month}</td>
-                                    <td>{year}</td>
+                                    <td style={{textAlign: 'center', borderRight: '1px solid black'}}>{day}</td>
+                                    <td style={{textAlign: 'center', borderRight: '1px solid black'}}>{month}</td>
+                                    <td style={{textAlign: 'center',}}>{year}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -147,33 +175,14 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         <td colSpan="2" style={{textAlign: 'left', border: '1px solid black'}}>{deliveryInformation?.cub?.linea}</td>
                     </tr>
                     <tr>
-                        <td style={{textAlign: 'center', border: '1px solid black'}}>Grupo étnico o poblacional al que
-                            pertenece:
-                        </td>
-                        <td style={{
-                            textAlign: 'left',
-                            borderTop: '1px solid black',
-                            borderBottom: '1px solid black'
-                        }}>{deliveryInformation?.cub?.etnia}</td>
-                        <td style={{textAlign: 'left', borderRight: '1px solid black'}}>Otro: ¿Cuál?</td>
-                    </tr>
-                    <tr>
-                        <td style={{textAlign: 'center', border: '1px solid black'}}>Si es población indígena (en los demás casos indicar NO Aplica)</td>
-                        <td colSpan="2" style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-
-                    <tr>
-                        <td colSpan="3" style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colSpan="3" style={{textAlign: 'left', border: '1px solid black', padding: '25px'}}>
+                        <td colSpan="3" style={{textAlign: 'left', border: '1px solid black', padding: '10px'}}>
                             El (los) abajo firmante (s) en calidad de titular o beneficiario del proyecto productivo en
                             referencia CERTIFICO (CERTIFICAMOS) que he (hemos) recibido a satisfacción los bienes o servicios relacionados en la presente acta,
                             el día <strong>{day}</strong> del mes <strong>{month}</strong> del año <strong>{year}</strong>,
-                            por valor de (letras)________________________________________________(pesos)
-                            <strong>$ {deliveryInformation?.cub?.deuda_componente}</strong> dejando constancia que está (mos) de acuerdo con lo recibido
+                            por valor de (letras) <strong> {valorEnLetras} </strong>
+                            (pesos) <strong> {valorEnPesos}</strong> dejando constancia que está (mos) de acuerdo con lo recibido
                             y aprueba (aprobamos) la cantidad y calidad de los mismos.
-
+                            <br/>
                             NOTA: Incluir como anexos del Acta soporte fotográfico de la actividad de entrega a cada
                             titular o beneficiario.
                         </td>
@@ -200,8 +209,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         <tr>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>Activo productivo adquirido</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>Descripción detallada</td>
-                            <td style={{textAlign: 'center', border: '1px solid black'}}>Unidad de medida y/o presentación
-                            </td>
+                            <td style={{textAlign: 'center', border: '1px solid black'}}>Unidad de medida y/o presentación</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>Valor unitario</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>Cantidad</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>Valor Total</td>
@@ -275,9 +283,6 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                         <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                     </tr>
-                    <tr>
-                        <td colSpan="4" style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
-                    </tr>
                     </thead>
                 </table>
 
@@ -286,15 +291,14 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     <tr>
                         <td style={{
                             textAlign: 'center',
-                            borderLeft: '1px solid black',
-                            borderRight: '1px solid black',
+                            border: '1px solid black',
                             backgroundColor: 'gray'
                         }}>
                             <h4> OBSERVACIONES Y PENDIENTES </h4>
                         </td>
                     </tr>
                     <tr>
-                        <td style={{height: '100px', textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
+                        <td style={{height: '50px', textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                     </tr>
                     </thead>
                 </table>
@@ -324,7 +328,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     </tr>
                     <tr>
                         <td style={{
-                            height: '100px',
+                            height: '40px',
                             textAlign: 'center',
                             border: '1px solid black',
                             verticalAlign: 'top'

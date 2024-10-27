@@ -218,6 +218,10 @@ export const Deliveries = () => {
         }
     };
 
+    const handleBack = () => {
+        window.location.reload();
+    }
+
 
     //Al cargar el componente
     useEffect(() => {
@@ -382,11 +386,25 @@ export const Deliveries = () => {
                                     <Button
                                         variant="success"
                                         size="lg"
+                                        onClick={handleBack}
+                                        style={{
+                                            backgroundColor: "#2148C0",
+                                            borderColor: "#007BFF",
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        <i className="fas fa-save me-2"></i>ATRAS
+                                    </Button>
+
+                                    <Button
+                                        variant="success"
+                                        size="lg"
                                         onClick={handleSaveProduct}
                                         style={{
                                             backgroundColor: "#BFD732",
                                             borderColor: "#BFD732",
-                                            fontWeight: "bold"
+                                            fontWeight: "bold",
+                                            marginLeft: '10px'
                                         }}
                                     >
                                         <i className="fas fa-save me-2"></i>GUARDAR
