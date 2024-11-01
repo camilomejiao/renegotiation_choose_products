@@ -78,10 +78,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaHome className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Solicitud</span>}
                                         </div>
-                                        {/*<div className="dropdown-item" onClick={handleOrderReport}>
+                                        <div className="dropdown-item" onClick={handleOrderReport}>
                                             <FaReceipt className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
-                                        </div>*/}
+                                        </div>
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaClipboardList className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}
@@ -91,24 +91,6 @@ export const Sidebar = ({userAuth}) => {
                             </Card>
                         </Accordion>
                     )}
-
-                {/*<Row className="justify-content-center mt-3">
-                        <Col xs={12} className="d-flex justify-content-center align-items-center application" onClick={handleApplication}>
-                            <FaStore className="sidebar-icon" />
-                            {isOpen && <span className="sidebar-text">Solicitud</span>}
-                        </Col>
-                    </Row>
-                    {userAuth.rol_id === 2 && (
-                        <Row className="justify-content-center mt-3">
-                            <Col onClick={handleReport}
-                                 xs={12}
-                                 className="d-flex justify-content-center align-items-center reports"
-                            >
-                                <FaClipboardList className="sidebar-icon" />
-                                {isOpen && <span className="sidebar-text">Reportes general</span>}
-                            </Col>
-                        </Row>
-                    )}*/}
 
             </Container>
                 <div className="logout" onClick={handleLogout}>

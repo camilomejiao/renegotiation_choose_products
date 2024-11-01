@@ -122,8 +122,8 @@ export const Deliveries = () => {
     const handleDeliveryInformationReport = async (deliveryId) => {
         setIsLoading(true);
         try {
-            const resp = await deliveriesServices.deliveryReport(deliveryId);
-            setDeliveryInformation(resp.data);
+            const { data } = await deliveriesServices.deliveryReport(deliveryId);
+            setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
             console.error("Error obteniendo el reporte:", error);
