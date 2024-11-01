@@ -3,6 +3,7 @@ import {Button, Modal, Spinner} from "react-bootstrap";
 import Swal from "sweetalert2";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
+import { FaTrash } from "react-icons/fa";
 
 //Image
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -15,7 +16,6 @@ import { StatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Css
 import './OrderReport.css';
-import {FaTrash} from "react-icons/fa";
 
 export const OrderReport = () => {
     const [purcharseOrder, setPurcharseOrder] = useState([]); //Obtener los datos

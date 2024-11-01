@@ -92,7 +92,7 @@ export const AddProducts = () => {
                     unidad: data.unidad,
                     valor_unitario: parseInt(data.valor_unitario),
                     quantity: 1,
-                    discount: '0%'
+                    discount: '0'
                 }]);
                 // Reset the select
                 setSelectedItem(null);
@@ -154,10 +154,9 @@ export const AddProducts = () => {
         };
 
         try {
-            const { status} = await productsServices.saveProducts(dataToSend, params.id);
-            //console.log('saveProducts: ', data);
+            const { data, status} = await productsServices.saveProducts(dataToSend, params.id);
 
-            if(status === StatusEnum.OK) {
+            if(status === StatusEnum.CREATE) {
                 // Si la llamada fue exitosa
                 Swal.fire({
                     title: 'Bien hecho!',
@@ -172,12 +171,17 @@ export const AddProducts = () => {
                 // Limpiar la lista de productos
                 setItems([]);
                 setSelectedItem(null);
-
-                // Obtener el reporte y la información del usuario
-                await getHeadlineReport(params.id);
-                await getUserInformation(params.id);
-
                 setIsReportLoading(false);
+            }
+
+            if(status === StatusEnum.BAD_REQUEST) {
+                Swal.fire({
+                    title: 'Error al guardar los productos',
+                    text: `${data.items[0].discount}`,
+                    icon: 'error',
+                    width: 300,
+                    heightAuto: true
+                });
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
