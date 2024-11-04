@@ -26,13 +26,21 @@ export const OrderReport = () => {
     const [showModal, setShowModal] = useState(false); //Mostrar modal
     const [selectedId, setSelectedId] = useState(null); //Id seleccionado para la eliminacion
     const [searchQuery, setSearchQuery] = useState(""); //Buscar item
-    const [filteredData, setFilteredData] = useState([]); //Guardar la busqueda
 
     //Columnas de la tabla
     const columns = [
         { dataField: "id", text: "Order ID" },
-        { dataField: "persona_cub_id", text: "CUB ID" },
-        { dataField: "persona_cub_id", text: "DOCUMENTO ID" },
+        { dataField: "fecha_registro", text: "Fecha de Registro" },
+        {
+            dataField: "cub.id",
+            text: "CUB",
+            formatter: (cell, row) => row?.cub?.id // Accede a `cub.id`
+        },
+        {
+            dataField: "cub.identificacion",
+            text: "DOCUMENTO",
+            formatter: (cell, row) => row.cub.identificacion // Accede a `cub.identificacion`
+        },
         {
             dataField: "valor_total",
             text: "Valor Total",
@@ -54,34 +62,50 @@ export const OrderReport = () => {
     ];
 
     //Obtiene la data inicial y pagina
-    const getPurcharseOrder = async (pageNumber = 1) => {
+    const getPurcharseOrder = async (pageNumber = 1, documentId = "") => {
         setIsLoading(true);
         try {
-            const { data, status } = await purchaseOrderServices.getAll(`?page=${pageNumber}`);
-            console.log('data: ', data);
+            const url = buildUrl(pageNumber, documentId);
+            const response = await fetchPurchaseOrders(url);
 
-            if (status === StatusEnum.OK) {
-                setPurcharseOrder(data.results);
-                setTotalSize(data.count); // Establece el tamaño total de los registros
-                setPage(pageNumber);
-
-                //setFilteredData(data.results); // Misma data para buscar
-            }
-
-            if (status === StatusEnum.BAD_REQUEST) {
-                Swal.fire({
-                    title: "Error",
-                    text: "Error",
-                    icon: "error",
-                    width: 300,
-                    heightAuto: true,
-                });
+            if (response.status === StatusEnum.OK) {
+                updateOrderData(response.data, pageNumber);
+            } else {
+                showAlert("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
             console.error("Error obteniendo las órdenes de compra:", error);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const buildUrl = (pageNumber, documentId) => {
+        return documentId
+            ? `?cedula=${documentId}&page=${pageNumber}`
+            : `?page=${pageNumber}`;
+    }
+
+    // Función para llamar al servicio de órdenes de compra
+    const fetchPurchaseOrders = async (url) => {
+        return await purchaseOrderServices.getAll(url);
+    };
+
+// Actualizar los datos en el estado después de la respuesta exitosa
+    const updateOrderData = (data, pageNumber) => {
+        setPurcharseOrder(data.results);
+        setTotalSize(data.count);
+        setPage(pageNumber);
+    };
+
+    const showAlert = (title, message) => {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: "error",
+            width: 300,
+            heightAuto: true,
+        });
     };
 
     //Recibe la pagina a mostrar
@@ -126,29 +150,35 @@ export const OrderReport = () => {
     };
 
     //Busqueda
-    const handleSearch = (e) => {
+    const handleSearchQueryChange = (e) => {
         setSearchQuery(e.target.value);
-        setPage(1);
+    };
+
+    // Función para ejecutar la búsqueda al hacer clic en "Buscar"
+    const handleSearch = () => {
+        if (searchQuery.length >= 5) {
+            getPurcharseOrder(1, searchQuery); // Busca con el valor de cédula
+        }
+
+        if(searchQuery.length < 5) {
+            Swal.fire({
+                title: "Error",
+                text: "El valor a buscar debe ser mayor a 5 caracteres",
+                icon: "error",
+                width: 300,
+                heightAuto: true,
+            });
+        }
+    };
+
+    // Función para limpiar la búsqueda
+    const handleClearSearch = () => {
+        setSearchQuery("");
+        getPurcharseOrder(1);
     };
 
     useEffect(() => {
-        if (searchQuery === "") {
-            setFilteredData(purcharseOrder);
-        } else {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            const filtered = purcharseOrder.filter((order) =>
-                Object.values(order).some(
-                    (value) =>
-                        value &&
-                        value.toString().toLowerCase().includes(lowerCaseQuery)
-                )
-            );
-            setFilteredData(filtered);
-        }
-    }, [searchQuery, purcharseOrder]);
-
-    useEffect(() => {
-        getPurcharseOrder()
+        getPurcharseOrder(1)
     }, []);
 
     return (
@@ -173,10 +203,18 @@ export const OrderReport = () => {
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
-                        onChange={handleSearch}
-                        style={{ marginBottom: "20px", padding: "10px", width: "100%" }}
+                        onChange={handleSearchQueryChange}
+                        style={{ marginBottom: "0", padding: "10px", width: "80%" }} // Ajusta el ancho del input
+                        className="me-2" // Margen a la derecha para espaciarlo del botón
                     />
-                    <div className="table-responsive">
+                    <Button variant="primary" onClick={handleSearch} className="me-2">
+                        Buscar
+                    </Button>
+                    <Button variant="secondary" onClick={handleClearSearch}>
+                        Limpiar
+                    </Button>
+
+                    <div className="table-responsive mt-3">
                         <BootstrapTable
                             keyField="id"
                             data={purcharseOrder}
