@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import Select from "react-select";
-import { useParams}  from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {Button, Col, Container, Form, Row, Spinner, Table} from "react-bootstrap";
-import { FaTrashAlt} from "react-icons/fa";
+import {FaTrashAlt} from "react-icons/fa";
 import Swal from "sweetalert2";
 import printJS from "print-js";
 
@@ -16,15 +16,15 @@ import './AddProducts.css';
 
 
 //Components
-import { Footer} from "../footer/Footer";
-import { HeaderImage} from "../../shared/header-image/HeaderImage";
-import { UserInformation} from "../user-information/UserInformation";
-import { CompanyReportPrinting } from "../ReportsCompany/report/CompanyReportPrinting";
+import {Footer} from "../footer/Footer";
+import {HeaderImage} from "../../shared/header-image/HeaderImage";
+import {UserInformation} from "../user-information/UserInformation";
+import {CompanyReportPrinting} from "../ReportsCompany/report/CompanyReportPrinting";
 
 //Services
-import { userService } from "../../../../helpers/services/UserServices";
-import { productsServices } from "../../../../helpers/services/ProductsServices";
-import { reportServices } from "../../../../helpers/services/ReportServices";
+import {userService} from "../../../../helpers/services/UserServices";
+import {productsServices} from "../../../../helpers/services/ProductsServices";
+import {reportServices} from "../../../../helpers/services/ReportServices";
 import {StatusEnum} from "../../../../helpers/GlobalEnum";
 
 export const AddProducts = () => {
@@ -52,7 +52,6 @@ export const AddProducts = () => {
 
         try {
             const {data, status} = await productsServices.searchProduct(searchWord);
-            //console.log('data: ', data);
             if(status === StatusEnum.OK) {
                 const formattedOptions = data.map(product => ({
                     value: product.id, // Ajusta según la estructura de tu producto
@@ -60,22 +59,21 @@ export const AddProducts = () => {
                 }));
                 setOption(formattedOptions);
             }
-
         } catch (error) {
-            console.error('Error buscando productos:', error);
+            handleError(error, 'Error buscando productos:');
         }
     }
 
     const getUserInformation = async (cubId) => {
         try {
-            const {data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userService.userInformation(cubId);
 
             if(status === StatusEnum.OK) {
                 setUserData(data);
                 setSaldoRestante(data.monto_proveedores);
             }
         } catch (error) {
-            console.error('Error buscando productos:', error);
+            handleError(error, 'Error buscando productos:');
         }
     }
 
@@ -97,7 +95,7 @@ export const AddProducts = () => {
                 // Reset the select
                 setSelectedItem(null);
             } catch (error) {
-                console.error('Error agregando producto a la tabla:', error);
+                handleError(error, 'Error agregando producto a la tabla:');
             }
         }
     };
@@ -129,14 +127,27 @@ export const AddProducts = () => {
         }
 
         // Si no coincide (tiene más de 4 decimales), truncamos a 4 decimales
-        const truncatedValue = parseFloat(value).toFixed(4);
-        return truncatedValue;
+        return parseFloat(value).toFixed(4);
     };
 
+    //Guardar la data
     const handleSaveProduct = async () => {
-        // Mapeamos los items y calculamos el total para cada uno
-        const itemsWithTotal = items.map((item) => {
-            const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100));
+        const itemsWithTotal = calculateItemsWithTotal();
+        const dataToSend = buildDataToSend(itemsWithTotal);
+
+        try {
+            const { data, status} = await productsServices.saveProducts(dataToSend, params.id);
+            handleSaveResponse(data, status);
+        } catch (error) {
+            handleError(error, 'Error al guardar los productos');
+        }
+    };
+
+    //Calcula el total por cada item y mapea los datos necesarios
+    const calculateItemsWithTotal = () => {
+        return items.map((item) => {
+            const discountRate = parseFloat(item.discount) || 0;
+            const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - discountRate / 100));
             return {
                 producto: item.id,
                 discount: item.discount,
@@ -145,68 +156,66 @@ export const AddProducts = () => {
                 valor_final: totalByItem
             };
         });
+    };
 
-        // Creamos la estructura final
-        const dataToSend = {
+    //Construye la estructura de datos a enviar
+    const buildDataToSend = (itemsWithTotal) => {
+        return {
             persona_cub_id: params.id,
-            valor_total: Math.ceil(total), // Aseguramos que sea un número flotante
+            valor_total: Math.ceil(total),
             items: itemsWithTotal
         };
+    };
 
-        try {
-            const { data, status} = await productsServices.saveProducts(dataToSend, params.id);
-
-            if(status === StatusEnum.CREATE) {
-                // Si la llamada fue exitosa
-                Swal.fire({
-                    title: 'Bien hecho!',
-                    html: 'Productos guardados exitosamente',
-                    icon: 'success',
-                    width: 300,
-                    heightAuto: true
-                });
-
-                setIsReportLoading(true);
-
-                // Limpiar la lista de productos
-                setItems([]);
-                setSelectedItem(null);
-                setIsReportLoading(false);
-            }
-
-            if(status === StatusEnum.BAD_REQUEST) {
-                Swal.fire({
-                    title: 'Error al guardar los productos',
-                    text: `${data.items[0].discount}`,
-                    icon: 'error',
-                    width: 300,
-                    heightAuto: true
-                });
-            }
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-            // Aquí mostramos el mensaje de error en caso de que algo salga mal
-            Swal.fire({
-                title: 'Error al guardar los productos',
-                text: `${errorMessage}`,
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
+    //Maneja la respuesta del servicio y muestra la alerta correspondiente
+    const handleSaveResponse = (data, status) => {
+        if (status === StatusEnum.CREATE) {
+            setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
+            showAlert('Bien hecho!', 'Productos guardados exitosamente', 'success');
+            resetProductList();
+            window.location.reload();
         }
-    }
+
+        if (status === StatusEnum.BAD_REQUEST) {
+            showAlert('Error al guardar los productos', data.items[0].discount, 'error');
+        }
+    };
+
+    //Muestra una alerta con título y mensaje específicos
+    const showAlert = (title, message, icon) => {
+        Swal.fire({
+            title,
+            html: message,
+            icon,
+            width: 300,
+            heightAuto: true
+        });
+    };
+
+    // Reinicia la lista de productos
+    const resetProductList = () => {
+        setIsReportLoading(true);
+        setItems([]);
+        setSelectedItem(null);
+        setIsReportLoading(false);
+    };
+
+    //Maneja el error en caso de fallo de la llamada
+    const handleError = (error, title) => {
+        const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
+        showAlert(title, errorMessage, 'error');
+    };
 
     const getHeadlineReport = async (cubId) => {
         setIsLoading(true);
         try {
             const {data, status} = await reportServices.companyAndUserReport(cubId);
-            console.log('setHeadLineInformation: ', data);
             if(status === StatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReportLoading(true);
             }
         } catch (error) {
-            console.error('Error al obtener el reporte:', error);
+            handleError(error, 'Error al obtener el reporte:');
         } finally {
             setIsLoading(false);
         }
@@ -266,7 +275,6 @@ export const AddProducts = () => {
             setIsReportLoading(false);
         }
     }, [isReportLoading]);
-
 
     return (
         <>
