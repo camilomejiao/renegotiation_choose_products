@@ -16,7 +16,7 @@ import { Header } from "../../../shared/header/Header";
 import useAuth from "../../../../../hooks/useAuth";
 
 //Services
-import {authService} from "../../../../../helpers/services/Auth";
+import { authService } from "../../../../../helpers/services/Auth";
 
 const initialValues = {
     email: "",
@@ -60,7 +60,7 @@ export const Login = () => {
     return (
         <>
             <Header />
-            <Container fluid className="login-container d-flex justify-content-center align-items-center">
+            <Container fluid className="login-container d-flex justify-content-center align-items-center mt-lg-5">
                 <Row className="login-row">
                     <Col md={6} className="login-form-container d-flex flex-column justify-content-center align-items-center">
                         <div className="">

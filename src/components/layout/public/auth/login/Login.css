@@ -33,7 +33,7 @@
 }
 
 .form-control {
-    width: 307px !important;
+    width: 100% !important; /* Ajuste para responsividad */
     height: 50px !important;
     padding-left: 50px !important; /* Espacio para el icono */
     border: 1px solid #046999 !important;
@@ -75,4 +75,63 @@
     width: 100%;
     height: auto;
     object-fit: cover;
+}
+
+/* Responsive adjustments */
+@media (max-width: 766px) {
+    .login-row {
+        flex-direction: column; /* Cambia la disposición para pantallas más pequeñas */
+        padding: 20px;
+    }
+
+    .login-form-container {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .input-icon-img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .form-control {
+        font-size: 14px !important; /* Ajuste de fuente en móviles */
+        height: 45px !important;
+    }
+
+    .login-button {
+        font-size: 16px !important; /* Reduce el tamaño del botón en móviles */
+        height: 45px !important;
+    }
+
+    .forgot-password-link {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-row {
+        padding: 10px;
+        margin-top: 100px !important;
+    }
+
+    .login-image-container {
+        display: none; /* Oculta la imagen de fondo en pantallas pequeñas */
+    }
+
+    .login-form-container {
+        padding: 15px;
+    }
+
+    .form-control {
+        font-size: 13px !important;
+    }
+
+    .login-button {
+        font-size: 14px !important;
+    }
+
+    .forgot-password-link {
+        font-size: 12px;
+    }
 }

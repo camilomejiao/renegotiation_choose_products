@@ -68,6 +68,8 @@ export const AddProducts = () => {
         try {
             const { data, status} = await userService.userInformation(cubId);
 
+            console.log('data: ', data);
+
             if(status === StatusEnum.OK) {
                 setUserData(data);
                 setSaldoRestante(data.monto_proveedores);
