@@ -1,4 +1,4 @@
-/* Dashboard.css */
+
 .dashboard-container {
     background-color: #f9f9f9;
     padding: 50px 0;
@@ -17,11 +17,11 @@
 }
 
 .green-box {
-    background-color: #c2d500; /* Color de fondo verde lima */
+    background-color: #c2d500;
     color: white;
-    padding: 15px 25px; /* Ajusta según sea necesario */
-    border-radius: 8px; /* Bordes redondeados */
-    font-weight: 400; /* Peso de la fuente */
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: 400;
     display: inline-block;
     text-align: center;
     font-size: 24px;
@@ -43,7 +43,7 @@
 }
 
 .search-input {
-    border: 2px solid #0056b3 !important; /* Cambia el color al azul adecuado */
+    border: 2px solid #0056b3 !important;
     border-radius: 10px !important;
     padding: 10px 20px !important;
     font-weight: bold !important;
@@ -52,7 +52,7 @@
 }
 
 .search-button {
-    background-color: #0056b3 !important; /* Cambia el color al azul adecuado */
+    background-color: #0056b3 !important;
     border: none !important;
     color: white !important;
     width: 50px !important;
@@ -67,6 +67,61 @@
     color: #0056b3;
     font-size: 14px;
     text-align: left;
-    padding-left: 40px; /* Ajusta para alinear con el input */
-    margin-top: -5px; /* Ajusta para acercar al input */
+    padding-left: 40px;
+    margin-top: -5px;
+}
+
+
+@media (max-width: 768px) {
+    .dashboard-title {
+        font-size: 36px;
+    }
+
+    .green-box {
+        font-size: 20px;
+        width: 80%;
+    }
+
+    .search-input {
+        width: 90% !important;
+    }
+
+    .search-helper-text {
+        padding-left: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-title {
+        font-size: 25px;
+        line-height: 1.2;
+    }
+
+    .green-box {
+        font-size: 15px;
+        width: 75%;
+        padding: 10px 15px;
+    }
+
+    .search-input {
+        width: 60% !important;
+        padding: 8px 15px !important;
+        font-size: 16px !important;
+    }
+
+    .search-button {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .search-helper-text {
+        font-size: 12px;
+        padding-left: 65px;
+        text-align: left;
+        margin-top: 5px;
+    }
+
+    .dashboard-container {
+        padding: 20px 0;
+    }
 }

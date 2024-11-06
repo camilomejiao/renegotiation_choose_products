@@ -68,7 +68,7 @@ export const HeadLineReport = ({dataReport}) => {
                         </tr>
                         <tr>
                             <td style={{ border: '1px solid black' }}><strong>Línea Productiva Seleccionada</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">Pecuaria</td>
+                            <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport.linea}</td>
                         </tr>
                         <tr>
                             <td style={{ width: '18%', border: '1px solid black' }}><strong>SALDO TOTAL PLAN DE INVERSIÓN:</strong></td>

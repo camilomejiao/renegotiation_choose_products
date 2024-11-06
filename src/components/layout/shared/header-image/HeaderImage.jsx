@@ -19,7 +19,9 @@ export const HeaderImage = ({imageHeader, titleHeader, bannerIcon, bannerInforma
                 <Row className="position-relative">
                     <Col className="d-flex justify-content-center">
                         {/* Icono separado del banner */}
-                        <div className="icon-wrapper position-absolute" style={{ top: '-90px', left: '330px' }}>
+                        <div className="icon-wrapper position-absolute"
+                             /*style={{ top: '-90px', left: '330px' }}*/
+                        >
                             <img src={bannerIcon} alt="Icono" className="icon-large" />
                         </div>
                         {/* Banner de información */}

@@ -1,8 +1,23 @@
 .footer-image-container {
     text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .footer-image {
     width: 100%;
-    max-width: 1353px;
+        max-width: 1353px;
+    height: auto;
+}
+
+@media (max-width: 768px) {
+    .footer-image {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-image {
+        max-width: 80%;
+    }
 }

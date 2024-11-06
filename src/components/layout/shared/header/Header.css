@@ -1,27 +1,26 @@
 .header {
-    background-color: #ffffff; /* Fondo blanco */
-    border-bottom: 2px solid #046999; /* Línea inferior azul */
-    padding: 10px 20px; /* Espaciado en el header */
+    background-color: #ffffff;
+    border-bottom: 2px solid #046999;
+    padding: 10px 20px;
 }
 
 .portal-title {
     font-family: 'Nunito Sans', sans-serif;
-    font-size: 30px; /* Ajuste del tamaño de fuente para que sea más pequeño */
+    font-size: 50px;
     font-weight: 400;
     color: #046999;
     margin: 0;
 }
 
 .portal-title-highlight {
-    color: #2E7D32; /* Verde para "Proveedores" */
+    color: #2E7D32;
 }
 
 .header-logo {
     height: 50px;
-    margin-left: 10px; /* Espacio entre los logos */
+    margin-left: 10px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .portal-title {
         font-size: 40px;
