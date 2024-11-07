@@ -1,14 +1,15 @@
+/* Banner de entregas */
 .deliveries-banner {
     background-color: #0094D1;
-    height: 110px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px 0;
     position: relative;
-    padding-bottom: 20px; /* Espacio adicional para los selects */
 }
 
+/* Botón de entregas */
 .deliveries-button {
     background-color: white;
     border: none;
@@ -20,6 +21,7 @@
     font-family: 'Nunito', sans-serif;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-align: center;
 }
 
 .deliveries-button img.button-icon {
@@ -32,10 +34,77 @@
     background-color: brown;
 }
 
+/* Contenedor de información adicional (si aplica) */
 .deliveries-info {
     background-color: #F1FFFA;
     border-radius: 8px;
     padding: 20px;
+}
+
+/* Contenedor de los botones */
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Estilo general para los botones responsivos */
+.responsive-button {
+    padding: 12px 24px;
+    font-weight: bold;
+    font-size: 18px; /* Ajusta el ancho a su contenido en pantallas grandes */
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .deliveries-banner {
+        padding: 10px;
+    }
+
+    /* Ajusta el ancho del botón y el select en tabletas */
+    .deliveries-button {
+        font-size: 14px;
+        padding: 8px 16px;
+        width: 100%; /* Botón ocupa todo el ancho en tabletas */
+        margin-top: 10px; /* Separación entre el select y el botón */
+    }
+
+    .custom-select__control {
+        width: 90%; /* Select ocupa todo el ancho */
+    }
+
+    .button-container {
+        justify-content: center; /* Centrar los botones en tabletas */
+    }
+
+    .responsive-button {
+        width: 48%; /* Ocupan casi el 50% del contenedor en pantallas medianas */
+        font-size: 16px; /* Reducir ligeramente el tamaño de fuente */
+        padding: 10px 20px; /* Ajustar el padding */
+        margin-bottom: 10px; /* Espaciado entre botones cuando están en fila vertical */
+    }
+}
+
+@media (max-width: 576px) {
+    /* Ajuste adicional en pantallas muy pequeñas */
+    .deliveries-button {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: 35%;
+        margin-right: 250px;
+    }
+
+    .custom-select__control {
+        font-size: 12px;
+    }
+
+    .responsive-button {
+        width: 100%; /* Botones ocupan todo el ancho en móviles */
+        font-size: 14px; /* Reduce ligeramente el tamaño de la fuente en móviles */
+        padding: 8px 16px; /* Ajusta el padding para móviles */
+    }
 }
 
 /**/

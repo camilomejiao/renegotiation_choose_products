@@ -207,10 +207,10 @@ export const OrderReport = () => {
                             onChange={handleSearchQueryChange}
                             className="input-responsive me-2 mb-2 mb-md-0" // Clase personalizada para el input
                         />
-                        <Button variant="primary" onClick={handleSearch} className="button-responsive me-2 mb-2 mb-md-0">
+                        <Button variant="primary" onClick={handleSearch} className="button-order-responsive me-2 mb-2 mb-md-0">
                             Buscar
                         </Button>
-                        <Button variant="secondary" onClick={handleClearSearch} className="button-responsive">
+                        <Button variant="secondary" onClick={handleClearSearch} className="button-order-responsive">
                             Limpiar
                         </Button>
                     </div>

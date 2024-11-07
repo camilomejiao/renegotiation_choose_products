@@ -250,18 +250,18 @@ export const Deliveries = () => {
 
                 <div className="deliveries-banner">
                     <Container>
-                        <Row className="justify-content-start mt-4">
-                            <Col md={5}>
+                        <Row className="justify-content-start align-items-center mt-4">
+                            <Col xs={12} md={5} className="mb-2 mb-md-0">
                                 <Select
                                     value={selectedSupplier}
-                                    onChange={(selectedOption) => {setSelectedSupplier(selectedOption)}}
+                                    onChange={(selectedOption) => { setSelectedSupplier(selectedOption) }}
                                     options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
                                     placeholder="Selecciona una compañia"
                                     classNamePrefix="custom-select"
                                     className="custom-select"
                                 />
                             </Col>
-                            <Col md={4}>
+                            <Col xs={12} md={4} className="d-flex justify-content-md-start justify-content-center">
                                 <button onClick={handleCreateDeliveries} className="deliveries-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     ENTREGAS
@@ -280,140 +280,138 @@ export const Deliveries = () => {
 
                 <div className="deliveries-info">
                     <Container>
-
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm && (
-                            <Row className="mt-3">
-                                <Col>
-                                    <Table bordered hover>
-                                        <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                            <tr>
-                                                <th>COD. ENTREGA</th>
-                                                <th>FECHA</th>
-                                                <th>PROVEEDOR</th>
-                                                <th>EVIDENCIAS</th>
-                                                <th>EVIDENCIAS PDF</th>
-                                                <th>GENERAR PDF</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        {listDeliveriesToUser.map(delivery => (
-                                            <tr key={delivery?.id}>
-                                                <td>{delivery?.id}</td>
-                                                <td>{delivery.fecha_creacion.split('T')[0]}</td>
-                                                <td>{delivery?.proveedor}</td>
-                                                <td>
-                                                    {[1, 2, 3, 4].map(fileNumber => (
-                                                        <label className="custom-file-label" key={fileNumber}>
-                                                            Subir Imagen {fileNumber}
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={(e) => handleFileChange(e, 1, fileNumber)}
-                                                                className="custom-file-input"
-                                                            />
-                                                        </label>
-                                                    ))}
-                                                </td>
-                                                <td>
-                                                    <label className="custom-file-label">
-                                                        Subir PDF
+                            <div className="table-responsive">
+                                <Table bordered hover>
+                                    <thead style={{ backgroundColor: "#40A581", color: "white" }}>
+                                        <tr>
+                                            <th>COD. ENTREGA</th>
+                                            <th>FECHA</th>
+                                            <th>PROVEEDOR</th>
+                                            <th>EVIDENCIAS</th>
+                                            <th>EVIDENCIAS PDF</th>
+                                            <th>GENERAR PDF</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {listDeliveriesToUser.map(delivery => (
+                                        <tr key={delivery?.id}>
+                                            <td>{delivery?.id}</td>
+                                            <td>{delivery.fecha_creacion.split('T')[0]}</td>
+                                            <td>{delivery?.proveedor}</td>
+                                            <td>
+                                                {[1, 2, 3, 4].map(fileNumber => (
+                                                    <label className="custom-file-label" key={fileNumber}>
+                                                        Subir Imagen {fileNumber}
                                                         <input
                                                             type="file"
-                                                            accept="application/pdf"
-                                                            onChange={(e) => handleFileChange(e, 1, 'pdf')}
+                                                            accept="image/*"
+                                                            onChange={(e) => handleFileChange(e, 1, fileNumber)}
                                                             className="custom-file-input"
                                                         />
                                                     </label>
-                                                </td>
-                                                <td>
-                                                    <Button variant="primary" size="sm" onClick={() => handleDeliveryInformationReport(delivery?.id)}>
-                                                        <FaFilePdf />
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </Table>
-                                </Col>
-                            </Row>
-                        )}
-
-                        {showDeliveryForm && (
-                        <Row className="mt-3">
-                            <Col>
-                                <Table bordered hover>
-                                    <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                    <tr>
-                                        <th>COD</th>
-                                        <th>NOMBRE</th>
-                                        <th>DESCRIPCIÓN</th>
-                                        <th>CANTIDAD SOLICITADA</th>
-                                        <th>CANTIDAD A ENTREGAR</th>
-                                        <th>ESTADO</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {deliveryProducts.map((product) => (
-                                        <tr  key={product?.id}>
-                                            <td>{product?.id}</td>
-                                            <td style={{textAlign: 'left'}}>{product?.nombre}</td>
-                                            <td style={{textAlign: 'left'}}>{product?.descripcion}</td>
-                                            <td>{product?.cantidad}</td>
-                                            <td>
-                                                <Form.Control
-                                                    type="number"
-                                                    className="small-input form-control-sm"
-                                                    value={product?.quantityToDeliver !== undefined ? product.quantityToDeliver : product.cantidad}
-                                                    min="0"
-                                                    onChange={(e) => handleQuantityChange(product?.id, e.target.value)}
-                                                />
+                                                ))}
                                             </td>
-                                            <td style={{width: '13%'}}>
-                                                <Select
-                                                    value={deliveryStatus.find(opt => opt.id === product?.estado )}
-                                                    onChange={(e) => handleStatusChange(product?.id, e.id)}
-                                                    options={deliveryStatus.map((opt) => ({ id: opt.id, label: opt.label }))}
-                                                    placeholder="Selecciona la opción"
-                                                    classNamePrefix="custom-select"
-                                                    className="custom-select"
-                                                />
+                                            <td>
+                                                <label className="custom-file-label">
+                                                    Subir PDF
+                                                    <input
+                                                        type="file"
+                                                        accept="application/pdf"
+                                                        onChange={(e) => handleFileChange(e, 1, 'pdf')}
+                                                        className="custom-file-input"
+                                                    />
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <Button variant="primary" size="sm" onClick={() => handleDeliveryInformationReport(delivery?.id)}>
+                                                    <FaFilePdf />
+                                                </Button>
                                             </td>
                                         </tr>
                                     ))}
                                     </tbody>
                                 </Table>
-                                <div style={{ marginTop: '10px', width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                            </div>
+                        )}
+
+                        {showDeliveryForm && (
+                            <>
+                                <div className="table-responsive">
+                                    <Table bordered hover>
+                                        <thead style={{ backgroundColor: "#40A581", color: "white" }}>
+                                        <tr>
+                                            <th>COD</th>
+                                            <th>NOMBRE</th>
+                                            <th>DESCRIPCIÓN</th>
+                                            <th>CANTIDAD SOLICITADA</th>
+                                            <th>CANTIDAD A ENTREGAR</th>
+                                            <th>ESTADO</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {deliveryProducts.map((product) => (
+                                            <tr  key={product?.id}>
+                                                <td>{product?.id}</td>
+                                                <td style={{textAlign: 'left'}}>{product?.nombre}</td>
+                                                <td style={{textAlign: 'left'}}>{product?.descripcion}</td>
+                                                <td>{product?.cantidad}</td>
+                                                <td>
+                                                    <Form.Control
+                                                        type="number"
+                                                        className="small-input form-control-sm"
+                                                        value={product?.quantityToDeliver !== undefined ? product.quantityToDeliver : product.cantidad}
+                                                        min="0"
+                                                        onChange={(e) => handleQuantityChange(product?.id, e.target.value)}
+                                                    />
+                                                </td>
+                                                <td style={{width: '13%'}}>
+                                                    <Select
+                                                        value={deliveryStatus.find(opt => opt.id === product?.estado )}
+                                                        onChange={(e) => handleStatusChange(product?.id, e.id)}
+                                                        options={deliveryStatus.map((opt) => ({ id: opt.id, label: opt.label }))}
+                                                        placeholder="Selecciona la opción"
+                                                        classNamePrefix="custom-select"
+                                                        className="custom-select"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </Table>
+                                </div>
+
+                                <div className="button-container mt-2 d-flex flex-wrap justify-content-end">
                                     <Button
                                         variant="success"
                                         size="lg"
                                         onClick={handleBack}
+                                        className="responsive-button me-2"
                                         style={{
                                             backgroundColor: "#2148C0",
                                             borderColor: "#007BFF",
                                             fontWeight: "bold",
                                         }}
                                     >
-                                        <i className="fas fa-save me-2"></i>ATRAS
+                                        <i className="fas fa-save me-2"></i>ATRÁS
                                     </Button>
 
                                     <Button
                                         variant="success"
                                         size="lg"
                                         onClick={handleSaveProduct}
+                                        className="responsive-button"
                                         style={{
                                             backgroundColor: "#BFD732",
                                             borderColor: "#BFD732",
                                             fontWeight: "bold",
-                                            marginLeft: '10px'
                                         }}
                                     >
                                         <i className="fas fa-save me-2"></i>GUARDAR
                                     </Button>
                                 </div>
-                            </Col>
-                        </Row>
+                            </>
                     )}
-
                     </Container>
                 </div>
 

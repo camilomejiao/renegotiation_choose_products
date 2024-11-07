@@ -175,7 +175,7 @@ export const ReportingSystem = () => {
                 <div className="search-banner-reports">
                     <Container>
                         <Row className="justify-content-around">
-                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0">
+                            <Col xs={12} md={4} className="d-flex justify-content-center mb-3 mb-md-0">
                                 <button onClick={handlePrintAuthorization} className="reporting-system-button general">
                                     <img src={imgFrame1} alt="icono general" className="button-icon" />
                                     AUTORIZACIÓN
