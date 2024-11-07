@@ -2,11 +2,12 @@
     text-align: center;
     display: flex;
     justify-content: center;
+    overflow: hidden; /* Asegura que el contenido no cause desbordamiento */
 }
 
 .footer-image {
     width: 100%;
-        max-width: 1353px;
+    max-width: 100%; /* Limita el ancho máximo al 100% del contenedor */
     height: auto;
 }
 
@@ -19,5 +20,6 @@
 @media (max-width: 576px) {
     .footer-image {
         max-width: 80%;
+        margin-left: 30px;
     }
 }

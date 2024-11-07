@@ -13,15 +13,15 @@ export const PrivateLayout = () => {
                 ?
                 <div>Cargando..</div>
                 :
-                <div className="app">
-                    <Header />
-                    <Sidebar userAuth={auth} />
-                    <main className="content">
-                        {
-                            auth.id ? <Outlet context={{ userAuth: auth }} /> : <Navigate to="/login" />
-                        }
-                    </main>
-                </div>
+                    <div className="app">
+                        <Header />
+                        <div className="layout-container">
+                            <Sidebar userAuth={auth} />
+                            <main className="content">
+                                {auth.id ? <Outlet context={{ userAuth: auth }} /> : <Navigate to="/login" />}
+                            </main>
+                        </div>
+                    </div>
             }
         </>
     )

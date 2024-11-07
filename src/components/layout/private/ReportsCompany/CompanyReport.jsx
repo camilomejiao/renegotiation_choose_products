@@ -8,7 +8,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 //Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
-import { Footer } from "../footer/Footer";
+import { Footer } from "../../shared/footer/Footer";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";

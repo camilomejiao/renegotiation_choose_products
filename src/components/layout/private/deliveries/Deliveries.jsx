@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import printJS from "print-js";
 
 //Components
-import { Footer } from "../footer/Footer";
+import { Footer } from "../../shared/footer/Footer";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 
 //Img

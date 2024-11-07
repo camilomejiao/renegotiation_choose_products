@@ -1,3 +1,20 @@
+/* Sidebar cerrado */
+.sidebar {
+    width: 70px; /* Ancho reducido por defecto */
+    position: fixed;
+    top: 80px; /* Ajusta según la altura del header */
+    left: 0;
+    height: calc(100vh - 80px); /* Altura del viewport menos la altura del header */
+    background-color: #2E7D32;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Sidebar abierto */
 .sidebar.open {
     width: 150px; /* Ancho cuando está expandido */
 }
@@ -5,71 +22,78 @@
 /* Estilos para el contenido del sidebar */
 .sidebar-content {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Iconos y texto en el Sidebar */
 .sidebar-icon {
-    font-size: 24px;
-    color: white; /* Color blanco para los iconos */
+    font-size: 24px; /* Tamaño de icono en pantallas grandes */
+    color: white;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 .sidebar-text {
-    color: white; /* Color blanco para el texto */
+    color: white;
     font-size: 16px;
     margin-left: 10px;
-    display: inline;
+    display: inline-block;
+    max-width: 100px;
+    white-space: normal;
+    word-break: break-word;
 }
 
 /* Estilos del acordeón */
 .accordion {
-    background-color: transparent !important; /* Sin fondo en el acordeón */
+    background-color: transparent;
+    width: 100%;
 }
 
 .accordion .accordion-card {
-    background-color: transparent !important; /* Sin fondo en cada card */
-    border: none !important; /* Sin borde */
+    background-color: transparent;
+    border: none;
 }
 
-.accordion .accordion-header {
-    background-color: transparent !important; /* Sin fondo en el encabezado */
+.accordion-body {
+    padding: 0 !important;
 }
 
 .accordion .accordion-button {
-    background-color: transparent !important; /* Sin fondo en el botón */
-    color: white !important; /* Color del texto */
-    border: none !important; /* Sin borde */
-    padding: 10px !important; /* Espaciado interno */
-    width: 100% !important; /* Ancho completo */
-    text-align: left !important; /* Alinear texto a la izquierda */
-}
-
-.accordion .accordion-body {
-    background-color: transparent !important; /* Sin fondo en el cuerpo */
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: left;
 }
 
 /* Estilo para los items del dropdown */
 .dropdown-content {
-    display: flex !important;
-    flex-direction: column !important; /* Para que los elementos se apilen verticalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
 }
 
 .dropdown-item {
-    color: white !important; /* Color del texto de los elementos del dropdown */
-    padding: 5px !important; /* Espaciado interno */
-    cursor: pointer !important; /* Cambia el cursor a manito al pasar sobre la opción */
-    white-space: normal !important;
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+    width: 100%; /* Asegura que ocupe el ancho completo */
+    text-align: left;
 }
 
 .dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important; /* Efecto hover */
+    background-color: rgba(255, 255, 255, 0.1);
 }
-
 
 /* Botón de colapso/expansión del Sidebar */
 .sidebar-toggle {
     position: absolute;
-    bottom: 20px; /* Posición en la parte inferior */
-    width: 100%; /* Ancho completo */
+    bottom: 20px;
+    width: 100%;
     display: flex;
     justify-content: center;
     cursor: pointer;
@@ -77,55 +101,78 @@
 
 .toggle-icon {
     font-size: 24px;
-    color: white; /* Color blanco para el icono de toggle */
+    color: white;
 }
 
 /* Logout */
 .logout {
     position: absolute;
-    bottom: 80px; /* Ajusta según sea necesario */
+    bottom: 80px;
     width: 100%;
     display: flex;
     justify-content: center;
     cursor: pointer;
     font-size: 24px;
-    color: white; /* Color blanco para el texto de logout */
+    color: white;
 }
 
-/* Estilos responsivos para pantallas pequeñas */
+/* Estilos responsivos para pantallas medianas (hasta 768px) */
 @media (max-width: 768px) {
     .sidebar {
-        width: 60px; /* Ancho más estrecho en pantallas pequeñas */
+        width: 60px; /* Sidebar más estrecho en pantallas medianas */
     }
 
     .sidebar.open {
-        width: 150px; /* Ancho cuando está expandido en pantallas pequeñas */
+        width: 150px;
     }
 
     .sidebar-text {
-        display: none; /* Ocultar el texto por defecto en pantallas pequeñas */
+        display: none; /* Ocultar el texto cuando está cerrado en pantallas medianas */
     }
 
     .sidebar.open .sidebar-text {
         display: inline; /* Mostrar el texto cuando está expandido */
+    }
+
+    .sidebar-icon {
+        font-size: 22px; /* Iconos un poco más pequeños en pantallas medianas */
     }
 }
 
-/* Estilos adicionales para pantallas extra pequeñas (425px y menores) */
-@media (max-width: 425px) {
+/* Estilos adicionales para pantallas pequeñas (hasta 576px) */
+@media (max-width: 576px) {
     .sidebar {
-        width: 60px; /* Mantener el Sidebar visible en todas las resoluciones */
+        width: 50px; /* Sidebar aún más estrecho en pantallas pequeñas */
     }
 
     .sidebar.open {
-        width: 150px; /* Ancho cuando está expandido en pantallas extra pequeñas */
+        width: 120px; /* Ancho cuando está expandido en pantallas pequeñas */
+    }
+
+    .sidebar-icon {
+        font-size: 18px; /* Tamaño de icono más pequeño en pantallas pequeñas */
     }
 
     .sidebar-text {
-        display: none; /* Ocultar el texto por defecto en pantallas extra pequeñas */
+        font-size: 12px; /* Texto más pequeño en pantallas pequeñas */
+    }
+}
+
+/* Estilos para pantallas extra pequeñas (425px y menores) */
+@media (max-width: 425px) {
+    .sidebar {
+        width: 50px; /* Sidebar más pequeño en pantallas extra pequeñas */
     }
 
-    .sidebar.open .sidebar-text {
-        display: inline; /* Mostrar el texto cuando está expandido */
+    .sidebar.open {
+        width: 120px; /* Ancho cuando está expandido en pantallas extra pequeñas */
+    }
+
+    .sidebar-icon {
+        font-size: 18px; /* Tamaño de icono aún más pequeño en pantallas extra pequeñas */
+    }
+
+    .sidebar-text {
+        font-size: 12px; /* Texto más pequeño en pantallas extra pequeñas */
     }
 }

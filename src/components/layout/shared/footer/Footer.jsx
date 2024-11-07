@@ -7,7 +7,7 @@ export const Footer = () => {
         <>
             <Row className="footer-image-container mt-5">
                 <Col>
-                    <img src={imgFooter} alt="Footer" className="footer-image" />
+                    <img src={imgFooter} alt="Footer" className="footer-image" style={{ width: '95%'}}/>
                 </Col>
             </Row>
         </>

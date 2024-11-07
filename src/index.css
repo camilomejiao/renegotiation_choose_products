@@ -22,18 +22,6 @@ body,
   border-bottom: 10px solid #046999;
 }
 
-.sidebar {
-  position: fixed;
-  top: 80px; /* Ajusta según la altura del header */
-  left: 0;
-  height: calc(100vh - 80px); /* Altura del viewport menos la altura del header */
-  width: 80px;
-  background-color: #2E7D32;
-  transition: width 0.3s;
-  overflow: hidden;
-  z-index: 100;
-}
-
 .content {
   margin-top: 80px; /* Altura del header */
   margin-left: 50px; /* Ancho del sidebar */

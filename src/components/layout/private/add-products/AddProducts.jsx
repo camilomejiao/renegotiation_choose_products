@@ -16,7 +16,7 @@ import './AddProducts.css';
 
 
 //Components
-import {Footer} from "../footer/Footer";
+import {Footer} from "../../shared/footer/Footer";
 import {HeaderImage} from "../../shared/header-image/HeaderImage";
 import {UserInformation} from "../user-information/UserInformation";
 import {CompanyReportPrinting} from "../ReportsCompany/report/CompanyReportPrinting";
@@ -329,17 +329,16 @@ export const AddProducts = () => {
                 {/* Tabla de productos */}
                 <Container>
                     {/* Encabezado */}
-                    <Row className="d-flex mt-4" style={{ border: "2px solid #BFD732", borderRadius: "5px", padding: "10px" }}>
-                        <Col sm={9}>
+                    <Row className="head-title-table d-flex mt-4" >
+                        <Col md={12} sm={12} xl={8} className="mb-2">
                             {/* Contenedor del título */}
                             <div className="title-div">
                                 <h3>FORMATO DE VENTA</h3>
                             </div>
                         </Col>
-                        <Col sm={3}>
+                        <Col md={12} sm={12} xl={4} className="mb-2">
                             {/* Contenedor del saldo */}
-                            <div className="d-flex justify-content-center align-items-center mt-1"
-                                style={{ backgroundColor: "#AECA13", padding: "10px", borderRadius: "5px" }}>
+                            <div className="head-title-balance d-flex justify-content-center align-items-center mt-1">
                                 <span style={{ fontSize: "25px", fontWeight: "bold", color: "#FFF" }}>
                                     Saldo: ${parseFloat(saldoRestante).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                                 </span>
@@ -355,8 +354,8 @@ export const AddProducts = () => {
                     )}
 
                     {/* Tabla */}
-                    <Row className="mt-3">
-                        <Col>
+                    <Row className="mt-3 ">
+                        <div className="table-responsive">
                             <Table bordered hover>
                                 <thead style={{ backgroundColor: "#40A581", color: "white" }}>
                                 <tr>
@@ -404,35 +403,37 @@ export const AddProducts = () => {
                                 ))}
                                 </tbody>
                             </Table>
-                        </Col>
+                        </div>
                     </Row>
 
                     {/* Totales */}
-                    <Row className="mt-2">
-                        <Col className="text-end">
-                            <p><strong>SUBTOTAL:</strong> ${subtotal.toLocaleString()}</p>
-                            <p style={{ fontSize: "18px", fontWeight: "bold", color: "#2E7D32" }}>TOTAL: ${total.toLocaleString()}</p>
+                    <Row className="mt-2 justify-content-md-end justify-content-center">
+                        <Col xs={12} md={6} className="text-end">
+                            <p className="subtotal-text"><strong>SUBTOTAL:</strong> ${subtotal.toLocaleString()}</p>
+                            <p className="total-text">TOTAL: ${total.toLocaleString()}</p>
                         </Col>
                     </Row>
 
                     {/* Botón Guardar */}
-                    <Row className="mt-3">
-                        <Col className="text-end">
-                            <Button variant="info" size="lg"
-                                    onClick={() => getHeadlineReport(params.id)}
-                                    disabled={isReportLoading}
-                                    style={{
-                                        backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
-                                        borderColor: "#007BFF",
-                                        fontWeight: "bold",
-                                        color: "white",
-                                        cursor: isReportLoading ? "not-allowed" : "pointer",
-                                        opacity: isReportLoading ? 0.6 : 1,
-                                        marginRight: "10px"
-                                    }}
+                    <Row className="mt-3 justify-content-md-end justify-content-center">
+                        <Col xs="auto" className="text-center text-md-end">
+                            <Button
+                                variant="info"
+                                size="lg"
+                                onClick={() => getHeadlineReport(params.id)}
+                                disabled={isReportLoading}
+                                className="button-responsive me-md-2 mb-2 mb-md-0"
+                                style={{
+                                    backgroundColor: isReportLoading ? "#ccc" : "#2148C0",
+                                    borderColor: "#007BFF",
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    cursor: isReportLoading ? "not-allowed" : "pointer",
+                                    opacity: isReportLoading ? 0.6 : 1,
+                                }}
                             >
                                 {isReportLoading ? (
-                                    <span>Cargando...</span> // Mostrar texto de carga
+                                    <span>Cargando...</span>
                                 ) : (
                                     <>
                                         <i className="fas fa-print me-2"></i>IMPRIMIR ORDEN
@@ -443,11 +444,12 @@ export const AddProducts = () => {
                                 variant="success"
                                 size="lg"
                                 onClick={handleSaveProduct}
-                                disabled={items.length === 0} // Deshabilitar si no hay productos en la tabla
+                                disabled={items.length === 0}
+                                className="button-responsive"
                                 style={{
-                                    backgroundColor: items.length === 0 ? "#ccc" : "#BFD732", // Cambiar color si está deshabilitado
+                                    backgroundColor: items.length === 0 ? "#ccc" : "#BFD732",
                                     borderColor: "#BFD732",
-                                    fontWeight: "bold"
+                                    fontWeight: "bold",
                                 }}
                             >
                                 <i className="fas fa-save me-2"></i>GUARDAR

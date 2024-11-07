@@ -12,7 +12,7 @@ import './Dashboard.css';
 import { userService } from "../../../../helpers/services/UserServices";
 
 //Component
-import { Footer } from "../footer/Footer";
+import { Footer } from "../../shared/footer/Footer";
 
 //Enum
 import { StatusEnum } from "../../../../helpers/GlobalEnum";
