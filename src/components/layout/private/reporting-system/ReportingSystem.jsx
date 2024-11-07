@@ -174,18 +174,20 @@ export const ReportingSystem = () => {
 
                 <div className="search-banner-reports">
                     <Container>
-                        <Row className="justify-content-center">
-                            <Col md={12} className="d-flex justify-content-around">
+                        <Row className="justify-content-around">
+                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0">
                                 <button onClick={handlePrintAuthorization} className="reporting-system-button general">
                                     <img src={imgFrame1} alt="icono general" className="button-icon" />
                                     AUTORIZACIÓN
                                 </button>
-
+                            </Col>
+                            <Col xs={12} md={4} className="d-flex justify-content-center mb-3 mb-md-0">
                                 <button onClick={() => handleHeadlineInformationToReport(params.id)} className="reporting-system-button unique">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     REPORTE DE COMPRAS POR TITULAR
                                 </button>
-
+                            </Col>
+                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-end">
                                 <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     ENTREGAS
@@ -194,10 +196,11 @@ export const ReportingSystem = () => {
                         </Row>
                     </Container>
                 </div>
+
                 <div>
                     <Container>
                         {/* Selects alineados en una nueva fila */}
-                        <Row className="justify-content-start mt-4">
+                        <Row className="justify-content-start mt-4 mb-4">
                             <Col md={4}>
                                 <div className="authorization-options">
                                     <h4 style={{ fontWeight: "bold", fontSize: "18px", color: "#2148C0", textAlign: 'center' }}>Selecciona las opciones para la autorización:</h4>
