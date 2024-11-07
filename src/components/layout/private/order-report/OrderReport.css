@@ -2,6 +2,17 @@
     justify-content: center;
 }
 
+.input-responsive {
+    padding: 10px;
+    width: 80%;
+    max-width: 300px;
+}
+
+.button-responsive {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
 @media (max-width: 768px) {
     .table-responsive .table th,
     .table-responsive .table td {
@@ -13,5 +24,31 @@
     /* Opcional: reducir márgenes de la búsqueda */
     .container .content input[type="text"] {
         margin-bottom: 10px;
+    }
+
+    .input-responsive {
+        width: 90%; /* Ancho completo en tabletas */
+        max-width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
+        margin-bottom: 10px; /* Espacio inferior en pantallas pequeñas */
+    }
+
+    .button-responsive {
+        width: 40%; /* Botones a ancho relativo para ocupar todo el espacio disponible */
+        font-size: 14px;
+        padding: 8px 16px;
+        margin-bottom: 10px; /* Espacio inferior en pantallas pequeñas */
+    }
+}
+
+@media (max-width: 576px) {
+    .input-responsive {
+        font-size: 14px; /* Tamaño de fuente más pequeño en móviles */
+        padding: 8px;
+    }
+
+    .button-responsive {
+        width: 40%; /* Botones ocupan el ancho completo en móviles */
+        font-size: 14px;
+        padding: 8px 16px;
     }
 }

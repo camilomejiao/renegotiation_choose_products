@@ -199,20 +199,21 @@ export const OrderReport = () => {
                 )}
 
                 <div className="container mt-lg-5">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchQueryChange}
-                        style={{ marginBottom: "0", padding: "10px", width: "80%" }} // Ajusta el ancho del input
-                        className="me-2" // Margen a la derecha para espaciarlo del botón
-                    />
-                    <Button variant="primary" onClick={handleSearch} className="me-2">
-                        Buscar
-                    </Button>
-                    <Button variant="secondary" onClick={handleClearSearch}>
-                        Limpiar
-                    </Button>
+                    <div className="d-flex flex-wrap align-items-center mt-3 mb-3">
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            value={searchQuery}
+                            onChange={handleSearchQueryChange}
+                            className="input-responsive me-2 mb-2 mb-md-0" // Clase personalizada para el input
+                        />
+                        <Button variant="primary" onClick={handleSearch} className="button-responsive me-2 mb-2 mb-md-0">
+                            Buscar
+                        </Button>
+                        <Button variant="secondary" onClick={handleClearSearch} className="button-responsive">
+                            Limpiar
+                        </Button>
+                    </div>
 
                     <div className="table-responsive mt-3">
                         <BootstrapTable
@@ -224,14 +225,15 @@ export const OrderReport = () => {
                                 sizePerPage,
                                 totalSize,
                                 hideSizePerPage: true, // Oculta el selector de tamaño de página
-                                withFirstAndLast: true, // Opcional, oculta los botones de primera y última página
+                                withFirstAndLast: true, // Oculta los botones de primera y última página
                             })}
                             remote
-                            onTableChange={handleTableChange} // Asegúrate de que esta línea está presente
+                            onTableChange={handleTableChange}
                             wrapperClasses="pagination-buttons"
                         />
                     </div>
                 </div>
+
 
                 {/* Modal de Confirmación */}
                 <Modal show={showModal} onHide={handleCloseModal}>
