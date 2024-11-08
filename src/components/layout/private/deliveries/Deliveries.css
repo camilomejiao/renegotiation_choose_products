@@ -45,7 +45,6 @@
 .button-container {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
 }
@@ -54,7 +53,8 @@
 .responsive-button {
     padding: 12px 24px;
     font-weight: bold;
-    font-size: 18px; /* Ajusta el ancho a su contenido en pantallas grandes */
+    font-size: 18px;
+    width: auto;
 }
 
 /* Estilos responsivos */
@@ -67,23 +67,24 @@
     .deliveries-button {
         font-size: 14px;
         padding: 8px 16px;
-        width: 100%; /* Botón ocupa todo el ancho en tabletas */
-        margin-top: 10px; /* Separación entre el select y el botón */
+        width: 100%;
+        margin-top: 10px;
     }
 
     .custom-select__control {
-        width: 90%; /* Select ocupa todo el ancho */
+        width: 90%;
     }
 
     .button-container {
-        justify-content: center; /* Centrar los botones en tabletas */
+        justify-content: center;
     }
 
     .responsive-button {
-        width: 48%; /* Ocupan casi el 50% del contenedor en pantallas medianas */
-        font-size: 16px; /* Reducir ligeramente el tamaño de fuente */
-        padding: 10px 20px; /* Ajustar el padding */
-        margin-bottom: 10px; /* Espaciado entre botones cuando están en fila vertical */
+        width: 50% !important;
+        font-size: 16px !important;
+        padding: 8px 16px !important;
+        margin: 0 auto;
+        display: block;
     }
 }
 
@@ -101,25 +102,41 @@
     }
 
     .responsive-button {
-        width: 100%; /* Botones ocupan todo el ancho en móviles */
-        font-size: 14px; /* Reduce ligeramente el tamaño de la fuente en móviles */
-        padding: 8px 16px; /* Ajusta el padding para móviles */
+        width: 50% !important;
+        font-size: 14px !important;
+        padding: 8px 16px !important;
+        margin: 0 auto;
+        display: block;
     }
 }
 
 /**/
-.custom-file-input {
-    display: none; /* Oculta el input file original */
+.button-grid-cell {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 10px; /* Espaciado entre botones */
+    padding: 10px;
 }
 
+/* Estilo de los botones */
 .custom-file-label {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 10px 15px;
-    background-color: #1abcd9; /* Color de fondo */
-    color: white; /* Color del texto */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-    margin-right: 5px; /* Espaciado entre los botones */
+    background-color: #1abcd9;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px; /* Tamaño de fuente para botones medianos */
+    font-weight: bold;
+    text-align: center;
+    width: 100%; /* Ocupa el ancho completo de la celda */
+    max-width: 150px; /* Ancho máximo del botón */
+}
+
+.custom-file-input {
+    display: none; /* Oculta el input file original */
 }
 
 .custom-file-label:hover {

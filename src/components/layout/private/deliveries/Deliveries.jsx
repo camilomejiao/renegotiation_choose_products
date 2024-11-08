@@ -299,7 +299,7 @@ export const Deliveries = () => {
                                             <td>{delivery?.id}</td>
                                             <td>{delivery.fecha_creacion.split('T')[0]}</td>
                                             <td>{delivery?.proveedor}</td>
-                                            <td>
+                                            <td className="button-grid-cell">
                                                 {[1, 2, 3, 4].map(fileNumber => (
                                                     <label className="custom-file-label" key={fileNumber}>
                                                         Subir Imagen {fileNumber}
@@ -381,12 +381,12 @@ export const Deliveries = () => {
                                     </Table>
                                 </div>
 
-                                <div className="button-container mt-2 d-flex flex-wrap justify-content-end">
+                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="success"
                                         size="lg"
                                         onClick={handleBack}
-                                        className="responsive-button me-2"
+                                        className="responsive-button mb-2 mb-md-0"
                                         style={{
                                             backgroundColor: "#2148C0",
                                             borderColor: "#007BFF",
@@ -410,6 +410,7 @@ export const Deliveries = () => {
                                         <i className="fas fa-save me-2"></i>GUARDAR
                                     </Button>
                                 </div>
+
                             </>
                     )}
                     </Container>
