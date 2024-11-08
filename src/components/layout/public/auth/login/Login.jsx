@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import Swal from "sweetalert2";
 import imageLogin from '../../../../../assets/image/login/principal-image.png';
@@ -7,6 +7,7 @@ import userInput from '../../../../../assets/image/login/user.png';
 import lockInput from '../../../../../assets/image/login/lock.png';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 //css
 import './Login.css';
@@ -31,6 +32,12 @@ const loginSchema = yup.object().shape({
 export const Login = () => {
 
     const {setAuth} = useAuth();
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
     const handleLogin = async (values, { resetForm }) => {
         const informationToSend = {
             'mail' : values.valueOf().email,
@@ -92,11 +99,14 @@ export const Login = () => {
                                             </Form.Control.Feedback>
                                         </Form.Group>
 
-                                        <Form.Group controlId="password" className="mb-3">
+                                        <Form.Group controlId="password" className="mb-3 position-relative">
                                             <div className="input-icon-wrapper">
+                                                {/* Icono del candado */}
                                                 <img src={lockInput} alt="icono candado" className="input-icon-img" />
+
+                                                {/* Campo de entrada de contraseña */}
                                                 <Form.Control
-                                                    type="password"
+                                                    type={showPassword ? "text" : "password"}
                                                     name="password"
                                                     placeholder="CONTRASEÑA"
                                                     value={values.password}
@@ -104,7 +114,14 @@ export const Login = () => {
                                                     onBlur={handleBlur}
                                                     isInvalid={!!errors.password && touched.password}
                                                 />
+
+                                                {/* Icono del ojito para alternar visibilidad */}
+                                                <div className="password-toggle-icon" onClick={togglePasswordVisibility}>
+                                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                                </div>
                                             </div>
+
+                                            {/* Mensaje de error */}
                                             <Form.Control.Feedback type="invalid">
                                                 {errors.password}
                                             </Form.Control.Feedback>
