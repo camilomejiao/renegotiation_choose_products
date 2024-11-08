@@ -354,7 +354,6 @@ export const AddProducts = () => {
                     )}
 
                     {/* Tabla */}
-
                     <div className="mt-3 table-responsive">
                         <Table bordered hover>
                             <thead style={{ backgroundColor: "#40A581", color: "white" }}>
@@ -373,7 +372,7 @@ export const AddProducts = () => {
                             {items.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item.id}</td>
-                                    <td>{item.nombre}</td>
+                                    <td style={{textAlign: 'left'}} >{item.nombre}</td>
                                     <td>${item.valor_unitario.toLocaleString()}</td>
                                     <td>{item.unidad}</td>
                                     <td>
