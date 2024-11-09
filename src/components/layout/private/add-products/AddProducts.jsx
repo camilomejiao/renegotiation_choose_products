@@ -152,7 +152,7 @@ export const AddProducts = () => {
             const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - discountRate / 100));
             return {
                 producto: item.id,
-                discount: item.discount,
+                discount: item.discount || 0,
                 cantidad: item.quantity,
                 valor_unitario: parseFloat(item.valor_unitario),
                 valor_final: totalByItem
