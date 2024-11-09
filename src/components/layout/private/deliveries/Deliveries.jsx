@@ -49,9 +49,9 @@ export const Deliveries = () => {
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async (cubId) => {
         try {
-            const dataDeliveriesToUser = await deliveriesServices.getSuppliers(cubId);
-            if (dataDeliveriesToUser.status === StatusEnum.OK) {
-                setSuppliers(dataDeliveriesToUser.data); // Asigna los datos de proveedores
+            const { status, data} = await deliveriesServices.getSuppliers(cubId);
+            if (status === StatusEnum.OK) {
+                setSuppliers(data); // Asigna los datos de proveedores
             }
         } catch (error) {
             console.error("Error obteniendo proveedores:", error);
@@ -104,18 +104,61 @@ export const Deliveries = () => {
         }
     }
 
-    //GUardar evidencias
-    const handleFileChange = (e, deliveryId, fileNumber) => {
+    //Guardar evidencias
+    const handleFileChange = async (e, deliveryId, fileName) => {
         const selectedFile = e.target.files[0]; // Obtener el archivo seleccionado
         if (selectedFile) {
-            // Actualizar el estado para el archivo correspondiente a la entrega
-            setFiles(prevFiles => ({
-                ...prevFiles,
-                [deliveryId]: {
-                    ...prevFiles[deliveryId],
-                    [fileNumber]: selectedFile // Guarda el archivo en el índice correspondiente
+            // Validar el tipo de archivo
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                Swal.fire({
+                    title: 'Archivo no válido',
+                    text: 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.',
+                    icon: 'error',
+                    width: 300,
+                    heightAuto: true
+                });
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("ruta", selectedFile);
+            formData.append("indice", fileName);
+
+            try {
+                const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
+
+                if (status === StatusEnum.CREATE) {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Archivo enviado exitosamente',
+                        icon: 'success',
+                        width: 300,
+                        heightAuto: true
+                    });
                 }
-            }));
+
+                if (status === StatusEnum.BAD_REQUEST ||
+                    status === StatusEnum.INTERNAL_SERVER_ERROR ||
+                    !status === StatusEnum.CREATE) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Error al enviar el archivo',
+                            icon: 'error',
+                            width: 300,
+                            heightAuto: true
+                        });
+                }
+            } catch (error) {
+                console.error("Error al enviar el archivo:", error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al enviar el archivo',
+                    icon: 'error',
+                    width: 300,
+                    heightAuto: true
+                });
+            }
         }
     };
 
@@ -222,7 +265,6 @@ export const Deliveries = () => {
         window.location.reload();
     }
 
-
     //Al cargar el componente
     useEffect(() => {
         if(params.id){
@@ -306,7 +348,7 @@ export const Deliveries = () => {
                                                         <input
                                                             type="file"
                                                             accept="image/*"
-                                                            onChange={(e) => handleFileChange(e, 1, fileNumber)}
+                                                            onChange={(e) => handleFileChange(e, delivery?.id, `imagen${fileNumber}`)}
                                                             className="custom-file-input"
                                                         />
                                                     </label>
@@ -318,7 +360,7 @@ export const Deliveries = () => {
                                                     <input
                                                         type="file"
                                                         accept="application/pdf"
-                                                        onChange={(e) => handleFileChange(e, 1, 'pdf')}
+                                                        onChange={(e) => handleFileChange(e, delivery?.id, 'pdf')}
                                                         className="custom-file-input"
                                                     />
                                                 </label>

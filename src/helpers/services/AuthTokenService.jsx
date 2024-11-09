@@ -11,9 +11,13 @@ class AuthTokenService {
         }
 
         const headers = {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         };
+
+        // Detectar si el body es FormData o si el método es GET
+        if (options.method !== 'GET' && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json'; // Solo agregar Content-Type si no es FormData
+        }
 
         const response = await fetch(url, { ...options, headers });
 

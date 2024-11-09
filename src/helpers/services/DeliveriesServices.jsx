@@ -3,6 +3,7 @@ import { authTokenService } from "./AuthTokenService";
 
 class DeliveriesServices {
 
+    //
     async getSuppliers(cubId) {
         let url = Global.url + "entrega/proveedores/"+cubId+"/";
         return await authTokenService.fetchWithAuth(url, {
@@ -10,6 +11,7 @@ class DeliveriesServices {
         });
     }
 
+    //
     async searchDeliveriesToUser(cubId) {
         let url = Global.url + "entrega/cub/"+cubId+"/";
         return await authTokenService.fetchWithAuth(url, {
@@ -17,6 +19,7 @@ class DeliveriesServices {
         });
     }
 
+    //
     async productsToBeDelivered(companyId, cubId) {
         let url = Global.url + "entrega/"+companyId+"/"+cubId+"/";
         return await authTokenService.fetchWithAuth(url, {
@@ -24,6 +27,7 @@ class DeliveriesServices {
         });
     }
 
+    //
     async saveProducts(companyId, cubId, products) {
         const params = JSON.stringify(products); // Convertir productos a JSON
         const url = Global.url + "entrega/guardar/"+companyId+"/"+cubId+"/";
@@ -34,10 +38,21 @@ class DeliveriesServices {
         });
     }
 
+    //
     async deliveryReport(deliveryId) {
         let url = Global.url + "entrega/"+deliveryId+"/";
         return await authTokenService.fetchWithAuth(url, {
             method: "GET"
+        });
+    }
+
+    //
+    async evidenceOfDeliveries(deliveryId, formData) {
+        const url = Global.url + "entrega/archivo/" + deliveryId + "/";
+
+        return await authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: formData, // Enviar el objeto FormData
         });
     }
 
