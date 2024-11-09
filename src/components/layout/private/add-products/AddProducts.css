@@ -72,6 +72,11 @@
     overflow-x: auto;
 }
 
+.scrollable-thead-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 .small-input {
     width: 60px !important;
     height: 30px !important;

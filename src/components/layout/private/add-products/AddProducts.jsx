@@ -354,52 +354,52 @@ export const AddProducts = () => {
                     )}
 
                     {/* Tabla */}
-                    <div className="mt-3 table-responsive">
+                    <div className="mt-3 table-responsive scrollable-thead-body">
                         <Table bordered hover>
                             <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                            <tr>
-                                <th>COD</th>
-                                <th>Nombre</th>
-                                <th>Vr. Unitario</th>
-                                <th>Unidad</th>
-                                <th>Cantidad</th>
-                                <th>Dto</th>
-                                <th>Total</th>
-                                <th>&nbsp;</th>
-                            </tr>
+                                <tr>
+                                    <th>COD</th>
+                                    <th>Nombre</th>
+                                    <th>Vr. Unitario</th>
+                                    <th>Unidad</th>
+                                    <th>Cantidad</th>
+                                    <th>Dto</th>
+                                    <th>Total</th>
+                                    <th>&nbsp;</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {items.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td style={{textAlign: 'left'}} >{item.nombre}</td>
-                                    <td>${item.valor_unitario.toLocaleString()}</td>
-                                    <td>{item.unidad}</td>
-                                    <td>
-                                        <Form.Control
-                                            type="number"
-                                            className="small-input form-control-sm"
-                                            value={item.quantity}
-                                            onChange={(e) => handleQuantityChange(index, e.target.value)}
-                                            min="1"
-                                        />
-                                    </td>
-                                    <td>
-                                        <Form.Control
-                                            type="text"
-                                            className="small-input form-control-sm"
-                                            value={item.discount}
-                                            onChange={(e) => handleDiscountChange(index, limitToFourDecimals(e.target.value))}
-                                        />
-                                    </td>
-                                    <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
-                                    <td>
-                                        <Button variant="danger" size="sm" onClick={() => handleDeleteItem(index)}>
-                                            <FaTrashAlt />
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
+                                {items.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{item.id}</td>
+                                        <td style={{textAlign: 'left'}} >{item.nombre}</td>
+                                        <td>${item.valor_unitario.toLocaleString()}</td>
+                                        <td>{item.unidad}</td>
+                                        <td>
+                                            <Form.Control
+                                                type="number"
+                                                className="small-input form-control-sm"
+                                                value={item.quantity}
+                                                onChange={(e) => handleQuantityChange(index, e.target.value)}
+                                                min="1"
+                                            />
+                                        </td>
+                                        <td>
+                                            <Form.Control
+                                                type="text"
+                                                className="small-input form-control-sm"
+                                                value={item.discount}
+                                                onChange={(e) => handleDiscountChange(index, limitToFourDecimals(e.target.value))}
+                                            />
+                                        </td>
+                                        <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
+                                        <td>
+                                            <Button variant="danger" size="sm" onClick={() => handleDeleteItem(index)}>
+                                                <FaTrashAlt />
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </Table>
                     </div>
