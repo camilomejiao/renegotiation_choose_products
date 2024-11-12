@@ -72,11 +72,13 @@ export const HeadLineReport = ({dataReport}) => {
                         </tr>
                         <tr>
                             <td style={{ width: '18%', border: '1px solid black' }}><strong>SALDO TOTAL PLAN DE INVERSIÓN:</strong></td>
-                            <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}> $ {dataReport.saldo}</td>
+                            <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport.saldo).toLocaleString()}</td>
                             <td style={{ width: '15%', border: '1px solid black' }}><strong>VALOR TOTAL INVERTIDO</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {dataReport.invertido}</td>
+                            <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport.invertido).toLocaleString()}</td>
                             <td style={{ width: '25%', border: '1px solid black' }}><strong>SALDO FINAL DESPUES DE INVERSIÓN :</strong></td>
-                            <td style={{ width: '12%', border: '1px solid black', textAlign: 'center' }}> $ {(dataReport.saldo - dataReport.invertido).toLocaleString()}</td>
+                            <td style={{ width: '12%', border: '1px solid black', textAlign: 'center' }}>
+                                $ {parseFloat(dataReport.saldo - dataReport.invertido).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            </td>
                         </tr>
                     </thead>
                 </table>

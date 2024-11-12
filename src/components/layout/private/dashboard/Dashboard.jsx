@@ -1,61 +1,24 @@
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import magnifyingGlass from '../../../../assets/image/icons/magnifying_glass.png';
-import {useState} from "react";
-import Swal from "sweetalert2";
-
-import {useNavigate, useOutletContext} from "react-router-dom";
+import { Col, Container, Row } from "react-bootstrap";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 //css
 import './Dashboard.css';
 
-//
-import { userService } from "../../../../helpers/services/UserServices";
-
 //Component
 import { Footer } from "../../shared/footer/Footer";
-
-//Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import { SearchUserForm } from "../search-user-form/SearchUserForm";
 
 export const Dashboard = () => {
 
     const { userAuth } = useOutletContext();
-
-    const [searchValue, setSearchValue] = useState("");
     const navigate = useNavigate();
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
+    const handleSearchSuccess = (userData) => {
+        const { id } = userData;
 
-        if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
-            const resp = await userService.searchUser(searchValue);
-
-                if(resp.status === StatusEnum.OK) {
-                    // Verificar si el objeto está vacío
-                    if (Object.keys(resp.data).length === 0) {
-                        Swal.fire({
-                            title: 'Oops...',
-                            html: 'Usuario no existe en el sistema',
-                            icon: 'error',
-                            width: 300,
-                            heightAuto: true
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Bien hecho!',
-                            html: 'Usuario encontrado',
-                            icon: 'success',
-                            width: 300,
-                            heightAuto: true
-                        });
-
-                        // Redirigir según el rol del usuario
-                        userAuth.rol_id === 2
-                            ? navigate(`/admin/add_products/${resp.data.id}`)
-                            : navigate(`/admin/reports/${resp.data.id}`);
-                    }
-                }
-        }
+        userAuth.rol_id === 2
+            ? navigate(`/admin/add_products/${id}`)
+            : navigate(`/admin/reports/${id}`);
     };
 
     return (
@@ -71,23 +34,9 @@ export const Dashboard = () => {
                         </p>
                     </Col>
                 </Row>
+
                 <Row className="justify-content-center mt-4">
-                    <Col md={6} className="text-center">
-                        <Form className="search-form d-flex align-items-center" onSubmit={handleSearch}>
-                            <Form.Control
-                                type="number"
-                                min="1"
-                                placeholder="Buscar"
-                                className="search-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                            />
-                            <Button type="submit" variant="outline-primary" className="search-button ms-2">
-                                <img src={magnifyingGlass} alt="Buscar" style={{ width: "20px", height: "20px" }} />
-                            </Button>
-                        </Form>
-                        <p className="search-helper-text mt-2">Ingrese número de C.C</p>
-                    </Col>
+                    <SearchUserForm onSearchSuccess={handleSearchSuccess} />
                 </Row>
 
                 <Footer />

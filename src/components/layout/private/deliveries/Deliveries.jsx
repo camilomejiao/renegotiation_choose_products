@@ -51,6 +51,7 @@ export const Deliveries = () => {
         try {
             const { status, data} = await deliveriesServices.getSuppliers(cubId);
             if (status === StatusEnum.OK) {
+                console.log('dataDlever: ', data);
                 setSuppliers(data); // Asigna los datos de proveedores
             }
         } catch (error) {

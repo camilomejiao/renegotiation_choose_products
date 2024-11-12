@@ -8,7 +8,7 @@ import {
     FaHome,
     FaUserCircle,
     FaIndustry,
-    FaReceipt
+    FaReceipt, FaTruckMoving
 } from 'react-icons/fa';
 import './Sidebar.css';
 import { useNavigate } from "react-router-dom";
@@ -36,6 +36,10 @@ export const Sidebar = ({userAuth}) => {
     const handleReport = () => {
         navigate(`/admin/company-reports`)
     };
+
+    const handleDeliveries = () => {
+        navigate(`/admin/company-reports`)
+    }
 
     return (
         <>
@@ -81,6 +85,10 @@ export const Sidebar = ({userAuth}) => {
                                         <div className="dropdown-item" onClick={handleOrderReport}>
                                             <FaReceipt className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handleDeliveries}>
+                                            <FaTruckMoving className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Entregas</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaClipboardList className="sidebar-icon" />

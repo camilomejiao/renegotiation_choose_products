@@ -56,9 +56,9 @@ export const ReportingSystem = () => {
     //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const response = await userService.userInformation(cubId);
-            if(response.status === StatusEnum.OK) {
-                setUserData(response.data);
+            const {data, status} = await userService.userInformation(cubId);
+            if(status === StatusEnum.OK) {
+                setUserData(data);
             }
         } catch (error) {
             console.error("Error obteniendo la informacion del usuario:", error);
@@ -99,7 +99,7 @@ export const ReportingSystem = () => {
     const handleHeadlineInformationToReport = async (cubId) => {
         setIsLoading(true);
         try {
-            const {data, status} = await reportServices.headlineReport(cubId);
+            const { data, status} = await reportServices.headlineReport(cubId);
             if(status === StatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReadyToPrintHeadLineInformation(true);
