@@ -1,3 +1,4 @@
+
 export const RouterEnum = {
 
     RouterAdmin: '/admin',
@@ -5,7 +6,8 @@ export const RouterEnum = {
     AddProducts: 'add_products/:id',
 
     //Entregas
-    deliveries: 'deliveries/:id',
+    SearchUserForDeliveries: 'search-user-for-deliveries',
+    Deliveries: 'deliveries/:id',
 
     //Reportes
     Reports: 'reports/:id',

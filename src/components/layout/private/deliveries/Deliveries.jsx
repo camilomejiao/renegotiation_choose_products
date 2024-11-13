@@ -1,27 +1,28 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {useOutletContext, useParams} from "react-router-dom";
 import Select from "react-select";
-import { Button, Col, Container, Row, Table, Form, Spinner } from "react-bootstrap";
-import { FaFilePdf } from "react-icons/fa";
+import {Button, Col, Container, Form, Row, Spinner, Table} from "react-bootstrap";
+import {FaFilePdf} from "react-icons/fa";
 import Swal from "sweetalert2";
 import printJS from "print-js";
 
 //Components
-import { Footer } from "../../shared/footer/Footer";
-import { DeliveryReport } from "./delivery-report/DeliveryReport";
+import {Footer} from "../../shared/footer/Footer";
+import {DeliveryReport} from "./delivery-report/DeliveryReport";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
-import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
+import {deliveriesServices} from "../../../../helpers/services/DeliveriesServices";
 
 //Css
 import './Deliveries.css';
 
 //Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import {StatusEnum} from "../../../../helpers/GlobalEnum";
+import {authService} from "../../../../helpers/services/Auth";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -33,27 +34,23 @@ const deliveryStatus = [
 
 export const Deliveries = () => {
 
+    const { userAuth } = useOutletContext();
     const params = useParams();
     const deliveryReportRef = useRef();
 
-    const [suppliers, setSuppliers] = useState([]);
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [supplier, setSupplier] = useState('');
     const [listDeliveriesToUser, setListDeliveriesToUser] = useState([]);
     const [showDeliveryForm, setShowDeliveryForm] = useState(false);
-    const [files, setFiles] = useState({}); // Estado para almacenar los archivos
     const [deliveryProducts, setDeliveryProducts] = useState([]);
     const [deliveryInformation, setDeliveryInformation] = useState({});
     const [isReadyToPrintDeliveryInformation, setIsReadyToPrintDeliveryInformation] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    //Trae las compañias con las que el usuario realizó compras
-    const getSuppliersFromWhomYouPurchased = async (cubId) => {
+    //Trae el id de la compañia
+    const getSuppliersFromWhomYouPurchased = async () => {
         try {
-            const { status, data} = await deliveriesServices.getSuppliers(cubId);
-            if (status === StatusEnum.OK) {
-                console.log('dataDlever: ', data);
-                setSuppliers(data); // Asigna los datos de proveedores
-            }
+            const itemId = await authService.getSupplierId();
+            setSupplier(itemId);
         } catch (error) {
             console.error("Error obteniendo proveedores:", error);
         }
@@ -62,9 +59,9 @@ export const Deliveries = () => {
     //Listado de entregas al titular
     const getListDeliveriesToUser = async (cubId) => {
         try {
-            const response = await deliveriesServices.searchDeliveriesToUser(cubId);
-            if(response.status === StatusEnum.OK) {
-                setListDeliveriesToUser(response.data);
+            const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
+            if(status === StatusEnum.OK) {
+                setListDeliveriesToUser(data);
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -73,32 +70,25 @@ export const Deliveries = () => {
 
     //Crear entrega
     const handleCreateDeliveries = async () => {
-        if (!selectedSupplier) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Debe escoger al menos una empresa',
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
-            return;
-        }
-        setListDeliveriesToUser([]); // Ocultar la tabla
-        setShowDeliveryForm(true); // Mostrar el formulario
+        setListDeliveriesToUser([]);
+        setShowDeliveryForm(true);
+        console.log('supplier: ', supplier);
 
         try {
-            const response = await deliveriesServices.productsToBeDelivered(selectedSupplier.value, params.id);
+            const { data, status} = await deliveriesServices.productsToBeDelivered(supplier, params.id);
 
-            if (response.status === StatusEnum.OK) {
-                const dataProductsToBeDelivered = response.data;
-
-                const updatedData = dataProductsToBeDelivered.map(product => ({
+            if (status === StatusEnum.OK) {
+                const updatedData = data.map(product => ({
                     ...product,
                     estado: 1,
                     quantityToDeliver: product.cantidad
                 }));
 
                 setDeliveryProducts(updatedData);
+            }
+
+            if(status === StatusEnum.BAD_REQUEST) {
+                showError("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
@@ -112,13 +102,7 @@ export const Deliveries = () => {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(selectedFile.type)) {
-                Swal.fire({
-                    title: 'Archivo no válido',
-                    text: 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.',
-                    icon: 'error',
-                    width: 300,
-                    heightAuto: true
-                });
+                showError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
@@ -130,35 +114,17 @@ export const Deliveries = () => {
                 const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === StatusEnum.CREATE) {
-                    Swal.fire({
-                        title: 'Éxito',
-                        text: 'Archivo enviado exitosamente',
-                        icon: 'success',
-                        width: 300,
-                        heightAuto: true
-                    });
+                    showAlert('Éxito', 'Archivo enviado exitosamente');
                 }
 
                 if (status === StatusEnum.BAD_REQUEST ||
                     status === StatusEnum.INTERNAL_SERVER_ERROR ||
-                    !status === StatusEnum.CREATE) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Error al enviar el archivo',
-                            icon: 'error',
-                            width: 300,
-                            heightAuto: true
-                        });
+                    status !== StatusEnum.CREATE) {
+                    showError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {
                 console.error("Error al enviar el archivo:", error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error al enviar el archivo',
-                    icon: 'error',
-                    width: 300,
-                    heightAuto: true
-                });
+                showError('Error', 'Error al enviar el archivo');
             }
         }
     };
@@ -171,6 +137,7 @@ export const Deliveries = () => {
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
             console.error("Error obteniendo el reporte:", error);
+            showError('Error', 'Error obteniendo el reporte:');
         } finally {
             setIsLoading(false);
         }
@@ -230,35 +197,17 @@ export const Deliveries = () => {
                 estado: prod.estado
             }));
 
-            const response = await deliveriesServices.saveProducts(selectedSupplier.value, params.id, dataSaveProducts);
-            if(response.status === StatusEnum.OK) {
-                Swal.fire({
-                    title: 'Éxito',
-                    text: 'Productos entregados correctamente.',
-                    icon: 'success',
-                    width: 300,
-                    heightAuto: true
-                });
+            const {data, status} = await deliveriesServices.saveProducts(supplier, params.id, dataSaveProducts);
+            if(status === StatusEnum.OK) {
+                showAlert('Éxito', 'Productos entregados correctamente.')
                 window.location.reload();
             }
 
-            if(response.status === StatusEnum.BAD_REQUEST) {
-                Swal.fire({
-                    title: 'Error',
-                    text: `${response.data.message + ' ,debes entregar al menos un producto'}`,
-                    icon: 'warning',
-                    width: 300,
-                    heightAuto: true
-                });
+            if(status === StatusEnum.BAD_REQUEST) {
+                showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
             }
         } catch (error) {
-            await Swal.fire({
-                title: 'Error al guardar los productos',
-                text: `${error}`,
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
+            showError('Error al guardar los productos', `${error}`);
         }
     };
 
@@ -266,13 +215,27 @@ export const Deliveries = () => {
         window.location.reload();
     }
 
-    //Al cargar el componente
-    useEffect(() => {
-        if(params.id){
-            getSuppliersFromWhomYouPurchased(params.id);
-            getListDeliveriesToUser(params.id);
-        }
-    }, []);
+    //
+    const showAlert = (title, message) => {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: 'success',
+            width: 300,
+            heightAuto: true,
+        });
+    };
+
+    //
+    const showError = (title, message) => {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: "error",
+            width: 300,
+            heightAuto: true,
+        });
+    };
 
     useEffect(() => {
         if(isReadyToPrintDeliveryInformation) {
@@ -280,6 +243,14 @@ export const Deliveries = () => {
          setIsReadyToPrintDeliveryInformation(false);
         }
     }, [isReadyToPrintDeliveryInformation]);
+
+    //Al cargar el componente
+    useEffect(() => {
+        if (params.id) {
+            getSuppliersFromWhomYouPurchased();
+            getListDeliveriesToUser(params.id);
+        }
+    }, []);
 
     return (
         <>
@@ -291,28 +262,20 @@ export const Deliveries = () => {
                     </div>
                 </div>
 
-                <div className="deliveries-banner">
-                    <Container>
-                        <Row className="justify-content-start align-items-center mt-4">
-                            <Col xs={12} md={5} className="mb-2 mb-md-0">
-                                <Select
-                                    value={selectedSupplier}
-                                    onChange={(selectedOption) => { setSelectedSupplier(selectedOption) }}
-                                    options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
-                                    placeholder="Selecciona una compañia"
-                                    classNamePrefix="custom-select"
-                                    className="custom-select"
-                                />
-                            </Col>
-                            <Col xs={12} md={4} className="d-flex justify-content-md-start justify-content-center">
-                                <button onClick={handleCreateDeliveries} className="deliveries-button deliveries">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    ENTREGAS
-                                </button>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
+                {userAuth.rol_id === 2 &&(
+                    <div className="deliveries-banner">
+                        <Container>
+                            <Row className="justify-content-start align-items-center mt-4">
+                                <Col xs={12} className="d-flex justify-content-md-start justify-content-center">
+                                    <button onClick={handleCreateDeliveries} className="deliveries-button deliveries">
+                                        <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                        CREAR ENTREGAS
+                                    </button>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </div>
+                )}
 
                 {isLoading && (
                     <div className="spinner-container">
@@ -450,7 +413,7 @@ export const Deliveries = () => {
                                             fontWeight: "bold",
                                         }}
                                     >
-                                        <i className="fas fa-save me-2"></i>GUARDAR
+                                        <i className="fas fa-save me-2"></i>GUARDAR ENTREGA
                                     </Button>
                                 </div>
 

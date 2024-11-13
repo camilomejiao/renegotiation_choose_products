@@ -6,7 +6,6 @@ import {
     FaClipboardList,
     FaSignOutAlt,
     FaHome,
-    FaUserCircle,
     FaIndustry,
     FaReceipt, FaTruckMoving
 } from 'react-icons/fa';
@@ -38,7 +37,7 @@ export const Sidebar = ({userAuth}) => {
     };
 
     const handleDeliveries = () => {
-        navigate(`/admin/company-reports`)
+        navigate(`/admin/search-user-for-deliveries`)
     }
 
     return (
@@ -46,25 +45,12 @@ export const Sidebar = ({userAuth}) => {
             <div className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <Container fluid className="sidebar-content">
                     {userAuth.rol_id === 3 && (
-                        <Accordion>
-                            {/* Acordeón Menú 1 */}
-                            <Card className="accordion-card">
-                                <Accordion.Header>
-                                    <div className="accordion-toggle">
-                                        <FaUserCircle className="sidebar-icon" />
-                                        {isOpen && <span className="sidebar-text">DSCI</span>}
-                                    </div>
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                    <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={handleApplication}>
-                                            <FaStore className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Solicitud</span>}
-                                        </div>
-                                    </div>
-                                </Accordion.Body>
-                            </Card>
-                        </Accordion>
+                        <div className="dropdown-content">
+                            <div className="dropdown-item" onClick={handleApplication}>
+                                <FaStore className="sidebar-icon" />
+                                {isOpen && <span className="sidebar-text">Solicitud</span>}
+                            </div>
+                        </div>
                     )}
                     {userAuth.rol_id === 2 && (
                         <Accordion>

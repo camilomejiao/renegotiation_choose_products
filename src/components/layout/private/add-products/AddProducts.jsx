@@ -64,7 +64,7 @@ export const AddProducts = () => {
             } catch (error) {
                 handleError(error, "Error buscando productos:");
             }
-        }, 300), // Ajusta el delay del debounce a 300ms
+        }, 300),
         []
     );
 
@@ -452,7 +452,7 @@ export const AddProducts = () => {
                                     fontWeight: "bold",
                                 }}
                             >
-                                <i className="fas fa-save me-2"></i>GUARDAR
+                                <i className="fas fa-save me-2"></i>GUARDAR ORDEN
                             </Button>
                         </Col>
                     </Row>

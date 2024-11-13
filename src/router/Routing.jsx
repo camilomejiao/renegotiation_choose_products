@@ -13,6 +13,7 @@ import {ReportingSystem} from "../components/layout/private/reporting-system/Rep
 import {CompanyReport} from "../components/layout/private/ReportsCompany/CompanyReport";
 import {OrderReport} from "../components/layout/private/order-report/OrderReport";
 import {Deliveries} from "../components/layout/private/deliveries/Deliveries";
+import {SearchUserForDeliveries} from "../components/layout/private/deliveries/SearchUserForDeliveries";
 
 export const Routing = () => {
     return (
@@ -28,7 +29,8 @@ export const Routing = () => {
                         <Route index element={ <Dashboard /> } />
 
                         <Route path={ RouterEnum.AddProducts }  element={ <AddProducts /> }  />
-                        <Route path={ RouterEnum.deliveries }  element={ <Deliveries /> }  />
+                        <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
+                        <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
 
                         <Route path={ RouterEnum.Reports }  element={ <ReportingSystem /> }  />
                         <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />

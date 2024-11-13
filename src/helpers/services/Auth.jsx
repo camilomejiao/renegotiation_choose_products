@@ -1,5 +1,5 @@
-import { Global } from "../Global.jsx";
-import { jwtDecode } from "jwt-decode";
+import {Global} from "../Global.jsx";
+import {jwtDecode} from "jwt-decode";
 
 class Auth {
 
@@ -33,21 +33,19 @@ class Auth {
 
     //
     async saveStorage (token, decodeToken) {
-        localStorage.setItem('id', decodeToken.proveedor);
-        localStorage.setItem('token', token.access);
-        localStorage.setItem('refresh', token.refresh);
+        localStorage.setItem('id', decodeToken?.proveedor);
+        localStorage.setItem('token', token?.access);
+        localStorage.setItem('refresh', token?.refresh);
         localStorage.setItem('user', JSON.stringify(decodeToken));
-        localStorage.setItem('rol_id', decodeToken.rol);
+        localStorage.setItem('rol_id', decodeToken?.rol);
     }
 
-    async getUserId() {
+    async getSupplierId() {
         return localStorage.getItem('id');
     }
 
     async getTokenCode(token) {
-        const decodedToken = jwtDecode(token);
-        console.log(decodedToken);
-        return decodedToken;
+        return jwtDecode(token);
     }
 }
 
