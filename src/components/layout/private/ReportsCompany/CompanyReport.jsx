@@ -181,6 +181,25 @@ export const CompanyReport = () => {
                     </Container>
                 </div>
 
+                <div className="banner-reports">
+                    <Container>
+                        <Row className="justify-content-center align-items-center">
+
+
+                            {/* Botón Reporte General */}
+                            <Col md={4} className="d-flex justify-content-center">
+                                <button
+                                    onClick={handlePrintCompanyReport}
+                                    className="report-button general"
+                                >
+                                    <img src={imgFrame1} alt="icono general" className="button-icon" />
+                                    REPORTE GENERAL
+                                </button>
+                            </Col>
+                        </Row>
+                    </Container>
+                </div>
+
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
                     {companyInformation && (

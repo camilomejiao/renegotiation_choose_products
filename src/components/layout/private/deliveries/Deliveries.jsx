@@ -72,7 +72,6 @@ export const Deliveries = () => {
     const handleCreateDeliveries = async () => {
         setListDeliveriesToUser([]);
         setShowDeliveryForm(true);
-        console.log('supplier: ', supplier);
 
         try {
             const { data, status} = await deliveriesServices.productsToBeDelivered(supplier, params.id);
