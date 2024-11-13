@@ -1,4 +1,4 @@
-import { NumerosALetras } from 'numero-a-letras';
+//import { NumerosALetras } from 'numero-a-letras';
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -21,28 +21,28 @@ export const DeliveryReport = ({deliveryInformation}) => {
     }, 0);
 
     //Formatear el número como pesos colombianos
-    const valorEnPesos = totalValorFinal.toLocaleString('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-    });
-
-    const limpiarMillones = (valorEnLetras) => {
-        valorEnLetras = valorEnLetras.replace(/\s+/g, ' ').trim(); // Paso 1: Normalizar espacios adicionales
-
-        // Paso 2: Detectar si "DE" es necesario o no // Caso donde hay una secuencia numérica compleja después de "MILLONES DE", quitar "DE"
-        if (/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi.test(valorEnLetras)) {
-            valorEnLetras = valorEnLetras.replace(/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi, 'MILLONES ');
-        } else if (/MILLONES DE PESOS/gi.test(valorEnLetras)) { // Mantener el "DE" si es simplemente "MILLONES DE PESOS"
-            valorEnLetras = valorEnLetras.replace(/MILLONES DE PESOS/gi, 'MILLONES DE PESOS');
-        }
-        valorEnLetras = valorEnLetras.replace('00/100 M.N.', 'MCTE').trim();
-
-        return valorEnLetras.toUpperCase();
-    };
+    // const valorEnPesos = totalValorFinal.toLocaleString('es-CO', {
+    //     style: 'currency',
+    //     currency: 'COP',
+    // });
+    //
+    // const limpiarMillones = (valorEnLetras) => {
+    //     valorEnLetras = valorEnLetras.replace(/\s+/g, ' ').trim(); // Paso 1: Normalizar espacios adicionales
+    //
+    //     // Paso 2: Detectar si "DE" es necesario o no // Caso donde hay una secuencia numérica compleja después de "MILLONES DE", quitar "DE"
+    //     if (/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi.test(valorEnLetras)) {
+    //         valorEnLetras = valorEnLetras.replace(/MILLONES DE (?=\w+ (MIL|CIENTOS|CINCUENTA|NOVECIENTOS|SEISCIENTOS|OCHENTA|Y|CUARENTA|DOS|TRES|CUATRO|CINCO|SEIS|SIETE|OCHO|NUEVE))/gi, 'MILLONES ');
+    //     } else if (/MILLONES DE PESOS/gi.test(valorEnLetras)) { // Mantener el "DE" si es simplemente "MILLONES DE PESOS"
+    //         valorEnLetras = valorEnLetras.replace(/MILLONES DE PESOS/gi, 'MILLONES DE PESOS');
+    //     }
+    //     valorEnLetras = valorEnLetras.replace('00/100 M.N.', 'MCTE').trim();
+    //
+    //     return valorEnLetras.toUpperCase();
+    // };
 
     // Convertir el valor numérico a letras
-    let valorEnLetras  =  NumerosALetras(totalValorFinal);
-    valorEnLetras = limpiarMillones(valorEnLetras);
+    //let valorEnLetras  =  NumerosALetras(totalValorFinal);
+    //valorEnLetras = limpiarMillones(valorEnLetras);
 
     return (
         <>
@@ -208,7 +208,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         {products?.map((product) => {
                             const valorFinal = parseFloat(product?.valor_final);
                             const cantidad = product?.cantidad;
-                            const valorPorUnidad = (valorFinal && cantidad > 0) ? (valorFinal / cantidad).toLocaleString('es-CO') : 'N/A';
+                            //const valorPorUnidad = (valorFinal && cantidad > 0) ? (valorFinal / cantidad).toLocaleString('es-CO') : 'N/A';
                             const estado = deliveryStatus.find(status => status.id === product?.estado);
 
                             return (
