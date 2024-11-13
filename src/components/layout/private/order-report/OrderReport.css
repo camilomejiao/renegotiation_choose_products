@@ -13,6 +13,16 @@
     font-size: 16px;
 }
 
+.responsive-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+
 @media (max-width: 768px) {
     .table-responsive .table th,
     .table-responsive .table td {
@@ -38,6 +48,11 @@
         padding: 8px 16px;
         margin-bottom: 10px; /* Espacio inferior en pantallas pequeñas */
     }
+
+    .responsive-container {
+        flex-direction: column;
+        width: 97%;
+    }
 }
 
 @media (max-width: 576px) {
@@ -50,5 +65,9 @@
         width: 40%; /* Botones ocupan el ancho completo en móviles */
         font-size: 14px;
         padding: 8px 16px;
+    }
+
+    .responsive-container {
+        width: 90%;
     }
 }

@@ -1,10 +1,11 @@
-import {useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import {useParams} from "react-router-dom";
-import {Button, Col, Container, Form, Row, Spinner, Table} from "react-bootstrap";
-import {FaTrashAlt} from "react-icons/fa";
+import { useParams} from "react-router-dom";
+import { Button, Col, Container, Form, Row, Spinner, Table } from "react-bootstrap";
+import { FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import printJS from "print-js";
+import { debounce } from "@mui/material";
 
 //Img
 import imgPeople from '../../../../assets/image/addProducts/people1.jpg';
@@ -13,7 +14,6 @@ import frame from '../../../../assets/image/addProducts/Frame.png';
 
 //Css
 import './AddProducts.css';
-
 
 //Components
 import {Footer} from "../../shared/footer/Footer";
@@ -44,25 +44,29 @@ export const AddProducts = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     //
-    const getOptionsProducts = async (searchWord) => {
-        if (!searchWord) {
-            setOption([]);
-            return;
-        }
-
-        try {
-            const {data, status} = await productsServices.searchProduct(searchWord);
-            if(status === StatusEnum.OK) {
-                const formattedOptions = data.map(product => ({
-                    value: product.id, // Ajusta según la estructura de tu producto
-                    label: product.nombre // Ajusta según el campo que representa el nombre del producto
-                }));
-                setOption(formattedOptions);
+    const getOptionsProducts = useCallback(
+        debounce(async (searchWord) => {
+            if (searchWord.length < 3) {
+                setOption([]);
+                return;
             }
-        } catch (error) {
-            handleError(error, 'Error buscando productos:');
-        }
-    }
+
+            try {
+                const { data, status } = await productsServices.searchProduct(searchWord);
+                console.log('data: ', data);
+                if (status === StatusEnum.OK) {
+                    const formattedOptions = data.map((product) => ({
+                        value: product.id,
+                        label: product.nombre,
+                    }));
+                    setOption(formattedOptions);
+                }
+            } catch (error) {
+                handleError(error, "Error buscando productos:");
+            }
+        }, 300), // Ajusta el delay del debounce a 300ms
+        []
+    );
 
     const getUserInformation = async (cubId) => {
         try {

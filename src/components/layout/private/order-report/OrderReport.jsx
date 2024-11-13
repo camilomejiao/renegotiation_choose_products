@@ -1,106 +1,130 @@
 import { useEffect, useState } from "react";
-import {Button, Modal, Spinner} from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
 import { FaTrash } from "react-icons/fa";
+import { DataGrid } from "@mui/x-data-grid";
 
-//Image
+// Image
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 
-//Services
+// Services
 import { purchaseOrderServices } from "../../../../helpers/services/PurchaseOrderServices";
 
-//Enum
+// Enum
 import { StatusEnum } from "../../../../helpers/GlobalEnum";
 
-//Css
-import './OrderReport.css';
+// Css
+import "./OrderReport.css";
+
+const PAGE_SIZE = 10;
 
 export const OrderReport = () => {
-    const [purcharseOrder, setPurcharseOrder] = useState([]); //Obtener los datos
-    const [totalSize, setTotalSize] = useState(0); //Total de datos
-    const [page, setPage] = useState(1); //Paginas
-    const [isLoading, setIsLoading] = useState(false); //Cargando la data
-    const sizePerPage = 10; // Tamaño fijo del array de datos
-    const [showModal, setShowModal] = useState(false); //Mostrar modal
-    const [selectedId, setSelectedId] = useState(null); //Id seleccionado para la eliminacion
-    const [searchQuery, setSearchQuery] = useState(""); //Buscar item
+    const [purcharseOrder, setPurcharseOrder] = useState([]);
+    const [rowCountState, setRowCountState] = useState(0);
+    const [paginationModel, setPaginationModel] = useState({
+        page: 0,
+        pageSize: PAGE_SIZE,
+    }); //Paginación
+    const [isLoading, setIsLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchActive, setIsSearchActive] = useState(false);
 
-    //Columnas de la tabla
+    // Normaliza los datos recibidos del backend
+    const normalizeRows = (data) => {
+        return data.map((row) => ({
+            id: row.id, // Siempre incluir un `id` único
+            cub_id: row.cub?.id || "",
+            cub_identificacion: row.cub?.identificacion || "",
+            cub_nombre: row.cub?.nombre || "",
+            cub_apellido: row.cub?.apellido || "",
+            valor_total: parseFloat(row?.valor_total) || 0,
+            fecha_registro: row?.fecha_registro,
+        }));
+    }
+
+    // Configuración de las columnas del DataGrid
     const columns = [
-        { dataField: "id", text: "Order ID" },
-        { dataField: "fecha_registro", text: "Fecha de Registro" },
+        { field: "id", headerName: "ORDER ID", flex: 1 },
+        { field: "fecha_registro", headerName: "FECHA DE REGISTRO", flex: 1 },
+        { field: "cub_id", headerName: "CUB", flex: 1 },
+        { field: "cub_identificacion", headerName: "DOCUMENTO", flex: 1 },
         {
-            dataField: "cub.id",
-            text: "CUB",
-            formatter: (cell, row) => row?.cub?.id // Accede a `cub.id`
+            field: "valor_total", headerName: "VALOR TOTAL", flex: 1,
+            valueFormatter: (params) => `$${params.toLocaleString("es-CO")}`,
         },
         {
-            dataField: "cub.identificacion",
-            text: "DOCUMENTO",
-            formatter: (cell, row) => row.cub.identificacion // Accede a `cub.identificacion`
-        },
-        {
-            dataField: "valor_total",
-            text: "Valor Total",
-            formatter: (cell) => {
-                const valorFormateado = parseInt(cell).toLocaleString('es-CO');
-                return `$${valorFormateado}`;
-            }
-        },
-        {
-            dataField: "delete",
-            text: "Acciones",
-            formatter: (cell, row) => (
+            field: "actions", headerName: "ACCIONES", flex: 1,
+            renderCell: (params) => (
                 <FaTrash
                     style={{ cursor: "pointer", color: "red" }}
-                    onClick={() => handleDeleteClick(row.id)} // Llama a la función con el ID de la fila
+                    onClick={() => handleDeleteClick(params.row.id)}
                 />
             ),
+            sortable: false,
+            filterable: false,
         },
     ];
 
-    //Obtiene la data inicial y pagina
-    const getPurcharseOrder = async (pageNumber = 1, documentId = "") => {
+    // Obtener órdenes de compra
+    const getPurcharseOrder = async () => {
         setIsLoading(true);
         try {
-            const url = buildUrl(pageNumber, documentId);
-            const response = await fetchPurchaseOrders(url);
+            const { page, pageSize } = paginationModel;
+            const url = buildUrl(page + 1, pageSize, isSearchActive ? searchQuery : "");
 
-            if (response.status === StatusEnum.OK) {
-                updateOrderData(response.data, pageNumber);
+            const { status, data } = await fetchPurchaseOrders(url);
+            if (status === StatusEnum.OK) {
+                updateOrderData(data);
             } else {
-                showAlert("Error", "Error al obtener las órdenes de compra");
+                showError("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
             console.error("Error obteniendo las órdenes de compra:", error);
+            showError("Error al comunicarse con el servidor");
         } finally {
             setIsLoading(false);
+            setIsSearchActive(false);
         }
     };
 
-    const buildUrl = (pageNumber, documentId) => {
-        return documentId
-            ? `?cedula=${documentId}&page=${pageNumber}`
-            : `?page=${pageNumber}`;
-    }
+    //
+    const buildUrl = (page, size, cedula = "") => {
+        const params = new URLSearchParams({
+            page,
+            size,
+            ...(cedula && { cedula }),
+        });
+        return `?${params.toString()}`;
+    };
 
     // Función para llamar al servicio de órdenes de compra
     const fetchPurchaseOrders = async (url) => {
         return await purchaseOrderServices.getAll(url);
     };
 
-// Actualizar los datos en el estado después de la respuesta exitosa
-    const updateOrderData = (data, pageNumber) => {
-        setPurcharseOrder(data.results);
-        setTotalSize(data.count);
-        setPage(pageNumber);
+    // Actualizar los datos en el estado después de la respuesta exitosa
+    const updateOrderData = (data) => {
+        setPurcharseOrder(normalizeRows(data.results));
+        setRowCountState(data.count);
     };
 
+    //
     const showAlert = (title, message) => {
         Swal.fire({
             title: title,
+            text: message,
+            icon: 'success',
+            width: 300,
+            heightAuto: true,
+        });
+    };
+
+    // Muestra un error con SweetAlert
+    const showError = (message) => {
+        Swal.fire({
+            title: "Error",
             text: message,
             icon: "error",
             width: 300,
@@ -108,78 +132,56 @@ export const OrderReport = () => {
         });
     };
 
-    //Recibe la pagina a mostrar
-    const handleTableChange = (type, { page }) => {
-        if (type === "pagination") {
-            setPage(page);
-            getPurcharseOrder(page);
-        }
-    };
-
-    // Función para abrir el modal de confirmación
+    // Maneja el clic en el ícono de eliminación
     const handleDeleteClick = (id) => {
-        setSelectedId(id); // Guarda el ID del elemento a eliminar
-        setShowModal(true); // Muestra el modal
+        setSelectedId(id);
+        setShowModal(true);
     };
 
-    // Función para cerrar el modal
+    // Cierra el modal de confirmación
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedId(null);
     };
 
-    // Función para confirmar la eliminación
+    // Confirma la eliminación de un registro
     const handleConfirmDelete = async () => {
         try {
-            const { status} = await purchaseOrderServices.removeOrder(selectedId);
-
-            if(status === StatusEnum.NO_CONTENT) {
-                Swal.fire({
-                    title: 'Bien hecho!',
-                    html: 'Orden elimnada exitosamente!',
-                    icon: 'success',
-                    width: 300,
-                    heightAuto: true
-                });
-                getPurcharseOrder();
-                handleCloseModal()
+            const { status } = await purchaseOrderServices.removeOrder(selectedId);
+            if (status === StatusEnum.NO_CONTENT) {
+                showAlert("Bien hecho!", "Orden eliminada exitosamente!");
+                await getPurcharseOrder();
+                handleCloseModal();
             }
         } catch (error) {
             console.error("Error al eliminar el elemento:", error);
+            showError("No se pudo eliminar la orden");
         }
     };
 
-    //Busqueda
-    const handleSearchQueryChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
+    // Actualiza el valor del campo de búsqueda
+    const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
 
-    // Función para ejecutar la búsqueda al hacer clic en "Buscar"
+    // Realiza la búsqueda
     const handleSearch = () => {
         if (searchQuery.length >= 5) {
-            getPurcharseOrder(1, searchQuery); // Busca con el valor de cédula
-        }
-
-        if(searchQuery.length < 5) {
-            Swal.fire({
-                title: "Error",
-                text: "El valor a buscar debe ser mayor a 5 caracteres",
-                icon: "error",
-                width: 300,
-                heightAuto: true,
-            });
+            setPaginationModel({ ...paginationModel, page: 0 }); // Cambia la página
+            setIsSearchActive(true); // Marca como búsqueda activa
+        } else {
+            showError("El valor a buscar debe tener al menos 5 caracteres");
         }
     };
 
-    // Función para limpiar la búsqueda
+    // Limpia la búsqueda
     const handleClearSearch = () => {
         setSearchQuery("");
-        getPurcharseOrder(1);
+        setPaginationModel({ page: 0, pageSize: PAGE_SIZE });
     };
 
+    // Ejecuta la consulta inicial al cargar el componente
     useEffect(() => {
-        getPurcharseOrder(1)
-    }, []);
+        getPurcharseOrder();
+    }, [paginationModel]);
 
     return (
         <>
@@ -191,13 +193,6 @@ export const OrderReport = () => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
-
                 <div className="container mt-lg-5">
                     <div className="d-flex flex-wrap align-items-center mt-3 mb-3">
                         <input
@@ -205,7 +200,7 @@ export const OrderReport = () => {
                             placeholder="Buscar..."
                             value={searchQuery}
                             onChange={handleSearchQueryChange}
-                            className="input-responsive me-2 mb-2 mb-md-0" // Clase personalizada para el input
+                            className="input-responsive me-2 mb-2 mb-md-0"
                         />
                         <Button variant="primary" onClick={handleSearch} className="button-order-responsive me-2 mb-2 mb-md-0">
                             Buscar
@@ -215,27 +210,49 @@ export const OrderReport = () => {
                         </Button>
                     </div>
 
-                    <div className="table-responsive mt-3">
-                        <BootstrapTable
-                            keyField="id"
-                            data={purcharseOrder}
-                            columns={columns}
-                            pagination={paginationFactory({
-                                page,
-                                sizePerPage,
-                                totalSize,
-                                hideSizePerPage: true, // Oculta el selector de tamaño de página
-                                withFirstAndLast: true, // Oculta los botones de primera y última página
-                            })}
-                            remote
-                            onTableChange={handleTableChange}
-                            wrapperClasses="pagination-buttons"
+                    <div className="responsive-container">
+                        <DataGrid
+                            rows={purcharseOrder}
+                            columns={columns.map((col) => ({
+                                ...col,
+                                flex: col.flex || 1,
+                                minWidth: 150,
+                            }))}
+                            rowCount={rowCountState}
+                            loading={isLoading}
+                            paginationModel={paginationModel}
+                            onPaginationModelChange={setPaginationModel}
+                            paginationMode="server"
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
                         />
                     </div>
                 </div>
 
-
-                {/* Modal de Confirmación */}
                 <Modal show={showModal} onHide={handleCloseModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>Confirmación</Modal.Title>

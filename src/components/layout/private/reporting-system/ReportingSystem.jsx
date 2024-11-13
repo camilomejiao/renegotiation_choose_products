@@ -56,7 +56,7 @@ export const ReportingSystem = () => {
     //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const {data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userService.userInformation(cubId);
             if(status === StatusEnum.OK) {
                 setUserData(data);
             }
