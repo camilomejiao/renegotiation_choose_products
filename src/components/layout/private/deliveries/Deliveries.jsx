@@ -15,7 +15,7 @@ import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.pn
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
-import {deliveriesServices} from "../../../../helpers/services/DeliveriesServices";
+import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
 
 //Css
 import './Deliveries.css';
@@ -26,10 +26,8 @@ import {authService} from "../../../../helpers/services/Auth";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
-    { id: 0, label: "SIN DEFINIR" },
-    { id: 1, label: "ENTREGADO" },
-    { id: 2, label: "PENDIENTE POR ENTREGAR" },
-    { id: 3, label: "ENTREGA PARCIAL" }
+    { id: 0, label: "NO ENTREGADO" },
+    { id: 1, label: "ENTREGADO" }
 ];
 
 export const Deliveries = () => {
@@ -38,7 +36,8 @@ export const Deliveries = () => {
     const params = useParams();
     const deliveryReportRef = useRef();
 
-    const [supplier, setSupplier] = useState('');
+    const [suppliers, setSuppliers] = useState([]);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [listDeliveriesToUser, setListDeliveriesToUser] = useState([]);
     const [showDeliveryForm, setShowDeliveryForm] = useState(false);
     const [deliveryProducts, setDeliveryProducts] = useState([]);
@@ -46,11 +45,21 @@ export const Deliveries = () => {
     const [isReadyToPrintDeliveryInformation, setIsReadyToPrintDeliveryInformation] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    //Trae el id de la compañia
+    //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
-            const itemId = await authService.getSupplierId();
-            setSupplier(itemId);
+            if (userAuth.rol_id === 3) {
+                const { status, data } = await deliveriesServices.getSuppliers(params.id);
+                if (status === StatusEnum.OK) {
+                    setSuppliers(data);
+                }
+            }
+
+            if (userAuth.rol_id === 2) {
+                const itemId = await authService.getSupplierId();
+                const singleSupplier = [{ id: itemId }];
+                setSuppliers(singleSupplier);
+            }
         } catch (error) {
             console.error("Error obteniendo proveedores:", error);
         }
@@ -70,11 +79,23 @@ export const Deliveries = () => {
 
     //Crear entrega
     const handleCreateDeliveries = async () => {
+        if (!selectedSupplier && userAuth.rol_id === 3) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Debe escoger al menos una empresa',
+                icon: 'error',
+                width: 300,
+                heightAuto: true
+            });
+            return;
+        }
         setListDeliveriesToUser([]);
         setShowDeliveryForm(true);
 
+        const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
+
         try {
-            const { data, status} = await deliveriesServices.productsToBeDelivered(supplier, params.id);
+            const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
             if (status === StatusEnum.OK) {
                 const updatedData = data.map(product => ({
@@ -196,7 +217,9 @@ export const Deliveries = () => {
                 estado: prod.estado
             }));
 
-            const {data, status} = await deliveriesServices.saveProducts(supplier, params.id, dataSaveProducts);
+            const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
+
+            const {data, status} = await deliveriesServices.saveProducts(dataSupplier, params.id, dataSaveProducts);
             if(status === StatusEnum.OK) {
                 showAlert('Éxito', 'Productos entregados correctamente.')
                 window.location.reload();
@@ -261,20 +284,31 @@ export const Deliveries = () => {
                     </div>
                 </div>
 
-                {userAuth.rol_id === 2 &&(
-                    <div className="deliveries-banner">
-                        <Container>
-                            <Row className="justify-content-start align-items-center mt-4">
-                                <Col xs={12} className="d-flex justify-content-md-start justify-content-center">
-                                    <button onClick={handleCreateDeliveries} className="deliveries-button deliveries">
-                                        <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                        CREAR ENTREGAS
-                                    </button>
+                <div className="deliveries-banner">
+                    <Container>
+                        <Row className="justify-content-start align-items-center mt-4">
+                            {userAuth.rol_id === 3 && (
+                                <Col xs={12} md={6} className="d-flex align-items-center">
+                                    <Select
+                                        value={selectedSupplier}
+                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                        options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
+                                        placeholder="Selecciona una compañía"
+                                        classNamePrefix="custom-select"
+                                        className="custom-select w-100"
+                                    />
                                 </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                )}
+                            )}
+                            <Col xs={12} md={6} className="d-flex align-items-center justify-content-md-start justify-content-center">
+                                <button onClick={handleCreateDeliveries} className="deliveries-button deliveries d-flex align-items-center">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                    CREAR ENTREGAS
+                                </button>
+                            </Col>
+                        </Row>
+
+                    </Container>
+                </div>
 
                 {isLoading && (
                     <div className="spinner-container">
@@ -285,12 +319,12 @@ export const Deliveries = () => {
 
                 <div className="deliveries-info">
                     <Container>
-                        {listDeliveriesToUser.length > 0 && !showDeliveryForm && (
+                        {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
                             <div className="table-responsive">
                                 <Table bordered hover>
                                     <thead style={{ backgroundColor: "#40A581", color: "white" }}>
                                         <tr>
-                                            <th>COD. ENTREGA</th>
+                                            <th>N° ENTREGA</th>
                                             <th>FECHA</th>
                                             <th>PROVEEDOR</th>
                                             <th>EVIDENCIAS</th>
@@ -338,6 +372,12 @@ export const Deliveries = () => {
                                     </tbody>
                                 </Table>
                             </div>
+                        ) : (
+                            !showDeliveryForm && (
+                                <div className="text-center mt-4">
+                                    <p>No se han realizado entregas.</p>
+                                </div>
+                            )
                         )}
 
                         {showDeliveryForm && (

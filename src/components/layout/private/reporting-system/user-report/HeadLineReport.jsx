@@ -4,7 +4,7 @@ export const HeadLineReport = ({dataReport}) => {
     console.log('dataReport: ', dataReport);
 
     const totalSum = Object.keys(dataReport?.proveedores || {}).reduce((acc, key) => {
-        const proveedor = dataReport.proveedores[key];
+        const proveedor = dataReport?.proveedores[key];
         const totalProductos = Object.keys(proveedor.productos).reduce((productoAcc, productoKey) => {
             const producto = proveedor.productos[productoKey];
             return productoAcc + producto.total; // Sumar el total de cada producto
@@ -53,32 +53,32 @@ export const HeadLineReport = ({dataReport}) => {
                     <thead>
                         <tr>
                             <td style={{ border: '1px solid black' }}><strong>CUB</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport.cub}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cub}</td>
                             <td style={{ border: '1px solid black' }}><strong>NOMBRE TITULAR:</strong></td>
-                            <td style={{ width: '20%', border: '1px solid black', textAlign: 'center' }}>{dataReport.nombre}</td>
+                            <td style={{ width: '20%', border: '1px solid black', textAlign: 'center' }}>{dataReport?.nombre}</td>
                             <td style={{ border: '1px solid black' }}><strong>No. CÉDULA:</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport.cedula}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cedula}</td>
                         </tr>
                         <tr>
                             <td style={{ border: '1px solid black' }}><strong>Departamento</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport.departamento}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.departamento}</td>
                             <td style={{ border: '1px solid black' }}><strong>Municipio</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport.municipio}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.municipio}</td>
                             <td style={{ border: '1px solid black' }}><strong>VEREDA / TERRITORIO COLECTIVO ÉTNICO:</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport.vereda}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.vereda}</td>
                         </tr>
                         <tr>
                             <td style={{ border: '1px solid black' }}><strong>Línea Productiva Seleccionada</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport.linea}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport?.linea}</td>
                         </tr>
                         <tr>
                             <td style={{ width: '18%', border: '1px solid black' }}><strong>SALDO TOTAL PLAN DE INVERSIÓN:</strong></td>
-                            <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport.saldo).toLocaleString()}</td>
+                            <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport?.saldo).toLocaleString()}</td>
                             <td style={{ width: '15%', border: '1px solid black' }}><strong>VALOR TOTAL INVERTIDO</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport.invertido).toLocaleString()}</td>
+                            <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport?.invertido).toLocaleString()}</td>
                             <td style={{ width: '25%', border: '1px solid black' }}><strong>SALDO FINAL DESPUES DE INVERSIÓN :</strong></td>
                             <td style={{ width: '12%', border: '1px solid black', textAlign: 'center' }}>
-                                $ {parseFloat(dataReport.saldo - dataReport.invertido).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                $ {parseFloat(dataReport?.saldo - dataReport?.invertido).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                             </td>
                         </tr>
                     </thead>
@@ -110,7 +110,7 @@ export const HeadLineReport = ({dataReport}) => {
                     </thead>
                     <tbody>
                         {Object.keys(dataReport?.proveedores || {}).map((key, index) => {
-                        const proveedor = dataReport.proveedores[key];
+                        const proveedor = dataReport?.proveedores[key];
                             return Object.keys(proveedor.productos).map((productoKey, productoIndex) => {
                                 const producto = proveedor.productos[productoKey];
                                 return (
@@ -182,7 +182,7 @@ export const HeadLineReport = ({dataReport}) => {
                     <thead>
                         <tr>
                             <td style={{ width: '10%', textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black' }}>Firma  y cédula del titular</td>
-                            <td style={{ width: '6%', textAlign: 'left', borderRight: '1px solid black' }}>C.C: {dataReport.cedula}</td>
+                            <td style={{ width: '6%', textAlign: 'left', borderRight: '1px solid black' }}>C.C: {dataReport?.cedula}</td>
                             <td style={{ width: '8%', textAlign: 'left', borderRight: '1px solid black' }}>Huella</td>
                             <td style={{ width: '10%', height: '100px', textAlign: 'left', borderRight: '1px solid black' }}>&nbsp;</td>
                             <td style={{ width: '10%', textAlign: 'left', borderRight: '1px solid black' }}>Firma y cédula del Técnico</td>
@@ -190,7 +190,7 @@ export const HeadLineReport = ({dataReport}) => {
                         </tr>
                         <tr>
                             <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del titular:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan="3">{dataReport.nombre}</td>
+                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan="3">{dataReport?.nombre}</td>
                             <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del Técnico:</td>
                             <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan="2">&nbsp;</td>
                         </tr>

@@ -330,18 +330,18 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Cargo:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Cargo:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Cargo:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Profesión:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Profesión:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Profesión:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>TP:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>TP:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>TP:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
                     </thead>
                 </table>

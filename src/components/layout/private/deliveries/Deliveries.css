@@ -57,6 +57,18 @@
     width: auto;
 }
 
+.custom-select {
+    margin-right: 10px;
+}
+
+.deliveries-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .deliveries-banner {

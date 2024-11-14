@@ -22,6 +22,7 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 import "./CompanyReport.css";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
+import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
 
 
 export const CompanyReport = () => {
@@ -115,6 +116,22 @@ export const CompanyReport = () => {
         });
     }
 
+    const handleDownloadInstructions = () => {
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/2024-11-07_PAGOS_PROVEEDORES.pdf", "_blank");
+    };
+
+    const handleDocumentsForPaymentRequest = () => {
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/DOCUMENTOS_ENVIO_SOLICITUD_PAGO.pdf", "_blank");
+    };
+
+    const handleCollectionAccountFormat = () => {
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/FORMATO_CUENTA_DE_COBRO_PN.xlsx", "_blank");
+    };
+
+    const handleAccountList = () => {
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/RELACION_CUENTAS.xlsx", "_blank");
+    };
+
     useEffect(() => {
         if (isReadyToPrint && companyInformation) {
             printReport(); // Imprime cuando los datos estén listos
@@ -177,23 +194,36 @@ export const CompanyReport = () => {
                                     REPORTE GENERAL
                                 </button>
                             </Col>
+
                         </Row>
                     </Container>
                 </div>
 
                 <div className="banner-reports">
                     <Container>
-                        <Row className="justify-content-center align-items-center">
-
-
-                            {/* Botón Reporte General */}
-                            <Col md={4} className="d-flex justify-content-center">
-                                <button
-                                    onClick={handlePrintCompanyReport}
-                                    className="report-button general"
-                                >
+                        <Row className="justify-content-around">
+                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                                <button onClick={handleDownloadInstructions} className="reporting-system-button general">
                                     <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                    REPORTE GENERAL
+                                    INSTRUCTIVO PARA PAGOS
+                                </button>
+                            </Col>
+                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
+                                <button onClick={handleDocumentsForPaymentRequest} className="reporting-system-button deliveries">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                    DOCUMENTOS PARA SOLICITUD DE PAGO
+                                </button>
+                            </Col>
+                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                                <button onClick={handleCollectionAccountFormat} className="reporting-system-button unique">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                   FORMATO DE CUENTA DE COBRO
+                                </button>
+                            </Col>
+                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
+                                <button onClick={handleAccountList} className="reporting-system-button deliveries">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                    REPORTE DE EVIDENCIAS
                                 </button>
                             </Col>
                         </Row>

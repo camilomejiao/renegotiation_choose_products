@@ -27,7 +27,6 @@ import {StatusEnum} from "../../../../helpers/GlobalEnum";
 
 
 export const ReportingSystem = () => {
-    const { userAuth } = useOutletContext();
     const params = useParams();
     const navigate = useNavigate();
 
@@ -240,9 +239,11 @@ export const ReportingSystem = () => {
                     <div ref={authorizationRef}>
                         <Authorization userData={userData} opt1={option1} opt2={option2} opt3={option3} />
                     </div>
-                    <div ref={headlineReportRef}>
-                        <HeadLineReport dataReport={headLineInformation} />
-                    </div>
+                    {isReadyToPrintHeadLineInformation && (
+                        <div ref={headlineReportRef}>
+                            <HeadLineReport dataReport={headLineInformation} />
+                        </div>
+                    )}
                 </div>
 
                 <Footer />
