@@ -1,7 +1,7 @@
 FROM node:18.19-alpine3.19 as builder
 WORKDIR /source
 COPY package.json /source/
-RUN npm install --force
+RUN npm install
 # COPY .env /source/
 COPY . /source/
 RUN npm run build
