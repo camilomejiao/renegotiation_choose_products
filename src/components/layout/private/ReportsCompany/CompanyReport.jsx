@@ -223,7 +223,7 @@ export const CompanyReport = () => {
                             <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
                                 <button onClick={handleAccountList} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    REPORTE DE EVIDENCIAS
+                                    SOLICITUD DE PAGO
                                 </button>
                             </Col>
                         </Row>
