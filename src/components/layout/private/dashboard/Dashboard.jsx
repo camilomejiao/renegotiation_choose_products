@@ -8,6 +8,9 @@ import './Dashboard.css';
 import { Footer } from "../../shared/footer/Footer";
 import { SearchUserForm } from "../search-user-form/SearchUserForm";
 
+//Enums
+import { RolesEnum } from "../../../../helpers/GlobalEnum";
+
 export const Dashboard = () => {
 
     const { userAuth } = useOutletContext();
@@ -16,7 +19,7 @@ export const Dashboard = () => {
     const handleSearchSuccess = (userData) => {
         const { id } = userData;
 
-        userAuth.rol_id === 2
+        userAuth.rol_id === RolesEnum.DELIVER
             ? navigate(`/admin/add_products/${id}`)
             : navigate(`/admin/reports/${id}`);
     };

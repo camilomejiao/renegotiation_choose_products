@@ -43,7 +43,21 @@ export const AddProducts = () => {
     const [isReportLoading, setIsReportLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    //
+    //Obtener la información del usuario
+    const getUserInformation = async (cubId) => {
+        try {
+            const { data, status} = await userService.userInformation(cubId);
+
+            if(status === StatusEnum.OK) {
+                setUserData(data);
+                setSaldoRestante(data.monto_proveedores);
+            }
+        } catch (error) {
+            handleError(error, 'Error buscando productos:');
+        }
+    }
+
+    //Buscar producto
     const getOptionsProducts = useCallback(
         debounce(async (searchWord) => {
             if (searchWord.length < 3) {
@@ -53,7 +67,6 @@ export const AddProducts = () => {
 
             try {
                 const { data, status } = await productsServices.searchProduct(searchWord);
-                console.log('data: ', data);
                 if (status === StatusEnum.OK) {
                     const formattedOptions = data.map((product) => ({
                         value: product.id,
@@ -68,19 +81,7 @@ export const AddProducts = () => {
         []
     );
 
-    const getUserInformation = async (cubId) => {
-        try {
-            const { data, status} = await userService.userInformation(cubId);
-
-            if(status === StatusEnum.OK) {
-                setUserData(data);
-                setSaldoRestante(data.monto_proveedores);
-            }
-        } catch (error) {
-            handleError(error, 'Error buscando productos:');
-        }
-    }
-
+    //Adicionar item a la tabla
     const addItemToTable = async () => {
         if (selectedItem) {
             try {
@@ -104,23 +105,27 @@ export const AddProducts = () => {
         }
     };
 
+    //
     const handleQuantityChange = (index, value) => {
         const newItems = [...items];
         newItems[index].quantity = value;
         setItems(newItems);
     };
 
+    //
     const handleDiscountChange = (index, value) => {
         const newItems = [...items];
         newItems[index].discount = value;
         setItems(newItems);
     };
 
+    //Eliminar un itema de la tabla
     const handleDeleteItem = (index) => {
         const newItems = items.filter((_, i) => i !== index);
         setItems(newItems);
     };
 
+    //
     const limitToFourDecimals = (value) => {
         // Utilizamos una expresión regular para permitir números con hasta 4 decimales
         const regex = /^\d*\.?\d{0,4}$/;
@@ -134,7 +139,7 @@ export const AddProducts = () => {
         return parseFloat(value).toFixed(4);
     };
 
-    //Guardar la data
+    //Enviar los productos
     const handleSaveProduct = async () => {
         const itemsWithTotal = calculateItemsWithTotal();
         const dataToSend = buildDataToSend(itemsWithTotal);
@@ -173,6 +178,7 @@ export const AddProducts = () => {
 
     //Maneja la respuesta del servicio y muestra la alerta correspondiente
     const handleSaveResponse = (data, status) => {
+        console.log(data, status);
         if (status === StatusEnum.CREATE) {
             setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
             showAlert('Bien hecho!', 'Productos guardados exitosamente', 'success');
@@ -213,7 +219,7 @@ export const AddProducts = () => {
     const getHeadlineReport = async (cubId) => {
         setIsLoading(true);
         try {
-            const {data, status} = await reportServices.companyAndUserReport(cubId);
+            const { data, status} = await reportServices.companyAndUserReport(cubId);
             if(status === StatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReportLoading(true);
@@ -268,17 +274,17 @@ export const AddProducts = () => {
     }, [items]);
 
     useEffect(() => {
-        if(params.id){
-            getUserInformation(params.id);
-        }
-    },[]);
-
-    useEffect(() => {
         if(isReportLoading) {
             handlePrintOrder();
             setIsReportLoading(false);
         }
     }, [isReportLoading]);
+
+    useEffect(() => {
+        if(params.id){
+            getUserInformation(params.id);
+        }
+    },[]);
 
     return (
         <>

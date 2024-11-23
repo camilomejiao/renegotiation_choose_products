@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
-import { FaTrash } from "react-icons/fa";
+import {FaPencilAlt, FaTrash} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Image
@@ -31,19 +31,6 @@ export const OrderReport = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
 
-    // Normaliza los datos recibidos del backend
-    const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row.id, // Siempre incluir un `id` único
-            cub_id: row.cub?.id || "",
-            cub_identificacion: row.cub?.identificacion || "",
-            cub_nombre: row.cub?.nombre || "",
-            cub_apellido: row.cub?.apellido || "",
-            valor_total: parseFloat(row?.valor_total) || 0,
-            fecha_registro: row?.fecha_registro,
-        }));
-    }
-
     // Configuración de las columnas del DataGrid
     const columns = [
         { field: "id", headerName: "ORDER ID", flex: 1 },
@@ -55,16 +42,24 @@ export const OrderReport = () => {
             valueFormatter: (params) => `$${params.toLocaleString("es-CO")}`,
         },
         {
-            field: "actions", headerName: "ACCIONES", flex: 1,
+            field: "actions",
+            headerName: "ACCIONES",
+            flex: 1,
             renderCell: (params) => (
-                <FaTrash
-                    style={{ cursor: "pointer", color: "red" }}
-                    onClick={() => handleDeleteClick(params.row.id)}
-                />
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                    <FaPencilAlt
+                        style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}
+                        onClick={() => handleEditClick(params.row.id)}
+                    />
+                    <FaTrash
+                        style={{ cursor: "pointer", color: "red" }}
+                        onClick={() => handleDeleteClick(params.row.id)}
+                    />
+                </div>
             ),
             sortable: false,
             filterable: false,
-        },
+        }
     ];
 
     // Obtener órdenes de compra
@@ -110,6 +105,19 @@ export const OrderReport = () => {
         setRowCountState(data.count);
     };
 
+    // Normaliza los datos recibidos del backend
+    const normalizeRows = (data) => {
+        return data.map((row) => ({
+            id: row.id,
+            cub_id: row.cub?.id || "",
+            cub_identificacion: row.cub?.identificacion || "",
+            cub_nombre: row.cub?.nombre || "",
+            cub_apellido: row.cub?.apellido || "",
+            valor_total: parseFloat(row?.valor_total) || 0,
+            fecha_registro: row?.fecha_registro,
+        }));
+    }
+
     //
     const showAlert = (title, message) => {
         Swal.fire({
@@ -130,6 +138,11 @@ export const OrderReport = () => {
             width: 300,
             heightAuto: true,
         });
+    };
+
+    // Maneja el clic en el ícono de eliminación
+    const handleEditClick = (id) => {
+        setSelectedId(id);
     };
 
     // Maneja el clic en el ícono de eliminación
@@ -213,11 +226,7 @@ export const OrderReport = () => {
                     <div className="responsive-container">
                         <DataGrid
                             rows={purcharseOrder}
-                            columns={columns.map((col) => ({
-                                ...col,
-                                flex: col.flex || 1,
-                                minWidth: 150,
-                            }))}
+                            columns={columns}
                             rowCount={rowCountState}
                             loading={isLoading}
                             paginationModel={paginationModel}

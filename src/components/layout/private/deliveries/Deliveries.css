@@ -49,6 +49,22 @@
     flex-wrap: wrap;
 }
 
+/* Dropdown de react-select */
+.css-26l3qy-menu { /* Clase estándar del menú de react-select */
+    z-index: 1000 !important; /* Asegura que el menú sea visible */
+}
+
+.css-1okebmr-indicatorSeparator {
+    display: none; /* Oculta la línea separadora de los indicadores */
+}
+
+/* Control de react-select */
+.custom-select__control {
+    width: 100% !important;
+    font-size: 14px;
+    z-index: 1000 !important;
+}
+
 /* Estilo general para los botones responsivos */
 .responsive-button {
     padding: 12px 24px;
@@ -57,7 +73,7 @@
     width: auto;
 }
 
-.custom-select {
+.custom-dropdown { /* Renombrado de custom-select */
     margin-right: 10px;
 }
 
@@ -75,7 +91,6 @@
         padding: 10px;
     }
 
-    /* Ajusta el ancho del botón y el select en tabletas */
     .deliveries-button {
         font-size: 14px;
         padding: 8px 16px;
@@ -85,6 +100,7 @@
 
     .custom-select__control {
         width: 90%;
+        font-size: 12px;
     }
 
     .button-container {
@@ -101,7 +117,6 @@
 }
 
 @media (max-width: 576px) {
-    /* Ajuste adicional en pantallas muy pequeñas */
     .deliveries-button {
         font-size: 12px;
         padding: 6px 12px;
@@ -122,15 +137,15 @@
     }
 }
 
-/**/
+/* Botones */
 .button-grid-cell {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
-    gap: 10px; /* Espaciado entre botones */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
     padding: 10px;
 }
 
-/* Estilo de los botones */
+/* Custom file input */
 .custom-file-label {
     display: flex;
     align-items: center;
@@ -140,17 +155,16 @@
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px; /* Tamaño de fuente para botones medianos */
+    font-size: 16px;
     font-weight: bold;
     text-align: center;
-    width: 100%; /* Ocupa el ancho completo de la celda */
-    max-width: 150px; /* Ancho máximo del botón */
+    width: 100%;
 }
 
 .custom-file-input {
-    display: none; /* Oculta el input file original */
+    display: none;
 }
 
 .custom-file-label:hover {
-    background-color: #0056b3; /* Color al pasar el mouse */
+    background-color: #0056b3;
 }

@@ -8,6 +8,7 @@ export const RouterEnum = {
     //Entregas
     SearchUserForDeliveries: 'search-user-for-deliveries',
     Deliveries: 'deliveries/:id',
+    EditDeliveryOrder: 'edit-delivery-order/:id',
 
     //Reportes
     Reports: 'reports/:id',

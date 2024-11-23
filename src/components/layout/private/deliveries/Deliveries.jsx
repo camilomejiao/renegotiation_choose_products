@@ -1,39 +1,43 @@
-import {useEffect, useRef, useState} from "react";
-import {useOutletContext, useParams} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import Select from "react-select";
-import {Button, Col, Container, Form, Row, Spinner, Table} from "react-bootstrap";
-import {FaFilePdf} from "react-icons/fa";
+import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { FaFilePdf, FaFileUpload, FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import printJS from "print-js";
+import { DataGrid } from "@mui/x-data-grid";
 
 //Components
-import {Footer} from "../../shared/footer/Footer";
-import {DeliveryReport} from "./delivery-report/DeliveryReport";
+import { Footer } from "../../shared/footer/Footer";
+import { DeliveryReport } from "./delivery-report/DeliveryReport";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
+import { authService } from "../../../../helpers/services/Auth";
 import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
 
 //Css
 import './Deliveries.css';
 
 //Enum
-import {StatusEnum} from "../../../../helpers/GlobalEnum";
-import {authService} from "../../../../helpers/services/Auth";
+import { RolesEnum, StatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
     { id: 0, label: "NO ENTREGADO" },
-    { id: 1, label: "ENTREGADO" }
+    { id: 1, label: "ENTREGADO" },
+    //{ id: 2, label: "PENDIENTE POR ENTREGAR" },
+    { id: 3, label: "ENTREGA PARCIAL" }
 ];
 
 export const Deliveries = () => {
 
     const { userAuth } = useOutletContext();
     const params = useParams();
+    const navigate = useNavigate();
     const deliveryReportRef = useRef();
 
     const [suppliers, setSuppliers] = useState([]);
@@ -48,14 +52,14 @@ export const Deliveries = () => {
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
-            if (userAuth.rol_id === 3) {
+            if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) {
                 const { status, data } = await deliveriesServices.getSuppliers(params.id);
                 if (status === StatusEnum.OK) {
                     setSuppliers(data);
                 }
             }
 
-            if (userAuth.rol_id === 2) {
+            if (userAuth.rol_id === RolesEnum.DELIVER) {
                 const itemId = await authService.getSupplierId();
                 const singleSupplier = [{ id: itemId }];
                 setSuppliers(singleSupplier);
@@ -70,16 +74,267 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === StatusEnum.OK) {
-                setListDeliveriesToUser(data);
+                setListDeliveriesToUser(normalizeDeliveryRows(data));
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
         }
     }
 
+    // Definición de las columnas de entregas
+    const columnsDeliveries = [
+        { field: "id", headerName: "N° ENTREGA", width: 150 },
+        { field: "date", headerName: "FECHA", width: 150 },
+        { field: "supplier", headerName: "PROVEEDOR", width: 200 },
+        {
+            field: "evidence",
+            headerName: "EVIDENCIAS",
+            width: 300,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                    }}
+                >
+                    {[1, 2, 3, 4].map((fileNumber) => (
+                        <Button
+                            key={fileNumber}
+                            variant="primary"
+                            size="sm"
+                            onClick={() => {
+                                const input = document.createElement("input");
+                                input.type = "file";
+                                input.accept = "image/*";
+                                input.style.display = "none";
+                                input.onchange = (e) =>
+                                    handleFileChange(
+                                        e,
+                                        params.row.id,
+                                        `imagen${fileNumber}`
+                                    );
+                                document.body.appendChild(input);
+                                input.click();
+                                document.body.removeChild(input);
+                            }}
+                            style={{
+                                flex: "none", // Elimina el comportamiento de expansión automática
+                                width: "100px", // Controla el ancho del botón
+                                textAlign: "center",
+                                padding: "2px 4px", // Reduce el padding para menor altura
+                                fontSize: "12px", // Ajusta el tamaño del texto
+                                lineHeight: "1", // Controla la altura del contenido interno
+                                borderRadius: "12px", // Ajusta el borde para que luzca compacto
+                            }}
+                        >
+                            Imagen {fileNumber} <FaFileUpload />
+                        </Button>
+                    ))}
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "evidencePdf",
+            headerName: "EVIDENCIAS PDF",
+            width: 200,
+            renderCell: (params) => (
+                <div>
+                    <Button
+                        variant="secondary" // Cambia el estilo del botón según tus necesidades
+                        size="sm" // Tamaño pequeño
+                        onClick={() => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "application/pdf";
+                            input.style.display = "none";
+                            input.onchange = (e) =>
+                                handleFileChange(e, params.row.id, "pdf");
+                            document.body.appendChild(input);
+                            input.click();
+                            document.body.removeChild(input);
+                        }}
+                    >
+                        Subir PDF
+                    </Button>
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "generatePdf",
+            headerName: "GENERAR PDF",
+            width: 150,
+            renderCell: (params) => (
+                <div>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() =>
+                            handleDeliveryInformationReport(params.row.id)
+                        }
+                    >
+                        <FaFilePdf />
+                    </Button>
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "actions",
+            headerName: "ACCIONES",
+            width: 150,
+            renderCell: (params) => (
+                <div>
+                    <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() =>
+                            handleEditDelivery(params.row.id)
+                        }
+                        style={{ marginRight: "10px" }}
+                    >
+                        <FaPencilAlt />
+                    </Button>
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                            handleDeleteDelivery(params.row.id)
+                        }
+                    >
+                        <FaTrash />
+                    </Button>
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+    ];
+
+    //
+    const normalizeDeliveryRows = (data) => {
+        return data.map((row) => ({
+            id: row.id,
+            date: row.fecha_creacion.split("T")[0],
+            supplier: row.proveedor,
+        }));
+    }
+
+    //
+    const columnsProductsToBeDelivered = [
+        { field: "id", headerName: "COD", flex: 0.5 }, // Columna pequeña
+        {
+            field: "name",
+            headerName: "NOMBRE",
+            flex: 2, // Más espacio para esta columna
+            headerAlign: "left",
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "description",
+            headerName: "DESCRIPCIÓN",
+            flex: 3, // Aún más espacio para descripciones largas
+            headerAlign: "left",
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left", // Alinea el texto a la izquierda
+                        whiteSpace: "normal", // Permite texto en múltiples líneas
+                        wordWrap: "break-word", // Rompe las palabras largas
+                        overflow: "visible", // Asegura que todo el texto se muestre
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        { field: "amount", headerName: "CANT. SOLICITADA", flex: 1 }, // Columna mediana
+        {
+            field: "quantityToBeDelivered",
+            headerName: "CANT. A ENTREGAR",
+            flex: 1, // Columna de tamaño moderado
+            renderCell: (params) => {
+                return (
+                    <Form.Control
+                        type="number"
+                        className="small-input form-control-sm"
+                        value={params.row.quantityToBeDelivered}
+                        min="0"
+                        onChange={(e) =>
+                            handleQuantityChange(params.row.id, e.target.value)
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "5px",
+                            fontSize: "14px",
+                            cursor: "pointer",
+                        }}
+                    />
+                );
+            },
+        },
+        {
+            field: "state",
+            headerName: "ESTADO",
+            flex: 1.5, // Columna ligeramente más amplia
+            renderCell: (params) => {
+                return (
+                    <select
+                        value={params.row.state} // Estado actual del producto
+                        onChange={(e) =>
+                            handleStatusChange(params.row.id, parseInt(e.target.value))
+                        }
+                        style={{
+                            width: "100%",
+                            padding: "5px",
+                            fontSize: "14px",
+                            borderRadius: "4px",
+                            border: "1px solid #ccc",
+                            backgroundColor: "white",
+                            cursor: "pointer",
+                        }}
+                    >
+                        {deliveryStatus.map((option) => (
+                            <option key={option.id} value={option.id}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                );
+            },
+        },
+    ];
+
+    //
+    const normalizeProductsToBeDeliveredRows = (data) => {
+        return data.map((row) => ({
+            id: row.id,
+            name: row.nombre,
+            description: row.descripcion,
+            amount: row.cantidad,
+            quantityToBeDelivered: row.quantityToDeliver || 0,
+            state: row.estado,
+        }));
+    }
+
     //Crear entrega
     const handleCreateDeliveries = async () => {
-        if (!selectedSupplier && userAuth.rol_id === 3) {
+        if (!selectedSupplier && userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) {
             Swal.fire({
                 title: 'Error',
                 text: 'Debe escoger al menos una empresa',
@@ -103,8 +358,7 @@ export const Deliveries = () => {
                     estado: 1,
                     quantityToDeliver: product.cantidad
                 }));
-
-                setDeliveryProducts(updatedData);
+                setDeliveryProducts(normalizeProductsToBeDeliveredRows(updatedData));
             }
 
             if(status === StatusEnum.BAD_REQUEST) {
@@ -113,6 +367,16 @@ export const Deliveries = () => {
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
         }
+    }
+
+    //
+    const handleEditDelivery = async (id) => {
+        navigate(`/admin/edit-delivery-order/${id}`)
+    }
+
+    //
+    const handleDeleteDelivery = async (id) => {
+
     }
 
     //Guardar evidencias
@@ -188,33 +452,36 @@ export const Deliveries = () => {
         });
     }
 
+    //
     const handleQuantityChange = (id, value) => {
         const newProducts = deliveryProducts.map((product) => {
             if (product.id === id) {
-                return { ...product, quantityToDeliver: value.trim() === '' ? '' : Math.max(0, Number(value)) };
+                return { ...product, quantityToBeDelivered: value.trim() === '' ? '' : Math.max(0, Number(value)) };
             }
             return product;
         });
         setDeliveryProducts(newProducts);
     };
 
+    //
     const handleStatusChange = (id, value) => {
         const newProducts = deliveryProducts.map((product) => {
             if (product.id === id) {
-                return { ...product, estado: value };
+                return { ...product, state: value };
             }
             return product;
         });
         setDeliveryProducts(newProducts);
     };
 
+    //
     const handleSaveProduct = async () => {
         try {
             //
             const dataSaveProducts = deliveryProducts.map(prod => ({
                 producto: prod.id,
-                cantidad: prod.quantityToDeliver,
-                estado: prod.estado
+                cantidad: prod.quantityToBeDelivered,
+                estado: prod.state
             }));
 
             const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
@@ -287,7 +554,7 @@ export const Deliveries = () => {
                 <div className="deliveries-banner">
                     <Container>
                         <Row className="justify-content-start align-items-center mt-4">
-                            {userAuth.rol_id === 3 && (
+                            {userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN && (
                                 <Col xs={12} md={6} className="d-flex align-items-center">
                                     <Select
                                         value={selectedSupplier}
@@ -317,61 +584,47 @@ export const Deliveries = () => {
                     </div>
                 )}
 
-                <div className="deliveries-info">
+                <div className="">
                     <Container>
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
-                            <div className="table-responsive">
-                                <Table bordered hover>
-                                    <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                        <tr>
-                                            <th>N° ENTREGA</th>
-                                            <th>FECHA</th>
-                                            <th>PROVEEDOR</th>
-                                            <th>EVIDENCIAS</th>
-                                            <th>EVIDENCIAS PDF</th>
-                                            <th>GENERAR PDF</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {listDeliveriesToUser.map(delivery => (
-                                        <tr key={delivery?.id}>
-                                            <td>{delivery?.id}</td>
-                                            <td>{delivery.fecha_creacion.split('T')[0]}</td>
-                                            <td>{delivery?.proveedor}</td>
-                                            <td className="button-grid-cell">
-                                                {[1, 2, 3, 4].map(fileNumber => (
-                                                    <label className="custom-file-label" key={fileNumber}>
-                                                        Subir Imagen {fileNumber}
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleFileChange(e, delivery?.id, `imagen${fileNumber}`)}
-                                                            className="custom-file-input"
-                                                        />
-                                                    </label>
-                                                ))}
-                                            </td>
-                                            <td>
-                                                <label className="custom-file-label">
-                                                    Subir PDF
-                                                    <input
-                                                        type="file"
-                                                        accept="application/pdf"
-                                                        onChange={(e) => handleFileChange(e, delivery?.id, 'pdf')}
-                                                        className="custom-file-input"
-                                                    />
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <Button variant="primary" size="sm" onClick={() => handleDeliveryInformationReport(delivery?.id)}>
-                                                    <FaFilePdf />
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </Table>
-                            </div>
+                            <>
+                                <DataGrid
+                                    rows={listDeliveriesToUser}
+                                    columns={columnsDeliveries}
+                                    pageSize={10}
+                                    rowsPerPageOptions={[5, 10, 20]}
+                                    disableColumnMenu
+                                    disableSelectionOnClick
+                                    rowHeight={80}
+                                    sx={{
+                                        "& .MuiDataGrid-columnHeaders": {
+                                            backgroundColor: "#40A581",
+                                            color: "white",
+                                            fontSize: "14px",
+                                        },
+                                        "& .MuiDataGrid-columnHeader": {
+                                            textAlign: "center",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        },
+                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                            backgroundColor: "#40A581 !important",
+                                            color: "white !important",
+                                        },
+                                        "& .MuiDataGrid-cell": {
+                                            fontSize: "14px",
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                            display: "flex",
+                                        },
+                                        "& .MuiDataGrid-row:hover": {
+                                            backgroundColor: "#E8F5E9",
+                                        },
+                                    }}
+                                />
+                            </>
+
                         ) : (
                             !showDeliveryForm && (
                                 <div className="text-center mt-4">
@@ -382,49 +635,50 @@ export const Deliveries = () => {
 
                         {showDeliveryForm && (
                             <>
-                                <div className="table-responsive">
-                                    <Table bordered hover>
-                                        <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                        <tr>
-                                            <th>COD</th>
-                                            <th>NOMBRE</th>
-                                            <th>DESCRIPCIÓN</th>
-                                            <th>CANTIDAD SOLICITADA</th>
-                                            <th>CANTIDAD A ENTREGAR</th>
-                                            <th>ESTADO</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {deliveryProducts.map((product) => (
-                                            <tr  key={product?.id}>
-                                                <td>{product?.id}</td>
-                                                <td style={{textAlign: 'left'}}>{product?.nombre}</td>
-                                                <td style={{textAlign: 'left'}}>{product?.descripcion}</td>
-                                                <td>{product?.cantidad}</td>
-                                                <td>
-                                                    <Form.Control
-                                                        type="number"
-                                                        className="small-input form-control-sm"
-                                                        value={product?.quantityToDeliver !== undefined ? product.quantityToDeliver : product.cantidad}
-                                                        min="0"
-                                                        onChange={(e) => handleQuantityChange(product?.id, e.target.value)}
-                                                    />
-                                                </td>
-                                                <td style={{width: '13%'}}>
-                                                    <Select
-                                                        value={deliveryStatus.find(opt => opt.id === product?.estado )}
-                                                        onChange={(e) => handleStatusChange(product?.id, e.id)}
-                                                        options={deliveryStatus.map((opt) => ({ id: opt.id, label: opt.label }))}
-                                                        placeholder="Selecciona la opción"
-                                                        classNamePrefix="custom-select"
-                                                        className="custom-select"
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </Table>
-                                </div>
+                                <DataGrid
+                                    rows={deliveryProducts}
+                                    columns={columnsProductsToBeDelivered}
+                                    pageSize={5}
+                                    rowsPerPageOptions={[5, 10, 20]}
+                                    disableColumnMenu
+                                    disableSelectionOnClick
+                                    componentsProps={{
+                                        columnHeader: {
+                                            style: {
+                                                textAlign: "left", // Alinea los títulos a la izquierda
+                                                fontWeight: "bold", // Opcional: Aplica un peso específico
+                                                fontSize: "14px", // Ajusta el tamaño de fuente
+                                                wordWrap: "break-word", // Permite que el título se divida en varias líneas
+                                            },
+                                        },
+                                    }}
+                                    sx={{
+                                        "& .MuiDataGrid-columnHeaders": {
+                                            backgroundColor: "#40A581",
+                                            color: "white",
+                                            fontSize: "14px",
+                                        },
+                                        "& .MuiDataGrid-columnHeader": {
+                                            textAlign: "center",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        },
+                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                            backgroundColor: "#40A581 !important",
+                                            color: "white !important",
+                                        },
+                                        "& .MuiDataGrid-cell": {
+                                            fontSize: "14px",
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                            display: "flex",
+                                        },
+                                        "& .MuiDataGrid-row:hover": {
+                                            backgroundColor: "#E8F5E9",
+                                        },
+                                    }}
+                                />
 
                                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button

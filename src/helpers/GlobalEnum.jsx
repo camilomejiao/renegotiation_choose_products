@@ -6,3 +6,10 @@ export const StatusEnum = {
     BAD_REQUEST: 400,
     INTERNAL_SERVER_ERROR: 500,
 }
+
+export const RolesEnum = {
+    ADMIN: 1,
+    DELIVER: 2,
+    MANAGEMENT_TECHNICIAN: 3,
+    AUDITOR: 4
+}
