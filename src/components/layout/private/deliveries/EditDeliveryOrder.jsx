@@ -11,7 +11,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 //Enum
 import { StatusEnum } from "../../../../helpers/GlobalEnum";
 import Swal from "sweetalert2";
-import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
 
 //Opciones para los productos a entregar

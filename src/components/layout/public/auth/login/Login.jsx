@@ -17,7 +17,7 @@ import useAuth from "../../../../../hooks/useAuth";
 
 //Services
 import { authService } from "../../../../../helpers/services/Auth";
-import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
 
 const initialValues = {
     email: "",

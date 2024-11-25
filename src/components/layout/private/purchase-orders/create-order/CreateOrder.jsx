@@ -19,7 +19,7 @@ import { Footer } from "../../../shared/footer/Footer";
 import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 import { UserInformation } from "../../user-information/UserInformation";
 import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
-import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
 
 //Services
 import { userService } from "../../../../../helpers/services/UserServices";

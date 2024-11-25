@@ -11,7 +11,7 @@ import { StatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Css
 import './SearchUserForm.css';
-import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
 export const SearchUserForm = ({ onSearchSuccess }) => {
     const [searchValue, setSearchValue] = useState("");

@@ -22,7 +22,7 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 import "./CompanyReport.css";
 import { format } from "date-fns";
 import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
-import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
 
 export const CompanyReport = () => {

@@ -14,7 +14,7 @@ import { StatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
 import "./OrderReport.css";
-import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
+import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
 import {useNavigate} from "react-router-dom";
 
 const PAGE_SIZE = 10;
