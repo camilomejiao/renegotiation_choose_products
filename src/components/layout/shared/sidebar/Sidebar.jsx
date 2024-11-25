@@ -3,11 +3,11 @@ import { Container, Accordion, Card } from 'react-bootstrap';
 import {
     FaBars,
     FaStore,
-    FaClipboardList,
     FaSignOutAlt,
-    FaHome,
     FaIndustry,
-    FaReceipt, FaTruckMoving
+    FaShoppingCart,
+    FaFileInvoiceDollar,
+    FaChartPie, FaShippingFast, FaUsersSlash, FaUsersCog, FaRegBuilding
 } from 'react-icons/fa';
 import './Sidebar.css';
 import { useNavigate } from "react-router-dom";
@@ -47,8 +47,8 @@ export const Sidebar = ({userAuth}) => {
                     {userAuth.rol_id === 3 && (
                         <div className="dropdown-content">
                             <div className="dropdown-item" onClick={handleApplication}>
-                                <FaStore className="sidebar-icon" />
-                                {isOpen && <span className="sidebar-text">Solicitud</span>}
+                                <FaUsersCog className="sidebar-icon" />
+                                {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
                             </div>
                         </div>
                     )}
@@ -58,26 +58,26 @@ export const Sidebar = ({userAuth}) => {
                             <Card className="accordion-card">
                                 <Accordion.Header>
                                     <div className="accordion-toggle">
-                                        <FaIndustry className="sidebar-icon" />
+                                        <FaRegBuilding className="sidebar-icon" />
                                         {isOpen && <span className="sidebar-text">Proveedores</span>}
                                     </div>
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
                                         <div className="dropdown-item" onClick={handleApplication}>
-                                            <FaHome className="sidebar-icon" />
+                                            <FaShoppingCart className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Solicitud</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleOrderReport}>
-                                            <FaReceipt className="sidebar-icon" />
+                                            <FaFileInvoiceDollar className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleDeliveries}>
-                                            <FaTruckMoving className="sidebar-icon" />
+                                            <FaShippingFast className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Entregas</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleReport}>
-                                            <FaClipboardList className="sidebar-icon" />
+                                            <FaChartPie className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}
                                         </div>
                                     </div>
