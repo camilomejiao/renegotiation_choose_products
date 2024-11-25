@@ -98,7 +98,7 @@ export const Deliveries = () => {
                         gap: "8px",
                     }}
                 >
-                    {[1, 2, 3, 4].map((fileNumber) => (
+                    {[1, 2, 3, 4, 5, 6].map((fileNumber) => (
                         <Button
                             key={fileNumber}
                             variant="primary"
@@ -200,7 +200,7 @@ export const Deliveries = () => {
                     >
                         <FaPencilAlt />
                     </Button>
-                    <Button
+                   {/* <Button
                         variant="danger"
                         size="sm"
                         onClick={() =>
@@ -208,7 +208,7 @@ export const Deliveries = () => {
                         }
                     >
                         <FaTrash />
-                    </Button>
+                    </Button>*/}
                 </div>
             ),
             sortable: false,
@@ -595,7 +595,7 @@ export const Deliveries = () => {
                                     rowsPerPageOptions={[5, 10, 20]}
                                     disableColumnMenu
                                     disableSelectionOnClick
-                                    rowHeight={80}
+                                    rowHeight={100}
                                     sx={{
                                         "& .MuiDataGrid-columnHeaders": {
                                             backgroundColor: "#40A581",
