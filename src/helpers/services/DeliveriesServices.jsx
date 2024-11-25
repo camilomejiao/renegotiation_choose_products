@@ -3,56 +3,73 @@ import { authTokenService } from "./AuthTokenService";
 
 class DeliveriesServices {
 
-    //
-    async getSuppliers(cubId) {
-        let url = Global.url + "entrega/proveedores/"+cubId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    constructor() {
+        this.baseUrl = Global.url + "entrega/";
     }
 
-    //
-    async searchDeliveriesToUser(cubId) {
-        let url = Global.url + "entrega/cub/"+cubId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    /**
+     * Genera la URL completa para los endpoints de entrega.
+     * @param {string} endpoint - Endpoint relativo.
+     * @returns {string} - URL completa.
+     */
+    buildUrl(endpoint) {
+        return this.baseUrl + endpoint;
     }
 
-    //
-    async productsToBeDelivered(companyId, cubId) {
-        let url = Global.url + "entrega/"+companyId+"/"+cubId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    // Obtener proveedores
+    getSuppliers(cubId) {
+        const url = this.buildUrl(`proveedores/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    //
-    async saveProducts(companyId, cubId, products) {
-        const params = JSON.stringify(products); // Convertir productos a JSON
-        const url = Global.url + "entrega/guardar/"+companyId+"/"+cubId+"/";
+    // Buscar entregas realizadas al usuario
+    searchDeliveriesToUser(cubId) {
+        const url = this.buildUrl(`cub/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 
-        return await authTokenService.fetchWithAuth(url, {
+    // Productos a entregar
+    productsToBeDelivered(companyId, cubId) {
+        const url = this.buildUrl(`${companyId}/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    // Guardar productos
+    saveProducts(companyId, cubId, products) {
+        const url = this.buildUrl(`guardar/${companyId}/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: params,
+            body: JSON.stringify(products),
         });
     }
 
-    //
-    async deliveryReport(deliveryId) {
-        let url = Global.url + "entrega/"+deliveryId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    // Obtener productos de una entrega
+    getProductsFromADelivery(deliveryId) {
+        const url = this.buildUrl(`${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    //
-    async evidenceOfDeliveries(deliveryId, formData) {
-        const url = Global.url + "entrega/archivo/" + deliveryId + "/";
-
-        return await authTokenService.fetchWithAuth(url, {
+    // Editar entrega
+    editDelivery(itemId, product) {
+        const url = this.buildUrl(`item/${itemId}/`);
+        return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: formData, // Enviar el objeto FormData
+            body: JSON.stringify(product),
+        });
+    }
+
+    // Generar reporte de entrega
+    deliveryReport(deliveryId) {
+        const url = this.buildUrl(`${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    // Subir evidencia de entregas
+    evidenceOfDeliveries(deliveryId, formData) {
+        const url = this.buildUrl(`archivo/${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: formData,
         });
     }
 

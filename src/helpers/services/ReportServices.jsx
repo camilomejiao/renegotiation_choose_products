@@ -2,28 +2,46 @@ import { Global } from "../Global.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 class ReportServices {
-
-    async headlineReport(cubId) {
-        let url = Global.url + "orden/reporte/cub/"+cubId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    constructor() {
+        this.baseUrl = Global.url + "orden/reporte/";
     }
 
-    async companyReport(startDate, endDate) {
-        let url = Global.url + `orden/reporte/proveedor/?fecha_ini=${startDate}&fecha_fin=${endDate}`;
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    /**
+     * Genera la URL completa para los endpoints de reportes.
+     * @param {string} endpoint - Endpoint relativo.
+     * @returns {string} - URL completa.
+     */
+    buildUrl(endpoint) {
+        return this.baseUrl + endpoint;
     }
 
-    async companyAndUserReport(cubId) {
-        let url = Global.url + "orden/reporte/proveedor/"+cubId+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
+    /**
+     * Obtener reporte general por cubId.
+     * @param {number} cubId - ID del cub.
+     */
+    headlineReport(cubId) {
+        const url = this.buildUrl(`cub/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    /**
+     * Obtener reporte por rango de fechas.
+     * @param {string} startDate - Fecha inicial en formato 'YYYY-MM-DD'.
+     * @param {string} endDate - Fecha final en formato 'YYYY-MM-DD'.
+     */
+    companyReport(startDate, endDate) {
+        const url = this.buildUrl(`proveedor/?fecha_ini=${startDate}&fecha_fin=${endDate}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     * Obtener reporte por proveedor y cubId.
+     * @param {number} cubId - ID del cub.
+     */
+    companyAndUserReport(cubId) {
+        const url = this.buildUrl(`proveedor/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 }
 
 export const reportServices = new ReportServices();

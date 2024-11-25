@@ -119,13 +119,13 @@ export const Deliveries = () => {
                                 document.body.removeChild(input);
                             }}
                             style={{
-                                flex: "none", // Elimina el comportamiento de expansión automática
-                                width: "100px", // Controla el ancho del botón
+                                flex: "none",
+                                width: "100px",
                                 textAlign: "center",
-                                padding: "2px 4px", // Reduce el padding para menor altura
-                                fontSize: "12px", // Ajusta el tamaño del texto
-                                lineHeight: "1", // Controla la altura del contenido interno
-                                borderRadius: "12px", // Ajusta el borde para que luzca compacto
+                                padding: "2px 4px",
+                                fontSize: "12px",
+                                lineHeight: "1",
+                                borderRadius: "12px",
                             }}
                         >
                             Imagen {fileNumber} <FaFileUpload />
@@ -143,8 +143,8 @@ export const Deliveries = () => {
             renderCell: (params) => (
                 <div>
                     <Button
-                        variant="secondary" // Cambia el estilo del botón según tus necesidades
-                        size="sm" // Tamaño pequeño
+                        variant="secondary"
+                        size="sm"
                         onClick={() => {
                             const input = document.createElement("input");
                             input.type = "file";
@@ -227,11 +227,11 @@ export const Deliveries = () => {
 
     //
     const columnsProductsToBeDelivered = [
-        { field: "id", headerName: "COD", flex: 0.5 }, // Columna pequeña
+        { field: "id", headerName: "COD", flex: 0.5 },
         {
             field: "name",
             headerName: "NOMBRE",
-            flex: 2, // Más espacio para esta columna
+            flex: 2,
             headerAlign: "left",
             renderCell: (params) => (
                 <div
@@ -248,26 +248,26 @@ export const Deliveries = () => {
         {
             field: "description",
             headerName: "DESCRIPCIÓN",
-            flex: 3, // Aún más espacio para descripciones largas
+            flex: 3,
             headerAlign: "left",
             renderCell: (params) => (
                 <div
                     style={{
-                        textAlign: "left", // Alinea el texto a la izquierda
-                        whiteSpace: "normal", // Permite texto en múltiples líneas
-                        wordWrap: "break-word", // Rompe las palabras largas
-                        overflow: "visible", // Asegura que todo el texto se muestre
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        wordWrap: "break-word",
+                        overflow: "visible",
                     }}
                 >
                     {params.value}
                 </div>
             ),
         },
-        { field: "amount", headerName: "CANT. SOLICITADA", flex: 1 }, // Columna mediana
+        { field: "amount", headerName: "CANT. SOLICITADA", flex: 1 },
         {
             field: "quantityToBeDelivered",
             headerName: "CANT. A ENTREGAR",
-            flex: 1, // Columna de tamaño moderado
+            flex: 1,
             renderCell: (params) => {
                 return (
                     <Form.Control
@@ -291,11 +291,11 @@ export const Deliveries = () => {
         {
             field: "state",
             headerName: "ESTADO",
-            flex: 1.5, // Columna ligeramente más amplia
+            flex: 1.5,
             renderCell: (params) => {
                 return (
                     <select
-                        value={params.row.state} // Estado actual del producto
+                        value={params.row.state}
                         onChange={(e) =>
                             handleStatusChange(params.row.id, parseInt(e.target.value))
                         }

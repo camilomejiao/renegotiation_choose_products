@@ -2,32 +2,52 @@ import { Global } from "../Global.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 class ProductsServices {
+    constructor() {
+        this.baseUrl = Global.url + "producto/";
+    }
 
-    //search product by name
-    async searchProduct(searchData) {
-        let url = Global.url + "producto/buscar/"+searchData+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
-    };
+    /**
+     * Genera la URL completa para los endpoints de productos.
+     * @param {string} endpoint - Endpoint relativo.
+     * @returns {string} - URL completa.
+     */
+    buildUrl(endpoint) {
+        return this.baseUrl + endpoint;
+    }
 
-    async getProductId(id) {
-        let url = Global.url + "producto/"+id+"/";
-        return await authTokenService.fetchWithAuth(url, {
-            method: "GET"
-        });
-    };
+    /**
+     * Buscar un producto por nombre.
+     * @param {string} searchData - Término de búsqueda.
+     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     */
+    searchProduct(searchData) {
+        const url = this.buildUrl(`buscar/${searchData}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 
-    async saveProducts(products, cubId) {
-        const params = JSON.stringify(products); // Convertir productos a JSON
+    /**
+     * Obtener un producto por su ID.
+     * @param {number} id - ID del producto.
+     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     */
+    getProductId(id) {
+        const url = this.buildUrl(`${id}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     * Guardar productos.
+     * @param {object} products - Productos a guardar.
+     * @param {number} cubId - ID del cubículo asociado.
+     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     */
+    saveProducts(products, cubId) {
         const url = Global.url + "orden/";
-
-        return await authTokenService.fetchWithAuth(url, {
+        return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: params,
+            body: JSON.stringify(products),
         });
-    };
-
+    }
 }
 
 export const productsServices = new ProductsServices();
