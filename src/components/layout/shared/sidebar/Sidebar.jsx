@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { Container, Accordion, Card } from 'react-bootstrap';
 import {
     FaBars,
-    FaStore,
     FaSignOutAlt,
-    FaIndustry,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersSlash, FaUsersCog, FaRegBuilding
+    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding
 } from 'react-icons/fa';
 import './Sidebar.css';
 import { useNavigate } from "react-router-dom";
