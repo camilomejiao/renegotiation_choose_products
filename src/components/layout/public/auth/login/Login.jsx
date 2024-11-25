@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import Swal from "sweetalert2";
 import imageLogin from '../../../../../assets/image/login/principal-image.png';
 import imageLoginForm from '../../../../../assets/image/login/login-image-1.png';
 import userInput from '../../../../../assets/image/login/user.png';
@@ -18,6 +17,7 @@ import useAuth from "../../../../../hooks/useAuth";
 
 //Services
 import { authService } from "../../../../../helpers/services/Auth";
+import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
 
 const initialValues = {
     email: "",
@@ -51,9 +51,9 @@ export const Login = () => {
 
         //console.log(respServicesLogin);
         if(!respServicesLogin.access && !respServicesLogin.refresh) {
-            Swal.fire({title: 'Oops...', html: respServicesLogin.message, icon: 'error', width: 300, heightAuto: true});
+            AlertComponentServices.error('Oops...', respServicesLogin.message);
         } else {
-            Swal.fire({title: 'Bien hecho!', html: respServicesLogin.message, icon: 'success', width: 300, heightAuto: true});
+            AlertComponentServices.success('Bien hecho!', respServicesLogin.message);
             setAuth(respServicesLogin);
             setTimeout(() => {
                 window.location.reload();

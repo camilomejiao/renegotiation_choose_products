@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import {useNavigate, useOutletContext, useParams} from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { FaFilePdf, FaFileUpload, FaPencilAlt, FaTrash } from "react-icons/fa";
-import Swal from "sweetalert2";
 import printJS from "print-js";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Components
 import { Footer } from "../../shared/footer/Footer";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
+import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -335,13 +335,7 @@ export const Deliveries = () => {
     //Crear entrega
     const handleCreateDeliveries = async () => {
         if (!selectedSupplier && userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Debe escoger al menos una empresa',
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
+            showError('Error', 'Debe escoger al menos una empresa');
             return;
         }
         setListDeliveriesToUser([]);
@@ -506,24 +500,12 @@ export const Deliveries = () => {
 
     //
     const showAlert = (title, message) => {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: 'success',
-            width: 300,
-            heightAuto: true,
-        });
+        AlertComponentServices.success(title, message)
     };
 
     //
     const showError = (title, message) => {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: "error",
-            width: 300,
-            heightAuto: true,
-        });
+        AlertComponentServices.error(title, message);
     };
 
     useEffect(() => {

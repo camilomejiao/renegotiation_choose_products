@@ -11,6 +11,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 //Enum
 import { StatusEnum } from "../../../../helpers/GlobalEnum";
 import Swal from "sweetalert2";
+import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
 
 
 //Opciones para los productos a entregar
@@ -149,7 +150,6 @@ export const EditDeliveryOrder = () => {
         try {
             const {data, status} = await deliveriesServices.getProductsFromADelivery(id);
             if (status === StatusEnum.OK) {
-                console.log(data);
                 setCubId(data.cub?.id);
                 setListDeliveryProducts(normalizeRows(data.items));
             }
@@ -192,7 +192,6 @@ export const EditDeliveryOrder = () => {
 
     //
     const handleSaveProduct = async (product) => {
-        console.log('data: ', product);
         try {
             //
             const dataSaveProducts = {
@@ -200,8 +199,6 @@ export const EditDeliveryOrder = () => {
                 estado: product.state,
                 valor_final: product.price
             };
-
-            console.log(dataSaveProducts);
 
             const {data, status} = await deliveriesServices.editDelivery(product.id, dataSaveProducts);
             if(status === StatusEnum.OK) {
@@ -218,24 +215,12 @@ export const EditDeliveryOrder = () => {
 
     //
     const showAlert = (title, message) => {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: 'success',
-            width: 300,
-            heightAuto: true,
-        });
+        AlertComponentServices.success(title, message);
     };
 
     //
     const showError = (title, message) => {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: "error",
-            width: 300,
-            heightAuto: true,
-        });
+        AlertComponentServices.error(title, message);
     };
 
     const handleBack = () => {

@@ -20,7 +20,7 @@ export const Dashboard = () => {
         const { id } = userData;
 
         userAuth.rol_id === RolesEnum.DELIVER
-            ? navigate(`/admin/add_products/${id}`)
+            ? navigate(`/admin/create_order/${id}`)
             : navigate(`/admin/reports/${id}`);
     };
 

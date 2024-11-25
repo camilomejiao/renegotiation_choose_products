@@ -3,31 +3,33 @@ import Select from "react-select";
 import { useParams} from "react-router-dom";
 import { Button, Col, Container, Form, Row, Spinner, Table } from "react-bootstrap";
 import { FaTrashAlt } from "react-icons/fa";
-import Swal from "sweetalert2";
-import printJS from "print-js";
 import { debounce } from "@mui/material";
+import printJS from "print-js";
 
 //Img
-import imgPeople from '../../../../assets/image/addProducts/people1.jpg';
-import imgAdd from '../../../../assets/image/addProducts/imgAdd.png';
-import frame from '../../../../assets/image/addProducts/Frame.png';
+import imgPeople from '../../../../../assets/image/addProducts/people1.jpg';
+import imgAdd from '../../../../../assets/image/addProducts/imgAdd.png';
+import frame from '../../../../../assets/image/addProducts/Frame.png';
 
 //Css
-import './AddProducts.css';
+import './CreateOrder.css';
 
 //Components
-import {Footer} from "../../shared/footer/Footer";
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {UserInformation} from "../user-information/UserInformation";
-import {CompanyReportPrinting} from "../ReportsCompany/report/CompanyReportPrinting";
+import { Footer } from "../../../shared/footer/Footer";
+import { HeaderImage } from "../../../shared/header-image/HeaderImage";
+import { UserInformation } from "../../user-information/UserInformation";
+import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
+import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
 
 //Services
-import {userService} from "../../../../helpers/services/UserServices";
-import {productsServices} from "../../../../helpers/services/ProductsServices";
-import {reportServices} from "../../../../helpers/services/ReportServices";
-import {StatusEnum} from "../../../../helpers/GlobalEnum";
+import { userService } from "../../../../../helpers/services/UserServices";
+import { productsServices } from "../../../../../helpers/services/ProductsServices";
+import { reportServices } from "../../../../../helpers/services/ReportServices";
 
-export const AddProducts = () => {
+//Enum
+import { StatusEnum } from "../../../../../helpers/GlobalEnum";
+
+export const CreateOrder = () => {
 
     const params = useParams();
     const headlineReportRef = useRef();
@@ -178,28 +180,16 @@ export const AddProducts = () => {
 
     //Maneja la respuesta del servicio y muestra la alerta correspondiente
     const handleSaveResponse = (data, status) => {
-        console.log(data, status);
         if (status === StatusEnum.CREATE) {
             setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
-            showAlert('Bien hecho!', 'Productos guardados exitosamente', 'success');
+            AlertComponentServices.success('Bien hecho!', 'Productos guardados exitosamente');
             resetProductList();
             window.location.reload();
         }
 
         if (status === StatusEnum.BAD_REQUEST) {
-            showAlert('Error al guardar los productos', data.items[0].discount, 'error');
+            AlertComponentServices.error('Error al guardar los productos', data.items[0].discount);
         }
-    };
-
-    //Muestra una alerta con título y mensaje específicos
-    const showAlert = (title, message, icon) => {
-        Swal.fire({
-            title,
-            html: message,
-            icon,
-            width: 300,
-            heightAuto: true
-        });
     };
 
     // Reinicia la lista de productos
@@ -213,7 +203,7 @@ export const AddProducts = () => {
     //Maneja el error en caso de fallo de la llamada
     const handleError = (error, title) => {
         const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-        showAlert(title, errorMessage, 'error');
+        AlertComponentServices.error(title,errorMessage);
     };
 
     const getHeadlineReport = async (cubId) => {

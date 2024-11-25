@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button, Col, Form } from "react-bootstrap";
-import Swal from "sweetalert2";
 import magnifyingGlass from "../../../../assets/image/icons/magnifying_glass.png";
 import PropTypes from "prop-types";
 
@@ -12,6 +11,7 @@ import { StatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Css
 import './SearchUserForm.css';
+import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
 
 export const SearchUserForm = ({ onSearchSuccess }) => {
     const [searchValue, setSearchValue] = useState("");
@@ -24,23 +24,11 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
 
             if (status === StatusEnum.OK) {
                 if (Object.keys(data).length === 0) {
-                    Swal.fire({
-                        title: "Oops...",
-                        html: "Usuario no existe en el sistema",
-                        icon: "error",
-                        width: 300,
-                        heightAuto: true,
-                    });
+                    AlertComponentServices.error('Oops...', 'Usuario no existe en el sistema');
                 }
 
                 if (Object.keys(data).length > 0) {
-                    Swal.fire({
-                        title: "Bien hecho!",
-                        html: "Usuario encontrado",
-                        icon: "success",
-                        width: 300,
-                        heightAuto: true,
-                    });
+                    AlertComponentServices.success('Bien hecho!', 'Usuario encontrado');
 
                     // Llamar a la acción personalizada después de una búsqueda exitosa
                     onSearchSuccess(data);

@@ -21,8 +21,8 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 //
 import "./CompanyReport.css";
 import { format } from "date-fns";
-import Swal from "sweetalert2";
 import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
+import AlertComponentServices from "../../shared/Alert/AlertComponentServices";
 
 
 export const CompanyReport = () => {
@@ -45,24 +45,12 @@ export const CompanyReport = () => {
 
     const validateDates = async (startDate, endDate) => {
         if (!startDate || !endDate) {
-            Swal.fire({
-                title: 'Oops...',
-                html: 'Por favor seleccione ambas fechas.',
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
+            AlertComponentServices.error('Oops...', 'Por favor seleccione ambas fechas.');
             return false;
         }
 
         if (endDate < startDate) {
-            Swal.fire({
-                title: 'Oops...',
-                html: 'La fecha final no puede ser anterior a la fecha inicial.',
-                icon: 'error',
-                width: 300,
-                heightAuto: true
-            });
+            AlertComponentServices.error('Oops...', 'La fecha final no puede ser anterior a la fecha inicial.');
             return false;
         }
 
@@ -82,7 +70,6 @@ export const CompanyReport = () => {
 
         try {
             const { data } = await reportServices.companyReport(formattedStartDate, formattedEndDate);
-            console.log("Datos del reporte:", data);
             setCompanyInformation(data);
             setIsReadyToPrint(true);
         } catch (error) {

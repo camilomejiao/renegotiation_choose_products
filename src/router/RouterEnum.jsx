@@ -3,7 +3,8 @@ export const RouterEnum = {
 
     RouterAdmin: '/admin',
 
-    AddProducts: 'add_products/:id',
+    CreateOrder: 'create_order/:id',
+    EditOrder: 'edit_order/:order_id/:cub_id',
 
     //Entregas
     SearchUserForDeliveries: 'search-user-for-deliveries',

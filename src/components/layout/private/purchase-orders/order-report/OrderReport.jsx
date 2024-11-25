@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import Swal from "sweetalert2";
-import {FaPencilAlt, FaTrash} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Image
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 // Services
-import { purchaseOrderServices } from "../../../../helpers/services/PurchaseOrderServices";
+import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseOrderServices";
 
 // Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import { StatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
 import "./OrderReport.css";
+import AlertComponentServices from "../../../shared/Alert/AlertComponentServices";
+import {useNavigate} from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
 export const OrderReport = () => {
+
+    const navigate = useNavigate();
+
     const [purcharseOrder, setPurcharseOrder] = useState([]);
     const [rowCountState, setRowCountState] = useState(0);
     const [paginationModel, setPaginationModel] = useState({
@@ -47,10 +51,10 @@ export const OrderReport = () => {
             flex: 1,
             renderCell: (params) => (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                    <FaPencilAlt
-                        style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}
-                        onClick={() => handleEditClick(params.row.id)}
-                    />
+                    {/*<FaPencilAlt*/}
+                    {/*    style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}*/}
+                    {/*    onClick={() => handleEditClick(params.row)}*/}
+                    {/*/>*/}
                     <FaTrash
                         style={{ cursor: "pointer", color: "red" }}
                         onClick={() => handleDeleteClick(params.row.id)}
@@ -77,7 +81,7 @@ export const OrderReport = () => {
             }
         } catch (error) {
             console.error("Error obteniendo las órdenes de compra:", error);
-            showError("Error al comunicarse con el servidor");
+            showError("Error", "Error al comunicarse con el servidor");
         } finally {
             setIsLoading(false);
             setIsSearchActive(false);
@@ -120,29 +124,17 @@ export const OrderReport = () => {
 
     //
     const showAlert = (title, message) => {
-        Swal.fire({
-            title: title,
-            text: message,
-            icon: 'success',
-            width: 300,
-            heightAuto: true,
-        });
+        AlertComponentServices.success(title, message);
     };
 
     // Muestra un error con SweetAlert
-    const showError = (message) => {
-        Swal.fire({
-            title: "Error",
-            text: message,
-            icon: "error",
-            width: 300,
-            heightAuto: true,
-        });
+    const showError = (title, message) => {
+        AlertComponentServices.error(title, message);
     };
 
     // Maneja el clic en el ícono de eliminación
-    const handleEditClick = (id) => {
-        setSelectedId(id);
+    const handleEditClick = (data) => {
+        navigate(`/admin/edit_order/${data.id}/${data.cub_id}`)
     };
 
     // Maneja el clic en el ícono de eliminación
@@ -168,7 +160,7 @@ export const OrderReport = () => {
             }
         } catch (error) {
             console.error("Error al eliminar el elemento:", error);
-            showError("No se pudo eliminar la orden");
+            showError("Error", "No se pudo eliminar la orden");
         }
     };
 
@@ -181,7 +173,7 @@ export const OrderReport = () => {
             setPaginationModel({ ...paginationModel, page: 0 }); // Cambia la página
             setIsSearchActive(true); // Marca como búsqueda activa
         } else {
-            showError("El valor a buscar debe tener al menos 5 caracteres");
+            showError("Error", "El valor a buscar debe tener al menos 5 caracteres");
         }
     };
 
