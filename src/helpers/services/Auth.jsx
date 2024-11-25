@@ -3,7 +3,16 @@ import { jwtDecode } from "jwt-decode";
 
 class AuthService {
     constructor() {
-        this.baseUrl = Global.url + "acceder/";
+        this.baseUrl = Global.url;
+    }
+
+    /**
+     * Genera la URL completa para los endpoints de entrega.
+     * @param {string} endpoint - Endpoint relativo.
+     * @returns {string} - URL completa.
+     */
+    buildUrl(endpoint) {
+        return this.baseUrl + endpoint;
     }
 
     /**
@@ -12,8 +21,10 @@ class AuthService {
      * @returns {Promise<object>} - Respuesta del servidor.
      */
     async login(data) {
-        const url = this.baseUrl;
-        const headers = { "Content-Type": "application/json" };
+        const url = this.buildUrl(`acceder/`);
+        const headers = {
+            "Content-Type": "application/json"
+        };
 
         try {
             const response = await fetch(url, {
@@ -61,7 +72,7 @@ class AuthService {
      * @param {object} decodeToken - Datos decodificados del token.
      */
     saveToLocalStorage(tokens, decodeToken) {
-        localStorage.setItem("id", decodeToken?.proveedor || "");
+        localStorage.setItem("id", decodeToken?.proveedor || null);
         localStorage.setItem("token", tokens?.access || "");
         localStorage.setItem("refresh", tokens?.refresh || "");
         localStorage.setItem("user", JSON.stringify(decodeToken || {}));

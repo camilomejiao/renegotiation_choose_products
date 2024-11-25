@@ -49,7 +49,7 @@ export const Login = () => {
             return data;
         });
 
-        //console.log(respServicesLogin);
+        console.log(respServicesLogin);
         if(!respServicesLogin.access && !respServicesLogin.refresh) {
             AlertComponentServices.error('Oops...', respServicesLogin.message);
         } else {
