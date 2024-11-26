@@ -2,7 +2,7 @@
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
-    { id: 0, label: "SIN DEFINIR" },
+    { id: 0, label: "NO ENTREGADO" },
     { id: 1, label: "ENTREGADO" },
     { id: 2, label: "PENDIENTE POR ENTREGAR" },
     { id: 3, label: "ENTREGA PARCIAL" }

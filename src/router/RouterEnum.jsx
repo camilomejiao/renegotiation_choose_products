@@ -13,7 +13,8 @@ export const RouterEnum = {
     EditDeliveryOrder: 'edit-delivery-order/:id',
 
     //Productos
-
+    Products: 'products',
+    CreateProducts: 'create-products',
 
     //Reportes
     Reports: 'reports/:id',

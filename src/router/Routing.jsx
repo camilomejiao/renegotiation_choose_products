@@ -16,6 +16,8 @@ import { OrderReport } from "../components/layout/private/purchase-orders/order-
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
+import { Products } from "../components/layout/private/supplier-products/Products";
+import { AddProducts } from "../components/layout/private/supplier-products/AddProducts";
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
@@ -33,12 +35,20 @@ export const Routing = () => {
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
                         <Route index element={ <Dashboard /> } />
 
+                        {/* Ordenes */}
                         <Route path={ RouterEnum.CreateOrder }  element={ <CreateOrder /> }  />
                         <Route path={ RouterEnum.EditOrder }  element={ <EditOrder /> }  />
+
+                        {/* Entregas */}
                         <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
                         <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
 
+                        {/* Productos */}
+                        <Route path={ RouterEnum.Products }  element={ <Products /> }  />
+                        <Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />
+
+                        {/* Reportes */}
                         <Route path={ RouterEnum.Reports }  element={ <ReportingSystem /> }  />
                         <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
                         <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />

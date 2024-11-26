@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
-import { FaFilePdf, FaFileUpload, FaPencilAlt, FaTrash } from "react-icons/fa";
+import {
+    FaCheck,
+    FaFilePdf,
+    FaFileUpload,
+    FaPencilAlt,
+    FaTrash
+} from "react-icons/fa";
 import printJS from "print-js";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -82,7 +88,7 @@ export const Deliveries = () => {
     }
 
     // Definición de las columnas de entregas
-    const columnsDeliveries = [
+    const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
         { field: "supplier", headerName: "PROVEEDOR", width: 200 },
@@ -191,7 +197,7 @@ export const Deliveries = () => {
             renderCell: (params) => (
                 <div>
                     <Button
-                        variant="success"
+                        variant="warning"
                         size="sm"
                         onClick={() =>
                             handleEditDelivery(params.row.id)
@@ -200,15 +206,25 @@ export const Deliveries = () => {
                     >
                         <FaPencilAlt />
                     </Button>
-                   {/* <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() =>
-                            handleDeleteDelivery(params.row.id)
-                        }
-                    >
-                        <FaTrash />
-                    </Button>*/}
+                    {/*<Button*/}
+                    {/*    variant="danger"*/}
+                    {/*    size="sm"*/}
+                    {/*    onClick={() =>*/}
+                    {/*        handleDeleteDelivery(params.row.id)*/}
+                    {/*    }*/}
+                    {/*    style={{ marginRight: "10px" }}*/}
+                    {/*>*/}
+                    {/*    <FaTrash />*/}
+                    {/*</Button>*/}
+                    {/*<Button*/}
+                    {/*    variant="success"*/}
+                    {/*    size="sm"*/}
+                    {/*    onClick={() =>*/}
+                    {/*        handleApproveByAudit(params.row.id)*/}
+                    {/*    }*/}
+                    {/*>*/}
+                    {/*    <FaCheck />*/}
+                    {/*</Button>*/}
                 </div>
             ),
             sortable: false,
@@ -226,7 +242,7 @@ export const Deliveries = () => {
     }
 
     //
-    const columnsProductsToBeDelivered = [
+    const productsToBeDeliveredColumns = [
         { field: "id", headerName: "COD", flex: 0.5 },
         {
             field: "name",
@@ -370,6 +386,11 @@ export const Deliveries = () => {
 
     //
     const handleDeleteDelivery = async (id) => {
+
+    }
+
+    //
+    const handleApproveByAudit = async (id) => {
 
     }
 
@@ -572,7 +593,7 @@ export const Deliveries = () => {
                             <>
                                 <DataGrid
                                     rows={listDeliveriesToUser}
-                                    columns={columnsDeliveries}
+                                    columns={deliveryColumns}
                                     pageSize={10}
                                     rowsPerPageOptions={[5, 10, 20]}
                                     disableColumnMenu
@@ -619,7 +640,7 @@ export const Deliveries = () => {
                             <>
                                 <DataGrid
                                     rows={deliveryProducts}
-                                    columns={columnsProductsToBeDelivered}
+                                    columns={productsToBeDeliveredColumns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5, 10, 20]}
                                     disableColumnMenu

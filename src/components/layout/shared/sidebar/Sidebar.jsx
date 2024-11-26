@@ -6,7 +6,7 @@ import {
     FaSignOutAlt,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding
+    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed
 } from 'react-icons/fa';
 import './Sidebar.css';
 
@@ -21,23 +21,27 @@ export const Sidebar = ({userAuth}) => {
 
     const handleApplication = () => {
         navigate("/");
-    }
-
-    const handleLogout = () => {
-        navigate("/admin/logout");
     };
 
     const handleOrderReport = () => {
         navigate(`/admin/order-report`)
     };
 
+    const handleDeliveries = () => {
+        navigate(`/admin/search-user-for-deliveries`)
+    };
+
+    const handleProducts = () => {
+        navigate(`/admin/products`)
+    };
+
     const handleReport = () => {
         navigate(`/admin/company-reports`)
     };
 
-    const handleDeliveries = () => {
-        navigate(`/admin/search-user-for-deliveries`)
-    }
+    const handleLogout = () => {
+        navigate("/admin/logout");
+    };
 
     return (
         <>
@@ -75,6 +79,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaShippingFast className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Entregas</span>}
                                         </div>
+                                        {/*<div className="dropdown-item" onClick={handleProducts}>*/}
+                                        {/*    <FaDollyFlatbed className="sidebar-icon" />*/}
+                                        {/*    {isOpen && <span className="sidebar-text">Productos</span>}*/}
+                                        {/*</div>*/}
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaChartPie className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}
@@ -84,7 +92,6 @@ export const Sidebar = ({userAuth}) => {
                             </Card>
                         </Accordion>
                     )}
-
             </Container>
                 <div className="logout" onClick={handleLogout}>
                     <FaSignOutAlt className="logout-icon" />
