@@ -40,7 +40,7 @@ class AuthTokenService {
             console.error("Error parsing JSON:", error);
         }
 
-        return { data, status, statusText }; // Retorna los datos, estado y texto de estado
+        return { data, status, statusText };
     }
 }
 

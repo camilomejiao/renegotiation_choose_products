@@ -206,25 +206,25 @@ export const Deliveries = () => {
                     >
                         <FaPencilAlt />
                     </Button>
-                    {/*<Button*/}
-                    {/*    variant="danger"*/}
-                    {/*    size="sm"*/}
-                    {/*    onClick={() =>*/}
-                    {/*        handleDeleteDelivery(params.row.id)*/}
-                    {/*    }*/}
-                    {/*    style={{ marginRight: "10px" }}*/}
-                    {/*>*/}
-                    {/*    <FaTrash />*/}
-                    {/*</Button>*/}
-                    {/*<Button*/}
-                    {/*    variant="success"*/}
-                    {/*    size="sm"*/}
-                    {/*    onClick={() =>*/}
-                    {/*        handleApproveByAudit(params.row.id)*/}
-                    {/*    }*/}
-                    {/*>*/}
-                    {/*    <FaCheck />*/}
-                    {/*</Button>*/}
+                    {/*<Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                            handleDeleteDelivery(params.row.id)
+                        }
+                        style={{ marginRight: "10px" }}
+                    >
+                        <FaTrash />
+                    </Button>
+                    <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() =>
+                            handleApproveByAudit(params.row.id)
+                        }
+                    >
+                        <FaCheck />
+                    </Button>*/}
                 </div>
             ),
             sortable: false,

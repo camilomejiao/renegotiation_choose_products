@@ -15,7 +15,6 @@ export const AuthProvider = ({children}) => {
 
         //comprobamos si tenemos informacion
         if(!token || !user_id) {
-            console.log('Entro');
             return false;
         } else {
             const userObj = JSON.parse(user);
