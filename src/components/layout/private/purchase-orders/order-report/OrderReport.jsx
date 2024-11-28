@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import {FaBroom, FaBrush, FaPencilAlt, FaSearch, FaTrash} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Image
@@ -198,21 +198,34 @@ export const OrderReport = () => {
                     </div>
                 </div>
 
-                <div className="container mt-lg-5">
-                    <div className="d-flex flex-wrap align-items-center mt-3 mb-3">
+                <div className="container mt-lg-3">
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
                         <input
                             type="text"
                             placeholder="Buscar..."
+                            size="md"
                             value={searchQuery}
                             onChange={handleSearchQueryChange}
-                            className="input-responsive me-2 mb-2 mb-md-0"
+                            className="input-responsive"
                         />
-                        <Button variant="primary" onClick={handleSearch} className="button-order-responsive me-2 mb-2 mb-md-0">
-                            Buscar
-                        </Button>
-                        <Button variant="secondary" onClick={handleClearSearch} className="button-order-responsive">
-                            Limpiar
-                        </Button>
+                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                            <Button
+                                variant="primary"
+                                size="md"
+                                onClick={handleSearch}
+                                className="button-order-responsive"
+                            >
+                                Buscar <FaSearch />
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                size="md"
+                                onClick={handleClearSearch}
+                                className="button-order-responsive"
+                            >
+                                Limpiar <FaBroom />
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="responsive-container">

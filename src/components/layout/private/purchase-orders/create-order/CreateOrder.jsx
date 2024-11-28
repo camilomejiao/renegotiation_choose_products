@@ -23,7 +23,7 @@ import AlertComponentServices from "../../../shared/alert/AlertComponentServices
 
 //Services
 import { userService } from "../../../../../helpers/services/UserServices";
-import { productsServices } from "../../../../../helpers/services/ProductsServices";
+import { productForPurchaseOrderServices } from "../../../../../helpers/services/ProductForPurchaseOrderServices";
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Enum
@@ -68,7 +68,7 @@ export const CreateOrder = () => {
             }
 
             try {
-                const { data, status } = await productsServices.searchProduct(searchWord);
+                const { data, status } = await productForPurchaseOrderServices.searchProduct(searchWord);
                 if (status === StatusEnum.OK) {
                     const formattedOptions = data.map((product) => ({
                         value: product.id,
@@ -88,7 +88,7 @@ export const CreateOrder = () => {
         if (selectedItem) {
             try {
                 //Obtener los datos completos del producto desde el servicio
-                const { data } = await productsServices.getProductId(selectedItem.value);
+                const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
@@ -147,7 +147,7 @@ export const CreateOrder = () => {
         const dataToSend = buildDataToSend(itemsWithTotal);
 
         try {
-            const { data, status} = await productsServices.saveProducts(dataToSend, params.id);
+            const { data, status} = await productForPurchaseOrderServices.saveOrderProducts(dataToSend, params.id);
             handleSaveResponse(data, status);
         } catch (error) {
             handleError(error, 'Error al guardar los productos');

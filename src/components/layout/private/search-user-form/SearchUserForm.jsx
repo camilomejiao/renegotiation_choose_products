@@ -19,23 +19,55 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
     const handleSearch = async (e) => {
         e.preventDefault();
 
-        if (searchValue.trim() !== "" && parseInt(searchValue) > 5) {
-            const { data, status} = await userService.searchUser(searchValue);
-
-            if (status === StatusEnum.OK) {
-                if (Object.keys(data).length === 0) {
-                    AlertComponentServices.error('Oops...', 'Usuario no existe en el sistema');
-                }
-
-                if (Object.keys(data).length > 0) {
-                    AlertComponentServices.success('Bien hecho!', 'Usuario encontrado');
-
-                    // Llamar a la acción personalizada después de una búsqueda exitosa
-                    onSearchSuccess(data);
-                }
-            }
+        //Validar búsqueda
+        if (!isValidSearch(searchValue)) {
+            showAlert('error', 'Oops...', 'El número que buscas debe ser mayor a 5 dígitos');
+            return;
         }
+
+        //Realizar búsqueda
+        const { data, status } = await userService.searchUser(searchValue);
+
+        //Manejar estados de respuesta
+        if (handleSearchErrors(status)) return;
+
+        //Manejar resultados de la búsqueda
+        if (Object.keys(data).length === 0) {
+            showAlert('error', 'Oops...', 'Usuario no existe en el sistema');
+            return;
+        }
+
+        showAlert('success', 'Bien hecho!', 'Usuario encontrado');
+        onSearchSuccess(data);
     };
+
+    //Función para validar la búsqueda
+    function isValidSearch(value) {
+        return value.trim() !== "" && parseInt(value) > 5;
+    }
+
+    //Función para mostrar alertas
+    function showAlert(type, title, message) {
+        if (type === 'error') {
+            AlertComponentServices.error(title, message);
+        } else if (type === 'success') {
+            AlertComponentServices.success(title, message);
+        }
+    }
+
+    //Función para manejar errores de búsqueda
+    function handleSearchErrors(status) {
+        const errorMessages = {
+            [StatusEnum.UNAUTHORIZED]: 'Unauthorized access',
+            [StatusEnum.INTERNAL_SERVER_ERROR]: 'Error al buscar este usuario',
+        };
+
+        if (errorMessages[status]) {
+            showAlert('error', 'Oops...', errorMessages[status]);
+            return true;
+        }
+        return false;
+    }
 
     return (
         <Col md={6} className="text-center">

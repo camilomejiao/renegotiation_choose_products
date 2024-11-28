@@ -3,9 +3,18 @@
 }
 
 .input-responsive {
-    padding: 10px;
-    width: 80%;
+    padding: 5px;
+    width: 100%;
     max-width: 300px;
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
+.button-order-responsive {
+    font-size: 14px;
+    padding: 8px 16px;
+    margin-right: 10px;
 }
 
 .button-responsive {
@@ -37,9 +46,10 @@
     }
 
     .input-responsive {
-        width: 90%; /* Ancho completo en tabletas */
-        max-width: 100%; /* Asegura que ocupe todo el ancho del contenedor */
-        margin-bottom: 10px; /* Espacio inferior en pantallas pequeñas */
+        width: 90%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        margin-left: 0px;
     }
 
     .button-order-responsive {
@@ -57,17 +67,22 @@
 
 @media (max-width: 576px) {
     .input-responsive {
-        font-size: 14px; /* Tamaño de fuente más pequeño en móviles */
+        width: 90%;
+        font-size: 14px;
         padding: 8px;
     }
 
     .button-order-responsive {
-        width: 40%; /* Botones ocupan el ancho completo en móviles */
+        width: 40%;
         font-size: 14px;
         padding: 8px 16px;
     }
 
     .responsive-container {
         width: 90%;
+    }
+
+    .d-flex {
+        align-items: flex-start !important;
     }
 }

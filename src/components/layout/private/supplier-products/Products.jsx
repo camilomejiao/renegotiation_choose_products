@@ -1,6 +1,7 @@
-import { Box } from "@mui/material";
-import { Button, Container } from "react-bootstrap";
-import { FaCheck, FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Button } from "react-bootstrap";
+import { FaBroom, FaCheck, FaPlus, FaSearch } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Components
@@ -11,7 +12,10 @@ import { Footer } from "../../shared/footer/Footer";
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 
+
 export const Products = () => {
+
+    const navigate = useNavigate();
 
     const productColumns = [
         { field: "id", headerName: "COD", flex: 0.5 },
@@ -92,24 +96,56 @@ export const Products = () => {
         },
     ];
 
+    const handleCreateProducts = () => {
+        navigate(`/admin/create-products`);
+    }
+
+    useEffect(() => {
+
+    }, [])
+
     return (
         <>
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgPeople}
-                    titleHeader={'¡Empieza a agregar tus productos!'}
+                    titleHeader={'¡Listado de productos!'}
                     bannerIcon={''}
                     bannerInformation={''}
                 />
 
-                <Box>
-                    <Container>
-                        <div className="p-3">
+                <div className="container mt-lg-3">
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            value={''}
+                            onChange={''}
+                            className="input-responsive"
+                        />
+                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
                             <Button
-                                variant="success"
-                                size="lg"
+                                variant="primary"
+                                size="md"
                                 onClick={''}
-                                className="responsive-button"
+                                className="button-order-responsive"
+                            >
+                                Buscar <FaSearch />
+                            </Button>
+                            <Button
+                                variant="outline-success"
+                                size="md"
+                                onClick={''}
+                                className="button-order-responsive"
+                            >
+                                Limpiar <FaBroom />
+                            </Button>
+
+                            <Button
+                                variant="primary"
+                                size="md"
+                                onClick={handleCreateProducts}
+                                className="button-order-responsive"
                                 style={{
                                     backgroundColor: "#2148C0",
                                     borderColor: "#007BFF",
@@ -119,52 +155,47 @@ export const Products = () => {
                                 Agregar producto <FaPlus />
                             </Button>
                         </div>
+                    </div>
 
-                        <div>
-                            <DataGrid
-                                columns={productColumns}
-                                rows={''}
-                                //rowCount={rowCountState}
-                                //loading={isLoading}
-                                //paginationModel={paginationModel}
-                                //onPaginationModelChange={setPaginationModel}
-                                //paginationMode="server"
-                                sx={{
-                                    "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#40A581",
-                                        color: "white",
-                                        fontSize: "14px",
-                                    },
-                                    "& .MuiDataGrid-columnHeader": {
-                                        textAlign: "center",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    },
-                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#40A581 !important",
-                                        color: "white !important",
-                                    },
-                                    "& .MuiDataGrid-cell": {
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                        justifyContent: "center",
-                                        display: "flex",
-                                    },
-                                    "& .MuiDataGrid-row:hover": {
-                                        backgroundColor: "#E8F5E9",
-                                    },
-                                }}
-                            />
-                        </div>
+                    <div>
+                        <DataGrid
+                            columns={productColumns}
+                            rows={''}
+                            //rowCount={rowCountState}
+                            //loading={isLoading}
+                            //paginationModel={paginationModel}
+                            //onPaginationModelChange={setPaginationModel}
+                            //paginationMode="server"
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
+                    </div>
 
-
-
-                    </Container>
-                </Box>
-
-
-
+                </div>
                 <Footer />
             </div>
         </>

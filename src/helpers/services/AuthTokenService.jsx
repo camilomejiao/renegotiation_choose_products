@@ -7,7 +7,7 @@ class AuthTokenService {
         if (!token) {
             localStorage.clear();
             window.location.href = '/login';
-            return;
+            return {status: 401, message: "No token available" };
         }
 
         const headers = {
@@ -25,7 +25,7 @@ class AuthTokenService {
             // Limpiar el token y redirigir al login si hay un error de autenticación
             localStorage.clear();
             window.location.href = '/login';
-            return;
+            return {status: 401, message: "No token available" };
         }
 
         // Obtén el estado y el texto del estado
@@ -33,7 +33,7 @@ class AuthTokenService {
         const statusText = response.statusText;
 
         // Intenta parsear la respuesta a JSON
-        let data;
+        let data = null;
         try {
             data = await response.json();
         } catch (error) {

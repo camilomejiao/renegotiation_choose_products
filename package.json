@@ -38,7 +38,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://proveedorespnis.direccionsustitucion-pnis.gov.co",
+  "proxy": "https://devproveedorespnis.direccionsustitucion-pnis.gov.co",
   "eslintConfig": {
     "extends": [
       "react-app",

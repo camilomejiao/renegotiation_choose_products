@@ -79,10 +79,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaShippingFast className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Entregas</span>}
                                         </div>
-                                        {/*<div className="dropdown-item" onClick={handleProducts}>
+                                        <div className="dropdown-item" onClick={handleProducts}>
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Productos</span>}
-                                        </div>*/}
+                                        </div>
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaChartPie className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}

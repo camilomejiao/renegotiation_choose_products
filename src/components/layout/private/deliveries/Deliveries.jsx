@@ -206,7 +206,7 @@ export const Deliveries = () => {
                     >
                         <FaPencilAlt />
                     </Button>
-                    {/*<Button
+                    <Button
                         variant="danger"
                         size="sm"
                         onClick={() =>
@@ -224,7 +224,7 @@ export const Deliveries = () => {
                         }
                     >
                         <FaCheck />
-                    </Button>*/}
+                    </Button>
                 </div>
             ),
             sortable: false,

@@ -1,7 +1,7 @@
 import { Global } from "../Global.jsx";
 import { authTokenService } from "./AuthTokenService";
 
-class ProductsServices {
+class ProductForPurchaseOrderServices {
     constructor() {
         this.baseUrl = Global.url + "producto/";
     }
@@ -38,11 +38,10 @@ class ProductsServices {
     /**
      * Guardar productos.
      * @param {object} products - Productos a guardar.
-     * @param {number} cubId - ID del cubículo asociado.
      * @returns {Promise<object>} - Promesa con los datos de la respuesta.
      */
-    saveProducts(products, cubId) {
-        const url = Global.url + "orden/";
+    saveOrderProducts(products) {
+        const url = this.buildUrl(`orden/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),
@@ -50,4 +49,4 @@ class ProductsServices {
     }
 }
 
-export const productsServices = new ProductsServices();
+export const productForPurchaseOrderServices = new ProductForPurchaseOrderServices();
