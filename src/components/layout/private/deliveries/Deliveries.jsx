@@ -92,56 +92,56 @@ export const Deliveries = () => {
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
         { field: "supplier", headerName: "PROVEEDOR", width: 200 },
-        {
-            field: "evidence",
-            headerName: "EVIDENCIAS",
-            width: 300,
-            renderCell: (params) => (
-                <div
-                    style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "8px",
-                    }}
-                >
-                    {[1, 2, 3, 4, 5, 6].map((fileNumber) => (
-                        <Button
-                            key={fileNumber}
-                            variant="primary"
-                            size="sm"
-                            onClick={() => {
-                                const input = document.createElement("input");
-                                input.type = "file";
-                                input.accept = "image/*";
-                                input.style.display = "none";
-                                input.onchange = (e) =>
-                                    handleFileChange(
-                                        e,
-                                        params.row.id,
-                                        `imagen${fileNumber}`
-                                    );
-                                document.body.appendChild(input);
-                                input.click();
-                                document.body.removeChild(input);
-                            }}
-                            style={{
-                                flex: "none",
-                                width: "100px",
-                                textAlign: "center",
-                                padding: "2px 4px",
-                                fontSize: "12px",
-                                lineHeight: "1",
-                                borderRadius: "12px",
-                            }}
-                        >
-                            Imagen {fileNumber} <FaFileUpload />
-                        </Button>
-                    ))}
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
-        },
+        // {
+        //     field: "evidence",
+        //     headerName: "EVIDENCIAS",
+        //     width: 300,
+        //     renderCell: (params) => (
+        //         <div
+        //             style={{
+        //                 display: "flex",
+        //                 flexWrap: "wrap",
+        //                 gap: "8px",
+        //             }}
+        //         >
+        //             {[1, 2, 3, 4, 5, 6].map((fileNumber) => (
+        //                 <Button
+        //                     key={fileNumber}
+        //                     variant="primary"
+        //                     size="sm"
+        //                     onClick={() => {
+        //                         const input = document.createElement("input");
+        //                         input.type = "file";
+        //                         input.accept = "image/*";
+        //                         input.style.display = "none";
+        //                         input.onchange = (e) =>
+        //                             handleFileChange(
+        //                                 e,
+        //                                 params.row.id,
+        //                                 `imagen${fileNumber}`
+        //                             );
+        //                         document.body.appendChild(input);
+        //                         input.click();
+        //                         document.body.removeChild(input);
+        //                     }}
+        //                     style={{
+        //                         flex: "none",
+        //                         width: "100px",
+        //                         textAlign: "center",
+        //                         padding: "2px 4px",
+        //                         fontSize: "12px",
+        //                         lineHeight: "1",
+        //                         borderRadius: "12px",
+        //                     }}
+        //                 >
+        //                     Imagen {fileNumber} <FaFileUpload />
+        //                 </Button>
+        //             ))}
+        //         </div>
+        //     ),
+        //     sortable: false,
+        //     filterable: false,
+        // },
         {
             field: "evidencePdf",
             headerName: "EVIDENCIAS PDF",
