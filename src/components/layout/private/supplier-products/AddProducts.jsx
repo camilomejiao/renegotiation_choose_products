@@ -55,6 +55,7 @@ export const AddProducts = () => {
         {field: "id", headerName: "ID", width: 90},
         {field: "name", headerName: "Nombre", width: 150, editable: true},
         {field: "description", headerName: "Descripción", width: 200, editable: true},
+        {field: "brand", headerName: "Marca", width: 200, editable: true},
         {
             field: "unit",
             headerName: "Unidad",

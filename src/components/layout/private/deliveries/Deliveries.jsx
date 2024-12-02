@@ -626,6 +626,21 @@ export const Deliveries = () => {
                                         },
                                     }}
                                 />
+                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
+                                    <Button
+                                        variant="success"
+                                        size="lg"
+                                        onClick={() => navigate(-1)}
+                                        className="responsive-button mb-2 mb-md-0"
+                                        style={{
+                                            backgroundColor: "#2148C0",
+                                            borderColor: "#007BFF",
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        <i className="fas fa-save me-2"></i>ATRÁS
+                                    </Button>
+                                </div>
                             </>
 
                         ) : (
@@ -712,7 +727,6 @@ export const Deliveries = () => {
                                         <i className="fas fa-save me-2"></i>GUARDAR ENTREGA
                                     </Button>
                                 </div>
-
                             </>
                     )}
                     </Container>

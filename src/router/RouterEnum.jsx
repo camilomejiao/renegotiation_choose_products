@@ -16,6 +16,10 @@ export const RouterEnum = {
     Products: 'products',
     CreateProducts: 'create-products',
 
+    //Users
+    Users: 'users',
+    CreateUsers: 'create-users',
+
     //Reportes
     Reports: 'reports/:id',
     CompanyReport: 'company-reports',

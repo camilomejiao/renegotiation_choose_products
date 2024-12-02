@@ -1,29 +1,32 @@
-import { useEffect, useRef, useState } from "react";
-import {Col, Container, Row, Spinner} from "react-bootstrap";
+import {useEffect, useRef, useState} from "react";
+import {Col, Container, Dropdown, Row, Spinner} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendarAlt } from "react-icons/fa";
+import {FaCalendarAlt} from "react-icons/fa";
+import * as XLSX from 'xlsx';
 
 //Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
-import { Footer } from "../../shared/footer/Footer";
+import {HeaderImage} from "../../shared/header-image/HeaderImage";
+import {CompanyReportPrinting} from "./report/CompanyReportPrinting";
+import {Footer} from "../../shared/footer/Footer";
+import {format} from "date-fns";
+import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
 import imgFrame1 from "../../../../assets/image/icons/frame.png";
+import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
 
 //Services
-import { reportServices } from "../../../../helpers/services/ReportServices";
+import {reportServices} from "../../../../helpers/services/ReportServices";
 
-//
+//Css
 import "./CompanyReport.css";
-import { format } from "date-fns";
-import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
+//Enum
+import {StatusEnum} from "../../../../helpers/GlobalEnum";
 
 export const CompanyReport = () => {
 
@@ -57,21 +60,28 @@ export const CompanyReport = () => {
         return true;
     };
 
-    const handlePrintCompanyReport = async () => {
+    const handlePrintCompanyReport = async (reportType) => {
         if (! await validateDates(startDate, endDate)) {
             return;
         }
 
         setIsLoading(true);
 
-        // Llamar a la API con las fechas seleccionadas
         const formattedStartDate = format(startDate, 'yyyy-MM-dd');
         const formattedEndDate = format(endDate, 'yyyy-MM-dd');
 
         try {
-            const { data } = await reportServices.companyReport(formattedStartDate, formattedEndDate);
-            setCompanyInformation(data);
-            setIsReadyToPrint(true);
+            const { data, status } = await reportServices.companyReport(formattedStartDate, formattedEndDate);
+            if(status === StatusEnum.OK) {
+                if(reportType === 'pdf') {
+                    setCompanyInformation(data);
+                    setIsReadyToPrint(true);
+                }
+
+                if (reportType === 'excel') {
+                    handleExportToExcel(data);
+                }
+            }
         } catch (error) {
             console.error("Error obteniendo el reporte:", error);
         } finally {
@@ -103,6 +113,57 @@ export const CompanyReport = () => {
         });
     }
 
+    //
+    const handleExportToExcel = (reportData) => {
+        const transformedData = transformDataForExcel(reportData); // Transformamos los datos
+        exportToExcel(transformedData); // Exportamos a Excel
+    };
+
+    //
+    const transformDataForExcel = (data) => {
+
+        //Validamos la data
+        const distributors = Array.isArray(data) ? data : [data];
+
+        //.flatMap combina los pasos de iterar y aplanar la estructura de datos. Es útil cuando cada iteración genera múltiples filas
+        return distributors.flatMap((distributor) => {
+            const {nombre: distributorName, nit, cubs} = distributor;
+
+            return Object.values(cubs).flatMap((cub) => {
+                const {cub: cubId, nombre, cedula, departamento, municipio, vereda, productos: products} = cub;
+
+                return Object.values(products).map((product) => ({
+                    "Nombre Proveedor": distributorName,
+                    "NIT": nit,
+                    "CUB": cubId,
+                    "Beneficiario": nombre,
+                    "Cedula": cedula,
+                    "Departamento": departamento,
+                    "Municipio": municipio,
+                    "Vereda": vereda,
+                    "Producto": product.nombre,
+                    "Marca": product.marca,
+                    "Unidad": product.unidad,
+                    "Precio Unitario": product.precio,
+                    "Cantidad": product.cantidad,
+                    "Descuento": product.descuento + '%',
+                    "Total": product.total,
+                }));
+            });
+        });
+    };
+
+    //
+    const exportToExcel = (data) => {
+        //Formateamos los datos
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte");
+
+        //Descargar el archivo
+        XLSX.writeFile(workbook, "Reporte_Consolidado_De_Ventas.xlsx");
+    };
+
     const handleDownloadInstructions = () => {
         window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/2024-11-07_PAGOS_PROVEEDORES.pdf", "_blank");
     };
@@ -121,8 +182,8 @@ export const CompanyReport = () => {
 
     useEffect(() => {
         if (isReadyToPrint && companyInformation) {
-            printReport(); // Imprime cuando los datos estén listos
-            setIsReadyToPrint(false); // Reinicia el estado para evitar imprimir nuevamente
+            printReport();
+            setIsReadyToPrint(false);
         }
     }, [companyInformation, isReadyToPrint]);
 
@@ -145,9 +206,9 @@ export const CompanyReport = () => {
 
                 <div className="banner-reports">
                     <Container>
-                        <Row className="justify-content-center align-items-center">
+                        <Row className="justify-content-start align-items-center">
                             {/* Selectores de Fecha */}
-                            <Col md={4} className="d-flex flex-column">
+                            <Col md={3} className="d-flex flex-column">
                                 <div className="date-picker-wrapper">
                                     <FaCalendarAlt className="calendar-icon" />
                                     <DatePicker
@@ -159,7 +220,7 @@ export const CompanyReport = () => {
                                 </div>
                             </Col>
 
-                            <Col md={4} className="d-flex flex-column">
+                            <Col md={3} className="d-flex flex-column">
                                 <div className="date-picker-wrapper">
                                     <FaCalendarAlt className="calendar-icon" />
                                     <DatePicker
@@ -171,15 +232,23 @@ export const CompanyReport = () => {
                                 </div>
                             </Col>
 
-                            {/* Botón Reporte General */}
-                            <Col md={4} className="d-flex justify-content-center">
-                                <button
-                                    onClick={handlePrintCompanyReport}
-                                    className="report-button general"
-                                >
-                                    <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                    REPORTE GENERAL
-                                </button>
+                            {/* Dropdown Reporte General */}
+                            <Col md={3} className="d-flex flex-column justify-content-center">
+                                <Dropdown>
+                                    <Dropdown.Toggle className="report-button general">
+                                        <img src={imgFrame1} alt="reporte general" className="button-icon" />
+                                        REPORTE GENERAL
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={() => handlePrintCompanyReport('excel')}>
+                                            Exportar a Excel
+                                        </Dropdown.Item>
+                                        <Dropdown.Item onClick={() => handlePrintCompanyReport('pdf')}>
+                                            Exportar a PDF
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </Col>
 
                         </Row>
@@ -189,25 +258,25 @@ export const CompanyReport = () => {
                 <div className="banner-reports">
                     <Container>
                         <Row className="justify-content-around">
-                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center">
                                 <button onClick={handleDownloadInstructions} className="reporting-system-button general">
                                     <img src={imgFrame1} alt="icono general" className="button-icon" />
                                     INSTRUCTIVO PARA PAGOS
                                 </button>
                             </Col>
-                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
+                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center justify-content-md-end">
                                 <button onClick={handleDocumentsForPaymentRequest} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     DOCUMENTOS PARA SOLICITUD DE PAGO
                                 </button>
                             </Col>
-                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center">
                                 <button onClick={handleCollectionAccountFormat} className="reporting-system-button unique">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                    FORMATO DE CUENTA DE COBRO
                                 </button>
                             </Col>
-                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
+                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center justify-content-md-end">
                                 <button onClick={handleAccountList} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     SOLICITUD DE PAGO
@@ -221,7 +290,12 @@ export const CompanyReport = () => {
                 <div style={{ display: 'none' }}>
                     {companyInformation && (
                         <div ref={companyReportRef}>
-                            <CompanyReportPrinting titleReport={'CONSOLIDADO DE VENTAS'} dataReport={companyInformation} userData={''} isCompanyReport={true} />
+                            <CompanyReportPrinting
+                                titleReport={'CONSOLIDADO DE VENTAS'}
+                                dataReport={companyInformation}
+                                userData={''}
+                                isCompanyReport={true}
+                            />
                         </div>
                     )}
                 </div>

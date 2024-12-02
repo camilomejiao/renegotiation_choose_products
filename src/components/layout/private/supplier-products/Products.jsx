@@ -55,6 +55,23 @@ export const Products = () => {
             ),
         },
         {
+            field: "brand",
+            headerName: "MARCA",
+            flex: 2,
+            headerAlign: "left",
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
             field: "state",
             headerName: "ESTADO",
             flex: 1.5,

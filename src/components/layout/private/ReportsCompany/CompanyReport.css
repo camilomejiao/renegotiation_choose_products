@@ -1,6 +1,6 @@
 .banner-reports {
     background-color: #0094D1;
-    padding: 20px 0; /* Ajustamos el padding para centrar los elementos verticalmente */
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,7 +26,6 @@
 .custom-date-picker {
     padding-left: 40px; /* Deja espacio para el ícono */
     border-radius: 8px;
-    padding: 10px;
     border: 1px solid #007bff;
     background-color: #ffffff;
     font-size: 16px;

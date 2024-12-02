@@ -6,7 +6,7 @@ import {
     FaSignOutAlt,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed
+    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers
 } from 'react-icons/fa';
 import './Sidebar.css';
 
@@ -35,6 +35,10 @@ export const Sidebar = ({userAuth}) => {
         navigate(`/admin/products`)
     };
 
+    const handleUsers = () => {
+        navigate(`/admin/users`)
+    };
+
     const handleReport = () => {
         navigate(`/admin/company-reports`)
     };
@@ -47,7 +51,7 @@ export const Sidebar = ({userAuth}) => {
         <>
             <div className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <Container fluid className="sidebar-content">
-                    {userAuth.rol_id === 3 && (
+                    {(userAuth.rol_id === 3 || userAuth.rol_id === 1) && (
                         <div className="dropdown-content">
                             <div className="dropdown-item" onClick={handleApplication}>
                                 <FaUsersCog className="sidebar-icon" />
@@ -82,6 +86,10 @@ export const Sidebar = ({userAuth}) => {
                                         <div className="dropdown-item" onClick={handleProducts}>
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Productos</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handleUsers}>
+                                            <FaUsers className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Usuarios</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaChartPie className="sidebar-icon" />
