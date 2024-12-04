@@ -6,9 +6,14 @@ import {
     FaSignOutAlt,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers
+    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers, FaUser
 } from 'react-icons/fa';
+
+//Css
 import './Sidebar.css';
+
+//Enum
+import { RolesEnum } from "../../../../helpers/GlobalEnum";
 
 
 export const Sidebar = ({userAuth}) => {
@@ -51,7 +56,38 @@ export const Sidebar = ({userAuth}) => {
         <>
             <div className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <Container fluid className="sidebar-content">
-                    {(userAuth.rol_id === 3 || userAuth.rol_id === 1) && (
+                    {/* Perfil del Usuario */}
+                    {(userAuth.rol_id === RolesEnum.ADMIN) && (
+                        <Accordion>
+                            <Card className="accordion-card">
+                                <Accordion.Header>
+                                    <div className="accordion-toggle">
+                                        <FaUser className="sidebar-icon" />
+                                        {isOpen && <span className="sidebar-text">Perfil</span>}
+                                    </div>
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <div className="dropdown-content">
+                                        <div className="dropdown-item" onClick={handleApplication}>
+                                            <FaUsersCog className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handleUsers}>
+                                            <FaUsers className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Usuarios</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handleProducts}>
+                                            <FaDollyFlatbed className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Productos</span>}
+                                        </div>
+                                    </div>
+                                </Accordion.Body>
+                            </Card>
+                        </Accordion>
+                    )}
+
+                    {/* Gestión de Usuarios para Roles Administrativos */}
+                    {(userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) && (
                         <div className="dropdown-content">
                             <div className="dropdown-item" onClick={handleApplication}>
                                 <FaUsersCog className="sidebar-icon" />
@@ -59,9 +95,10 @@ export const Sidebar = ({userAuth}) => {
                             </div>
                         </div>
                     )}
-                    {userAuth.rol_id === 2 && (
+
+                    {/* Acordeón para Proveedores */}
+                    {(userAuth.rol_id === RolesEnum.DELIVER) && (
                         <Accordion>
-                            {/* Acordeón Menú 2 */}
                             <Card className="accordion-card">
                                 <Accordion.Header>
                                     <div className="accordion-toggle">
@@ -87,10 +124,6 @@ export const Sidebar = ({userAuth}) => {
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Productos</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleUsers}>
-                                            <FaUsers className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Usuarios</span>}
-                                        </div>
                                         <div className="dropdown-item" onClick={handleReport}>
                                             <FaChartPie className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}
@@ -100,7 +133,9 @@ export const Sidebar = ({userAuth}) => {
                             </Card>
                         </Accordion>
                     )}
-            </Container>
+                </Container>
+
+                {/* Toggle Sidebar */}
                 <div className="logout" onClick={handleLogout}>
                     <FaSignOutAlt className="logout-icon" />
                     {isOpen && <span className="sidebar-text">Salir</span>}
@@ -110,5 +145,6 @@ export const Sidebar = ({userAuth}) => {
                 </div>
             </div>
         </>
+
     );
 };

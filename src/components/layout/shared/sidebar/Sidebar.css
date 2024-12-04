@@ -110,10 +110,10 @@
     bottom: 80px;
     width: 100%;
     display: flex;
-    justify-content: center;
     cursor: pointer;
     font-size: 24px;
     color: white;
+    margin-left: 40px;
 }
 
 /* Estilos responsivos para pantallas medianas (hasta 768px) */
