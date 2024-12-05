@@ -385,7 +385,7 @@ export const AddProducts = () => {
                             onClick={handleClearSearch}
                             className="button-order-responsive"
                         >
-                            Eliminar busqueda <FaBroom/>
+                            Limpiar busqueda <FaBroom/>
                         </Button>
                         <Button
                             variant="outline-success"
