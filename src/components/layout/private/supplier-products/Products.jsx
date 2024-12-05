@@ -11,8 +11,6 @@ import { Footer } from "../../shared/footer/Footer";
 //Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
-
-
 export const Products = () => {
 
     const navigate = useNavigate();

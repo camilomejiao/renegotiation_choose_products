@@ -1,7 +1,7 @@
 import {Global} from "../Global";
 import {authTokenService} from "./AuthTokenService";
 
-class ProdustServices {
+class ProductServices {
 
     constructor() {
         this.baseUrl = Global.url + "producto/";
@@ -27,12 +27,13 @@ class ProdustServices {
     }
 
     save(products) {
-        const url = this.buildUrl(`orden/`);
+        const url = this.buildUrl(`bulk/crear/`);
+        console.log(url);
         return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: JSON.stringify(products),
+             method: "POST",
+             body: JSON.stringify(products),
         });
     }
 }
 
-export const produstServices = new ProdustServices();
+export const productServices = new ProductServices();

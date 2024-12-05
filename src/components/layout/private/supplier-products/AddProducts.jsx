@@ -8,16 +8,18 @@ import {FaBroom, FaFastBackward, FaSave} from "react-icons/fa";
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { Footer } from "../../shared/footer/Footer";
+import AlertComponentServices from "../../shared/alert/AlertComponentServices";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 //Services
-import { produstServices } from "../../../../helpers/services/ProdustServices";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import { productServices } from "../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enum
 import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import {authService} from "../../../../helpers/services/Auth";
 
 export const AddProducts = () => {
 
@@ -29,23 +31,65 @@ export const AddProducts = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
+    //
+    const getInfoSupplier = async () => {
+        try {
+            const { data, status } = await supplierServices.getInfoSupplier();
+            if (status === StatusEnum.OK) {
+
+                const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
+                    const [name] = value.split(" : ").map(str => str.trim());
+                    return {
+                        field: `price_${key}`,
+                        headerName: `Precio - ${name}`,
+                        width: 150,
+                        editable: true,
+                        renderCell: (params) => (
+                            <TextField
+                                type="text"
+                                value={formatPrice(params.value)} // Formatea el valor antes de mostrarlo
+                                onChange={(e) => {
+                                    const value = parseFloat(e.target.value.replace(/[^\d]/g, ""));
+                                    if (!isNaN(value)) {
+                                        params.api.updateRows([{ id: params.row.id, [`price_${key}`]: value }]);
+                                    }
+                                }}
+                                fullWidth
+                            />
+                        ),
+                    };
+                });
+
+                setDynamicMunicipalityColumns(newDynamicColumns);
+                return newDynamicColumns; // Devuelve las columnas dinámicas
+            }
+        } catch (error) {
+            console.log(error);
+            handleError(error, "Error buscando productos:");
+            return [];
+        }
+    };
+
+    //
     const getUnitOptions = async () => {
         try {
-            const {data, status} = await produstServices.getUnitList();
-            console.log(data);
+            const {data, status} = await productServices.getUnitList();
             if(status === StatusEnum.OK) setUnitOptions(data);
+            return data;
         } catch (error) {
             console.log(error)
             handleError(error, 'Error buscando productos:');
         }
     }
 
+    //
     const getCategoryOptions = async () => {
         try {
-            const {data, status} = await produstServices.getCategoryList();
-            console.log(data);
+            const {data, status} = await productServices.getCategoryList();
             if(status === StatusEnum.OK) setCategoryOptions(data);
+            return data;
         } catch (error) {
             handleError(error, 'Error buscando productos:');
         }
@@ -56,6 +100,7 @@ export const AddProducts = () => {
         {field: "name", headerName: "Nombre", width: 150, editable: true},
         {field: "description", headerName: "Descripción", width: 200, editable: true},
         {field: "brand", headerName: "Marca", width: 200, editable: true},
+        {field: "reference", headerName: "Referencia", width: 200, editable: true},
         {
             field: "unit",
             headerName: "Unidad",
@@ -100,93 +145,68 @@ export const AddProducts = () => {
         },
     ];
 
-    const selectedMunicipalities = ["Municipio A", "Municipio B", "Municipio C"];
-
-    const dynamicMunicipalityColumns = selectedMunicipalities.map((municipio) => ({
-        field: `price_${municipio}`,
-        headerName: `Precio - ${municipio}`,
-        width: 150,
-        editable: true,
-        renderCell: (params) => (
-            <TextField
-                type="text"
-                value={formatPrice(params.value)} // Formatea el valor antes de mostrarlo
-                onChange={(e) => {
-                    const value = parseFloat(e.target.value.replace(/[^\d]/g, "")); // Remueve caracteres no numéricos
-                    if (!isNaN(value)) {
-                        params.api.updateRows([{id: params.row.id, [`price_${municipio}`]: value}]);
-                    }
-                }}
-                fullWidth
-            />
-        ),
-    }));
-
     const columns = [...baseColumns, ...dynamicMunicipalityColumns];
 
+    //
     const formatPrice = (value) => {
         if (!value) return "";
         return new Intl.NumberFormat('es-ES', {style: 'currency', currency: 'COP'}).format(value);
     };
 
-    const handleClipboard = (event) => {
+    //
+    const handleClipboard = async (event) => {
         const clipboardData = event.clipboardData.getData("text");
 
-        //Detectamos la separación la momento del ctrl + v (tabulación o coma)
+        //Detectamos el separador
         const separator = clipboardData.includes("\t") ? "\t" : clipboardData.includes(",") ? "," : null;
 
         if (!separator) {
-            console.error("No se detectó un separador válido en los datos pegados, debe ser tabulacion o coma");
+            handleError('Error', 'No se detectó un separador válido en los datos pegados, debe ser tabulación o coma.');
             return;
         }
 
-        // Procesar los datos pegados
+        // Esperar a que se carguen las columnas dinámicas
+        const dynamicColumns = await getInfoSupplier();
+        const units = await getUnitOptions();
+        const categories = await getCategoryOptions();
+
+        //Procesamos los datos pegados
         const parsedData = clipboardData
             .split("\n")
-            .filter((row) => row.trim() !== "") // Filtrar filas vacías
-            .map((row) => row.split(separator).map((cell) => cell.trim())); // Limpiar espacios extra
+            .filter((row) => row.trim() !== "") //Filtrar filas vacías
+            .map((row) => row.split(separator).map((cell) => cell.trim()));
 
         const newRows = parsedData.map((rowData, index) => {
             const rowObject = {};
 
-            // Asignar valores a las columnas base
+            //Asignamos valores a las columnas base
             baseColumns.forEach((col, colIndex) => {
                 if (col.field === "unit") {
-                    // Buscar la unidad correspondiente
-                    const matchedUnit = unitOptions.find(option => option.nombre.trim().toLowerCase() === rowData[colIndex]?.trim().toLowerCase());
-                    rowObject[col.field] = matchedUnit
-                        ? matchedUnit.id // Asigna el `id` si la unidad existe
-                        : unitOptions[0]?.id || 398;
+                    const matchedUnit = units.find(option => option.nombre.trim().toLowerCase() === rowData[colIndex]?.trim().toLowerCase());
+                    rowObject[col.field] = matchedUnit ? matchedUnit.id : units[0]?.id || 398;
                 } else if (col.field === "category") {
-                    // Buscar la categoría correspondiente
-                    const matchedCategory = categoryOptions.find(option => option.nombre.trim().toLowerCase() === rowData[colIndex]?.trim().toLowerCase());
-                    rowObject[col.field] = matchedCategory
-                        ? matchedCategory.id // Asigna el `id` si la categoría existe
-                        : categoryOptions[0]?.id || 401;
+                    const matchedCategory = categories.find(option => option.nombre.trim().toLowerCase() === rowData[colIndex]?.trim().toLowerCase());
+                    rowObject[col.field] = matchedCategory ? matchedCategory.id : categories[0]?.id || 401;
                 } else {
-                    // Otros campos base
                     rowObject[col.field] = rowData[colIndex] || getDefaultBaseValue(col.field);
                 }
             });
 
-            // Asignar valores a las columnas dinámicas (municipios)
-            dynamicMunicipalityColumns.forEach((col, colIndex) => {
-                const dynamicFieldIndex = baseColumns.length + colIndex; // Índice en los datos pegados
+            //Asignamos valores a las columnas dinámicas
+            dynamicColumns.forEach((col, colIndex) => {
+                const dynamicFieldIndex = baseColumns.length + colIndex; //Índice basado en el orden
                 rowObject[col.field] = rowData[dynamicFieldIndex]
-                    ? parseFloat(rowData[dynamicFieldIndex].replace(/[^\d.]/g, "")) // Asegurar que sea numérico
-                    : 0; // Default a 0 si está vacío
+                    ? parseFloat(rowData[dynamicFieldIndex].replace(/[^\d.]/g, ""))
+                    : '0.00';
             });
-
-            // Generar un ID único si no está en los datos pegados
-            rowObject.id = rowObject.id || rows.length + index + 1;
 
             return rowObject;
         });
 
-        // Actualizar los datos
-        setRows(newRows);
-        setFilteredRows(newRows); // Sincronizar con los datos filtrados
+        setRows(newRows); //Actualizamos los datos
+        setFilteredRows(newRows); //Sincronizamos con los datos filtrados
     };
+
 
     const getDefaultBaseValue = (field) => {
         const defaultValues = {
@@ -219,23 +239,67 @@ export const AddProducts = () => {
         window.location.reload();
     };
 
+    //Manejo principal para guardar productos
     const handleSaveProducts = async () => {
         if (!rows || rows.length === 0) {
-            alert("No hay productos para guardar.");
+            handleError('Error', 'No hay productos para guardar.');
             return;
         }
 
-        setLoading(true); // Mostrar indicador de carga
-        console.log('rows: ', rows);
-        const batches = chunkArray(rows, 500); // Dividir en lotes de 500
-        console.log('batches: ', batches);
-        for (const batch of batches) {
-            //await sendBatchToService(batch); // Enviar cada lote al servicio
+        try {
+            setLoading(true); // Mostrar indicador de carga
+            const transformedData = transformData(rows); // Transformar los datos
+            const batches = chunkArray(transformedData, 500); // Dividir en lotes de 500
+
+            await sendBatchesInParallel(batches); // Enviar lotes en paralelo
+
+            AlertComponentServices.success('', 'Todos los productos se han creado exitosamente');
+
+            //Limpiamos la tabla
+            setRows([]);
+            setFilteredRows([]);
+        } catch (error) {
+            console.error('Error al guardar productos:', error.message);
+            handleError('Error', 'Hubo un problema al guardar los productos.');
+        } finally {
+            setLoading(false); // Ocultar indicador de carga
         }
-        setLoading(false); // Ocultar indicador de carga
     };
 
-    // Función para dividir en lotes o pedazos el array
+    //Transformar datos para ajustarlos al formato esperado por la API
+    const transformData = (inputData) => {
+        const supplierId = parseInt(getSupplierId());
+
+        return inputData.map(product => ({
+            proveedor_id: supplierId,
+            nombre: product.name,
+            especificacion_tecnicas: product.description,
+            referencia: product.reference,
+            marca_comercial: product.brand,
+            unidad_medida: product.unit,
+            categoria_producto_id: product.category,
+            valor_unitario: 0,
+            municipios: extractMunicipios(product), // Extraer municipios dinámicamente
+        }));
+    };
+
+    //Obtener el ID del proveedor
+    const getSupplierId = () => {
+        return authService.getSupplierId();
+    };
+
+    //Extraer los precios de municipios dinámicos
+    const extractMunicipios = (product) => {
+        return Object.keys(product)
+            .filter(key => key.startsWith("price_")) // Filtrar claves que empiezan con "price_"
+            .reduce((acc, key) => {
+                const municipioId = key.split("_")[1]; // Obtener el ID del municipio
+                acc[municipioId] = product[key]; // Asignar el precio al municipio
+                return acc;
+            }, {});
+    };
+
+    //Dividir un array en lotes
     const chunkArray = (array, chunkSize) => {
         const chunks = [];
         for (let i = 0; i < array.length; i += chunkSize) {
@@ -244,21 +308,43 @@ export const AddProducts = () => {
         return chunks;
     };
 
-    //
+    //Enviar lotes en paralelo con control de concurrencia
+    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
+        for (let i = 0; i < batches.length; i += maxConcurrent) {
+            const batchChunk = batches.slice(i, i + maxConcurrent);
+
+            await Promise.all(
+                batchChunk.map(async (batch) => {
+                    try {
+                        await sendBatchToService(batch);
+                    } catch (error) {
+                        console.error(`Error al enviar el lote: ${error.message}`);
+                        AlertComponentServices.error('Error', `Error al enviar el lote: ${error.message}`);
+                    }
+                })
+            );
+        }
+    };
+
+    //Enviar un lote al servicio
     const sendBatchToService = async (batch) => {
         try {
-            const response = await produstServices.save();
-            if (!response.ok) throw new Error("Error al enviar el lote");
-            return await response.json();
+            const { status } = await productServices.save(batch);
+
+            if (status === StatusEnum.CREATE) {
+                console.log('Lote enviado exitosamente:', batch);
+            } else {
+                throw new Error(`Estado inválido (${status}) al enviar el lote`);
+            }
         } catch (error) {
-            console.error("Error al enviar el lote:", error);
+            console.error('Error al enviar el lote:', error.message);
+            throw error; // Re-lanzar el error para que sea manejado en sendBatchesInParallel
         }
     };
 
     //Maneja el error en caso de fallo de la llamada
-    const handleError = (error, title) => {
-        const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-        AlertComponentServices.error(title,errorMessage);
+    const handleError = (error, title, ) => {
+        AlertComponentServices.error(error, title);
     };
 
     useEffect(() => {
@@ -269,6 +355,7 @@ export const AddProducts = () => {
     }, [rows]);
 
     useEffect(() => {
+        getInfoSupplier();
         getUnitOptions();
         getCategoryOptions();
     }, []);
@@ -318,6 +405,12 @@ export const AddProducts = () => {
                         </Button>
                     </div>
                 </div>
+
+                {loading && (
+                    <div className="overlay">
+                        <div className="loader">Guardando Productos...</div>
+                    </div>
+                )}
 
                 <div style={{height: 600, width: "100%"}}>
                     <DataGrid
