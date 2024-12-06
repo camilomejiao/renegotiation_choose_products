@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { SearchUserForm } from "../search-user-form/SearchUserForm";
 import { LocationModal } from "../../shared/Modals/LocationModal";
 
 //Enums
-import {ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
 
 //Services
 import { supplierServices } from "../../../../helpers/services/SupplierServices";

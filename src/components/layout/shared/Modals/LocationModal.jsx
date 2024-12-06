@@ -3,12 +3,12 @@ import { useState } from "react";
 import AlertComponent from "../alert/AlertComponent";
 
 export const LocationModal = ({ show, optionsArray, onConfirm }) => {
-    const [selectedOption, setSelectedOption] = useState(null); // Manejar como objeto seleccionado
+    const [selectedOption, setSelectedOption] = useState(null);
 
     const handleOptionChange = (event) => {
-        const selectedValue = parseInt(event.target.value, 10); // Asegurar que sea un número
+        const selectedValue = parseInt(event.target.value);
         const selectedLocation = optionsArray.find(option => option.value === selectedValue);
-        setSelectedOption(selectedLocation); // Guardar el objeto completo
+        setSelectedOption(selectedLocation);
     };
 
     const handleConfirm = () => {
@@ -16,7 +16,7 @@ export const LocationModal = ({ show, optionsArray, onConfirm }) => {
             AlertComponent.warning('', "Por favor, selecciona una opción.");
             return;
         }
-        onConfirm(selectedOption); // Enviar el objeto completo
+        onConfirm(selectedOption);
     };
 
     return (
