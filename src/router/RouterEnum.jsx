@@ -4,8 +4,8 @@ export const RouterEnum = {
     RouterAdmin: '/admin',
 
     //Ordenes de compra
-    CreateOrder: 'create_order/:id',
-    EditOrder: 'edit_order/:order_id/:cub_id',
+    CreateOrder: 'create-order/:id',
+    EditOrder: 'edit-order/:order_id/:cub_id',
 
     //Entregas
     SearchUserForDeliveries: 'search-user-for-deliveries',
@@ -15,6 +15,7 @@ export const RouterEnum = {
     //Productos
     Products: 'products',
     CreateProducts: 'create-products',
+    EditProduct: 'edit-product/:id',
 
     //Users
     Users: 'users',

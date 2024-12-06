@@ -11,7 +11,7 @@ import {HeaderImage} from "../../shared/header-image/HeaderImage";
 import {CompanyReportPrinting} from "./report/CompanyReportPrinting";
 import {Footer} from "../../shared/footer/Footer";
 import {format} from "date-fns";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../shared/alert/AlertComponent";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -26,7 +26,7 @@ import {reportServices} from "../../../../helpers/services/ReportServices";
 import "./CompanyReport.css";
 
 //Enum
-import {StatusEnum} from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 export const CompanyReport = () => {
 
@@ -48,12 +48,12 @@ export const CompanyReport = () => {
 
     const validateDates = async (startDate, endDate) => {
         if (!startDate || !endDate) {
-            AlertComponentServices.error('Oops...', 'Por favor seleccione ambas fechas.');
+            AlertComponent.error('Oops...', 'Por favor seleccione ambas fechas.');
             return false;
         }
 
         if (endDate < startDate) {
-            AlertComponentServices.error('Oops...', 'La fecha final no puede ser anterior a la fecha inicial.');
+            AlertComponent.error('Oops...', 'La fecha final no puede ser anterior a la fecha inicial.');
             return false;
         }
 
@@ -72,7 +72,7 @@ export const CompanyReport = () => {
 
         try {
             const { data, status } = await reportServices.companyReport(formattedStartDate, formattedEndDate);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 if(reportType === 'pdf') {
                     setCompanyInformation(data);
                     setIsReadyToPrint(true);

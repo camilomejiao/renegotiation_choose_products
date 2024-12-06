@@ -19,7 +19,7 @@ import { Footer } from "../../../shared/footer/Footer";
 import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 import { UserInformation } from "../../user-information/UserInformation";
 import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
-import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../../shared/alert/AlertComponent";
 
 //Services
 import { userService } from "../../../../../helpers/services/UserServices";
@@ -27,7 +27,7 @@ import { productForPurchaseOrderServices } from "../../../../../helpers/services
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Enum
-import { StatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 export const CreateOrder = () => {
 
@@ -50,7 +50,7 @@ export const CreateOrder = () => {
         try {
             const { data, status} = await userService.userInformation(cubId);
 
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
                 setSaldoRestante(data.monto_proveedores);
             }
@@ -69,7 +69,7 @@ export const CreateOrder = () => {
 
             try {
                 const { data, status } = await productForPurchaseOrderServices.searchProduct(searchWord);
-                if (status === StatusEnum.OK) {
+                if (status === ResponseStatusEnum.OK) {
                     const formattedOptions = data.map((product) => ({
                         value: product.id,
                         label: product.nombre,
@@ -180,15 +180,15 @@ export const CreateOrder = () => {
 
     //Maneja la respuesta del servicio y muestra la alerta correspondiente
     const handleSaveResponse = (data, status) => {
-        if (status === StatusEnum.CREATE) {
+        if (status === ResponseStatusEnum.CREATE) {
             setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
-            AlertComponentServices.success('Bien hecho!', 'Productos guardados exitosamente');
+            AlertComponent.success('Bien hecho!', 'Productos guardados exitosamente');
             resetProductList();
             window.location.reload();
         }
 
-        if (status === StatusEnum.BAD_REQUEST) {
-            AlertComponentServices.error('Error al guardar los productos', data.items[0].discount);
+        if (status === ResponseStatusEnum.BAD_REQUEST) {
+            AlertComponent.error('Error al guardar los productos', data.items[0].discount);
         }
     };
 
@@ -203,14 +203,14 @@ export const CreateOrder = () => {
     //Maneja el error en caso de fallo de la llamada
     const handleError = (error, title) => {
         const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
-        AlertComponentServices.error(title,errorMessage);
+        AlertComponent.error(title,errorMessage);
     };
 
     const getHeadlineReport = async (cubId) => {
         setIsLoading(true);
         try {
             const { data, status} = await reportServices.companyAndUserReport(cubId);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReportLoading(true);
             }

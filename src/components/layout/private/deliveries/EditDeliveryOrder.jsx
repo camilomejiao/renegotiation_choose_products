@@ -9,9 +9,9 @@ import { FaSync } from "react-icons/fa";
 import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
 
 //Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import Swal from "sweetalert2";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../shared/alert/AlertComponent";
 
 
 //Opciones para los productos a entregar
@@ -149,7 +149,7 @@ export const EditDeliveryOrder = () => {
     const getDeliveryById = async (id) => {
         try {
             const {data, status} = await deliveriesServices.getProductsFromADelivery(id);
-            if (status === StatusEnum.OK) {
+            if (status === ResponseStatusEnum.OK) {
                 setCubId(data.cub?.id);
                 setListDeliveryProducts(normalizeRows(data.items));
             }
@@ -201,11 +201,11 @@ export const EditDeliveryOrder = () => {
             };
 
             const {data, status} = await deliveriesServices.editDelivery(product.id, dataSaveProducts);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Producto actualizado correctamente.')
             }
 
-            if(status === StatusEnum.BAD_REQUEST) {
+            if(status === ResponseStatusEnum.BAD_REQUEST) {
                 showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
             }
         } catch (error) {
@@ -215,12 +215,12 @@ export const EditDeliveryOrder = () => {
 
     //
     const showAlert = (title, message) => {
-        AlertComponentServices.success(title, message);
+        AlertComponent.success(title, message);
     };
 
     //
     const showError = (title, message) => {
-        AlertComponentServices.error(title, message);
+        AlertComponent.error(title, message);
     };
 
     const handleBack = () => {

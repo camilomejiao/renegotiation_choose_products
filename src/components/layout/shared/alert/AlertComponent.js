@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 
-class AlertComponentServices {
+class AlertComponent {
     static success(title, message) {
         Swal.fire({
             title: title,
@@ -42,4 +42,4 @@ class AlertComponentServices {
     }
 }
 
-export default AlertComponentServices;
+export default AlertComponent;

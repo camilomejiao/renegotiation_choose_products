@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import {FaBroom, FaBrush, FaPencilAlt, FaSearch, FaTrash} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -10,14 +11,16 @@ import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople
 import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseOrderServices";
 
 // Enum
-import { StatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
 import "./OrderReport.css";
-import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
-import {useNavigate} from "react-router-dom";
+import AlertComponent from "../../../shared/alert/AlertComponent";
 
-const PAGE_SIZE = 10;
+//Components
+import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
+
+const PAGE_SIZE = 100;
 
 export const OrderReport = () => {
 
@@ -41,26 +44,26 @@ export const OrderReport = () => {
         { field: "fecha_registro", headerName: "FECHA DE REGISTRO", flex: 1 },
         { field: "cub_id", headerName: "CUB", flex: 1 },
         { field: "cub_identificacion", headerName: "DOCUMENTO", flex: 1 },
-        {
-            field: "valor_total", headerName: "VALOR TOTAL", flex: 1,
-            valueFormatter: (params) => `$${params.toLocaleString("es-CO")}`,
+        { field: "valor_total", headerName: "VALOR TOTAL", flex: 1,
+          valueFormatter: (params) => `$${params.toLocaleString("es-CO")}`,
         },
         {
             field: "actions",
             headerName: "ACCIONES",
             flex: 1,
-            renderCell: (params) => (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                    {/*<FaPencilAlt*/}
-                    {/*    style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}*/}
-                    {/*    onClick={() => handleEditClick(params.row)}*/}
-                    {/*/>*/}
-                    <FaTrash
-                        style={{ cursor: "pointer", color: "red" }}
-                        onClick={() => handleDeleteClick(params.row.id)}
-                    />
-                </div>
-            ),
+            renderCell: (params) => {
+                return (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                        {/*<FaPencilAlt*/}
+                        {/*    style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}*/}
+                        {/*    onClick={() => handleEditClick(params.row)}*/}
+                        {/*/>*/}
+                        <FaTrash
+                            style={{ cursor: "pointer", color: "red" }}
+                            onClick={() => handleDeleteClick(params.row.id)}
+                        />
+                    </div>
+                )},
             sortable: false,
             filterable: false,
         }
@@ -73,10 +76,12 @@ export const OrderReport = () => {
             const { page, pageSize } = paginationModel;
             const url = buildUrl(page + 1, pageSize, isSearchActive ? searchQuery : "");
 
-            const { status, data } = await fetchPurchaseOrders(url);
-            if (status === StatusEnum.OK) {
+            const { data, status } = await fetchPurchaseOrders(url);
+            if (status === ResponseStatusEnum.OK) {
                 updateOrderData(data);
-            } else {
+            }
+
+            if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
                 showError("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
@@ -124,17 +129,17 @@ export const OrderReport = () => {
 
     //
     const showAlert = (title, message) => {
-        AlertComponentServices.success(title, message);
+        AlertComponent.success(title, message);
     };
 
     // Muestra un error con SweetAlert
     const showError = (title, message) => {
-        AlertComponentServices.error(title, message);
+        AlertComponent.error(title, message);
     };
 
     // Maneja el clic en el ícono de eliminación
     const handleEditClick = (data) => {
-        navigate(`/admin/edit_order/${data.id}/${data.cub_id}`)
+        navigate(`/admin/edit-order/${data.id}/${data.cub_id}`)
     };
 
     // Maneja el clic en el ícono de eliminación
@@ -153,7 +158,7 @@ export const OrderReport = () => {
     const handleConfirmDelete = async () => {
         try {
             const { status } = await purchaseOrderServices.removeOrder(selectedId);
-            if (status === StatusEnum.NO_CONTENT) {
+            if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert("Bien hecho!", "Orden eliminada exitosamente!");
                 await getPurcharseOrder();
                 handleCloseModal();
@@ -230,8 +235,8 @@ export const OrderReport = () => {
 
                     <div className="responsive-container">
                         <DataGrid
-                            rows={purcharseOrder}
                             columns={columns}
+                            rows={purcharseOrder}
                             rowCount={rowCountState}
                             loading={isLoading}
                             paginationModel={paginationModel}
@@ -267,20 +272,16 @@ export const OrderReport = () => {
                     </div>
                 </div>
 
-                <Modal show={showModal} onHide={handleCloseModal}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Confirmación</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>¿Estás seguro de que deseas eliminar este elemento?</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseModal}>
-                            Cancelar
-                        </Button>
-                        <Button variant="danger" onClick={handleConfirmDelete}>
-                            Eliminar
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+                <ConfirmationModal
+                    show={showModal}
+                    title="Confirmación de Eliminación"
+                    message="¿Estás seguro de que deseas eliminar este elemento?"
+                    confirmLabel="Eliminar"
+                    cancelLabel="Cancelar"
+                    onConfirm={handleConfirmDelete}
+                    onClose={handleCloseModal}
+                />
+
             </div>
         </>
     );

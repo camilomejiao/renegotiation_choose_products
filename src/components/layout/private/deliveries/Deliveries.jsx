@@ -15,7 +15,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Components
 import { Footer } from "../../shared/footer/Footer";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../shared/alert/AlertComponent";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -29,7 +29,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 import './Deliveries.css';
 
 //Enum
-import { RolesEnum, StatusEnum } from "../../../../helpers/GlobalEnum";
+import { RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -60,12 +60,12 @@ export const Deliveries = () => {
         try {
             if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) {
                 const { status, data } = await deliveriesServices.getSuppliers(params.id);
-                if (status === StatusEnum.OK) {
+                if (status === ResponseStatusEnum.OK) {
                     setSuppliers(data);
                 }
             }
 
-            if (userAuth.rol_id === RolesEnum.DELIVER) {
+            if (userAuth.rol_id === RolesEnum.SUPPLIER) {
                 const itemId = await authService.getSupplierId();
                 const singleSupplier = [{ id: itemId }];
                 setSuppliers(singleSupplier);
@@ -79,7 +79,7 @@ export const Deliveries = () => {
     const getListDeliveriesToUser = async (cubId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setListDeliveriesToUser(normalizeDeliveryRows(data));
             }
         } catch (error) {
@@ -362,7 +362,7 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
-            if (status === StatusEnum.OK) {
+            if (status === ResponseStatusEnum.OK) {
                 const updatedData = data.map(product => ({
                     ...product,
                     estado: 1,
@@ -371,7 +371,7 @@ export const Deliveries = () => {
                 setDeliveryProducts(normalizeProductsToBeDeliveredRows(updatedData));
             }
 
-            if(status === StatusEnum.BAD_REQUEST) {
+            if(status === ResponseStatusEnum.BAD_REQUEST) {
                 showError("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
@@ -412,13 +412,13 @@ export const Deliveries = () => {
             try {
                 const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
-                if (status === StatusEnum.CREATE) {
+                if (status === ResponseStatusEnum.CREATE) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
                 }
 
-                if (status === StatusEnum.BAD_REQUEST ||
-                    status === StatusEnum.INTERNAL_SERVER_ERROR ||
-                    status !== StatusEnum.CREATE) {
+                if (status === ResponseStatusEnum.BAD_REQUEST ||
+                    status === ResponseStatusEnum.INTERNAL_SERVER_ERROR ||
+                    status !== ResponseStatusEnum.CREATE) {
                     showError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {
@@ -502,12 +502,12 @@ export const Deliveries = () => {
             const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
 
             const {data, status} = await deliveriesServices.saveProducts(dataSupplier, params.id, dataSaveProducts);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Productos entregados correctamente.')
                 window.location.reload();
             }
 
-            if(status === StatusEnum.BAD_REQUEST) {
+            if(status === ResponseStatusEnum.BAD_REQUEST) {
                 showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
             }
         } catch (error) {
@@ -521,12 +521,12 @@ export const Deliveries = () => {
 
     //
     const showAlert = (title, message) => {
-        AlertComponentServices.success(title, message)
+        AlertComponent.success(title, message)
     };
 
     //
     const showError = (title, message) => {
-        AlertComponentServices.error(title, message);
+        AlertComponent.error(title, message);
     };
 
     useEffect(() => {

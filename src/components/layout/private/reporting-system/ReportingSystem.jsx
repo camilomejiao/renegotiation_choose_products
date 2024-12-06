@@ -23,7 +23,7 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //Css
 import './ReportingSystem.css';
-import {StatusEnum} from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 
 export const ReportingSystem = () => {
@@ -56,7 +56,7 @@ export const ReportingSystem = () => {
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userService.userInformation(cubId);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
             }
         } catch (error) {
@@ -99,7 +99,7 @@ export const ReportingSystem = () => {
         setIsLoading(true);
         try {
             const { data, status} = await reportServices.headlineReport(cubId);
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setHeadLineInformation(data);
                 setIsReadyToPrintHeadLineInformation(true);
             }

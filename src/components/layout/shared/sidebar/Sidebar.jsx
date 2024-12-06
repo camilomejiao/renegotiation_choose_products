@@ -97,7 +97,7 @@ export const Sidebar = ({userAuth}) => {
                     )}
 
                     {/* Acordeón para Proveedores */}
-                    {(userAuth.rol_id === RolesEnum.DELIVER) && (
+                    {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>

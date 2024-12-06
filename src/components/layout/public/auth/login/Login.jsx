@@ -17,7 +17,7 @@ import useAuth from "../../../../../hooks/useAuth";
 
 //Services
 import { authService } from "../../../../../helpers/services/Auth";
-import AlertComponentServices from "../../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../../shared/alert/AlertComponent";
 
 const initialValues = {
     email: "",
@@ -51,9 +51,9 @@ export const Login = () => {
 
         //console.log(respServicesLogin);
         if(!respServicesLogin.access && !respServicesLogin.refresh) {
-            AlertComponentServices.error('Oops...', respServicesLogin.message);
+            AlertComponent.error('Oops...', respServicesLogin.message);
         } else {
-            AlertComponentServices.success('Bien hecho!', respServicesLogin.message);
+            AlertComponent.success('Bien hecho!', respServicesLogin.message);
             setAuth(respServicesLogin);
             setTimeout(() => {
                 window.location.reload();

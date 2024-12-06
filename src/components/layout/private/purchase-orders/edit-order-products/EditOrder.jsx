@@ -13,7 +13,7 @@ import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
 import { userService } from "../../../../../helpers/services/UserServices";
 
 //Enum
-import {StatusEnum} from "../../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
 
 
 export const EditOrder = () => {
@@ -29,7 +29,7 @@ export const EditOrder = () => {
         try {
             const { data, status} = await userService.userInformation(cubId);
 
-            if(status === StatusEnum.OK) {
+            if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
                 setSaldoRestante(data.monto_proveedores);
             }

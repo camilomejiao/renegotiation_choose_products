@@ -7,11 +7,11 @@ import PropTypes from "prop-types";
 import { userService } from "../../../../helpers/services/UserServices";
 
 //Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Css
 import './SearchUserForm.css';
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../shared/alert/AlertComponent";
 
 export const SearchUserForm = ({ onSearchSuccess }) => {
     const [searchValue, setSearchValue] = useState("");
@@ -49,17 +49,17 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
     //Función para mostrar alertas
     function showAlert(type, title, message) {
         if (type === 'error') {
-            AlertComponentServices.error(title, message);
+            AlertComponent.error(title, message);
         } else if (type === 'success') {
-            AlertComponentServices.success(title, message);
+            AlertComponent.success(title, message);
         }
     }
 
     //Función para manejar errores de búsqueda
     function handleSearchErrors(status) {
         const errorMessages = {
-            [StatusEnum.UNAUTHORIZED]: 'Unauthorized access',
-            [StatusEnum.INTERNAL_SERVER_ERROR]: 'Error al buscar este usuario',
+            [ResponseStatusEnum.UNAUTHORIZED]: 'Unauthorized access',
+            [ResponseStatusEnum.INTERNAL_SERVER_ERROR]: 'Error al buscar este usuario',
         };
 
         if (errorMessages[status]) {

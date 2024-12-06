@@ -8,7 +8,7 @@ import {FaBroom, FaFastBackward, FaSave} from "react-icons/fa";
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { Footer } from "../../shared/footer/Footer";
-import AlertComponentServices from "../../shared/alert/AlertComponentServices";
+import AlertComponent from "../../shared/alert/AlertComponent";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -18,7 +18,7 @@ import { productServices } from "../../../../helpers/services/ProductServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enum
-import { StatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import {authService} from "../../../../helpers/services/Auth";
 
 export const AddProducts = () => {
@@ -34,10 +34,10 @@ export const AddProducts = () => {
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
     //
-    const getInfoSupplier = async () => {
+    const getDynamicColumnsBySupplier = async () => {
         try {
             const { data, status } = await supplierServices.getInfoSupplier();
-            if (status === StatusEnum.OK) {
+            if (status === ResponseStatusEnum.OK) {
 
                 const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
                     const [name] = value.split(" : ").map(str => str.trim());
@@ -76,7 +76,7 @@ export const AddProducts = () => {
     const getUnitOptions = async () => {
         try {
             const {data, status} = await productServices.getUnitList();
-            if(status === StatusEnum.OK) setUnitOptions(data);
+            if(status === ResponseStatusEnum.OK) setUnitOptions(data);
             return data;
         } catch (error) {
             console.log(error)
@@ -88,7 +88,7 @@ export const AddProducts = () => {
     const getCategoryOptions = async () => {
         try {
             const {data, status} = await productServices.getCategoryList();
-            if(status === StatusEnum.OK) setCategoryOptions(data);
+            if(status === ResponseStatusEnum.OK) setCategoryOptions(data);
             return data;
         } catch (error) {
             handleError(error, 'Error buscando productos:');
@@ -166,7 +166,7 @@ export const AddProducts = () => {
         }
 
         // Esperar a que se carguen las columnas dinámicas
-        const dynamicColumns = await getInfoSupplier();
+        const dynamicColumns = await getDynamicColumnsBySupplier();
         const units = await getUnitOptions();
         const categories = await getCategoryOptions();
 
@@ -253,7 +253,7 @@ export const AddProducts = () => {
 
             await sendBatchesInParallel(batches); // Enviar lotes en paralelo
 
-            AlertComponentServices.success('', 'Todos los productos se han creado exitosamente');
+            AlertComponent.success('', 'Todos los productos se han creado exitosamente');
 
             //Limpiamos la tabla
             setRows([]);
@@ -278,7 +278,6 @@ export const AddProducts = () => {
             marca_comercial: product.brand,
             unidad_medida: product.unit,
             categoria_producto_id: product.category,
-            valor_unitario: 0,
             municipios: extractMunicipios(product), // Extraer municipios dinámicamente
         }));
     };
@@ -319,7 +318,7 @@ export const AddProducts = () => {
                         await sendBatchToService(batch);
                     } catch (error) {
                         console.error(`Error al enviar el lote: ${error.message}`);
-                        AlertComponentServices.error('Error', `Error al enviar el lote: ${error.message}`);
+                        AlertComponent.error('Error', `Error al enviar el lote: ${error.message}`);
                     }
                 })
             );
@@ -331,7 +330,7 @@ export const AddProducts = () => {
         try {
             const { status } = await productServices.save(batch);
 
-            if (status === StatusEnum.CREATE) {
+            if (status === ResponseStatusEnum.CREATE) {
                 console.log('Lote enviado exitosamente:', batch);
             } else {
                 throw new Error(`Estado inválido (${status}) al enviar el lote`);
@@ -344,7 +343,7 @@ export const AddProducts = () => {
 
     //Maneja el error en caso de fallo de la llamada
     const handleError = (error, title, ) => {
-        AlertComponentServices.error(error, title);
+        AlertComponent.error(error, title);
     };
 
     useEffect(() => {
@@ -355,7 +354,7 @@ export const AddProducts = () => {
     }, [rows]);
 
     useEffect(() => {
-        getInfoSupplier();
+        getDynamicColumnsBySupplier();
         getUnitOptions();
         getCategoryOptions();
     }, []);
@@ -371,21 +370,29 @@ export const AddProducts = () => {
 
             <div className="container mt-lg-3">
                 <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="input-responsive me-2"
-                    />
                     <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                        <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => navigate(-1)}
+                            className="button-order-responsive"
+                        >
+                            Atrás <FaFastBackward/>
+                        </Button>
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            className="input-responsive me-2"
+                        />
                         <Button
                             variant="secondary"
                             size="md"
                             onClick={handleClearSearch}
                             className="button-order-responsive"
                         >
-                            Limpiar busqueda <FaBroom/>
+                            Limpiar <FaBroom/>
                         </Button>
                         <Button
                             variant="outline-success"
@@ -395,14 +402,7 @@ export const AddProducts = () => {
                         >
                             Reiniciar tabla <FaBroom/>
                         </Button>
-                        <Button
-                            variant="primary"
-                            size="md"
-                            onClick={() => navigate(-1)}
-                            className="button-order-responsive"
-                        >
-                            Atrás <FaFastBackward/>
-                        </Button>
+
                     </div>
                 </div>
 

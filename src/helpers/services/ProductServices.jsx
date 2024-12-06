@@ -26,12 +26,28 @@ class ProductServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    getProductList() {
+        const url = this.baseUrl;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     save(products) {
         const url = this.buildUrl(`bulk/crear/`);
-        console.log(url);
         return authTokenService.fetchWithAuth(url, {
              method: "POST",
              body: JSON.stringify(products),
+        });
+    }
+
+    productRemove(productId) {
+        const url = this.buildUrl(`${productId}`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
+    productApprove(productId) {
+        const url = this.buildUrl(`aprobar/${productId}/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
         });
     }
 }
