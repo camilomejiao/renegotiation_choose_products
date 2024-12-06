@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import {FaBroom, FaBrush, FaPencilAlt, FaSearch, FaTrash} from "react-icons/fa";
+import {FaBroom, FaPencilAlt, FaSearch, FaTrash} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Image
