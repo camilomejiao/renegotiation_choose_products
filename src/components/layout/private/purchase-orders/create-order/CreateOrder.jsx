@@ -28,6 +28,7 @@ import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import {supplierServices} from "../../../../../helpers/services/SupplierServices";
 
 export const CreateOrder = () => {
 
@@ -87,16 +88,31 @@ export const CreateOrder = () => {
     const addItemToTable = async () => {
         if (selectedItem) {
             try {
-                //Obtener los datos completos del producto desde el servicio
+                //Obtenemos los datos completos del producto desde el servicio
                 const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
+
+                //Obtenemos la ubicacion del proveedor
+               const { locationKey, location_id, locationName} = getSupplierLocation();
+
+                //Buscamos el objeto que coincide con la ubicación del proveedor
+                const matchingMunicipio = data.valor_municipio.find((location) => {
+                    return location.ubicacion_proveedor === parseInt(locationKey);
+                });
+
+                if(!matchingMunicipio) {
+                    AlertComponent.error('Error', 'No puedes ingresar este producto! Contacta tu administrador!');
+                    return;
+                }
+
+                const valorUnitario = parseInt(matchingMunicipio.valor_unitario);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
                     id: data.id,
                     nombre: data.nombre,
                     unidad: data.unidad,
-                    valor_unitario: parseInt(data.valor_unitario),
-                    quantity: 1,
+                    valor_unitario: valorUnitario,
+                    quantity : 1,
                     discount: '0'
                 }]);
                 // Reset the select
@@ -246,6 +262,10 @@ export const CreateOrder = () => {
             documentTitle: 'Reporte Beneficiario',
         });
     };
+
+    const getSupplierLocation = () => {
+        return supplierServices.getLocation();
+    }
 
     useEffect(() => {
         const subtotal = items.reduce((acc, item) => {

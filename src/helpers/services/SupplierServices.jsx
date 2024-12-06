@@ -12,13 +12,15 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    saveLocationToLocalStorage(locationId, locationName) {
+    saveLocationToLocalStorage(locationKey, locationId, locationName) {
+        localStorage.setItem("location_key", locationKey);
         localStorage.setItem("location_id", locationId);
         localStorage.setItem("location_name", locationName);
     }
 
     getLocation() {
         return {
+            locationKey: localStorage.getItem("location_key"),
             location_id: localStorage.getItem("location_id"),
             locationName: localStorage.getItem("location_name")
         };

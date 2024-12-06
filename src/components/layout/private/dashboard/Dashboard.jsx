@@ -42,11 +42,11 @@ export const Dashboard = () => {
             const { data, status } = await supplierServices.getInfoSupplier();
             if (status === ResponseStatusEnum.OK) {
                 const muni = Object.entries(data.municipios).map(([key, value]) => {
-                    const [code, name] = value.split(" : ").map(str => str.trim());
+                    const [codeMuni, nameMuni] = value.split(" : ").map(str => str.trim());
                     return {
-                        value: parseInt(code),
-                        label: name,
-                        codeMuni: code
+                        value: parseInt(key),
+                        label: nameMuni,
+                        codeMuni: codeMuni
                     };
                 });
                 setMunicipalities(muni);
@@ -58,7 +58,7 @@ export const Dashboard = () => {
 
     //
     const saveSupplierLocation = (selectedLocation) => {
-        supplierServices.saveLocationToLocalStorage(selectedLocation.value, selectedLocation.label);
+        supplierServices.saveLocationToLocalStorage(selectedLocation.value, selectedLocation.codeMuni, selectedLocation.label);
         setShowModal(false);
     };
 
@@ -79,7 +79,6 @@ export const Dashboard = () => {
 
     return (
         <>
-
             <Container fluid className="dashboard-container">
                 <Row className="text-center mt-5">
                     <Col>
@@ -104,7 +103,6 @@ export const Dashboard = () => {
                 optionsArray={municipalities}
                 onConfirm={saveSupplierLocation}
             />
-
         </>
     );
 }
