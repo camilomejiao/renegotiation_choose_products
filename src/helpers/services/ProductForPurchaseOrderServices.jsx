@@ -41,7 +41,7 @@ class ProductForPurchaseOrderServices {
      * @returns {Promise<object>} - Promesa con los datos de la respuesta.
      */
     saveOrderProducts(products) {
-        const url = this.buildUrl(`orden/`);
+        const url = Global.url + "orden/";
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),

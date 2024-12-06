@@ -187,8 +187,10 @@ export const CreateOrder = () => {
 
     //Construye la estructura de datos a enviar
     const buildDataToSend = (itemsWithTotal) => {
+        const { locationKey} = getSupplierLocation();
         return {
             persona_cub_id: params.id,
+            ubicacion_id: parseInt(locationKey),
             valor_total: Math.ceil(total),
             items: itemsWithTotal
         };
