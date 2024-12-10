@@ -371,14 +371,6 @@ export const AddProducts = () => {
             <div className="container mt-lg-3">
                 <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
                     <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-                        <Button
-                            variant="primary"
-                            size="md"
-                            onClick={() => navigate(-1)}
-                            className="button-order-responsive"
-                        >
-                            Atrás <FaFastBackward/>
-                        </Button>
                         <input
                             type="text"
                             placeholder="Buscar..."
@@ -402,7 +394,14 @@ export const AddProducts = () => {
                         >
                             Reiniciar tabla <FaBroom/>
                         </Button>
-
+                        <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => navigate(-1)}
+                            className="button-order-responsive"
+                        >
+                            Atrás <FaFastBackward/>
+                        </Button>
                     </div>
                 </div>
 

@@ -205,7 +205,7 @@ export const CreateOrder = () => {
 
             setTimeout(() => {
                 window.location.reload();
-            }, 3000);
+            }, 2000);
         }
 
         if (status === ResponseStatusEnum.BAD_REQUEST) {

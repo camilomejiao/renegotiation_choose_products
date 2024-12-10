@@ -57,7 +57,7 @@ export const Sidebar = ({userAuth}) => {
             <div className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <Container fluid className="sidebar-content">
                     {/* Perfil del Usuario */}
-                    {(userAuth.rol_id === RolesEnum.ADMIN) && (
+                    {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>

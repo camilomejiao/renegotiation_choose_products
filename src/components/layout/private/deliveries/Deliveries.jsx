@@ -58,7 +58,7 @@ export const Deliveries = () => {
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
-            if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN) {
+            if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) {
                 const { status, data } = await deliveriesServices.getSuppliers(params.id);
                 if (status === ResponseStatusEnum.OK) {
                     setSuppliers(data);
@@ -557,7 +557,7 @@ export const Deliveries = () => {
                 <div className="deliveries-banner">
                     <Container>
                         <Row className="justify-content-start align-items-center mt-4">
-                            {(userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN) && (
+                            {(userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
                                 <Col xs={12} md={6} className="d-flex align-items-center">
                                     <Select
                                         value={selectedSupplier}

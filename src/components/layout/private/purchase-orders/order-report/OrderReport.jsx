@@ -233,6 +233,12 @@ export const OrderReport = () => {
                         </div>
                     </div>
 
+                    {isLoading && (
+                        <div className="overlay">
+                            <div className="loader">Cargando Ordenes...</div>
+                        </div>
+                    )}
+
                     <div className="responsive-container">
                         <DataGrid
                             columns={columns}
