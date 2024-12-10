@@ -202,7 +202,10 @@ export const CreateOrder = () => {
             setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
             AlertComponent.success('Bien hecho!', 'Productos guardados exitosamente');
             resetProductList();
-            window.location.reload();
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
         }
 
         if (status === ResponseStatusEnum.BAD_REQUEST) {
