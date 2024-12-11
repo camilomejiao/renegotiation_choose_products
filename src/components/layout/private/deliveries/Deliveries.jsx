@@ -30,6 +30,7 @@ import './Deliveries.css';
 
 //Enum
 import { RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {PhotographicEvidenceReport} from "./photographic-evidence-report/photographicEvidenceReport";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -451,7 +452,10 @@ export const Deliveries = () => {
                       font-family: Arial, sans-serif;
                       margin: 20px;
                       font-size: 10px;
-                    }           
+                    }
+                    .page-break {
+                        page-break-after: always;
+                    }
                   </style>
                 </head>
                 <body>
@@ -737,6 +741,8 @@ export const Deliveries = () => {
                     {isReadyToPrintDeliveryInformation && (
                         <div ref={deliveryReportRef}>
                             <DeliveryReport deliveryInformation={deliveryInformation} />
+                            <div className="page-break"></div>
+                            <PhotographicEvidenceReport deliveryInformation={deliveryInformation} />
                         </div>
                     )}
                 </div>

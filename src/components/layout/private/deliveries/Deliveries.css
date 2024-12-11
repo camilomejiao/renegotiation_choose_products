@@ -168,3 +168,7 @@
 .custom-file-label:hover {
     background-color: #0056b3;
 }
+
+.page-break {
+    page-break-after: always;
+}

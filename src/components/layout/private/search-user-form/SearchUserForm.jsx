@@ -29,7 +29,7 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
         const { data, status } = await userService.searchUser(searchValue);
 
         //Manejar estados de respuesta
-        if (handleSearchErrors(status)) return;
+        if (handleSearchErrors(data, status)) return;
 
         //Manejar resultados de la búsqueda
         if (Object.keys(data).length === 0) {
@@ -56,8 +56,9 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
     }
 
     //Función para manejar errores de búsqueda
-    function handleSearchErrors(status) {
+    function handleSearchErrors(msg = '', status) {
         const errorMessages = {
+            [ResponseStatusEnum.BAD_REQUEST]: msg,
             [ResponseStatusEnum.UNAUTHORIZED]: 'Unauthorized access',
             [ResponseStatusEnum.INTERNAL_SERVER_ERROR]: 'Error al buscar este usuario',
         };
