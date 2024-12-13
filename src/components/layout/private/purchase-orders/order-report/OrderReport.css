@@ -53,10 +53,10 @@
     }
 
     .button-order-responsive {
-        width: 40%; /* Botones a ancho relativo para ocupar todo el espacio disponible */
+        width: 40%;
         font-size: 14px;
         padding: 8px 16px;
-        margin-bottom: 10px; /* Espacio inferior en pantallas pequeñas */
+        margin-bottom: 10px;
     }
 
     .responsive-container {

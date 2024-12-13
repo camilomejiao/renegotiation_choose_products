@@ -31,6 +31,8 @@ import './Deliveries.css';
 //Enum
 import { RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import {PhotographicEvidenceReport} from "./photographic-evidence-report/photographicEvidenceReport";
+import {UserInformation} from "../user-information/UserInformation";
+import {userService} from "../../../../helpers/services/UserServices";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -50,6 +52,7 @@ export const Deliveries = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [listDeliveriesToUser, setListDeliveriesToUser] = useState([]);
+    const [userData, setUserData] = useState({});
     const [showDeliveryForm, setShowDeliveryForm] = useState(false);
     const [deliveryProducts, setDeliveryProducts] = useState([]);
     const [deliveryInformation, setDeliveryInformation] = useState({});
@@ -85,6 +88,19 @@ export const Deliveries = () => {
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
+        }
+    }
+
+    const getUserInformation = async (cubId) => {
+        try {
+            const { data, status} = await userService.userInformation(cubId);
+
+            if(status === ResponseStatusEnum.OK) {
+                setUserData(data);
+            }
+        } catch (error) {
+            console.log(error);
+            showError(error, 'Error buscando productos:');
         }
     }
 
@@ -545,6 +561,7 @@ export const Deliveries = () => {
         if (params.id) {
             getSuppliersFromWhomYouPurchased();
             getListDeliveriesToUser(params.id);
+            getUserInformation(params.id);
         }
     }, []);
 
@@ -557,6 +574,9 @@ export const Deliveries = () => {
                         <h1>¡Entrega de Productos!</h1>
                     </div>
                 </div>
+
+                {/* Contenedor de la información del usuario */}
+                <UserInformation userData={userData} />
 
                 <div className="deliveries-banner">
                     <Container>

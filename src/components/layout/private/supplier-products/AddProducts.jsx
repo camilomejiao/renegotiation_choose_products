@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "react-bootstrap";
 import { TextField, Select, MenuItem } from "@mui/material";
-import {FaBroom, FaFastBackward, FaSave} from "react-icons/fa";
+import {FaBroom, FaFastBackward, FaSave, FaTrash} from "react-icons/fa";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
@@ -18,8 +18,9 @@ import { productServices } from "../../../../helpers/services/ProductServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum as StatusEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 import {authService} from "../../../../helpers/services/Auth";
+import AlertComponentServices from "../../shared/alert/AlertComponent";
 
 export const AddProducts = () => {
 
@@ -40,7 +41,7 @@ export const AddProducts = () => {
             if (status === ResponseStatusEnum.OK) {
 
                 const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
-                    const [name] = value.split(" : ").map(str => str.trim());
+                    const [code, name] = value.split(" : ").map(str => str.trim());
                     return {
                         field: `price_${key}`,
                         headerName: `Precio - ${name}`,
@@ -145,7 +146,25 @@ export const AddProducts = () => {
         },
     ];
 
-    const columns = [...baseColumns, ...dynamicMunicipalityColumns];
+    const actionsColumns = [
+        {
+            field: 'actions',
+            headerName: 'Acciones',
+            flex: 0.7,
+            renderCell: (params) => (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <FaTrash
+                        style={{ color: 'red', cursor: 'pointer' }}
+                        onClick={() => handleDeleteClick(params.row.id)}
+                    />
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+    ]
+
+    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...actionsColumns];
 
     //
     const formatPrice = (value) => {
@@ -253,9 +272,9 @@ export const AddProducts = () => {
 
             await sendBatchesInParallel(batches); // Enviar lotes en paralelo
 
-            AlertComponent.success('', 'Todos los productos se han creado exitosamente');
+            AlertComponentServices.success('', 'Todos los productos se han creado exitosamente');
 
-            //Limpiamos la tabla
+            // Limpiamos la tabla
             setRows([]);
             setFilteredRows([]);
         } catch (error) {
@@ -265,6 +284,7 @@ export const AddProducts = () => {
             setLoading(false); // Ocultar indicador de carga
         }
     };
+
 
     //Transformar datos para ajustarlos al formato esperado por la API
     const transformData = (inputData) => {
@@ -277,8 +297,8 @@ export const AddProducts = () => {
             referencia: product.reference,
             marca_comercial: product.brand,
             unidad_medida: product.unit,
-            categoria_producto_id: product.category,
-            municipios: extractMunicipios(product), // Extraer municipios dinámicamente
+            categoria_producto: product.category,
+            valor_municipio: extractMunicipios(product),
         }));
     };
 
@@ -309,36 +329,44 @@ export const AddProducts = () => {
 
     //Enviar lotes en paralelo con control de concurrencia
     const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
+        const errors = []; // Para almacenar los errores
         for (let i = 0; i < batches.length; i += maxConcurrent) {
             const batchChunk = batches.slice(i, i + maxConcurrent);
 
-            await Promise.all(
-                batchChunk.map(async (batch) => {
-                    try {
-                        await sendBatchToService(batch);
-                    } catch (error) {
-                        console.error(`Error al enviar el lote: ${error.message}`);
-                        AlertComponent.error('Error', `Error al enviar el lote: ${error.message}`);
-                    }
-                })
+            const results = await Promise.allSettled(
+                batchChunk.map(batch => sendBatchToService(batch))
             );
+
+            // Filtrar los errores
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    errors.push(result.reason); // Guardar el error
+                    console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
+                    AlertComponentServices.error('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`);
+                }
+            });
+        }
+
+        if (errors.length > 0) {
+            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
         }
     };
 
-    //Enviar un lote al servicio
-    const sendBatchToService = async (batch) => {
-        try {
-            const { status } = await productServices.save(batch);
 
-            if (status === ResponseStatusEnum.CREATE) {
-                console.log('Lote enviado exitosamente:', batch);
-            } else {
-                throw new Error(`Estado inválido (${status}) al enviar el lote`);
-            }
-        } catch (error) {
-            console.error('Error al enviar el lote:', error.message);
-            throw error; // Re-lanzar el error para que sea manejado en sendBatchesInParallel
+    const sendBatchToService = async (batch) => {
+        // Eliminar try-catch aquí, ya que queremos que el error se propague
+        const { data, status } = await productServices.save(batch);
+        if (status !== StatusEnum.CREATE) {
+            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
         }
+        return data;
+    };
+
+    // Función para eliminar un elemento de la tabla
+    const handleDeleteClick = (id) => {
+        // Filtramos los elementos que NO tienen el id seleccionado
+        const updatedRows = filteredRows.filter((row) => row.id !== id);
+        setFilteredRows(updatedRows);
     };
 
     //Maneja el error en caso de fallo de la llamada
