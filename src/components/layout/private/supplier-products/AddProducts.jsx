@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "react-bootstrap";
 import { TextField, Select, MenuItem } from "@mui/material";
-import {FaBroom, FaFastBackward, FaSave, FaTrash} from "react-icons/fa";
+import {FaBackspace, FaBroom, FaFastBackward, FaSave, FaTrash} from "react-icons/fa";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
@@ -226,7 +226,6 @@ export const AddProducts = () => {
         setFilteredRows(newRows); //Sincronizamos con los datos filtrados
     };
 
-
     const getDefaultBaseValue = (field) => {
         const defaultValues = {
             name: "Producto sin nombre", // Valor por defecto para el nombre
@@ -247,11 +246,6 @@ export const AddProducts = () => {
             )
         );
         setFilteredRows(filteredData);
-    };
-
-    const handleClearSearch = () => {
-        setSearchQuery("");
-        setFilteredRows(rows);
     };
 
     const handleUploadTable = () => {
@@ -407,14 +401,6 @@ export const AddProducts = () => {
                             className="input-responsive me-2"
                         />
                         <Button
-                            variant="secondary"
-                            size="md"
-                            onClick={handleClearSearch}
-                            className="button-order-responsive"
-                        >
-                            Limpiar <FaBroom/>
-                        </Button>
-                        <Button
                             variant="outline-success"
                             size="md"
                             onClick={handleUploadTable}
@@ -423,12 +409,11 @@ export const AddProducts = () => {
                             Reiniciar tabla <FaBroom/>
                         </Button>
                         <Button
-                            variant="primary"
+                            variant="secondary"
                             size="md"
                             onClick={() => navigate(-1)}
-                            className="button-order-responsive"
-                        >
-                            Atrás <FaFastBackward/>
+                            className="button-order-responsive">
+                            Atras <FaBackspace />
                         </Button>
                     </div>
                 </div>

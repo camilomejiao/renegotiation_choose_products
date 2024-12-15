@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { MenuItem, Select, TextField } from "@mui/material";
 import { Button } from "react-bootstrap";
-import { FaBackspace, FaPlus } from "react-icons/fa";
+import { FaBackspace, FaPlus, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
 
 //Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 //Modules
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { Footer } from "../../shared/footer/Footer";
 import AlertComponent from "../../shared/alert/AlertComponent";
 
 //Services
@@ -16,50 +18,73 @@ import { supplierServices } from "../../../../helpers/services/SupplierServices"
 import { productServices } from "../../../../helpers/services/ProductServices";
 
 //Enums
-import { ProductStatusEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 const PAGE_SIZE = 50;
 
 export const EditProduct = () => {
 
+    const navigate = useNavigate();
+
     const [productList, setProductList] = useState([]);
+    const [editedProducts, setEditedProducts] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
-    const [isLoading, setIsLoading] = useState(false);
     const [unitOptions, setUnitOptions] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const getProductList = async () => {
-        setIsLoading(true);
         try {
             const { data, status } = await productServices.getProductList();
             if (status === ResponseStatusEnum.OK) {
-                console.log(data.results);
-                const products = normalizeRows(data.results);
+                const products = await normalizeRows(data.results);
+                console.log('products: ', products);
                 setProductList(products);
                 setFilteredData(products);
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
-    const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row.id,
-            name: row.nombre,
-            description: row.especificacion_tecnicas,
-            brand: row.marca_comercial,
-            state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
-            reference: row.especificacion_tecnicas,
-            unit: row.unidad,
-            category: row?.categoria
-        }));
+    const normalizeRows = async (data) => {
+        try {
+            // Obtener la información de los municipios
+            const { municipalities } = await getDynamicColumnsBySupplier();
+
+            // Normalizar cada fila de productos
+            const normalizedRows = data.map((row) => {
+                // Extraer los precios de los municipios
+                const municipalityPrices = Object.fromEntries(
+                    Object.entries(municipalities).map(([key]) => {
+                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === parseInt(key));
+                        const price = priceData ? priceData.valor_unitario : 0; // Asignar 0 si no hay valor
+                        return [`price_${key}`, price];
+                    })
+                );
+
+                // Devolver el objeto del producto con todos los campos necesarios
+                return {
+                    id: row.id,
+                    name: row.nombre,
+                    description: row.especificacion_tecnicas,
+                    brand: row.marca_comercial,
+                    reference: row.referencia,
+                    unit: row.unidad_medida,
+                    category: row.categoria_producto,
+                    ...municipalityPrices // Esparcir los precios de los municipios
+                };
+            });
+
+            return normalizedRows;
+        } catch (error) {
+            console.error('Error al normalizar filas:', error);
+            return []; // Devolver array vacío en caso de error
+        }
     };
 
     //
@@ -92,7 +117,7 @@ export const EditProduct = () => {
                 });
 
                 setDynamicMunicipalityColumns(newDynamicColumns);
-                return newDynamicColumns; // Devuelve las columnas dinámicas
+                return { municipalities: data.municipios, newDynamicColumns }; // Devuelve las columnas dinámicas
             }
         } catch (error) {
             console.log(error);
@@ -130,16 +155,66 @@ export const EditProduct = () => {
     }
 
     const baseColumns = [
-        {field: "id", headerName: "ID", width: 90},
-        {field: "name", headerName: "Nombre", width: 150, editable: true},
-        {field: "description", headerName: "Descripción", width: 200, editable: true},
-        {field: "brand", headerName: "Marca", width: 200, editable: true},
-        {field: "reference", headerName: "Referencia", width: 200, editable: true},
+        {field: "id", headerName: "COD", flex: 0.5},
+        {
+            field: "name",
+            headerName: "NOMBRE",
+            width: 170,
+            headerAlign: "left",
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "description",
+            headerName: "DESCRIPCIÓN",
+            width: 250,
+            headerAlign: "left",
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        { field: "brand", headerName: "MARCA", width: 100, editable: true },
+        {
+            field: "reference",
+            headerName: "Referencia",
+            width: 200,
+            headerAlign: "left",
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
         {
             field: "unit",
             headerName: "Unidad",
             width: 150,
-            editable: true,
             renderCell: (params) => (
                 <Select
                     value={params.value || ""}
@@ -160,7 +235,6 @@ export const EditProduct = () => {
             field: "category",
             headerName: "Categoría",
             width: 150,
-            editable: true,
             renderCell: (params) => (
                 <Select
                     value={params.value || ""}
@@ -193,11 +267,46 @@ export const EditProduct = () => {
         const filtered = productList.filter(product =>
             product.name.toLowerCase().includes(query.toLowerCase()) ||
             product.description.toLowerCase().includes(query.toLowerCase()) ||
-            product.brand.toLowerCase().includes(query.toLowerCase()) ||
-            product.state.toLowerCase().includes(query.toLowerCase())
+            product.brand.toLowerCase().includes(query.toLowerCase())
         );
 
         setFilteredData(filtered);
+    };
+
+    const handleCreateProducts = () => navigate(`/admin/create-products`);
+
+    const handleRowUpdate = (newRow, oldRow) => {
+        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+            setEditedProducts(prevState => {
+                const index = prevState.findIndex(product => product.id === newRow.id);
+                if (index > -1) {
+                    prevState[index] = newRow;
+                } else {
+                    prevState.push(newRow);
+                }
+                return [...prevState];
+            });
+        }
+        return newRow;
+    };
+
+    const handleSaveProducts = async () => {
+        try {
+            setLoading(true);
+            if (editedProducts.length === 0) {
+                AlertComponent.warning('', 'No hay productos modificados para guardar.');
+                return;
+            }
+
+            console.log('editedProducts: ', editedProducts);
+            await productServices.edit(editedProducts);
+            AlertComponent.success('', 'Productos actualizados con éxito.');
+            setEditedProducts([]);
+        } catch (error) {
+            AlertComponent.error('Error', 'Error al guardar los productos.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -209,75 +318,112 @@ export const EditProduct = () => {
 
     return (
         <>
-            <HeaderImage imageHeader={imgPeople} titleHeader="¡Editar productos!" />
-
-            <div className="container mt-4">
-                <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={searchQuery}
-                    onChange={handleSearchQueryChange}
-                    className="input-responsive"
+            <div className="main-container">
+                <HeaderImage
+                    imageHeader={imgPeople}
+                    titleHeader="¡Editar productos!"
                 />
 
-                <Button onClick={''} className="button-order-responsive">
-                    Agregar productos <FaPlus />
-                </Button>
+                <div className="container mt-lg-3">
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={handleSearchQueryChange}
+                                className="input-responsive"
+                            />
 
-                <Button variant="secondary" onClick={''} className="button-order-responsive">
-                    Atras <FaBackspace />
-                </Button>
+                            <Button onClick={handleCreateProducts} className="button-order-responsive">
+                                Agregar productos <FaPlus />
+                            </Button>
 
-                <DataGrid
-                    columns={columns}
-                    rows={filteredData}
-                    pagination
-                    page={page}
-                    pageSize={pageSize}
-                    onPageChange={(newPage) => setPage(newPage)}
-                    onPageSizeChange={(newPageSize) => {
-                        setPageSize(newPageSize);
-                        setPage(0);
-                    }}
-                    rowsPerPageOptions={[10, 50, 100]}
-                    rowCount={filteredData.length}
-                    componentsProps={{
-                        columnHeader: {
-                            style: {
-                                textAlign: "left",
-                                fontWeight: "bold",
-                                fontSize: "10px",
-                                wordWrap: "break-word",
-                            },
-                        },
-                    }}
-                    sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: "#40A581",
-                            color: "white",
-                            fontSize: "14px",
-                        },
-                        "& .MuiDataGrid-columnHeader": {
-                            textAlign: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        },
-                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                            backgroundColor: "#40A581 !important",
-                            color: "white !important",
-                        },
-                        "& .MuiDataGrid-cell": {
-                            fontSize: "14px",
-                            textAlign: "center",
-                            justifyContent: "center",
-                            display: "flex",
-                        },
-                        "& .MuiDataGrid-row:hover": {
-                            backgroundColor: "#E8F5E9",
-                        },
-                    }}
-                />
+                            <Button
+                                variant="secondary"
+                                size="md"
+                                onClick={() => navigate(-1)}
+                                className="button-order-responsive">
+                                Atras <FaBackspace />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {loading && (
+                        <div className="overlay">
+                            <div className="loader">Guardando Productos...</div>
+                        </div>
+                    )}
+
+                    <div style={{height: 600, width: "100%"}}>
+                        <DataGrid
+                            columns={columns}
+                            rows={filteredData}
+                            processRowUpdate={handleRowUpdate}
+                            editMode="row"
+                            pagination
+                            page={page}
+                            pageSize={pageSize}
+                            onPageChange={(newPage) => setPage(newPage)}
+                            onPageSizeChange={(newPageSize) => {
+                                setPageSize(newPageSize);
+                                setPage(0);
+                            }}
+                            rowsPerPageOptions={[10, 50, 100]}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
+                                        textAlign: "left",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
+                                    },
+                                },
+                            }}
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
+                    </div>
+
+                    {/* Botón Guardar */}
+                    <div className="d-flex align-items-end mt-3">
+                        <Button
+                            variant="success"
+                            size="md"
+                            onClick={handleSaveProducts}
+                            className="ms-auto"
+                            disabled={loading}
+                        >
+                            {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
+                        </Button>
+                    </div>
+
+                </div>
+            <Footer/>
             </div>
         </>
     )

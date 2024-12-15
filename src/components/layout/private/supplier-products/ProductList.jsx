@@ -29,7 +29,6 @@ export const ProductList = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
-    const [isLoading, setIsLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -90,10 +89,8 @@ export const ProductList = () => {
     ];
 
     const getProductList = async () => {
-        setIsLoading(true);
         try {
             const { data, status } = await productServices.getProductList();
-            console.log('data: ', data);
             if (status === ResponseStatusEnum.OK) {
                 const products = normalizeRows(data.results);
                 setProductList(products);
@@ -101,8 +98,6 @@ export const ProductList = () => {
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -177,86 +172,98 @@ export const ProductList = () => {
 
     return (
         <>
-            <HeaderImage imageHeader={imgPeople} titleHeader="¡Listado de productos!" />
-
-            <div className="container mt-4">
-                <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={searchQuery}
-                    onChange={handleSearchQueryChange}
-                    className="input-responsive"
+            <div className="main-container">
+                <HeaderImage
+                    imageHeader={imgPeople}
+                    titleHeader="¡Listado de productos!"
                 />
 
-                <Button onClick={handleCreateProducts} className="button-order-responsive">
-                    Agregar productos <FaPlus />
-                </Button>
+                <div className="container mt-lg-3">
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
 
-                <Button variant="secondary" onClick={handleEditProducts} className="button-order-responsive">
-                    Editar productos <FaEdit />
-                </Button>
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={handleSearchQueryChange}
+                                className="input-responsive"
+                            />
 
-                <DataGrid
-                    columns={productColumns}
-                    rows={filteredData}
-                    pagination
-                    page={page}
-                    pageSize={pageSize}
-                    onPageChange={(newPage) => setPage(newPage)}
-                    onPageSizeChange={(newPageSize) => {
-                        setPageSize(newPageSize);
-                        setPage(0);
-                    }}
-                    rowsPerPageOptions={[10, 50, 100]}
-                    rowCount={filteredData.length}
-                    componentsProps={{
-                        columnHeader: {
-                            style: {
-                                textAlign: "left",
-                                fontWeight: "bold",
-                                fontSize: "10px",
-                                wordWrap: "break-word",
-                            },
-                        },
-                    }}
-                    sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: "#40A581",
-                            color: "white",
-                            fontSize: "14px",
-                        },
-                        "& .MuiDataGrid-columnHeader": {
-                            textAlign: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        },
-                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                            backgroundColor: "#40A581 !important",
-                            color: "white !important",
-                        },
-                        "& .MuiDataGrid-cell": {
-                            fontSize: "14px",
-                            textAlign: "center",
-                            justifyContent: "center",
-                            display: "flex",
-                        },
-                        "& .MuiDataGrid-row:hover": {
-                            backgroundColor: "#E8F5E9",
-                        },
-                    }}
-                />
+                            <Button onClick={handleCreateProducts} className="button-order-responsive">
+                                Agregar productos <FaPlus />
+                            </Button>
 
-                <ConfirmationModal
-                    show={showModal}
-                    title="Confirmación de Eliminación"
-                    message="¿Estás seguro de que deseas eliminar este elemento?"
-                    onConfirm={handleConfirmDelete}
-                    onClose={handleCloseModal}
-                />
-            </div>
+                            <Button variant="secondary" onClick={handleEditProducts} className="button-order-responsive">
+                                Editar productos <FaEdit />
+                            </Button>
+                        </div>
+                    </div>
 
+                    <div style={{height: 600, width: "100%"}}>
+                        <DataGrid
+                            columns={productColumns}
+                            rows={filteredData}
+                            pagination
+                            page={page}
+                            pageSize={pageSize}
+                            onPageChange={(newPage) => setPage(newPage)}
+                            onPageSizeChange={(newPageSize) => {
+                                setPageSize(newPageSize);
+                                setPage(0);
+                            }}
+                            rowsPerPageOptions={[10, 50, 100]}
+                            rowCount={filteredData.length}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
+                                        textAlign: "left",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
+                                    },
+                                },
+                            }}
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
+
+                        <ConfirmationModal
+                            show={showModal}
+                            title="Confirmación de Eliminación"
+                            message="¿Estás seguro de que deseas eliminar este elemento?"
+                            onConfirm={handleConfirmDelete}
+                            onClose={handleCloseModal}
+                        />
+                    </div>
+
+                </div>
             <Footer />
+            </div>
         </>
     );
 };

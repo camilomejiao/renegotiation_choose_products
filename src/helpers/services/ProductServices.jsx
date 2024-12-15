@@ -50,6 +50,14 @@ class ProductServices {
             method: "POST",
         });
     }
+
+    edit(products) {
+        const url = this.buildUrl(`bulk/edit/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(products),
+        });
+    }
 }
 
 export const productServices = new ProductServices();
