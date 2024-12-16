@@ -83,8 +83,21 @@ export const Deliveries = () => {
     const getListDeliveriesToUser = async (cubId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
+            console.log('Entregas:', data);
             if(status === ResponseStatusEnum.OK) {
                 setListDeliveriesToUser(normalizeDeliveryRows(data));
+            }
+        } catch (error) {
+            console.error("Error fetching deliveries:", error);
+        }
+    }
+
+    const getDeliveryUrl = async (deliveryId) => {
+        try {
+            const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
+            console.log('deliveryUrl:', data);
+            if(status === ResponseStatusEnum.OK) {
+                return data;
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -160,34 +173,6 @@ export const Deliveries = () => {
         //     filterable: false,
         // },
         {
-            field: "evidencePdf",
-            headerName: "EVIDENCIAS PDF",
-            width: 200,
-            renderCell: (params) => (
-                <div>
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                            const input = document.createElement("input");
-                            input.type = "file";
-                            input.accept = "application/pdf";
-                            input.style.display = "none";
-                            input.onchange = (e) =>
-                                handleFileChange(e, params.row.id, "pdf");
-                            document.body.appendChild(input);
-                            input.click();
-                            document.body.removeChild(input);
-                        }}
-                    >
-                        Subir PDF
-                    </Button>
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
-        },
-        {
             field: "generatePdf",
             headerName: "GENERAR PDF",
             width: 150,
@@ -206,6 +191,43 @@ export const Deliveries = () => {
             ),
             sortable: false,
             filterable: false,
+        },
+        {
+            field: "evidencePdf",
+            headerName: "EVIDENCIAS PDF",
+            width: 200,
+            renderCell: (params) => {
+                console.log('params: ', params.row);
+                return (
+                    <div>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleUploadFile(params.row.id)}
+                        >
+                            {params.row.fileName ? "Reemplazar PDF" : "Subir PDF"}
+                        </Button>
+
+                        {params.row.fileName && (
+                            <div>
+                                <small style={{ fontSize: "12px", color: "#555" }}>
+                                    <strong>Archivo:</strong> {params.row.fileName}
+                                </small>
+                            </div>
+                        )}
+
+                        {params.row.evidencePdf && (
+                            <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleViewFile(params.row.evidencePdf)}
+                            >
+                                Ver PDF
+                            </Button>
+                        )}
+                    </div>
+                )
+            }
         },
         {
             field: "actions",
@@ -257,6 +279,44 @@ export const Deliveries = () => {
             supplier: row.proveedor,
         }));
     }
+
+    //
+    const handleUploadFile = (rowId) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/pdf";
+        input.style.display = "none";
+
+        // Captura el archivo seleccionado
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileChange(file, rowId, "pdf");
+
+                // Actualizar la fila correspondiente con el nombre del archivo
+                setListDeliveriesToUser((prevRows) =>
+                    prevRows.map((row) =>
+                        row.id === rowId
+                            ? { ...row, fileName: file.name, evidencePdf: URL.createObjectURL(file) }
+                            : row
+                    )
+                );
+            }
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    };
+
+    //
+    const handleViewFile = (pdfUrl) => {
+        if (!pdfUrl) {
+            AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
+            return;
+        }
+        window.open(pdfUrl, '_blank');
+    };
 
     //
     const productsToBeDeliveredColumns = [
@@ -412,22 +472,25 @@ export const Deliveries = () => {
     }
 
     //Guardar evidencias
-    const handleFileChange = async (e, deliveryId, fileName) => {
-        const selectedFile = e.target.files[0]; // Obtener el archivo seleccionado
-        if (selectedFile) {
+    const handleFileChange = async (file, deliveryId, fileName) => {
+        if (file) {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
-            if (!allowedTypes.includes(selectedFile.type)) {
+            if (!allowedTypes.includes(file.type)) {
                 showError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
             const formData = new FormData();
-            formData.append("ruta", selectedFile);
+            formData.append("ruta", file);
             formData.append("indice", fileName);
 
+            console.log('Archivo (ruta):', formData.get('ruta'));
+            console.log('Indice:', formData.get('indice'));
+
             try {
-                const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
+                const { data, status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
+                console.log('statusFile: ', status, data);
 
                 if (status === ResponseStatusEnum.CREATE) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');

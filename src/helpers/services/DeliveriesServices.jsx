@@ -28,6 +28,12 @@ class DeliveriesServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    //Buscar url de
+    searchDeliveriesPDF(deliveryId) {
+        const url = this.buildUrl(`${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     // Productos a entregar
     productsToBeDelivered(companyId, cubId) {
         const url = this.buildUrl(`${companyId}/${cubId}/`);

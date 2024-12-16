@@ -14,11 +14,12 @@ import { Footer } from "../../shared/footer/Footer";
 import AlertComponent from "../../shared/alert/AlertComponent";
 
 //Services
+import { authService } from "../../../../helpers/services/Auth";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 import { productServices } from "../../../../helpers/services/ProductServices";
 
 //Enums
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum as StatusEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 const PAGE_SIZE = 50;
 
@@ -42,7 +43,6 @@ export const EditProduct = () => {
             const { data, status } = await productServices.getProductList();
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data.results);
-                console.log('products: ', products);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -62,7 +62,7 @@ export const EditProduct = () => {
                 const municipalityPrices = Object.fromEntries(
                     Object.entries(municipalities).map(([key]) => {
                         const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === parseInt(key));
-                        const price = priceData ? priceData.valor_unitario : 0; // Asignar 0 si no hay valor
+                        const price = priceData !== undefined ? priceData.valor_unitario : '0.00';
                         return [`price_${key}`, price];
                     })
                 );
@@ -157,6 +157,44 @@ export const EditProduct = () => {
     const baseColumns = [
         {field: "id", headerName: "COD", flex: 0.5},
         {
+            field: "category",
+            headerName: "Categoría",
+            width: 150,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || ""}
+                    onChange={(e) =>
+                        params.api.updateRows([{id: params.row.id, category: e.target.value}])
+                    }
+                    fullWidth
+                >
+                    {categoryOptions.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.nombre}
+                        </MenuItem>
+                    ))}
+                </Select>
+            ),
+        },
+        {
+            field: "reference",
+            headerName: "Referencia",
+            width: 200,
+            headerAlign: "left",
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        overflow: "visible",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
             field: "name",
             headerName: "NOMBRE",
             width: 170,
@@ -194,24 +232,6 @@ export const EditProduct = () => {
         },
         { field: "brand", headerName: "MARCA", width: 100, editable: true },
         {
-            field: "reference",
-            headerName: "Referencia",
-            width: 200,
-            headerAlign: "left",
-            editable: true,
-            renderCell: (params) => (
-                <div
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        overflow: "visible",
-                    }}
-                >
-                    {params.value}
-                </div>
-            ),
-        },
-        {
             field: "unit",
             headerName: "Unidad",
             width: 150,
@@ -231,26 +251,7 @@ export const EditProduct = () => {
                 </Select>
             ),
         },
-        {
-            field: "category",
-            headerName: "Categoría",
-            width: 150,
-            renderCell: (params) => (
-                <Select
-                    value={params.value || ""}
-                    onChange={(e) =>
-                        params.api.updateRows([{id: params.row.id, category: e.target.value}])
-                    }
-                    fullWidth
-                >
-                    {categoryOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            ),
-        },
+
     ];
 
     const columns = [...baseColumns, ...dynamicMunicipalityColumns];
@@ -298,8 +299,11 @@ export const EditProduct = () => {
                 return;
             }
 
-            console.log('editedProducts: ', editedProducts);
-            await productServices.edit(editedProducts);
+            const products = await productsBeforeSend(editedProducts);
+            const batches = chunkArray(products, 500);
+
+            await sendBatchesInParallel(batches);
+
             AlertComponent.success('', 'Productos actualizados con éxito.');
             setEditedProducts([]);
         } catch (error) {
@@ -307,6 +311,79 @@ export const EditProduct = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    //Dividir un array en lotes
+    const chunkArray = (array, chunkSize) => {
+        const chunks = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+            chunks.push(array.slice(i, i + chunkSize));
+        }
+        return chunks;
+    };
+
+    //Enviar lotes en paralelo con control de concurrencia
+    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
+        const errors = []; // Para almacenar los errores
+        for (let i = 0; i < batches.length; i += maxConcurrent) {
+            const batchChunk = batches.slice(i, i + maxConcurrent);
+
+            const results = await Promise.allSettled(
+                batchChunk.map(batch => sendBatchToService(batch))
+            );
+
+            // Filtrar los errores
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    errors.push(result.reason); // Guardar el error
+                    console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
+                    handleError('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`)
+                }
+            });
+        }
+
+        if (errors.length > 0) {
+            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
+        }
+    };
+
+    const sendBatchToService = async (batch) => {
+        const { data, status } = await productServices.edit(batch);
+        if (status !== StatusEnum.OK) {
+            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
+        }
+        return data;
+    };
+
+    //Obtener el ID del proveedor
+    const getSupplierId = () => {
+        return authService.getSupplierId();
+    };
+
+    const productsBeforeSend = (inputData) => {
+        const supplierId = parseInt(getSupplierId());
+        return inputData.map((product) => ({
+            id: product.id,
+            proveedor_id: supplierId,
+            nombre: product.name,
+            especificacion_tecnicas: product.description,
+            marca_comercial: product.brand,
+            referencia: product.reference,
+            unidad_medida: product.unit,
+            categoria_producto: product.category,
+            valor_municipio: extractMunicipios(product)
+        }));
+    };
+
+    //Extraer los precios de municipios dinámicos
+    const extractMunicipios = (product) => {
+        return Object.keys(product)
+            .filter(key => key.startsWith("price_"))
+            .reduce((acc, key) => {
+                const municipioId = key.split("_")[1];
+                acc[municipioId] = product[key];
+                return acc;
+            }, {});
     };
 
     useEffect(() => {

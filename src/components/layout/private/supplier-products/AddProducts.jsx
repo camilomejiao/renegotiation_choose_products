@@ -39,7 +39,6 @@ export const AddProducts = () => {
         try {
             const { data, status } = await supplierServices.getInfoSupplier();
             if (status === ResponseStatusEnum.OK) {
-
                 const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
                     const [code, name] = value.split(" : ").map(str => str.trim());
                     return {
@@ -62,7 +61,6 @@ export const AddProducts = () => {
                         ),
                     };
                 });
-
                 setDynamicMunicipalityColumns(newDynamicColumns);
                 return newDynamicColumns; // Devuelve las columnas dinámicas
             }
@@ -98,31 +96,6 @@ export const AddProducts = () => {
 
     const baseColumns = [
         {field: "id", headerName: "ID", width: 90},
-        {field: "name", headerName: "Nombre", width: 150, editable: true},
-        {field: "description", headerName: "Descripción", width: 200, editable: true},
-        {field: "brand", headerName: "Marca", width: 200, editable: true},
-        {field: "reference", headerName: "Referencia", width: 200, editable: true},
-        {
-            field: "unit",
-            headerName: "Unidad",
-            width: 150,
-            editable: true,
-            renderCell: (params) => (
-                <Select
-                    value={params.value || ""}
-                    onChange={(e) =>
-                        params.api.updateRows([{id: params.row.id, unit: e.target.value}])
-                    }
-                    fullWidth
-                >
-                    {unitOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            ),
-        },
         {
             field: "category",
             headerName: "Categoría",
@@ -137,6 +110,31 @@ export const AddProducts = () => {
                     fullWidth
                 >
                     {categoryOptions.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.nombre}
+                        </MenuItem>
+                    ))}
+                </Select>
+            ),
+        },
+        {field: "reference", headerName: "Referencia", width: 200, editable: true},
+        {field: "name", headerName: "Nombre", width: 150, editable: true},
+        {field: "description", headerName: "Descripción", width: 200, editable: true},
+        {field: "brand", headerName: "Marca", width: 200, editable: true},
+        {
+            field: "unit",
+            headerName: "Unidad",
+            width: 150,
+            editable: true,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || ""}
+                    onChange={(e) =>
+                        params.api.updateRows([{id: params.row.id, unit: e.target.value}])
+                    }
+                    fullWidth
+                >
+                    {unitOptions.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
                             {option.nombre}
                         </MenuItem>
@@ -262,9 +260,9 @@ export const AddProducts = () => {
         try {
             setLoading(true); // Mostrar indicador de carga
             const transformedData = transformData(rows); // Transformar los datos
-            const batches = chunkArray(transformedData, 500); // Dividir en lotes de 500
+            const batches = chunkArray(transformedData, 500);
 
-            await sendBatchesInParallel(batches); // Enviar lotes en paralelo
+            await sendBatchesInParallel(batches);
 
             AlertComponentServices.success('', 'Todos los productos se han creado exitosamente');
 
@@ -348,7 +346,6 @@ export const AddProducts = () => {
 
 
     const sendBatchToService = async (batch) => {
-        // Eliminar try-catch aquí, ya que queremos que el error se propague
         const { data, status } = await productServices.save(batch);
         if (status !== StatusEnum.CREATE) {
             throw new Error(`Error en el estado de la respuesta. Status: ${status}`);

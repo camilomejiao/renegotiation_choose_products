@@ -52,7 +52,7 @@ class ProductServices {
     }
 
     edit(products) {
-        const url = this.buildUrl(`bulk/edit/`);
+        const url = this.buildUrl(`bulk/modificar/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),
