@@ -274,7 +274,9 @@ export const EditProduct = () => {
         setFilteredData(filtered);
     };
 
-    const handleCreateProducts = () => navigate(`/admin/create-products`);
+    const handleCreateProducts = () => navigate('/admin/create-products');
+
+    const handleBack = () => navigate('/admin/products');
 
     const handleRowUpdate = (newRow, oldRow) => {
         if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
@@ -419,7 +421,7 @@ export const EditProduct = () => {
                             <Button
                                 variant="secondary"
                                 size="md"
-                                onClick={() => navigate(-1)}
+                                onClick={handleBack}
                                 className="button-order-responsive">
                                 Atras <FaBackspace />
                             </Button>

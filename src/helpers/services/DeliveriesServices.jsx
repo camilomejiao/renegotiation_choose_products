@@ -79,6 +79,12 @@ class DeliveriesServices {
         });
     }
 
+    //
+    removeDelivery(deliveryId) {
+        const url = this.buildUrl(`${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
 }
 
 export const deliveriesServices = new DeliveriesServices();

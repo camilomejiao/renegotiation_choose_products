@@ -1,20 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import Select from "react-select";
-import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
-import {
-    FaCheck,
-    FaFilePdf,
-    FaFileUpload,
-    FaPencilAlt,
-    FaTrash
-} from "react-icons/fa";
+import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
+import {FaCheck, FaFilePdf, FaPencilAlt, FaTrash} from "react-icons/fa";
 import printJS from "print-js";
-import { DataGrid } from "@mui/x-data-grid";
+import {DataGrid} from "@mui/x-data-grid";
 
 //Components
-import { Footer } from "../../shared/footer/Footer";
-import { DeliveryReport } from "./delivery-report/DeliveryReport";
+import {Footer} from "../../shared/footer/Footer";
+import {DeliveryReport} from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../shared/alert/AlertComponent";
 
 //Img
@@ -22,14 +16,14 @@ import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.pn
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
-import { authService } from "../../../../helpers/services/Auth";
-import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
+import {authService} from "../../../../helpers/services/Auth";
+import {deliveriesServices} from "../../../../helpers/services/DeliveriesServices";
 
 //Css
 import './Deliveries.css';
 
 //Enum
-import { RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
 import {PhotographicEvidenceReport} from "./photographic-evidence-report/photographicEvidenceReport";
 import {UserInformation} from "../user-information/UserInformation";
 import {userService} from "../../../../helpers/services/UserServices";
@@ -41,6 +35,8 @@ const deliveryStatus = [
     //{ id: 2, label: "PENDIENTE POR ENTREGAR" },
     { id: 3, label: "ENTREGA PARCIAL" }
 ];
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 export const Deliveries = () => {
 
@@ -83,9 +79,8 @@ export const Deliveries = () => {
     const getListDeliveriesToUser = async (cubId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
-            console.log('Entregas:', data);
             if(status === ResponseStatusEnum.OK) {
-                setListDeliveriesToUser(normalizeDeliveryRows(data));
+                setListDeliveriesToUser(await normalizeDeliveryRows(data));
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -95,9 +90,8 @@ export const Deliveries = () => {
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
-            console.log('deliveryUrl:', data);
             if(status === ResponseStatusEnum.OK) {
-                return data;
+                return `${apiUrl}${data.archivos[0].ruta.slice(1)}`;
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -121,7 +115,7 @@ export const Deliveries = () => {
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
-        { field: "supplier", headerName: "PROVEEDOR", width: 200 },
+        { field: "supplier", headerName: "PROVEEDOR", width: 250 },
         // {
         //     field: "evidence",
         //     headerName: "EVIDENCIAS",
@@ -197,7 +191,6 @@ export const Deliveries = () => {
             headerName: "EVIDENCIAS PDF",
             width: 200,
             renderCell: (params) => {
-                console.log('params: ', params.row);
                 return (
                     <div>
                         <Button
@@ -221,6 +214,7 @@ export const Deliveries = () => {
                                 variant="success"
                                 size="sm"
                                 onClick={() => handleViewFile(params.row.evidencePdf)}
+                                style={{marginLeft: "10px"}}
                             >
                                 Ver PDF
                             </Button>
@@ -233,52 +227,58 @@ export const Deliveries = () => {
             field: "actions",
             headerName: "ACCIONES",
             width: 150,
-            renderCell: (params) => (
-                <div>
-                    <Button
-                        variant="warning"
-                        size="sm"
-                        onClick={() =>
+            renderCell: (params) => {
+                return (
+                    <div>
+                        <Button
+                            variant="warning"
+                            size="sm"
+                            onClick={() =>
                             handleEditDelivery(params.row.id)
                         }
-                        style={{ marginRight: "10px" }}
-                    >
-                        <FaPencilAlt />
-                    </Button>
-                    <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() =>
-                            handleDeleteDelivery(params.row.id)
-                        }
-                        style={{ marginRight: "10px" }}
-                    >
-                        <FaTrash />
-                    </Button>
-                    <Button
-                        variant="success"
-                        size="sm"
-                        onClick={() =>
-                            handleApproveByAudit(params.row.id)
-                        }
-                    >
-                        <FaCheck />
-                    </Button>
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
+                            style={{marginRight: "10px"}}
+                        >
+                            <FaPencilAlt/>
+                        </Button>
+                        {(userAuth.rol_id === RolesEnum.AUDITOR || userAuth.rol_id === RolesEnum.ADMIN) && (
+                            <>
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleDeleteDelivery(params.row.id)}
+                                    style={{marginRight: "10px"}}
+                                >
+                                    <FaTrash/>
+                                </Button>
+                                <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() => handleApproveByAudit(params.row.id)}
+                                >
+                                    <FaCheck/>
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                );
+            },
         },
     ];
 
     //
-    const normalizeDeliveryRows = (data) => {
-        return data.map((row) => ({
-            id: row.id,
-            date: row.fecha_creacion.split("T")[0],
-            supplier: row.proveedor,
-        }));
-    }
+    const normalizeDeliveryRows = async (data) => {
+        return await Promise.all(
+            data.map(async (row) => {
+                const evidencePdf = await getDeliveryUrl(row.id);
+                return {
+                    id: row.id,
+                    date: row.fecha_creacion.split("T")[0],
+                    supplier: row.proveedor,
+                    evidencePdf: evidencePdf
+                };
+            })
+        );
+    };
 
     //
     const handleUploadFile = (rowId) => {
@@ -463,7 +463,20 @@ export const Deliveries = () => {
 
     //
     const handleDeleteDelivery = async (id) => {
+        try {
+            const { status} = await deliveriesServices.removeDelivery(id);
+            console.log(status);
+            if (status === ResponseStatusEnum.NO_CONTENT) {
+                showAlert('Éxito', 'Entrega eliminada exitosamente');
+                window.location.reload();
+            }
 
+            if (status === ResponseStatusEnum.METHOD_NOT_ALLOWED) {
+                showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÓN');
+            }
+        } catch (error) {
+            console.error("Error eliminando la entrega:", error);
+        }
     }
 
     //
@@ -485,15 +498,12 @@ export const Deliveries = () => {
             formData.append("ruta", file);
             formData.append("indice", fileName);
 
-            console.log('Archivo (ruta):', formData.get('ruta'));
-            console.log('Indice:', formData.get('indice'));
-
             try {
-                const { data, status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
-                console.log('statusFile: ', status, data);
+                const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === ResponseStatusEnum.CREATE) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
+                    window.location.reload();
                 }
 
                 if (status === ResponseStatusEnum.BAD_REQUEST ||
@@ -597,10 +607,6 @@ export const Deliveries = () => {
             showError('Error al guardar los productos', `${error}`);
         }
     };
-
-    const handleBack = () => {
-        window.location.reload();
-    }
 
     //
     const showAlert = (title, message) => {
@@ -789,7 +795,7 @@ export const Deliveries = () => {
                                     <Button
                                         variant="success"
                                         size="lg"
-                                        onClick={handleBack}
+                                        onClick={() => navigate(-1)}
                                         className="responsive-button mb-2 mb-md-0"
                                         style={{
                                             backgroundColor: "#2148C0",

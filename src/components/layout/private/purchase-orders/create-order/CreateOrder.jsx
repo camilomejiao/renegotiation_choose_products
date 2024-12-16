@@ -100,7 +100,7 @@ export const CreateOrder = () => {
                 });
 
                 if(!matchingMunicipio) {
-                    AlertComponent.error('Error', 'El producto nop tiene valor total configurado!');
+                    AlertComponent.error('Error', 'El producto no tiene valor total configurado!');
                     return;
                 }
 

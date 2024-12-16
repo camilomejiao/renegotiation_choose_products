@@ -250,6 +250,8 @@ export const AddProducts = () => {
         window.location.reload();
     };
 
+    const handleBack = () => navigate('/admin/products');
+
     //Manejo principal para guardar productos
     const handleSaveProducts = async () => {
         if (!rows || rows.length === 0) {
@@ -270,7 +272,6 @@ export const AddProducts = () => {
             setRows([]);
             setFilteredRows([]);
         } catch (error) {
-            console.error('Error al guardar productos:', error.message);
             handleError('Error', 'Hubo un problema al guardar los productos.');
         } finally {
             setLoading(false); // Ocultar indicador de carga
@@ -355,7 +356,6 @@ export const AddProducts = () => {
 
     // Función para eliminar un elemento de la tabla
     const handleDeleteClick = (id) => {
-        // Filtramos los elementos que NO tienen el id seleccionado
         const updatedRows = filteredRows.filter((row) => row.id !== id);
         setFilteredRows(updatedRows);
     };
@@ -408,7 +408,7 @@ export const AddProducts = () => {
                         <Button
                             variant="secondary"
                             size="md"
-                            onClick={() => navigate(-1)}
+                            onClick={handleBack}
                             className="button-order-responsive">
                             Atras <FaBackspace />
                         </Button>
