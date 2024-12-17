@@ -36,8 +36,6 @@ const deliveryStatus = [
     { id: 3, label: "ENTREGA PARCIAL" }
 ];
 
-const apiUrl = process.env.REACT_APP_API_URL;
-
 export const Deliveries = () => {
 
     const { userAuth } = useOutletContext();
@@ -80,6 +78,7 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
+                console.log('deliveries: ', data);
                 setListDeliveriesToUser(await normalizeDeliveryRows(data));
             }
         } catch (error) {
@@ -91,13 +90,18 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
             if(status === ResponseStatusEnum.OK) {
-                return `${apiUrl}${data.archivos[0].ruta.slice(1)}`;
+                console.log(data);
+                return {
+                    urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
+                    approved: data?.fecha_aprobado === null ? parseInt(0) : data?.fecha_aprobado,
+                }
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
         }
     }
 
+    //
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userService.userInformation(cubId);
@@ -110,6 +114,10 @@ export const Deliveries = () => {
             showError(error, 'Error buscando productos:');
         }
     }
+
+    const isButtonDisabled = (row) => {
+        return row.actions.approved !== 0 && userAuth.rol_id === RolesEnum.SUPPLIER;
+    };
 
     // Definición de las columnas de entregas
     const deliveryColumns = [
@@ -191,29 +199,23 @@ export const Deliveries = () => {
             headerName: "EVIDENCIAS PDF",
             width: 200,
             renderCell: (params) => {
+                console.log('params: ', params.row);
                 return (
                     <div>
                         <Button
                             variant="secondary"
                             size="sm"
                             onClick={() => handleUploadFile(params.row.id)}
+                            disabled={isButtonDisabled(params.row)}
                         >
-                            {params.row.fileName ? "Reemplazar PDF" : "Subir PDF"}
+                            Subir PDF
                         </Button>
 
-                        {params.row.fileName && (
-                            <div>
-                                <small style={{ fontSize: "12px", color: "#555" }}>
-                                    <strong>Archivo:</strong> {params.row.fileName}
-                                </small>
-                            </div>
-                        )}
-
-                        {params.row.evidencePdf && (
+                        {(params.row.evidencePdf.urlFile !== 0) && (
                             <Button
                                 variant="success"
                                 size="sm"
-                                onClick={() => handleViewFile(params.row.evidencePdf)}
+                                onClick={() => handleViewFile(params.row.evidencePdf.urlFile)}
                                 style={{marginLeft: "10px"}}
                             >
                                 Ver PDF
@@ -233,23 +235,23 @@ export const Deliveries = () => {
                         <Button
                             variant="warning"
                             size="sm"
-                            onClick={() =>
-                            handleEditDelivery(params.row.id)
-                        }
+                            onClick={() => handleEditDelivery(params.row.id) }
                             style={{marginRight: "10px"}}
+                            disabled={isButtonDisabled(params.row)}
                         >
                             <FaPencilAlt/>
                         </Button>
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDeleteDelivery(params.row.id)}
+                            style={{marginRight: "10px"}}
+                            disabled={isButtonDisabled(params.row)}
+                        >
+                            <FaTrash/>
+                        </Button>
                         {(userAuth.rol_id === RolesEnum.AUDITOR || userAuth.rol_id === RolesEnum.ADMIN) && (
                             <>
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleDeleteDelivery(params.row.id)}
-                                    style={{marginRight: "10px"}}
-                                >
-                                    <FaTrash/>
-                                </Button>
                                 <Button
                                     variant="success"
                                     size="sm"
@@ -269,12 +271,13 @@ export const Deliveries = () => {
     const normalizeDeliveryRows = async (data) => {
         return await Promise.all(
             data.map(async (row) => {
-                const evidencePdf = await getDeliveryUrl(row.id);
+                const deliveryIdInfo = await getDeliveryUrl(row.id);
                 return {
                     id: row.id,
                     date: row.fecha_creacion.split("T")[0],
                     supplier: row.proveedor,
-                    evidencePdf: evidencePdf
+                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
+                    actions: { approved: deliveryIdInfo?.approved }
                 };
             })
         );
@@ -481,7 +484,16 @@ export const Deliveries = () => {
 
     //
     const handleApproveByAudit = async (id) => {
-
+        try {
+            const { status} = await deliveriesServices.approveDelivery(id);
+            console.log(status);
+            if (status === ResponseStatusEnum.OK) {
+                showAlert('Éxito', 'Entrega auditada exitosamente');
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error eliminando la entrega:", error);
+        }
     }
 
     //Guardar evidencias
@@ -632,7 +644,7 @@ export const Deliveries = () => {
             getListDeliveriesToUser(params.id);
             getUserInformation(params.id);
         }
-    }, []);
+    }, [params.id]);
 
     return (
         <>

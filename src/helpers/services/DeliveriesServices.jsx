@@ -85,6 +85,13 @@ class DeliveriesServices {
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
+    approveDelivery(deliveryId) {
+        const url = this.buildUrl(`aprobar/${deliveryId}/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+        });
+    }
+
 }
 
 export const deliveriesServices = new DeliveriesServices();
