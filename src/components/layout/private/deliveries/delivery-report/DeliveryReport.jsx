@@ -255,7 +255,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         <tr>
                             <td style={{height: '30px', textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.nombre + ' ' + deliveryInformation?.cub?.apellido}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.identificacion}</td>
-                            <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.id}</td>
+                            <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.cub_id}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
                         <tr>

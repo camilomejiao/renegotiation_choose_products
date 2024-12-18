@@ -20,13 +20,13 @@ import imgFrame1 from "../../../../assets/image/icons/frame.png";
 import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
 
 //Services
-import {reportServices} from "../../../../helpers/services/ReportServices";
+import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //Css
 import "./CompanyReport.css";
 
 //Enum
-import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 export const CompanyReport = () => {
 
@@ -130,7 +130,7 @@ export const CompanyReport = () => {
             const {nombre: distributorName, nit, cubs} = distributor;
 
             return Object.values(cubs).flatMap((cub) => {
-                const {cub: cubId, nombre, cedula, departamento, municipio, vereda, productos: products} = cub;
+                const {cub_id: cubId, nombre, cedula, departamento, municipio, vereda, productos: products} = cub;
 
                 return Object.values(products).map((product) => ({
                     "Nombre Proveedor": distributorName,

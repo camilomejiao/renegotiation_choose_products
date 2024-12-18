@@ -78,7 +78,6 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
-                console.log('deliveries: ', data);
                 setListDeliveriesToUser(await normalizeDeliveryRows(data));
             }
         } catch (error) {
@@ -90,7 +89,6 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
             if(status === ResponseStatusEnum.OK) {
-                console.log(data);
                 return {
                     urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
                     approved: data?.fecha_aprobado === null ? parseInt(0) : data?.fecha_aprobado,
@@ -105,7 +103,6 @@ export const Deliveries = () => {
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userService.userInformation(cubId);
-
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
             }
@@ -199,7 +196,6 @@ export const Deliveries = () => {
             headerName: "EVIDENCIAS PDF",
             width: 200,
             renderCell: (params) => {
-                console.log('params: ', params.row);
                 return (
                     <div>
                         <Button
@@ -468,7 +464,6 @@ export const Deliveries = () => {
     const handleDeleteDelivery = async (id) => {
         try {
             const { status} = await deliveriesServices.removeDelivery(id);
-            console.log(status);
             if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert('Éxito', 'Entrega eliminada exitosamente');
                 window.location.reload();
@@ -486,7 +481,6 @@ export const Deliveries = () => {
     const handleApproveByAudit = async (id) => {
         try {
             const { status} = await deliveriesServices.approveDelivery(id);
-            console.log(status);
             if (status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Entrega auditada exitosamente');
                 window.location.reload();

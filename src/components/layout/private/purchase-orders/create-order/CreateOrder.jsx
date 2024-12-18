@@ -484,7 +484,11 @@ export const CreateOrder = () => {
             <div style={{ display: 'none' }}>
                 {headLineInformation && (
                     <div ref={headlineReportRef}>
-                        <CompanyReportPrinting titleReport={'ORDEN DE COMPRA'} dataReport={headLineInformation} userData={userData} isCompanyReport={false}/>
+                        <CompanyReportPrinting
+                            titleReport={'ORDEN DE COMPRA'}
+                            dataReport={headLineInformation}
+                            userData={userData}
+                            isCompanyReport={false}/>
                     </div>
                 )}
             </div>

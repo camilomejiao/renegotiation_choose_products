@@ -17,7 +17,7 @@ export const UserInformation = ({userData}) => {
                                 </div>
                                 <div className="user-id">
                                     <strong>C.C:</strong> {userData.identificacion}
-                                    <span className="ms-3"><strong>CUB:</strong> {userData.id}</span>
+                                    <span className="ms-3"><strong>CUB:</strong> {userData.cub_id}</span>
                                 </div>
                             </div>
                         </Col>

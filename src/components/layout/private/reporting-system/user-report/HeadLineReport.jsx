@@ -52,7 +52,7 @@ export const HeadLineReport = ({dataReport}) => {
                     <thead>
                         <tr>
                             <td style={{ border: '1px solid black' }}><strong>CUB</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cub}</td>
+                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cub_id}</td>
                             <td style={{ border: '1px solid black' }}><strong>NOMBRE TITULAR:</strong></td>
                             <td style={{ width: '20%', border: '1px solid black', textAlign: 'center' }}>{dataReport?.nombre}</td>
                             <td style={{ border: '1px solid black' }}><strong>No. CÉDULA:</strong></td>

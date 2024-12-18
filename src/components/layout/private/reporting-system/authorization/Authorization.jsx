@@ -41,7 +41,7 @@ export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
                             <td style={{ width: '15%', border: '1px solid black' }}><strong>Nombre</strong></td>
                             <td style={{ width: '35%', border: '1px solid black' }} colSpan="3">{userData.nombre} {userData.apellido}</td>
                             <td style={{ width: '10%', border: '1px solid black' }}><strong>CUB</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black' }}>{userData.id}</td>
+                            <td style={{ width: '15%', border: '1px solid black' }}>{userData.cub_id}</td>
                         </tr>
                         <tr>
                             <td style={{width:'15%', border: '1px solid black'}}><strong>Departamento</strong></td>

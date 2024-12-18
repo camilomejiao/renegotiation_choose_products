@@ -25,7 +25,6 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 import './ReportingSystem.css';
 import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
-
 export const ReportingSystem = () => {
     const params = useParams();
     const navigate = useNavigate();
