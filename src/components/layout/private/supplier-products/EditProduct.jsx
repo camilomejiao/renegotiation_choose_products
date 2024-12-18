@@ -42,7 +42,7 @@ export const EditProduct = () => {
         try {
             const { data, status } = await productServices.getProductList();
             if (status === ResponseStatusEnum.OK) {
-                const products = await normalizeRows(data.results);
+                const products = await normalizeRows(data);
                 setProductList(products);
                 setFilteredData(products);
             }
