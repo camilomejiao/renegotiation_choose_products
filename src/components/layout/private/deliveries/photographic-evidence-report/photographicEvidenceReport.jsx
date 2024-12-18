@@ -60,7 +60,7 @@ export const PhotographicEvidenceReport = ({deliveryInformation}) => {
                             borderLeft: '1px solid black',
                             borderRight: '1px solid black'
                         }}>
-                            CUB: {deliveryInformation?.cub?.id}
+                            CUB: {deliveryInformation?.cub?.cub_id}
                         </td>
                         <td style={{
                             width: '40%',
