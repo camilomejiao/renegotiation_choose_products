@@ -92,7 +92,7 @@ export const ProductList = () => {
         try {
             const { data, status } = await productServices.getProductList();
             if (status === ResponseStatusEnum.OK) {
-                const products = normalizeRows(data.results);
+                const products = normalizeRows(data);
                 setProductList(products);
                 setFilteredData(products);
             }
