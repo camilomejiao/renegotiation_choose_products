@@ -19,7 +19,16 @@ import AlertComponent from "../../shared/alert/AlertComponent";
 // Enum
 import { ProductStatusEnum, RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
-const PAGE_SIZE = 50;
+//Utils
+import { handleError } from "../../../../helpers/utils/utils";
+import {
+    getBaseColumns,
+    getDynamicColumnsBySupplier,
+    getUnitOptions,
+    getCategoryOptions
+} from "../../../../helpers/utils/ProductColumns";
+
+const PAGE_SIZE = 100;
 
 export const ProductList = () => {
     const { userAuth } = useOutletContext();
@@ -32,45 +41,65 @@ export const ProductList = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [unitOptions, setUnitOptions] = useState([]);
+    const [categoryOptions, setCategoryOptions] = useState([]);
+    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    const productColumns = [
-        { field: "id", headerName: "COD", flex: 0.5 },
-        {
-            field: "name",
-            headerName: "NOMBRE",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
-                <div
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        overflow: "visible",
-                    }}
-                >
-                    {params.value}
-                </div>
-            ),
-        },
-        {
-            field: "description",
-            headerName: "DESCRIPCIÓN",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
-                <div
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        overflow: "visible",
-                    }}
-                >
-                    {params.value}
-                </div>
-            ),
-        },
-        { field: "brand", headerName: "MARCA", flex: 1.5 },
-        { field: "state", headerName: "ESTADO", flex: 1.5 },
+    const getProductList = async () => {
+        try {
+            const { data, status } = await productServices.getProductList();
+            if (status === ResponseStatusEnum.OK) {
+                const products =  await normalizeRows(data);
+                setProductList(products);
+                setFilteredData(products);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de productos:", error);
+        }
+    };
+
+    const normalizeRows = async (data) => {
+        try {
+            // Obtener la información de los municipios
+            const { municipalities } = await getDynamicColumnsBySupplier(false);
+
+            // Normalizar cada fila de productos
+            const normalizedRows = data.map((row) => {
+                // Extraer los precios de los municipios
+                const municipalityPrices = Object.fromEntries(
+                    Object.entries(municipalities).map(([key]) => {
+                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === parseInt(key));
+                        const price = priceData !== undefined ? priceData.valor_unitario : '0.00';
+                        return [`price_${key}`, price];
+                    })
+                );
+
+                // Devolver el objeto del producto con todos los campos necesarios
+                return {
+                    id: row.id,
+                    category: row.categoria_producto,
+                    reference: row.referencia,
+                    name: row.nombre,
+                    description: row.especificacion_tecnicas,
+                    brand: row.marca_comercial,
+                    unit: row.unidad_medida,
+                    ...municipalityPrices,
+                    state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
+                };
+            });
+
+            return normalizedRows;
+        } catch (error) {
+            console.error('Error al normalizar filas:', error);
+            return [];
+        }
+    };
+
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
+    const statusProduct = [
+        { field: "state", headerName: "ESTADO", width: 150, },
+    ];
+    const actionsColumns = [
         {
             field: "actions",
             headerName: "ACCIONES",
@@ -86,30 +115,9 @@ export const ProductList = () => {
             sortable: false,
             filterable: false,
         },
-    ];
+    ]
 
-    const getProductList = async () => {
-        try {
-            const { data, status } = await productServices.getProductList();
-            if (status === ResponseStatusEnum.OK) {
-                const products = normalizeRows(data);
-                setProductList(products);
-                setFilteredData(products);
-            }
-        } catch (error) {
-            console.error("Error al obtener la lista de productos:", error);
-        }
-    };
-
-    const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row.id,
-            name: row.nombre,
-            description: row.especificacion_tecnicas,
-            brand: row.marca_comercial,
-            state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
-        }));
-    };
+    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns];
 
     const handleDeleteClick = (id) => {
         setSelectedId(id);
@@ -170,6 +178,26 @@ export const ProductList = () => {
         getProductList();
     }, []);
 
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+                    getUnitOptions(),
+                    getCategoryOptions(),
+                    getDynamicColumnsBySupplier(false)
+                ]);
+
+                setUnitOptions(unitData);
+                setCategoryOptions(categoryData);
+                setDynamicMunicipalityColumns(newDynamicColumns);
+            } catch (error) {
+                handleError(error, "Error cargando los datos iniciales.");
+            }
+        };
+
+        loadData();
+    }, []);
+
     return (
         <>
             <div className="main-container">
@@ -202,7 +230,7 @@ export const ProductList = () => {
 
                     <div style={{height: 600, width: "100%"}}>
                         <DataGrid
-                            columns={productColumns}
+                            columns={columns}
                             rows={filteredData}
                             pagination
                             page={page}
@@ -213,7 +241,6 @@ export const ProductList = () => {
                                 setPage(0);
                             }}
                             rowsPerPageOptions={[10, 50, 100]}
-                            rowCount={filteredData.length}
                             componentsProps={{
                                 columnHeader: {
                                     style: {

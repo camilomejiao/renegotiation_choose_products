@@ -3,6 +3,7 @@ export const ResponseStatusEnum = {
     OK: 200,
     CREATE: 201,
     NO_CONTENT: 204,
+    MOVED_PERMANENTLY: 301,
     BAD_REQUEST: 400,
     UNAUTHORIZED: 401,
     FORBIDDEN: 403,
