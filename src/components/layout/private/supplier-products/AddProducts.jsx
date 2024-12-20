@@ -12,8 +12,8 @@ import { Footer } from "../../shared/footer/Footer";
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 //Services
-import { authService } from "../../../../helpers/services/Auth";
 import { productServices } from "../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
@@ -65,6 +65,23 @@ export const AddProducts = () => {
 
     const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...actionsColumns];
 
+    const loadData = async () => {
+        try {
+            const supplierId = getSupplierId();
+            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+                getDynamicColumnsBySupplier(supplierId, true)
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+            setDynamicMunicipalityColumns(newDynamicColumns);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
+        }
+    };
+
     //
     const handleClipboard = async (event) => {
         const clipboardData = event.clipboardData.getData("text");
@@ -78,7 +95,8 @@ export const AddProducts = () => {
         }
 
         // Esperar a que se carguen las columnas dinámicas
-        const { newDynamicColumns: dynamicColumns } = await getDynamicColumnsBySupplier(true);
+        const supplierId = getSupplierId();
+        const { newDynamicColumns: dynamicColumns } = await getDynamicColumnsBySupplier(supplierId,true);
         const units = await getUnitOptions();
         const categories = await getCategoryOptions();
 
@@ -191,7 +209,7 @@ export const AddProducts = () => {
 
     //Obtener el ID del proveedor
     const getSupplierId = () => {
-        return authService.getSupplierId();
+        return supplierServices.getSupplierId();
     };
 
     //Enviar lotes en paralelo con control de concurrencia
@@ -236,22 +254,6 @@ export const AddProducts = () => {
 
     // Cargar datos iniciales
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
-                    getUnitOptions(),
-                    getCategoryOptions(),
-                    getDynamicColumnsBySupplier()
-                ]);
-
-                setUnitOptions(unitData);
-                setCategoryOptions(categoryData);
-                setDynamicMunicipalityColumns(newDynamicColumns);
-            } catch (error) {
-                handleError(error, "Error cargando los datos iniciales.");
-            }
-        };
-
         loadData();
     }, []);
 

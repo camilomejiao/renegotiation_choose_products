@@ -59,15 +59,14 @@ export const getBaseColumns = (unitOptions, categoryOptions, editable = true) =>
 ]);
 
 // Obtener columnas dinámicas de los municipios
-export const getDynamicColumnsBySupplier = async (editable = true) => {
+export const getDynamicColumnsBySupplier = async (supplierId, editable = true) => {
     try {
-        const { data, status } = await supplierServices.getInfoSupplier();
+        const { data, status } = await supplierServices.getInfoSupplier(supplierId);
         if (status === ResponseStatusEnum.OK && data?.municipios) {
-            const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
-                const [code, name] = value.split(" : ").map(str => str.trim());
+            const newDynamicColumns = data.municipios.map((municipio) => {
                 return {
-                    field: `price_${key}`,
-                    headerName: `Precio - ${name}`,
+                    field: `price_${municipio.id}`,
+                    headerName: `Precio - ${municipio.ubicacion}`,
                     width: 150,
                     editable: editable,
                     renderCell: (params) => (
@@ -77,7 +76,7 @@ export const getDynamicColumnsBySupplier = async (editable = true) => {
                             onChange={(e) => {
                                 const value = parseFloat(e.target.value.replace(/[^\d]/g, ""));
                                 if (!isNaN(value)) {
-                                    params.api.updateRows([{ id: params.row.id, [`price_${key}`]: value }]);
+                                    params.api.updateRows([{ id: params.row.id, [`price_${municipio.id}`]: value }]);
                                 }
                             }}
                             fullWidth
@@ -90,8 +89,8 @@ export const getDynamicColumnsBySupplier = async (editable = true) => {
             throw new Error("No se encontraron municipios.");
         }
     } catch (error) {
-        console.error("❌ Error en getDynamicColumnsBySupplier:", error);
-        throw error; // Lanza el error para ser capturado en los componentes
+        console.error("Error en getDynamicColumnsBySupplier:", error);
+        throw error;
     }
 };
 
@@ -107,8 +106,8 @@ export const getUnitOptions = async () => {
         if (status === ResponseStatusEnum.OK) return data;
         return [];
     } catch (error) {
-        console.error("❌ Error en getUnitOptions:", error);
-        throw error; // Lanza el error para ser capturado en los componentes
+        console.error("Error en getUnitOptions:", error);
+        throw error;
     }
 };
 
@@ -119,7 +118,7 @@ export const getCategoryOptions = async () => {
         if (status === ResponseStatusEnum.OK) return data;
         return [];
     } catch (error) {
-        console.error("❌ Error en getCategoryOptions:", error);
-        throw error; // Lanza el error para ser capturado en los componentes
+        console.error("Error en getCategoryOptions:", error);
+        throw error;
     }
 };

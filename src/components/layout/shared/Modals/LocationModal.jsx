@@ -1,6 +1,6 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import { useState } from "react";
-import AlertComponent from "../alert/AlertComponent";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 export const LocationModal = ({ show, optionsArray, onConfirm }) => {
     const [selectedOption, setSelectedOption] = useState(null);

@@ -11,7 +11,7 @@ import {HeaderImage} from "../../shared/header-image/HeaderImage";
 import {CompanyReportPrinting} from "./report/CompanyReportPrinting";
 import {Footer} from "../../shared/footer/Footer";
 import {format} from "date-fns";
-import AlertComponent from "../../shared/alert/AlertComponent";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";

@@ -4,12 +4,25 @@ import { authTokenService } from "./AuthTokenService";
 
 class SupplierServices {
 
+    getSuppliersAll() {
+        const url = `${Global.url}usuario/`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     /*
     * Obtener información de un proveedor
     */
-    getInfoSupplier(){
-        const url = `${Global.url}usuario/info/`;
+    getInfoSupplier(supplierId){
+        const url = `${Global.url}usuario/${supplierId}/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     * Obtiene el ID del proveedor almacenado en localStorage.
+     * @returns {string|null} - ID del proveedor.
+     */
+    getSupplierId() {
+        return localStorage.getItem("id");
     }
 
     saveLocationToLocalStorage(locationKey, locationId, locationName) {

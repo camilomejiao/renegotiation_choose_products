@@ -1,38 +1,32 @@
-import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import { FaBackspace, FaPlus, FaSave } from "react-icons/fa";
-import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Button} from "react-bootstrap";
+import {FaBackspace, FaPlus, FaSave} from "react-icons/fa";
+import {DataGrid} from "@mui/x-data-grid";
+import {useNavigate} from "react-router-dom";
 
 //Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 //Modules
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { Footer } from "../../shared/footer/Footer";
-import AlertComponent from "../../shared/alert/AlertComponent";
+import {HeaderImage} from "../../shared/header-image/HeaderImage";
+import {Footer} from "../../shared/footer/Footer";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Services
-import { authService } from "../../../../helpers/services/Auth";
-import { productServices } from "../../../../helpers/services/ProductServices";
+import {productServices} from "../../../../helpers/services/ProductServices";
+import {supplierServices} from "../../../../helpers/services/SupplierServices";
 
 //Enums
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 //Utils
-import {
-    chunkArray,
-    extractMunicipios,
-    handleError,
-    showAlert
-} from "../../../../helpers/utils/utils";
+import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
 import {
     getBaseColumns,
+    getCategoryOptions,
     getDynamicColumnsBySupplier,
-    getUnitOptions,
-    getCategoryOptions
+    getUnitOptions
 } from "../../../../helpers/utils/ProductColumns";
-
 
 const PAGE_SIZE = 50;
 
@@ -53,9 +47,10 @@ export const EditProduct = () => {
 
     const getProductList = async () => {
         try {
-            const { data, status } = await productServices.getProductList();
+            const supplierId = getSupplierId();
+            const { data, status } = await productServices.getProductList(supplierId);
             if (status === ResponseStatusEnum.OK) {
-                const products = await normalizeRows(data);
+                const products = await normalizeRows(supplierId, data);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -64,19 +59,19 @@ export const EditProduct = () => {
         }
     };
 
-    const normalizeRows = async (data) => {
+    const normalizeRows = async (supplierId, data) => {
         try {
             // Obtener la información de los municipios
-            const { municipalities } = await getDynamicColumnsBySupplier(true);
+            const { municipalities } = await getDynamicColumnsBySupplier(supplierId,true);
 
             // Normalizar cada fila de productos
-            const normalizedRows = data.map((row) => {
+            return data.map((row) => {
                 // Extraer los precios de los municipios
                 const municipalityPrices = Object.fromEntries(
-                    Object.entries(municipalities).map(([key]) => {
-                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === parseInt(key));
+                    municipalities.map((municipality) => {
+                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
                         const price = priceData !== undefined ? priceData.valor_unitario : '0.00';
-                        return [`price_${key}`, price];
+                        return [`price_${municipality.id}`, price];
                     })
                 );
 
@@ -91,11 +86,26 @@ export const EditProduct = () => {
                     ...municipalityPrices
                 };
             });
-
-            return normalizedRows;
         } catch (error) {
             console.error('Error al normalizar filas:', error);
             return []; // Devolver array vacío en caso de error
+        }
+    };
+
+    const loadData = async () => {
+        try {
+            const supplierId = getSupplierId();
+            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+                getDynamicColumnsBySupplier(supplierId, true)
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+            setDynamicMunicipalityColumns(newDynamicColumns);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
         }
     };
 
@@ -191,7 +201,7 @@ export const EditProduct = () => {
 
     //Obtener el ID del proveedor
     const getSupplierId = () => {
-        return authService.getSupplierId();
+        return supplierServices.getSupplierId();
     };
 
     const productsBeforeSend = (inputData) => {
@@ -212,22 +222,6 @@ export const EditProduct = () => {
     //Cargar datos iniciales
     useEffect(() => {
         getProductList();
-        const loadData = async () => {
-            try {
-                const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
-                    getUnitOptions(),
-                    getCategoryOptions(),
-                    getDynamicColumnsBySupplier()
-                ]);
-
-                setUnitOptions(unitData);
-                setCategoryOptions(categoryData);
-                setDynamicMunicipalityColumns(newDynamicColumns);
-            } catch (error) {
-                handleError(error, "Error cargando los datos iniciales.");
-            }
-        };
-
         loadData();
     }, []);
 
