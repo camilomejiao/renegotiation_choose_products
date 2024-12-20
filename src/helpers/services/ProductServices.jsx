@@ -26,8 +26,11 @@ class ProductServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    getProductList() {
-        const url = this.baseUrl;
+    getProductList(supplierId = "") {
+        let url = this.baseUrl; // URL base
+        if (supplierId) {
+            url = `${url}?proveedor=${supplierId}`; // Agrega el parámetro proveedor
+        }
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

@@ -9,24 +9,25 @@ import {DataGrid} from "@mui/x-data-grid";
 //Components
 import {Footer} from "../../shared/footer/Footer";
 import {DeliveryReport} from "./delivery-report/DeliveryReport";
-import AlertComponent from "../../shared/alert/AlertComponent";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
-import {authService} from "../../../../helpers/services/Auth";
-import {deliveriesServices} from "../../../../helpers/services/DeliveriesServices";
+import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
+import { userService } from "../../../../helpers/services/UserServices";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Css
 import './Deliveries.css';
 
 //Enum
-import {ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
-import {PhotographicEvidenceReport} from "./photographic-evidence-report/photographicEvidenceReport";
-import {UserInformation} from "../user-information/UserInformation";
-import {userService} from "../../../../helpers/services/UserServices";
+import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
+import { PhotographicEvidenceReport } from "./photographic-evidence-report/photographicEvidenceReport";
+import { UserInformation } from "../user-information/UserInformation";
+
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -57,14 +58,14 @@ export const Deliveries = () => {
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
             if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) {
-                const { status, data } = await deliveriesServices.getSuppliers(params.id);
+                const { data, status} = await deliveriesServices.getSuppliers(params.id);
                 if (status === ResponseStatusEnum.OK) {
                     setSuppliers(data);
                 }
             }
 
             if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-                const itemId = await authService.getSupplierId();
+                const itemId = await supplierServices.getSupplierId();
                 const singleSupplier = [{ id: itemId }];
                 setSuppliers(singleSupplier);
             }

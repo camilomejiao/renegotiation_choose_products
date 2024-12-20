@@ -15,7 +15,7 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
 import "./OrderReport.css";
-import AlertComponent from "../../../shared/alert/AlertComponent";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Components
 import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";

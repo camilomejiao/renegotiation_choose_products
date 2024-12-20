@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "react-bootstrap";
-import { TextField, Select, MenuItem } from "@mui/material";
-import {FaBackspace, FaBroom, FaFastBackward, FaSave, FaTrash} from "react-icons/fa";
+import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { Footer } from "../../shared/footer/Footer";
-import AlertComponent from "../../shared/alert/AlertComponent";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -18,9 +16,21 @@ import { productServices } from "../../../../helpers/services/ProductServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enum
-import {ResponseStatusEnum as StatusEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
-import {authService} from "../../../../helpers/services/Auth";
-import AlertComponentServices from "../../shared/alert/AlertComponent";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+
+//Utils
+import {
+    chunkArray,
+    extractMunicipios,
+    handleError,
+    showAlert
+} from "../../../../helpers/utils/utils";
+import {
+    getBaseColumns,
+    getDynamicColumnsBySupplier,
+    getUnitOptions,
+    getCategoryOptions
+} from "../../../../helpers/utils/ProductColumns";
 
 export const AddProducts = () => {
 
@@ -34,116 +44,7 @@ export const AddProducts = () => {
     const [loading, setLoading] = useState(false);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    //
-    const getDynamicColumnsBySupplier = async () => {
-        try {
-            const { data, status } = await supplierServices.getInfoSupplier();
-            if (status === ResponseStatusEnum.OK) {
-                const newDynamicColumns = Object.entries(data.municipios).map(([key, value]) => {
-                    const [code, name] = value.split(" : ").map(str => str.trim());
-                    return {
-                        field: `price_${key}`,
-                        headerName: `Precio - ${name}`,
-                        width: 150,
-                        editable: true,
-                        renderCell: (params) => (
-                            <TextField
-                                type="text"
-                                value={formatPrice(params.value)} // Formatea el valor antes de mostrarlo
-                                onChange={(e) => {
-                                    const value = parseFloat(e.target.value.replace(/[^\d]/g, ""));
-                                    if (!isNaN(value)) {
-                                        params.api.updateRows([{ id: params.row.id, [`price_${key}`]: value }]);
-                                    }
-                                }}
-                                fullWidth
-                            />
-                        ),
-                    };
-                });
-                setDynamicMunicipalityColumns(newDynamicColumns);
-                return newDynamicColumns; // Devuelve las columnas dinámicas
-            }
-        } catch (error) {
-            console.log(error);
-            handleError(error, "Error buscando productos:");
-            return [];
-        }
-    };
-
-    //
-    const getUnitOptions = async () => {
-        try {
-            const {data, status} = await productServices.getUnitList();
-            if(status === ResponseStatusEnum.OK) setUnitOptions(data);
-            return data;
-        } catch (error) {
-            console.log(error)
-            handleError(error, 'Error buscando productos:');
-        }
-    }
-
-    //
-    const getCategoryOptions = async () => {
-        try {
-            const {data, status} = await productServices.getCategoryList();
-            if(status === ResponseStatusEnum.OK) setCategoryOptions(data);
-            return data;
-        } catch (error) {
-            handleError(error, 'Error buscando productos:');
-        }
-    }
-
-    const baseColumns = [
-        {field: "id", headerName: "ID", width: 90},
-        {
-            field: "category",
-            headerName: "Categoría",
-            width: 150,
-            editable: true,
-            renderCell: (params) => (
-                <Select
-                    value={params.value || ""}
-                    onChange={(e) =>
-                        params.api.updateRows([{id: params.row.id, category: e.target.value}])
-                    }
-                    fullWidth
-                >
-                    {categoryOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            ),
-        },
-        {field: "reference", headerName: "Referencia", width: 200, editable: true},
-        {field: "name", headerName: "Nombre", width: 150, editable: true},
-        {field: "description", headerName: "Descripción", width: 200, editable: true},
-        {field: "brand", headerName: "Marca", width: 200, editable: true},
-        {
-            field: "unit",
-            headerName: "Unidad",
-            width: 150,
-            editable: true,
-            renderCell: (params) => (
-                <Select
-                    value={params.value || ""}
-                    onChange={(e) =>
-                        params.api.updateRows([{id: params.row.id, unit: e.target.value}])
-                    }
-                    fullWidth
-                >
-                    {unitOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            ),
-        },
-    ];
-
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
     const actionsColumns = [
         {
             field: 'actions',
@@ -164,10 +65,21 @@ export const AddProducts = () => {
 
     const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...actionsColumns];
 
-    //
-    const formatPrice = (value) => {
-        if (!value) return "";
-        return new Intl.NumberFormat('es-ES', {style: 'currency', currency: 'COP'}).format(value);
+    const loadData = async () => {
+        try {
+            const supplierId = getSupplierId();
+            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+                getDynamicColumnsBySupplier(supplierId, true)
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+            setDynamicMunicipalityColumns(newDynamicColumns);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
+        }
     };
 
     //
@@ -183,7 +95,8 @@ export const AddProducts = () => {
         }
 
         // Esperar a que se carguen las columnas dinámicas
-        const dynamicColumns = await getDynamicColumnsBySupplier();
+        const supplierId = getSupplierId();
+        const { newDynamicColumns: dynamicColumns } = await getDynamicColumnsBySupplier(supplierId,true);
         const units = await getUnitOptions();
         const categories = await getCategoryOptions();
 
@@ -266,18 +179,17 @@ export const AddProducts = () => {
 
             await sendBatchesInParallel(batches);
 
-            AlertComponentServices.success('', 'Todos los productos se han creado exitosamente');
+            showAlert('', 'Todos los productos se han creado exitosamente');
 
             // Limpiamos la tabla
             setRows([]);
             setFilteredRows([]);
         } catch (error) {
-            handleError('Error', 'Hubo un problema al guardar los productos.');
+            handleError('Error', `${error.message}`);
         } finally {
             setLoading(false); // Ocultar indicador de carga
         }
     };
-
 
     //Transformar datos para ajustarlos al formato esperado por la API
     const transformData = (inputData) => {
@@ -297,27 +209,7 @@ export const AddProducts = () => {
 
     //Obtener el ID del proveedor
     const getSupplierId = () => {
-        return authService.getSupplierId();
-    };
-
-    //Extraer los precios de municipios dinámicos
-    const extractMunicipios = (product) => {
-        return Object.keys(product)
-            .filter(key => key.startsWith("price_")) // Filtrar claves que empiezan con "price_"
-            .reduce((acc, key) => {
-                const municipioId = key.split("_")[1]; // Obtener el ID del municipio
-                acc[municipioId] = product[key]; // Asignar el precio al municipio
-                return acc;
-            }, {});
-    };
-
-    //Dividir un array en lotes
-    const chunkArray = (array, chunkSize) => {
-        const chunks = [];
-        for (let i = 0; i < array.length; i += chunkSize) {
-            chunks.push(array.slice(i, i + chunkSize));
-        }
-        return chunks;
+        return supplierServices.getSupplierId();
     };
 
     //Enviar lotes en paralelo con control de concurrencia
@@ -330,26 +222,26 @@ export const AddProducts = () => {
                 batchChunk.map(batch => sendBatchToService(batch))
             );
 
-            // Filtrar los errores
             results.forEach((result, index) => {
                 if (result.status === 'rejected') {
-                    errors.push(result.reason); // Guardar el error
-                    console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
-                    AlertComponentServices.error('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`);
+                    errors.push(result.reason);
                 }
             });
         }
 
         if (errors.length > 0) {
-            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
+            throw new Error(`${errors}`);
         }
     };
 
-
     const sendBatchToService = async (batch) => {
         const { data, status } = await productServices.save(batch);
-        if (status !== StatusEnum.CREATE) {
-            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
+        if (status === ResponseStatusEnum.BAD_REQUEST) {
+            throw new Error(`${data}`);
+        }
+
+        if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+            throw new Error(`${data}`);
         }
         return data;
     };
@@ -360,10 +252,10 @@ export const AddProducts = () => {
         setFilteredRows(updatedRows);
     };
 
-    //Maneja el error en caso de fallo de la llamada
-    const handleError = (error, title, ) => {
-        AlertComponent.error(error, title);
-    };
+    // Cargar datos iniciales
+    useEffect(() => {
+        loadData();
+    }, []);
 
     useEffect(() => {
         document.addEventListener("paste", handleClipboard);
@@ -371,12 +263,6 @@ export const AddProducts = () => {
             document.removeEventListener("paste", handleClipboard);
         };
     }, [rows]);
-
-    useEffect(() => {
-        getDynamicColumnsBySupplier();
-        getUnitOptions();
-        getCategoryOptions();
-    }, []);
 
     return (
         <div className="main-container">

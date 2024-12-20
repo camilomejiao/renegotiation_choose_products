@@ -39,14 +39,14 @@ export const Dashboard = () => {
     //
     const getSupplierInfo = async () => {
         try {
-            const { data, status } = await supplierServices.getInfoSupplier();
+            const supplierId = await supplierServices.getSupplierId();
+            const { data, status } = await supplierServices.getInfoSupplier(supplierId);
             if (status === ResponseStatusEnum.OK) {
-                const muni = Object.entries(data.municipios).map(([key, value]) => {
-                    const [codeMuni, nameMuni] = value.split(" : ").map(str => str.trim());
+                const muni = data.municipios.map((municipio) => {
                     return {
-                        value: parseInt(key),
-                        label: nameMuni,
-                        codeMuni: codeMuni
+                        value: parseInt(municipio.id),
+                        label: municipio.ubicacion,
+                        codeMuni: municipio.dane
                     };
                 });
                 setMunicipalities(muni);

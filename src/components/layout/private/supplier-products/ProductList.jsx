@@ -1,8 +1,9 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import {FaCheck, FaEdit, FaPlus, FaTrash} from "react-icons/fa";
+import { Button, Col } from "react-bootstrap";
+import { FaCheck, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import Select from "react-select";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -14,85 +15,71 @@ import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 // Services
 import { productServices } from "../../../../helpers/services/ProductServices";
-import AlertComponent from "../../shared/alert/AlertComponent";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 // Enum
-import { ProductStatusEnum, RolesEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ProductStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
 
-const PAGE_SIZE = 50;
+//Utils
+import { handleError } from "../../../../helpers/utils/utils";
+import {
+    getBaseColumns,
+    getCategoryOptions,
+    getDynamicColumnsBySupplier,
+    getUnitOptions
+} from "../../../../helpers/utils/ProductColumns";
+
+const PAGE_SIZE = 100;
 
 export const ProductList = () => {
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();
 
+    const [suppliers, setSuppliers] = useState([]);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [productList, setProductList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
     const [showModal, setShowModal] = useState(false);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedRowId, setSelectedRowId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [unitOptions, setUnitOptions] = useState([]);
+    const [categoryOptions, setCategoryOptions] = useState([]);
+    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    const productColumns = [
-        { field: "id", headerName: "COD", flex: 0.5 },
-        {
-            field: "name",
-            headerName: "NOMBRE",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
-                <div
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        overflow: "visible",
-                    }}
-                >
-                    {params.value}
-                </div>
-            ),
-        },
-        {
-            field: "description",
-            headerName: "DESCRIPCIÓN",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
-                <div
-                    style={{
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        overflow: "visible",
-                    }}
-                >
-                    {params.value}
-                </div>
-            ),
-        },
-        { field: "brand", headerName: "MARCA", flex: 1.5 },
-        { field: "state", headerName: "ESTADO", flex: 1.5 },
-        {
-            field: "actions",
-            headerName: "ACCIONES",
-            flex: 1,
-            renderCell: (params) => (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <FaTrash style={{ cursor: 'pointer', color: 'red' }} onClick={() => handleDeleteClick(params.row.id)} />
-                    {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
-                        <FaCheck style={{ cursor: 'pointer', color: 'green' }} onClick={() => handleApproveByAudit(params.row.id)} />
-                    )}
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
-        },
-    ];
+    //Obtener la lista de proveedores
+    const getSuppliers = async () => {
+        try {
+            const { data, status } = await supplierServices.getSuppliersAll();
+            if (status === ResponseStatusEnum.OK) {
+                setSuppliers(data);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de proveedores:", error);
+        }
+    }
 
+    const getSupplierId = () => {
+        let supplierId = null;
+        if (selectedSupplier && (userAuth.rol_id === RolesEnum.AUDITOR || userAuth.rol_id === RolesEnum.ADMIN)) {
+            supplierId = selectedSupplier.value;
+        }
+
+        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
+            supplierId = supplierServices.getSupplierId();
+        }
+
+        return supplierId;
+    }
+
+    //Obtener la lista de productos
     const getProductList = async () => {
         try {
-            const { data, status } = await productServices.getProductList();
+            const { data, status } = await productServices.getProductList(getSupplierId());
             if (status === ResponseStatusEnum.OK) {
-                const products = normalizeRows(data);
+                const products =  await normalizeRows(getSupplierId(), data);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -101,24 +88,103 @@ export const ProductList = () => {
         }
     };
 
-    const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row.id,
-            name: row.nombre,
-            description: row.especificacion_tecnicas,
-            brand: row.marca_comercial,
-            state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
-        }));
+    //
+    const loadData = async () => {
+        try {
+            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+                getDynamicColumnsBySupplier(getSupplierId(), true)
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+            setDynamicMunicipalityColumns(newDynamicColumns);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
+        }
     };
 
+    const normalizeRows = async (supplierId, data) => {
+        try {
+            const { municipalities } = await getDynamicColumnsBySupplier(supplierId,true);
+
+            return data.map((row) => {
+                // Extraer los precios de los municipios
+                const municipalityPrices = Object.fromEntries(
+                    municipalities.map((municipality) => {
+                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
+                        const price = priceData !== undefined ? priceData.valor_unitario : '0.00';
+                        return [`price_${municipality.id}`, price];
+                    })
+                );
+
+                return {
+                    id: row.id,
+                    name: row.nombre,
+                    description: row.especificacion_tecnicas,
+                    brand: row.marca_comercial,
+                    reference: row.referencia,
+                    unit: row.unidad_medida,
+                    category: row.categoria_producto,
+                    ...municipalityPrices,
+                    state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
+                };
+            });
+        } catch (error) {
+            console.error('Error al normalizar filas:', error);
+            return [];
+        }
+    };
+
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
+
+    const statusProduct = [
+        { field: "state", headerName: "ESTADO", width: 150, },
+    ];
+
+    const actionsColumns = [
+        {
+            field: "actions",
+            headerName: "ACCIONES",
+            width: 100,
+            renderCell: (params) => (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteClick(params.row.id)}
+                        style={{marginRight: "10px"}}
+                    >
+                        <FaTrash/>
+                    </Button>
+                    {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
+                        <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => handleApproveByAudit(params.row.id)}
+                            style={{ marginLeft: '10px' }}
+                        >
+                            <FaCheck/>
+                        </Button>
+                    )}
+                </div>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+    ]
+
+    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns];
+
     const handleDeleteClick = (id) => {
-        setSelectedId(id);
+        setSelectedRowId(id);
         setShowModal(true);
     };
 
-    const handleApproveByAudit = async () => {
+    const handleApproveByAudit = async (id) => {
         try {
-            const { status } = await productServices.productApprove(selectedId);
+            const { status } = await productServices.productApprove(id);
             if (status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Producto aprobado exitosamente!");
                 await getProductList();
@@ -131,15 +197,19 @@ export const ProductList = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setSelectedId(null);
+        selectedRowId(null);
     };
 
     const handleConfirmDelete = async () => {
         try {
-            const { status } = await productServices.productRemove(selectedId);
+            const { status } = await productServices.productRemove(selectedRowId);
             if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente!");
                 await getProductList();
+                handleCloseModal();
+            }
+            if (status === ResponseStatusEnum.FORBIDDEN) {
+                showInfo("Atención!", "No puedes borrar este producto ya aprobado!");
                 handleCloseModal();
             }
         } catch (error) {
@@ -162,13 +232,29 @@ export const ProductList = () => {
     };
 
     const showAlert = (title, message) => AlertComponent.success(title, message);
+
+    const showInfo = (title, message) => AlertComponent.info(title, message);
     const handleCreateProducts = () => navigate(`/admin/create-products`);
 
     const handleEditProducts = () => navigate(`/admin/edit-product`);
 
     useEffect(() => {
-        getProductList();
-    }, []);
+        if(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) {
+            getSuppliers();
+        }
+
+        if(userAuth.rol_id === RolesEnum.SUPPLIER) {
+            getProductList();
+            loadData();
+        }
+    }, [userAuth.rol_id]);
+
+    useEffect(() => {
+        if (selectedSupplier && (userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR)) {
+            getProductList();
+            loadData();
+        }
+    }, [selectedSupplier, userAuth.rol_id]);
 
     return (
         <>
@@ -181,7 +267,6 @@ export const ProductList = () => {
                 <div className="container mt-lg-3">
                     <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
                         <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-
                             <input
                                 type="text"
                                 placeholder="Buscar..."
@@ -190,19 +275,36 @@ export const ProductList = () => {
                                 className="input-responsive"
                             />
 
-                            <Button onClick={handleCreateProducts} className="button-order-responsive">
-                                Agregar productos <FaPlus />
-                            </Button>
+                            {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
+                                <>
+                                    <Button onClick={handleCreateProducts} className="button-order-responsive">
+                                        Agregar productos <FaPlus />
+                                    </Button>
 
-                            <Button variant="secondary" onClick={handleEditProducts} className="button-order-responsive">
-                                Editar productos <FaEdit />
-                            </Button>
+                                    <Button variant="secondary" onClick={handleEditProducts} className="button-order-responsive">
+                                        Editar productos <FaEdit />
+                                    </Button>
+                                </>
+                            )}
+
+                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
+                                <Col xs={12} md={6} className="d-flex align-items-center">
+                                    <Select
+                                        value={selectedSupplier}
+                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                        options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
+                                        placeholder="Selecciona una compañía"
+                                        classNamePrefix="custom-select"
+                                        className="custom-select w-100"
+                                    />
+                                </Col>
+                            )}
                         </div>
                     </div>
 
                     <div style={{height: 600, width: "100%"}}>
                         <DataGrid
-                            columns={productColumns}
+                            columns={columns}
                             rows={filteredData}
                             pagination
                             page={page}
@@ -213,7 +315,6 @@ export const ProductList = () => {
                                 setPage(0);
                             }}
                             rowsPerPageOptions={[10, 50, 100]}
-                            rowCount={filteredData.length}
                             componentsProps={{
                                 columnHeader: {
                                     style: {

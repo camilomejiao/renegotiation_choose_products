@@ -78,14 +78,6 @@ class AuthService {
         localStorage.setItem("user", JSON.stringify(decodeToken || {}));
         localStorage.setItem("rol_id", decodeToken?.rol || "");
     }
-
-    /**
-     * Obtiene el ID del proveedor almacenado en localStorage.
-     * @returns {string|null} - ID del proveedor.
-     */
-    getSupplierId() {
-        return localStorage.getItem("id");
-    }
 }
 
 export const authService = new AuthService();
