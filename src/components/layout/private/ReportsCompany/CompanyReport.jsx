@@ -165,19 +165,19 @@ export const CompanyReport = () => {
     };
 
     const handleDownloadInstructions = () => {
-        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/2024-11-07_PAGOS_PROVEEDORES.pdf", "_blank");
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/archivos/formatos/2024-11-07_PAGOS_PROVEEDORES.pdf", "_blank");
     };
 
     const handleDocumentsForPaymentRequest = () => {
-        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/DOCUMENTOS_ENVIO_SOLICITUD_PAGO.pdf", "_blank");
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/archivos/formatos/DOCUMENTOS_ENVIO_SOLICITUD_PAGO.pdf", "_blank");
     };
 
     const handleCollectionAccountFormat = () => {
-        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/FORMATO_CUENTA_DE_COBRO_PN.xlsx", "_blank");
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/archivos/formatos/FORMATO_CUENTA_DE_COBRO_PN.xlsx", "_blank");
     };
 
     const handleAccountList = () => {
-        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/api/archivos/formatos/RELACION_CUENTAS.xlsx", "_blank");
+        window.open("https://proveedorespnis.direccionsustitucion-pnis.gov.co/archivos/formatos/RELACION_CUENTAS.xlsx", "_blank");
     };
 
     useEffect(() => {
