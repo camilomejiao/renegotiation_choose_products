@@ -6,13 +6,13 @@ import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
 import { Footer } from "../../shared/footer/Footer";
 
 
-export const SearchUserForDeliveries = () => {
+export const SearchUserForRenegociation = () => {
 
     const navigate = useNavigate();
 
     const handleSearchSuccess = (userData) => {
         const { id } = userData;
-        navigate(`/admin/deliveries/${id}`)
+        navigate(`/admin/renegociation/${id}`)
     }
 
     return (

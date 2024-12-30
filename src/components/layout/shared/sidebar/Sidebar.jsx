@@ -6,7 +6,7 @@ import {
     FaSignOutAlt,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers, FaUser
+    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers, FaUser, FaHandshake, FaHardHat
 } from 'react-icons/fa';
 
 //Css
@@ -26,6 +26,10 @@ export const Sidebar = ({userAuth}) => {
 
     const handleApplication = () => {
         navigate("/");
+    };
+
+    const handleRenegociation = () => {
+        navigate("/admin/search-user-for-renegociation");
     };
 
     const handleOrderReport = () => {
@@ -68,17 +72,21 @@ export const Sidebar = ({userAuth}) => {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
+                                        <div className="dropdown-item" onClick={handleRenegociation}>
+                                            <FaHandshake className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Renegociación</span>}
+                                        </div>
                                         <div className="dropdown-item" onClick={handleApplication}>
                                             <FaUsersCog className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleUsers}>
                                             <FaUsers className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Usuarios</span>}
+                                            {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={handleProducts}>
                                             <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Productos</span>}
+                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>
@@ -88,12 +96,28 @@ export const Sidebar = ({userAuth}) => {
 
                     {/* Gestión de Usuarios para Roles Administrativos */}
                     {(userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) && (
-                        <div className="dropdown-content">
-                            <div className="dropdown-item" onClick={handleApplication}>
-                                <FaUsersCog className="sidebar-icon" />
-                                {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
-                            </div>
-                        </div>
+                        <Accordion>
+                            <Card className="accordion-card">
+                                <Accordion.Header>
+                                    <div className="accordion-toggle">
+                                        <FaHardHat className="sidebar-icon" />
+                                        {isOpen && <span className="sidebar-text">Tecnico Territorio</span>}
+                                    </div>
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <div className="dropdown-content">
+                                        <div className="dropdown-item" onClick={handleRenegociation}>
+                                            <FaHandshake className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Renegociación</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handleApplication}>
+                                            <FaUsersCog className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
+                                        </div>
+                                    </div>
+                                </Accordion.Body>
+                            </Card>
+                        </Accordion>
                     )}
 
                     {/* Acordeón para Proveedores */}

@@ -27,7 +27,8 @@ import {
     getBaseColumns,
     getCategoryOptions,
     getDynamicColumnsBySupplier,
-    getUnitOptions
+    getUnitOptions,
+    getCategoriesColumns
 } from "../../../../helpers/utils/ProductColumns";
 
 const PAGE_SIZE = 100;
@@ -49,6 +50,7 @@ export const ProductList = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
+
     //Obtener la lista de proveedores
     const getSuppliers = async () => {
         try {
@@ -61,6 +63,7 @@ export const ProductList = () => {
         }
     }
 
+    //
     const getSupplierId = () => {
         let supplierId = null;
         if (selectedSupplier && (userAuth.rol_id === RolesEnum.AUDITOR || userAuth.rol_id === RolesEnum.ADMIN)) {
@@ -105,6 +108,7 @@ export const ProductList = () => {
         }
     };
 
+    //
     const normalizeRows = async (supplierId, data) => {
         try {
             const { municipalities } = await getDynamicColumnsBySupplier(supplierId,true);
@@ -137,6 +141,7 @@ export const ProductList = () => {
         }
     };
 
+    //
     const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
 
     const statusProduct = [
@@ -147,7 +152,7 @@ export const ProductList = () => {
         {
             field: "actions",
             headerName: "ACCIONES",
-            width: 100,
+            width: 150,
             renderCell: (params) => (
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Button
@@ -173,9 +178,11 @@ export const ProductList = () => {
             sortable: false,
             filterable: false,
         },
-    ]
+    ];
 
-    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns];
+    const categoriesColumns = getCategoriesColumns();
+
+    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns, ...categoriesColumns];
 
     const handleDeleteClick = (id) => {
         setSelectedRowId(id);
@@ -329,7 +336,7 @@ export const ProductList = () => {
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#40A581",
                                     color: "white",
-                                    fontSize: "14px",
+                                    fontSize: "12px",
                                 },
                                 "& .MuiDataGrid-columnHeader": {
                                     textAlign: "center",
@@ -342,10 +349,16 @@ export const ProductList = () => {
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
                                     display: "flex",
+                                },
+                                "& .MuiSelect-root": {
+                                    fontSize: "12px",
+                                    fontFamily: "Arial, sans-serif",
+                                    width: "100%",
                                 },
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",

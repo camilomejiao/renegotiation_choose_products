@@ -7,7 +7,7 @@ import './Dashboard.css';
 
 //Component
 import { Footer } from "../../shared/footer/Footer";
-import { SearchUserForm } from "../search-user-form/SearchUserForm";
+import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
 import { LocationModal } from "../../shared/Modals/LocationModal";
 
 //Enums

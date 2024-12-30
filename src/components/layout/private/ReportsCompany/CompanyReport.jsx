@@ -3,7 +3,7 @@ import {Col, Container, Dropdown, Row, Spinner} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {FaCalendarAlt} from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 
 //Components

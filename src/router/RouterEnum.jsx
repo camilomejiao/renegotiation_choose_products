@@ -3,6 +3,10 @@ export const RouterEnum = {
 
     RouterAdmin: '/admin',
 
+    //Renegociacion
+    SearchUserForRenegociation: 'search-user-for-renegociation',
+    Renegociation: 'Renegociation/:cub_id',
+
     //Ordenes de compra
     CreateOrder: 'create-order/:id',
     EditOrder: 'edit-order/:order_id/:cub_id',

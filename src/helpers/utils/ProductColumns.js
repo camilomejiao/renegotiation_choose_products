@@ -13,7 +13,7 @@ export const getBaseColumns = (unitOptions, categoryOptions, editable = true) =>
     {
         field: "category",
         headerName: "Categoría",
-        width: 150,
+        width: 300,
         editable: editable,
         renderCell: (params) => (
             <Select
@@ -31,14 +31,14 @@ export const getBaseColumns = (unitOptions, categoryOptions, editable = true) =>
             </Select>
         ),
     },
-    { field: "reference", headerName: "Referencia", width: 200, editable: editable },
-    { field: "name", headerName: "Nombre", width: 150, editable: editable },
-    { field: "description", headerName: "Descripción", width: 200, editable: editable },
-    { field: "brand", headerName: "Marca", width: 200, editable: editable },
+    { field: "reference", headerName: "Referencia", width: 150, editable: editable },
+    { field: "name", headerName: "Nombre", width: 500, editable: editable },
+    { field: "description", headerName: "Descripción", width: 500, editable: editable },
+    { field: "brand", headerName: "Marca", width: 300, editable: editable },
     {
         field: "unit",
         headerName: "Unidad",
-        width: 150,
+        width: 300,
         editable: editable,
         renderCell: (params) => (
             <Select
@@ -122,3 +122,227 @@ export const getCategoryOptions = async () => {
         throw error;
     }
 };
+
+//
+export const getCategoriesColumns = () => ([
+        {
+            field: "PNN",
+            headerName: "PNN: Parque Nacional Natural",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, PNN: e.target.value }])
+                    }
+                    fullWidth
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "ZRFA",
+            headerName: "ZRF tipo A",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, ZRFA: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "ZRFB",
+            headerName: "ZRF tipo B",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, ZRFB: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "ZRFC",
+            headerName: "ZRF tipo C",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, ZRFC: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "AMEMPreservación",
+            headerName: "AMEM preservación",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, AMEMPreservación: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "AMEMProducción",
+            headerName: "AMEM producción",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, AMEMProducción: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "DRMI",
+            headerName: "DRMI",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, DRMI: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "ReservaForestal",
+            headerName: "Reserva Forestal Protectora Nacional",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, ReservaForestal: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "ND",
+            headerName: "ND: Núcleo de deforestación",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, ND: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "RIL",
+            headerName: "RIL: Resguardo Indígena Legalizado",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, RIL: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "CCL",
+            headerName: "CCL: Consejo Comunitario Legalizado",
+            width: 200,
+            editable: false,
+            renderCell: (params) => (
+                <Select
+                    value={params.value || "Si"}
+                    onChange={(e) =>
+                        params.api.updateRows([{ id: params.row.id, CCL: e.target.value }])
+                    }
+                    style={{ width: "100px" }}
+                >
+                    <MenuItem value="Si">Si</MenuItem>
+                    <MenuItem value="No">No</MenuItem>
+                </Select>
+            ),
+            sortable: false,
+            filterable: false,
+        },
+    ]);
