@@ -83,7 +83,20 @@ export const EditProduct = () => {
                     reference: row.referencia,
                     unit: row.unidad_medida,
                     category: row.categoria_producto,
-                    ...municipalityPrices
+                    ...municipalityPrices,
+                    ambiental: {
+                        PNN: row?.ambiental?.PNN ?? 0,
+                        ZRFA: row?.ambiental?.ZRFA ?? 0,
+                        ZRFB: row?.ambiental?.ZRFB ?? 0,
+                        ZRFC: row?.ambiental?.ZRFC ?? 0,
+                        AMEMPre: row?.ambiental?.AMEMPre ?? 0,
+                        AMEMProd: row?.ambiental?.AMEMProd ?? 0,
+                        DRMI: row?.ambiental?.DRMI ?? 0,
+                        RFPN: row?.ambiental?.RFPN ?? 0,
+                        ND: row?.ambiental?.ND ?? 0,
+                        RIL: row?.ambiental?.RIL ?? 0,
+                        CCL: row?.ambiental?.CCL ?? 0,
+                    }
                 };
             });
         } catch (error) {
@@ -215,7 +228,8 @@ export const EditProduct = () => {
             referencia: product.reference,
             unidad_medida: product.unit,
             categoria_producto: product.category,
-            valor_municipio: extractMunicipios(product)
+            valor_municipio: extractMunicipios(product),
+            ambiental: product.ambiental
         }));
     };
 

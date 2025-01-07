@@ -20,6 +20,23 @@ export const extractMunicipios = (product) => {
         }, {});
 };
 
+//
+export const getEnvironmental = () => {
+    return {
+        PNN: 1,
+        ZRFA: 1,
+        ZRFB: 1,
+        ZRFC: 1,
+        AMEMPre: 1,
+        AMEMProd: 1,
+        DRMI: 1,
+        RFPN: 1,
+        ND: 1,
+        RIL: 1,
+        CCL: 1
+    }
+}
+
 //Maneja el error en caso de fallo de la llamada
 export const handleError = (error, title) => {
     AlertComponent.error(error, title);

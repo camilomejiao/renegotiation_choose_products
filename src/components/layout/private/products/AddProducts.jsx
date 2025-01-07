@@ -21,7 +21,7 @@ import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 //Utils
 import {
     chunkArray,
-    extractMunicipios,
+    extractMunicipios, getEnvironmental,
     handleError,
     showAlert
 } from "../../../../helpers/utils/utils";
@@ -204,6 +204,7 @@ export const AddProducts = () => {
             unidad_medida: product.unit,
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
+            ambiental: getEnvironmental(),
         }));
     };
 

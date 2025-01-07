@@ -1,9 +1,10 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col } from "react-bootstrap";
-import { FaCheck, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import {FaCheck, FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
+import debounce from "lodash/debounce";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -22,7 +23,7 @@ import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import { ProductStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
 
 //Utils
-import { handleError } from "../../../../helpers/utils/utils";
+import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
@@ -40,6 +41,7 @@ export const ProductList = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [productList, setProductList] = useState([]);
+    const [editedProducts, setEditedProducts] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
@@ -49,6 +51,7 @@ export const ProductList = () => {
     const [unitOptions, setUnitOptions] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
+    const [loading, setLoading] = useState(false);
 
 
     //Obtener la lista de proveedores
@@ -133,6 +136,17 @@ export const ProductList = () => {
                     category: row.categoria_producto,
                     ...municipalityPrices,
                     state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
+                    PNN: row?.ambiental?.PNN ?? 0,
+                    ZRFA: row?.ambiental?.ZRFA ?? 0,
+                    ZRFB: row?.ambiental?.ZRFB ?? 0,
+                    ZRFC: row?.ambiental?.ZRFC ?? 0,
+                    AMEMPre: row?.ambiental?.AMEMPre ?? 0,
+                    AMEMProd: row?.ambiental?.AMEMProd ?? 0,
+                    DRMI: row?.ambiental?.DRMI ?? 0,
+                    RFPN: row?.ambiental?.RFPN ?? 0,
+                    ND: row?.ambiental?.ND ?? 0,
+                    RIL: row?.ambiental?.RIL ?? 0,
+                    CCL: row?.ambiental?.CCL ?? 0,
                 };
             });
         } catch (error) {
@@ -180,7 +194,27 @@ export const ProductList = () => {
         },
     ];
 
-    const categoriesColumns = getCategoriesColumns();
+    const debouncedHandleChange = debounce((field, params, newValue) => {
+        params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
+
+        setEditedProducts((prevState) => {
+            const index = prevState.findIndex((product) => product.id === params.row.id);
+            if (index > -1) {
+                prevState[index][field] = newValue;
+            } else {
+                prevState.push({ ...params.row, [field]: newValue });
+            }
+            return [...prevState];
+        });
+    }, 300);
+
+
+    const handleSelectChange = (field) => (params) => (event) => {
+        const newValue = event.target.value;
+        debouncedHandleChange(field, params, newValue);
+    };
+
+    const categoriesColumns = getCategoriesColumns(handleSelectChange, userAuth.rol_id);
 
     const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns, ...categoriesColumns];
 
@@ -236,6 +270,107 @@ export const ProductList = () => {
         );
 
         setFilteredData(filtered);
+    };
+
+    //
+    const handleRowUpdate = (newRow, oldRow) => {
+        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+            setEditedProducts(prevState => {
+                const index = prevState.findIndex(product => product.id === newRow.id);
+                if (index > -1) {
+                    prevState[index] = newRow;
+                } else {
+                    prevState.push(newRow);
+                }
+                return [...prevState];
+            });
+        }
+        return newRow;
+    };
+
+    //
+    const handleSaveProducts = async () => {
+        try {
+            setLoading(true);
+            if (editedProducts.length === 0) {
+                AlertComponent.warning('', 'No hay productos modificados para guardar.');
+                return;
+            }
+
+            const products = await productsBeforeSend(editedProducts);
+            const batches = chunkArray(products, 500);
+
+            await sendBatchesInParallel(batches);
+
+            showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+            setEditedProducts([]);
+        } catch (error) {
+            handleError('Error', 'Error al guardar los productos.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //
+    const productsBeforeSend = (inputData) => {
+        const supplierId = parseInt(getSupplierId());
+        return inputData.map((product) => ({
+            id: product.id,
+            proveedor_id: supplierId,
+            nombre: product.name,
+            especificacion_tecnicas: product.description,
+            marca_comercial: product.brand,
+            referencia: product.reference,
+            unidad_medida: product.unit,
+            categoria_producto: product.category,
+            valor_municipio: extractMunicipios(product),
+            ambiental: {
+                PNN: parseInt(product?.PNN),
+                ZRFA: parseInt(product?.ZRFA),
+                ZRFB: parseInt(product?.ZRFB),
+                ZRFC: parseInt(product?.ZRFC),
+                AMEMPre: parseInt(product?.AMEMPre),
+                AMEMProd: parseInt(product?.AMEMProd),
+                DRMI: parseInt(product?.DRMI),
+                RFPN: parseInt(product?.RFPN),
+                ND: parseInt(product?.ND),
+                RIL: parseInt(product?.RIL),
+                CCL: parseInt(product?.CCL),
+            }
+        }));
+    };
+
+    //Enviar lotes en paralelo con control de concurrencia
+    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
+        const errors = []; // Para almacenar los errores
+        for (let i = 0; i < batches.length; i += maxConcurrent) {
+            const batchChunk = batches.slice(i, i + maxConcurrent);
+
+            const results = await Promise.allSettled(
+                batchChunk.map(batch => sendBatchToService(batch))
+            );
+
+            // Filtrar los errores
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    errors.push(result.reason); // Guardar el error
+                    console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
+                    handleError('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`)
+                }
+            });
+        }
+
+        if (errors.length > 0) {
+            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
+        }
+    };
+
+    const sendBatchToService = async (batch) => {
+        const { data, status } = await productServices.edit(batch);
+        if (status !== ResponseStatusEnum.OK) {
+            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
+        }
+        return data;
     };
 
     const showAlert = (title, message) => AlertComponent.success(title, message);
@@ -313,6 +448,8 @@ export const ProductList = () => {
                         <DataGrid
                             columns={columns}
                             rows={filteredData}
+                            processRowUpdate={handleRowUpdate}
+                            editMode="row"
                             pagination
                             page={page}
                             pageSize={pageSize}
@@ -373,6 +510,21 @@ export const ProductList = () => {
                             onConfirm={handleConfirmDelete}
                             onClose={handleCloseModal}
                         />
+                    </div>
+
+                    {/* Botón Guardar */}
+                    <div className="d-flex align-items-end mt-3">
+                        {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
+                            <Button
+                                variant="success"
+                                size="md"
+                                onClick={handleSaveProducts}
+                                className="ms-auto"
+                                disabled={loading}
+                            >
+                                {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
+                            </Button>
+                        )}
                     </div>
 
                 </div>
