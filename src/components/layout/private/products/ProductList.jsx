@@ -11,7 +11,6 @@ import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { Footer } from "../../shared/footer/Footer";
 import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 // Services
@@ -528,7 +527,7 @@ export const ProductList = () => {
                     </div>
 
                 </div>
-            <Footer />
+
             </div>
         </>
     );

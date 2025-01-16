@@ -1,14 +1,31 @@
+/*html,*/
+/*body,*/
+/*#root,*/
+/*.app,*/
+/*.content {*/
+/*  height: 100%;*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  width: 100%;*/
+/*  overflow: hidden;*/
+/*  font-family: 'Nunito', sans-serif;*/
+/*}*/
+
 html,
 body,
-#root,
-.app,
-.content {
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  overflow: hidden;
   font-family: 'Nunito', sans-serif;
+  display: flex;
+  flex-direction: column; /* Diseño en columna */
+}
+
+.app {
+  flex: 1; /* Toma el espacio disponible */
+  display: flex;
+  flex-direction: column;
 }
 
 .header {

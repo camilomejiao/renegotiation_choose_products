@@ -12,12 +12,13 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import './Login.css';
 
 //
-import { Header } from "../../../shared/header/Header";
+import { Header2 } from "../../../shared/header2/Header2";
 import useAuth from "../../../../../hooks/useAuth";
 
 //Services
 import { authService } from "../../../../../helpers/services/Auth";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import {Footer2} from "../../../shared/footer2/Footer2";
 
 const initialValues = {
     email: "",
@@ -66,8 +67,8 @@ export const Login = () => {
 
     return (
         <>
-            <Header />
-            <Container fluid className="login-container d-flex justify-content-center align-items-center mt-lg-5">
+            <Header2 />
+            <Container fluid className="login-container d-flex justify-content-center align-items-center">
                 <Row className="login-row">
                     <Col md={6} className="login-form-container d-flex flex-column justify-content-center align-items-center">
                         <div className="">
@@ -145,6 +146,8 @@ export const Login = () => {
                     </Col>
                 </Row>
             </Container>
+            {/* Aquí agregas el Footer */}
+            <Footer2 />
         </>
     );
 };

@@ -26,6 +26,7 @@ import { RouterEnum } from "./RouterEnum";
 import {EditProduct} from "../components/layout/private/products/EditProduct";
 import {Renegociation} from "../components/layout/private/renegociation/Renegociation";
 import {SearchUserForRenegociation} from "../components/layout/private/renegociation/SearchUserForRenegociation";
+import {Payments} from "../components/layout/private/payments/Payments";
 
 export const Routing = () => {
     return (
@@ -57,6 +58,9 @@ export const Routing = () => {
                         <Route path={ RouterEnum.Products }  element={ <ProductList /> }  />
                         <Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />
                         <Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />
+
+                        {/* Users */}
+                        <Route path={ RouterEnum.Payments }  element={ <Payments /> }  />
 
                         {/* Users */}
                         <Route path={ RouterEnum.Users }  element={ <UserList /> }  />

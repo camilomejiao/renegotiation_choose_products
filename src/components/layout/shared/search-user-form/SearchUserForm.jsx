@@ -7,13 +7,14 @@ import PropTypes from "prop-types";
 import { userService } from "../../../../helpers/services/UserServices";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 //Css
 import './SearchUserForm.css';
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import {renegotiationServices} from "../../../../helpers/services/RenegociationServices";
 
-export const SearchUserForm = ({ onSearchSuccess }) => {
+export const SearchUserForm = ({ component, onSearchSuccess }) => {
     const [searchValue, setSearchValue] = useState("");
 
     const handleSearch = async (e) => {
@@ -25,20 +26,27 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
             return;
         }
 
-        //Realizar búsqueda
-        const { data, status } = await userService.searchUser(searchValue);
+        try {
+            //Realizar búsqueda
+            const { data, status } =
+                component === ComponentEnum.USER
+                    ? await userService.searchUser(searchValue)
+                    //: await renegotiationServices.getUserRenegotiation(searchValue);
+                    : await userService.searchUser(searchValue);
 
-        //Manejar estados de respuesta
-        if (handleSearchErrors(data, status)) return;
+            console.log(data);
 
-        //Manejar resultados de la búsqueda
-        if (Object.keys(data).length === 0) {
-            showAlert('error', 'Oops...', 'Usuario no existe en el sistema');
-            return;
+            if (handleSearchErrors(data, status)) return;
+
+            if (!data || Object.keys(data).length === 0) {
+                return showAlert("error", "Oops...", "Usuario no existe en el sistema");
+            }
+
+            showAlert("success", "Bien hecho!", "Usuario encontrado");
+            onSearchSuccess(data);
+        } catch (error) {
+            console.error("Search Error:", error);
         }
-
-        showAlert('success', 'Bien hecho!', 'Usuario encontrado');
-        onSearchSuccess(data);
     };
 
     //Función para validar la búsqueda
@@ -91,5 +99,6 @@ export const SearchUserForm = ({ onSearchSuccess }) => {
 };
 
 SearchUserForm.propTypes = {
+    component: PropTypes.string.isRequired,
     onSearchSuccess: PropTypes.func.isRequired,
 };

@@ -1,26 +1,25 @@
-import {useEffect, useState} from "react";
-import {Button} from "react-bootstrap";
-import {FaBackspace, FaPlus, FaSave} from "react-icons/fa";
-import {DataGrid} from "@mui/x-data-grid";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaBackspace, FaPlus, FaSave } from "react-icons/fa";
+import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
 
 //Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
-//Modules
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {Footer} from "../../shared/footer/Footer";
+//Components
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Services
-import {productServices} from "../../../../helpers/services/ProductServices";
-import {supplierServices} from "../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enums
-import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
+import { chunkArray, extractMunicipios, handleError, showAlert } from "../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
@@ -346,7 +345,7 @@ export const EditProduct = () => {
                     </div>
 
                 </div>
-            <Footer/>
+
             </div>
         </>
     )

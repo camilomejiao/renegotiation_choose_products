@@ -7,8 +7,7 @@ import printJS from "print-js";
 import {DataGrid} from "@mui/x-data-grid";
 
 //Components
-import {Footer} from "../../shared/footer/Footer";
-import {DeliveryReport} from "./delivery-report/DeliveryReport";
+import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
@@ -843,7 +842,6 @@ export const Deliveries = () => {
                     )}
                 </div>
 
-                <Footer />
             </div>
         </>
     )

@@ -3,7 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 
 //Components
 import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
-import { Footer } from "../../shared/footer/Footer";
+import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 
 export const SearchUserForRenegociation = () => {
@@ -30,10 +30,9 @@ export const SearchUserForRenegociation = () => {
                 </Row>
 
                 <Row className="justify-content-center mt-4">
-                    <SearchUserForm onSearchSuccess={handleSearchSuccess} />
+                    <SearchUserForm component={ComponentEnum.RENEGOTIATION} onSearchSuccess={handleSearchSuccess} />
                 </Row>
 
-                <Footer />
             </Container>
         </>
     );

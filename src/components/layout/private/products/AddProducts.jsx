@@ -6,7 +6,6 @@ import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { Footer } from "../../shared/footer/Footer";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -369,7 +368,7 @@ export const AddProducts = () => {
                 </div>
 
             </div>
-            <Footer/>
+
         </div>
     );
 };

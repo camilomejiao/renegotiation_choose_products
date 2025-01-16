@@ -6,7 +6,16 @@ import {
     FaSignOutAlt,
     FaShoppingCart,
     FaFileInvoiceDollar,
-    FaChartPie, FaShippingFast, FaUsersCog, FaRegBuilding, FaDollyFlatbed, FaUsers, FaUser, FaHandshake, FaHardHat
+    FaChartPie,
+    FaShippingFast,
+    FaUsersCog,
+    FaRegBuilding,
+    FaDollyFlatbed,
+    FaUsers,
+    FaUser,
+    FaHandshake,
+    FaHardHat,
+    FaCcPaypal
 } from 'react-icons/fa';
 
 //Css
@@ -42,6 +51,10 @@ export const Sidebar = ({userAuth}) => {
 
     const handleProducts = () => {
         navigate(`/admin/products`)
+    };
+
+    const handlePayments = () => {
+        navigate(`/admin/payments`)
     };
 
     const handleUsers = () => {
@@ -87,6 +100,10 @@ export const Sidebar = ({userAuth}) => {
                                         <div className="dropdown-item" onClick={handleProducts}>
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Productos</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={handlePayments}>
+                                            <FaCcPaypal className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>

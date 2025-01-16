@@ -7,10 +7,9 @@ import { FaCalendarAlt } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 
 //Components
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {CompanyReportPrinting} from "./report/CompanyReportPrinting";
-import {Footer} from "../../shared/footer/Footer";
-import {format} from "date-fns";
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
+import { format } from "date-fns";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
@@ -300,7 +299,6 @@ export const CompanyReport = () => {
                     )}
                 </div>
 
-                <Footer />
             </div>
         </>
     )

@@ -15,7 +15,6 @@ import frame from '../../../../../assets/image/addProducts/Frame.png';
 import './CreateOrder.css';
 
 //Components
-import { Footer } from "../../../shared/footer/Footer";
 import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 import { UserInformation } from "../../user-information/UserInformation";
 import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
@@ -478,7 +477,7 @@ export const CreateOrder = () => {
                         </Col>
                     </Row>
                 </Container>
-                <Footer />
+
             </div>
 
             <div style={{ display: 'none' }}>

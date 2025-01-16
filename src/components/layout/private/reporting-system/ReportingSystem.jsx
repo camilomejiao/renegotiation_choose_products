@@ -12,7 +12,6 @@ import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
 
 //Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { Footer } from "../../shared/footer/Footer";
 import { UserInformation } from "../user-information/UserInformation";
 import { Authorization } from "./authorization/Authorization";
 import { HeadLineReport } from "./user-report/HeadLineReport";
@@ -245,7 +244,6 @@ export const ReportingSystem = () => {
                     )}
                 </div>
 
-                <Footer />
             </div>
         </>
     )
