@@ -123,10 +123,10 @@ export const Sidebar = ({userAuth}) => {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={handleRenegociation}>
-                                            <FaHandshake className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Renegociación</span>}
-                                        </div>
+                                        {/*<div className="dropdown-item" onClick={handleRenegociation}>*/}
+                                        {/*    <FaHandshake className="sidebar-icon" />*/}
+                                        {/*    {isOpen && <span className="sidebar-text">Renegociación</span>}*/}
+                                        {/*</div>*/}
                                         <div className="dropdown-item" onClick={handleApplication}>
                                             <FaUsersCog className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
