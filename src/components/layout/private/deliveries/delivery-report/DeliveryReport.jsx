@@ -15,8 +15,11 @@ export const DeliveryReport = ({deliveryInformation}) => {
 
     const products = deliveryInformation?.items;
     const totalValorFinal = products.reduce((sum, item) => {
-        const valorFinal = parseFloat(item.valor_final); // Convierte a número
-        return sum + valorFinal;
+        if (item.estado === 1) {
+            const valorFinal = parseFloat(item.valor_final);
+            return sum + valorFinal;
+        }
+        return sum;
     }, 0);
 
     //Formatear el número como pesos colombianos
@@ -205,21 +208,23 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     </thead>
                     <tbody>
                         {products?.map((product) => {
-                            const valorFinal = parseFloat(product?.valor_final);
-                            const cantidad = product?.cantidad;
-                            //const valorPorUnidad = (valorFinal && cantidad > 0) ? (valorFinal / cantidad).toLocaleString('es-CO') : 'N/A';
-                            const estado = deliveryStatus.find(status => status.id === product?.estado);
+                            if(product?.estado === 1) {
+                                const valorFinal = parseFloat(product?.valor_final);
+                                const cantidad = product?.cantidad;
+                                //const valorPorUnidad = (valorFinal && cantidad > 0) ? (valorFinal / cantidad).toLocaleString('es-CO') : 'N/A';
+                                const estado = deliveryStatus.find(status => status.id === product?.estado);
 
-                            return (
-                                <tr key={product?.producto?.id}>
-                                    <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.nombre}</td>
-                                    <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.especificacion_tecnicas}</td>
-                                    <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.unidad}</td>
-                                    <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{cantidad}</td>
-                                    <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{valorFinal.toLocaleString('es-CO')}</td>
-                                    <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{estado.label}</td>
-                                </tr>
-                            );
+                                return (
+                                    <tr key={product?.producto?.id}>
+                                        <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.nombre}</td>
+                                        <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.especificacion_tecnicas}</td>
+                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.unidad}</td>
+                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{cantidad}</td>
+                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{valorFinal.toLocaleString('es-CO')}</td>
+                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{estado.label}</td>
+                                    </tr>
+                                );
+                            }
                         })}
                     </tbody>
                 </table>
