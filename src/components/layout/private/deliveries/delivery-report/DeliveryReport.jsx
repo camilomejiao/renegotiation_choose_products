@@ -211,7 +211,6 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             if(product?.estado === 1) {
                                 const valorFinal = parseFloat(product?.valor_final);
                                 const cantidad = product?.cantidad;
-                                //const valorPorUnidad = (valorFinal && cantidad > 0) ? (valorFinal / cantidad).toLocaleString('es-CO') : 'N/A';
                                 const estado = deliveryStatus.find(status => status.id === product?.estado);
 
                                 return (
@@ -225,6 +224,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                                     </tr>
                                 );
                             }
+                            return null;
                         })}
                     </tbody>
                 </table>
