@@ -22,7 +22,6 @@ import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 export const Renegociation = () => {
 
     const params = useParams();
-    const navigate = useNavigate();
 
     const planRef = useRef();
 
@@ -317,6 +316,49 @@ export const Renegociation = () => {
 
                 <Container>
                     <Row className="justify-content-start align-items-center mt-4">
+                        {/* Select para Plan */}
+                        <Col xs={12} md={4} className="mb-3">
+                            <Form.Group>
+                                <Form.Label>Plan</Form.Label>
+                                <Form.Select name="PlanId" value={formData.PlanId} onChange={handlePlanChange}>
+                                    <option value="">Seleccione Plan...</option>
+                                    {planOptions.map((plan) => (
+                                        <option key={plan.id} value={plan.id}>
+                                            {plan.nombre}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+
+                        {/* Select para Línea */}
+                        <Col xs={12} md={6} className="mb-3">
+                            <Form.Group>
+                                <Form.Label>Linea</Form.Label>
+                                <Form.Select
+                                    name="LineaId"
+                                    value={formData.LineaId}
+                                    onChange={(e) => setFormData({ ...formData, LineaId: e.target.value })}
+                                    disabled={!formData.PlanId}
+                                >
+                                    <option value="">Seleccione Linea...</option>
+                                    {lineaOptions.map((linea) => (
+                                        <option key={linea.id} value={linea.id}>
+                                            {linea.nombre}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+
+                        <Col xs={12} md={2} className="mb-3 mt-4">
+                            <Button variant="primary" onClick={() => handleModalDetail()}>
+                                Detalles Plan
+                            </Button>
+                        </Col>
+
+                    </Row>
+                    <Row className="justify-content-start align-items-center">
 
                         {/* Campo de texto Comentarios */}
                         <Col xs={12} md={12} className="mb-3">
@@ -331,11 +373,11 @@ export const Renegociation = () => {
                             />
                         </Col>
 
-                        {/* Campo de texto telefono */}
+                        {/* Campo de texto Teléfono */}
                         <Col xs={12} md={6} className="mb-3">
                             <TextField
-                                label="Telefono"
-                                placeholder="Escribe tus tenefono"
+                                label="Teléfono"
+                                placeholder="Escribe tu teléfono"
                                 fullWidth
                                 value={cellPhone}
                                 onChange={(e) => setCellPhone(e.target.value)}
@@ -344,43 +386,20 @@ export const Renegociation = () => {
                             />
                         </Col>
 
-                        {/* Select para Plan */}
-                        <Col xs={12} md={6} className="mb-3">
-                            <Form.Group>
-                                <Form.Select
-                                    name="PlanId"
-                                    value={formData.PlanId}
-                                    onChange={handlePlanChange}
-                                >
-                                    <option value="">Seleccione Plan...</option>
-                                    {planOptions.map((plan) => (
-                                        <option key={plan.id} value={plan.id}>
-                                            {plan.nombre}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
+                        {/* 🔹 Sección para los botones alineados a la derecha */}
+                        <Col xs={12} md={6} className="d-flex justify-content-end">
+                            <Button
+                                variant="success"
+                                disabled={!isSaveEnabled}
+                                onClick={handleSaveInformationUser}
+                                className="me-2"
+                            >
+                                Guardar
+                            </Button>
 
-                        {/* Select para Línea */}
-                        <Col xs={12} md={6} className="mb-3">
-                            <Form.Group>
-                                <Form.Select
-                                    name="LineaId"
-                                    value={formData.LineaId}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, LineaId: e.target.value })
-                                    }
-                                    disabled={!formData.PlanId}
-                                >
-                                    <option value="">Seleccione Linea...</option>
-                                    {lineaOptions.map((linea) => (
-                                        <option key={linea.id} value={linea.id}>
-                                            {linea.nombre}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
+                            <Button variant="warning" onClick={() => handlePlanToReport()} className="me-2">
+                                Generar Plan
+                            </Button>
                         </Col>
                     </Row>
 
@@ -391,42 +410,6 @@ export const Renegociation = () => {
                             <div className="loader">Cargando...</div>
                         </div>
                     )}
-
-                    <Row className="justify-content-end">
-                        {/* Botón de guardar */}
-                        <Col xs={12} md="auto" className="mb-2">
-                            <Button
-                                variant="success"
-                                disabled={!isSaveEnabled}
-                                onClick={handleSaveInformationUser}
-                                className="w-100" // Asegura que ocupe el ancho completo en pantallas pequeñas
-                            >
-                                Guardar
-                            </Button>
-                        </Col>
-
-                        {/* Generar Plan */}
-                        <Col xs={12} md="auto" className="mb-2">
-                            <Button
-                                variant="secondary"
-                                onClick={() => handlePlanToReport()}
-                                className="w-100"
-                            >
-                                Generar Plan
-                            </Button>
-                        </Col>
-
-                        {/* Detalles del Plan */}
-                        <Col xs={12} md="auto" className="mb-2">
-                            <Button
-                                variant="info"
-                                onClick={() => handleModalDetail()}
-                                className="w-100"
-                            >
-                                Detalles Plan
-                            </Button>
-                        </Col>
-                    </Row>
 
                     {/* Nueva sección para subir archivos */}
                     <Row className="justify-content-start align-items-center mt-4">
@@ -446,9 +429,13 @@ export const Renegociation = () => {
                                 variant="info"
                                 onClick={() => handleDownload(engagementId, "acuerdo")}
                             >
-                                <FaEye className="me-2" /> Ver Plan Firmado
+                                Ver Plan Firmado <FaEye className="me-2" />
                             </Button>
                         </Col>
+                    </Row>
+
+                    {/* Nueva sección para subir archivos */}
+                    <Row className="justify-content-start align-items-center">
 
                         {/* Subir Legalización */}
                         <Col xs={6} md={2} className="mb-3">
@@ -466,7 +453,7 @@ export const Renegociation = () => {
                                 variant="info"
                                 onClick={() => handleDownload(engagementId, "legalizacion")}
                             >
-                                <FaEye className="me-2" /> Ver Legalización
+                                Ver Legalización <FaEye className="me-2" />
                             </Button>
                         </Col>
                     </Row>

@@ -32,9 +32,9 @@ export const UserInformation = ({userData}) => {
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Teléfono:</strong> {userData?.telefono}</Col>
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Plan:</strong> {userData?.plan}</Col>
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Etnia:</strong> {userData?.etnico}</Col>
-                                <Col md={12} lg={12} className="user-detail-item"><strong>Restricción:</strong> {userData?.restriccion}</Col>
-                                <Col md={12} lg={12} className="user-detail-item"><strong>Línea:</strong> {userData?.linea}</Col>
-                                <Col md={12} lg={12} className="user-detail-item"><strong>Observaciones:</strong> {userData?.restriccion}</Col>
+                                <Col md={6} lg={4} className="user-detail-item"><strong>Línea:</strong> {userData?.linea}</Col>
+                                <Col md={6} lg={4} className="user-detail-item"><strong>Restricción:</strong> {userData?.restriccion}</Col>
+                                <Col md={6} lg={4} className="user-detail-item"><strong>Observaciones:</strong> {userData?.restriccion}</Col>
                             </Row>
                         </Col>
                     </Row>
