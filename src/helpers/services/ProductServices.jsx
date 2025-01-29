@@ -54,8 +54,8 @@ class ProductServices {
         });
     }
 
-    edit(products) {
-        const url = this.buildUrl(`bulk/modificar/`);
+    edit(products, supplierId) {
+        const url = this.buildUrl(`bulk/modificar/?proveedor=${supplierId}`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),

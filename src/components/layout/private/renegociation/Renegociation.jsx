@@ -37,8 +37,6 @@ export const Renegociation = () => {
     });
     const [comentarios, setComentarios] = useState("");
     const [cellPhone, setCellPhone] = useState("");
-    const [planFirmado, setPlanFirmado] = useState(null);
-    const [legalizacion, setLegalizacion] = useState(null);
     const [isReadyToPrintPlan, setIsReadyToPrintPlan] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [lineDetailData, setLineDetailData] = useState("");
@@ -46,10 +44,12 @@ export const Renegociation = () => {
 
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const {data, status} = await userService.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
                 setEngagementId(data?.cub_id);
+                setComentarios(data?.comentario);
+                await getInformationRenegotiation(data?.identificacion);
             }
         } catch (error) {
             console.log(error);
@@ -57,6 +57,27 @@ export const Renegociation = () => {
         }
     }
 
+    const getInformationRenegotiation = async (identification) => {
+        try {
+            const {data, status} = await renegotiationServices.getUserRenegotiation(identification);
+            if(status === ResponseStatusEnum.OK) {
+                if (data?.plan_id) {
+                    const { data: lines } = await renegotiationServices.getLine(data.plan_id);
+                    setLineaOptions(lines);
+
+                    setFormData(prevState => ({
+                        ...prevState,
+                        PlanId: data?.plan_id || "",
+                        LineaId: lines.some(line => line.id === data?.linea_id) ? data.linea_id : "",
+                    }));
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    //Cargar planes
     const getPlans = async () => {
         try {
             const { data, status} = await renegotiationServices.getPlan();
@@ -69,8 +90,19 @@ export const Renegociation = () => {
         }
     }
 
+    // Método para obtener líneas al cambiar el PlanId
+    const handlePlanChange = async (e) => {
+        const planId = e.target.value;
+        setFormData({ PlanId: planId, LineaId: "" });
+
+        if (planId) {
+            const { data } = await renegotiationServices.getLine(planId);
+            setLineaOptions(data);
+        }
+    };
+
     // Lógica para habilitar/deshabilitar el botón de guardar
-    const isSaveEnabled = comentarios || cellPhone || (formData.LineaId && formData.PlanId);
+    const isSaveEnabled = (comentarios || cellPhone) && (formData.PlanId && formData.LineaId);
 
     //
     const showAlert = (title, message) => {
@@ -89,17 +121,17 @@ export const Renegociation = () => {
             telefono: cellPhone,
             comentario: comentarios
         }
-        console.log('save: ', updateData);
         try {
-            const {data, status} = await renegotiationServices.updateUserInformationRenegotiation(params.cub_id, updateData);
-            console.log('status: ', status);
-            console.log('data: ', data);
+            const {data, status} = await renegotiationServices.updateUserInformationRenegotiation(engagementId, updateData);
             if(status === ResponseStatusEnum.NOT_FOUND) {
                 showError('error', data.detail);
             }
 
             if(status === ResponseStatusEnum.OK) {
-
+                showAlert('Bien hecho!', 'Actualización realizada con exito');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             }
         } catch (error) {
             console.log(error);
@@ -125,7 +157,7 @@ export const Renegociation = () => {
 
     const handleModalDetail = async () => {
         try {
-            const {data, status} = await renegotiationServices.getDetailPlan(engagementId);
+            const {data, status} = await renegotiationServices.getDetailPlan(formData.LineaId);
             if (status === ResponseStatusEnum.OK) {
                 setLineDetailData(data);
                 setShowModal(true);
@@ -150,7 +182,7 @@ export const Renegociation = () => {
             body {
               font-family: Arial, sans-serif;
               margin: 20px;
-              font-size: 12px;
+              font-size: 10px;
             }           
           </style>
         </head>
@@ -318,12 +350,7 @@ export const Renegociation = () => {
                                 <Form.Select
                                     name="PlanId"
                                     value={formData.PlanId}
-                                    onChange={async (e) => {
-                                        const planId = e.target.value;
-                                        setFormData({ ...formData, PlanId: planId, LineaId: "" }); // Resetear Línea
-                                        const { data } = await renegotiationServices.getLine(planId);
-                                        setLineaOptions(data);
-                                    }}
+                                    onChange={handlePlanChange}
                                 >
                                     <option value="">Seleccione Plan...</option>
                                     {planOptions.map((plan) => (

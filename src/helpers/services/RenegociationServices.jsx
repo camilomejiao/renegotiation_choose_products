@@ -45,7 +45,7 @@ class RenegotiationServices {
         console.log(cubId, data);
         const url = this.buildUrl(`acuerdo/${cubId}/`)
         return authTokenService.fetchWithAuth(url, {
-            method: "PATCH",
+            method: "PUT",
             body: JSON.stringify(data),
         });
     }

@@ -365,7 +365,7 @@ export const ProductList = () => {
     };
 
     const sendBatchToService = async (batch) => {
-        const { data, status } = await productServices.edit(batch);
+        const { data, status } = await productServices.edit(batch, selectedSupplier.value);
         if (status !== ResponseStatusEnum.OK) {
             throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
         }
