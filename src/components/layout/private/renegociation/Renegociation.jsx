@@ -351,7 +351,7 @@ export const Renegociation = () => {
                             </Form.Group>
                         </Col>
 
-                        <Col xs={12} md={2} className="mb-3 mt-4">
+                        <Col xs={12} md={2} className="mt-2">
                             <Button variant="primary" onClick={() => handleModalDetail()}>
                                 Detalles Plan
                             </Button>
