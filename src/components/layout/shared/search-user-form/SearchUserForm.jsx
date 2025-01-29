@@ -31,10 +31,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             const { data, status } =
                 component === ComponentEnum.USER
                     ? await userService.searchUser(searchValue)
-                    //: await renegotiationServices.getUserRenegotiation(searchValue);
-                    : await userService.searchUser(searchValue);
-
-            console.log(data);
+                    : await renegotiationServices.getUserRenegotiation(searchValue);
 
             if (handleSearchErrors(data, status)) return;
 

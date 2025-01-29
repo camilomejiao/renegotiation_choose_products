@@ -31,12 +31,35 @@ class RenegotiationServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    getInformationEngagement(cubId) {
+        const url = this.buildUrl(`acuerdo/reporte/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    getDetailPlan(cubId) {
+        const url = this.buildUrl(`acuerdo/detalle/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     updateUserInformationRenegotiation(cubId, data) {
         console.log(cubId, data);
         const url = this.buildUrl(`acuerdo/${cubId}/`)
         return authTokenService.fetchWithAuth(url, {
             method: "PATCH",
             body: JSON.stringify(data),
+        });
+    }
+
+    getEngagementDownload(cubId, type) {
+        const url = this.buildUrl(`acuerdo/descarga/${cubId}/${type}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    sendEngagement(cubId, formData) {
+        const url = this.buildUrl(`acuerdo/archivo/${cubId}/`)
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: formData,
         });
     }
 }

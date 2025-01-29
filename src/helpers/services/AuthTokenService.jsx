@@ -28,19 +28,20 @@ class AuthTokenService {
             return {status: 401, message: "No token available" };
         }
 
-        // Obtén el estado y el texto del estado
-        const status = response.status;
-        const statusText = response.statusText;
+        const contentType = response.headers.get('content-type');
 
-        // Intenta parsear la respuesta a JSON
-        let data = null;
-        try {
-            data = await response.json();
-        } catch (error) {
-            console.error("Error parsing JSON:", error);
+        // Si la respuesta es PDF, devuelve un Blob
+        if (contentType && contentType.includes('application/pdf')) {
+            return { blob: await response.blob(), status: response.status };
         }
 
-        return { data, status, statusText };
+        // Si no es PDF, intenta parsear como JSON
+        try {
+            return { data: await response.json(), status: response.status,  statusText: response.statusText };
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+            return { status: response.status, message: "Invalid JSON response" };
+        }
     }
 }
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import printJS from "print-js";
-import { Button, Col, Container, Row, Form } from "react-bootstrap";
+import {Button, Col, Container, Row, Form, Spinner} from "react-bootstrap";
 import { TextField } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 
@@ -27,6 +27,8 @@ export const Renegociation = () => {
     const planRef = useRef();
 
     const [userData, setUserData] = useState({});
+    const [engagementId, setEngagementId] = useState('');
+    const [engagement, setEngagement] = useState({});
     const [planOptions, setPlanOptions] = useState([]);
     const [lineaOptions, setLineaOptions] = useState([]);
     const [formData, setFormData] = useState({
@@ -40,12 +42,14 @@ export const Renegociation = () => {
     const [isReadyToPrintPlan, setIsReadyToPrintPlan] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [lineDetailData, setLineDetailData] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userService.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
+                setEngagementId(data?.cub_id);
             }
         } catch (error) {
             console.log(error);
@@ -103,17 +107,38 @@ export const Renegociation = () => {
         }
     }
 
-    const handlePlanToReport = () => {
-        setIsReadyToPrintPlan(true);
+    const handlePlanToReport = async () => {
+        setIsLoading(true);
+        try {
+            const {data, status} = await renegotiationServices.getInformationEngagement(engagementId);
+            if (status === ResponseStatusEnum.OK) {
+                setEngagement(data);
+                setIsReadyToPrintPlan(true);
+            }
+        } catch (error) {
+            console.log(error);
+            showError(error, 'Error buscando el contrato');
+        } finally {
+            setIsLoading(false);
+        }
     }
 
-    const handleModalDetail = () => {
-        setLineDetailData('Detalle');
-        setShowModal(true);
+    const handleModalDetail = async () => {
+        try {
+            const {data, status} = await renegotiationServices.getDetailPlan(engagementId);
+            if (status === ResponseStatusEnum.OK) {
+                setLineDetailData(data);
+                setShowModal(true);
+            }
+        } catch (error) {
+            console.log(error);
+            showError(error, 'Error buscando el detalle');
+        }
     }
 
     const handleCloseModal = () => {
-        setShowModal(false); // Cerrar el modal
+        setShowModal(false);
+        setLineDetailData('');
     };
 
     //
@@ -142,6 +167,95 @@ export const Renegociation = () => {
         });
     }
 
+    //
+    const handleUploadFile = (cubId, type) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/pdf";
+        input.style.display = "none";
+
+        // Captura el archivo seleccionado
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileChange(file, cubId, "pdf", type);
+            }
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    };
+
+    //Guardar archivos
+    const handleFileChange = async (file, cubId, fileName, type) => {
+        if (file) {
+            // Validar el tipo de archivo
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("archivo", file);
+            formData.append("tipo", type);
+
+            try {
+                const { status } = await renegotiationServices.sendEngagement(cubId, formData);
+
+                if (status === ResponseStatusEnum.CREATE) {
+                    showAlert('Éxito', 'Archivo enviado exitosamente');
+                    window.location.reload();
+                }
+
+                if (status === ResponseStatusEnum.BAD_REQUEST ||
+                    status === ResponseStatusEnum.INTERNAL_SERVER_ERROR ||
+                    status !== ResponseStatusEnum.CREATE) {
+                    showError('Error', 'Error al enviar el archivo');
+                }
+            } catch (error) {
+                console.error("Error al enviar el archivo:", error);
+                showError('Error', 'Error al enviar el archivo');
+            }
+        }
+    };
+
+    //
+    const handleDownload = async (cubId, type) => {
+        try {
+            setIsLoading(true);
+
+            const {status, blob} = await renegotiationServices.getEngagementDownload(cubId, type);
+
+            if (!blob || status !== ResponseStatusEnum.OK) {
+                showError('Error', `Error en la descarga`);
+                throw new Error(`Error en la descarga: ${status}`);
+            }
+
+            // Si la respuesta contiene un Blob, descargar el archivo
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${type}_${cubId}.pdf`; // Nombre del archivo
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                URL.revokeObjectURL(url);
+            } else {
+                showError('Error', 'No se recibió un archivo válido.');
+            }
+        } catch (error) {
+            console.error("Error al descargar el archivo:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
     useEffect(() => {
         if (params.cub_id) {
             getUserInformation(params.cub_id);
@@ -150,12 +264,11 @@ export const Renegociation = () => {
     }, [params.cub_id]);
 
     useEffect(() => {
-        if (isReadyToPrintPlan) {
+        if (engagement && isReadyToPrintPlan) {
             handlePrintPlan();
-            setIsReadyToPrintPlan(false); // Restablecer el estado
+            setIsReadyToPrintPlan(false);
         }
-
-    },[isReadyToPrintPlan]);
+    },[engagement, isReadyToPrintPlan]);
 
     return (
         <>
@@ -243,6 +356,15 @@ export const Renegociation = () => {
                             </Form.Group>
                         </Col>
                     </Row>
+
+                    {isLoading && (
+                        <div className="overlay">
+                            <div><Spinner animation="border" variant="success" /></div>
+                            <br/>
+                            <div className="loader">Cargando...</div>
+                        </div>
+                    )}
+
                     <Row className="justify-content-end">
                         {/* Botón de guardar */}
                         <Col xs={12} md="auto" className="mb-2">
@@ -285,30 +407,17 @@ export const Renegociation = () => {
                         <Col xs={6} md={2} className="mb-3">
                             <Button
                                 variant="secondary"
-                                onClick={() => {
-                                    document.getElementById("uploadPlanFirmado").click();
-                                }}
+                                onClick={() => handleUploadFile(engagementId, 'acuerdo')}
                             >
                                 Subir Plan Firmado
                             </Button>
-                            <input
-                                type="file"
-                                id="uploadPlanFirmado"
-                                style={{ display: "none" }}
-                                onChange={(e) => setPlanFirmado(e.target.files[0])}
-                            />
                         </Col>
+
                         {/* Ver Plan Firmado */}
                         <Col xs={6} md={4} className="mb-3">
                             <Button
                                 variant="info"
-                                disabled={!planFirmado}
-                                onClick={() => {
-                                    if (planFirmado) {
-                                        const url = URL.createObjectURL(planFirmado);
-                                        window.open(url, "_blank");
-                                    }
-                                }}
+                                onClick={() => handleDownload(engagementId, "acuerdo")}
                             >
                                 <FaEye className="me-2" /> Ver Plan Firmado
                             </Button>
@@ -318,30 +427,17 @@ export const Renegociation = () => {
                         <Col xs={6} md={2} className="mb-3">
                             <Button
                                 variant="secondary"
-                                onClick={() => {
-                                    document.getElementById("uploadLegalizacion").click();
-                                }}
+                                onClick={() => handleUploadFile(engagementId, 'legalizacion')}
                             >
                                 Subir Legalización
                             </Button>
-                            <input
-                                type="file"
-                                id="uploadLegalizacion"
-                                style={{ display: "none" }}
-                                onChange={(e) => setLegalizacion(e.target.files[0])}
-                            />
                         </Col>
+
                         {/* Ver Legalización */}
                         <Col xs={6} md={4} className="mb-3">
                             <Button
                                 variant="info"
-                                disabled={!legalizacion}
-                                onClick={() => {
-                                    if (legalizacion) {
-                                        const url = URL.createObjectURL(legalizacion);
-                                        window.open(url, "_blank");
-                                    }
-                                }}
+                                onClick={() => handleDownload(engagementId, "legalizacion")}
                             >
                                 <FaEye className="me-2" /> Ver Legalización
                             </Button>
@@ -353,9 +449,9 @@ export const Renegociation = () => {
 
             {/* Aquí renderizas el componente pero lo ocultas */}
             <div style={{ display: 'none' }}>
-                {isReadyToPrintPlan && (
+                {isReadyToPrintPlan && engagement && (
                     <div ref={planRef}>
-                        <PlanInversion data={''} />
+                        <PlanInversion engagement={engagement} />
                     </div>
                 )}
             </div>

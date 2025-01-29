@@ -13,7 +13,7 @@ export const UserInformation = ({userData}) => {
                             <img src={imgAdd} alt="Icono Usuario" className="user-icon" />
                             <div className="user-name-container">
                                 <div className="user-name">
-                                    {userData.nombre} {userData.apellido}
+                                    <span><strong>NOMBRE: </strong></span>{userData.nombre} {userData.apellido}
                                 </div>
                                 <div className="user-id">
                                     <strong>C.C:</strong> {userData.identificacion}
@@ -31,9 +31,9 @@ export const UserInformation = ({userData}) => {
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Tipo de persona:</strong> {userData?.tipo}</Col>
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Teléfono:</strong> {userData?.telefono}</Col>
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Plan:</strong> {userData?.plan}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Restricción:</strong> {userData?.restriccion}</Col>
                                 <Col md={6} lg={4} className="user-detail-item"><strong>Etnia:</strong> {userData?.etnico}</Col>
-                                <Col md={12} lg={8} className="user-detail-item"><strong>Línea:</strong> {userData?.linea}</Col>
+                                <Col md={12} lg={12} className="user-detail-item"><strong>Restricción:</strong> {userData?.restriccion}</Col>
+                                <Col md={12} lg={12} className="user-detail-item"><strong>Línea:</strong> {userData?.linea}</Col>
                                 <Col md={12} lg={12} className="user-detail-item"><strong>Observaciones:</strong> {userData?.restriccion}</Col>
                             </Row>
                         </Col>

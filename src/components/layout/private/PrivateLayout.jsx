@@ -2,7 +2,8 @@ import useAuth from "../../../hooks/useAuth";
 import { Navigate, Outlet } from "react-router-dom";
 import { Sidebar } from "../shared/sidebar/Sidebar";
 import { Header } from "../shared/header/Header";
-import { Footer2 } from "../shared/footer2/Footer2";
+import { Footer } from "../shared/footer/Footer";
+
 
 const LoadingIndicator = () => <div>Cargando...</div>;
 
@@ -33,7 +34,7 @@ export const PrivateLayout = () => {
                 <main className="content">
                     <Outlet context={{ userAuth: auth }} />
 
-                    <Footer2 />
+                    <Footer />
                 </main>
             </div>
         </div>
