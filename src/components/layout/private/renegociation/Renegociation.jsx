@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import printJS from "print-js";
 import {Button, Col, Container, Row, Form, Spinner} from "react-bootstrap";
@@ -383,6 +383,7 @@ export const Renegociation = () => {
                                 onChange={(e) => setCellPhone(e.target.value)}
                                 type="number"
                                 inputProps={{ min: 0 }}
+                                required
                             />
                         </Col>
 

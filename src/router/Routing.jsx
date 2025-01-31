@@ -27,12 +27,15 @@ import {EditProduct} from "../components/layout/private/products/EditProduct";
 import {Renegociation} from "../components/layout/private/renegociation/Renegociation";
 import {SearchUserForRenegociation} from "../components/layout/private/renegociation/SearchUserForRenegociation";
 import {Payments} from "../components/layout/private/payments/Payments";
+import {Conex} from "../components/layout/public/conex/Conex";
 
 export const Routing = () => {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
+                    <Route path={RouterEnum.Conex } element={ <Conex /> } />
+
                     <Route path="/" element={ <PublicLayout /> }>
                         <Route index element={ <Login /> } />
                         <Route path="login" element={ <Login /> } />

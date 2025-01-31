@@ -35,7 +35,6 @@ class AuthService {
             });
 
             const resp = await response.json();
-            console.log("resp-login: ", resp);
 
             // Validar si los tokens están presentes
             if (resp.access && resp.refresh) {
@@ -50,6 +49,10 @@ class AuthService {
             console.error("Error en el login:", error);
             throw error;
         }
+    }
+
+    async conex(data) {
+
     }
 
     /**

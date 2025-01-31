@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col } from "react-bootstrap";
-import {FaCheck, FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/fa";
+import { FaEdit, FaPlus, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
 import debounce from "lodash/debounce";
@@ -28,7 +28,10 @@ import {
     getCategoryOptions,
     getDynamicColumnsBySupplier,
     getUnitOptions,
-    getCategoriesColumns
+    getStatusProduct,
+    getEnvironmentalCategoriesColumns,
+    getObservationsColumns,
+    getActionsColumns,
 } from "../../../../helpers/utils/ProductColumns";
 
 const PAGE_SIZE = 100;
@@ -51,7 +54,6 @@ export const ProductList = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [loading, setLoading] = useState(false);
-
 
     //Obtener la lista de proveedores
     const getSuppliers = async () => {
@@ -146,6 +148,9 @@ export const ProductList = () => {
                     ND: row?.ambiental?.ND ?? 0,
                     RIL: row?.ambiental?.RIL ?? 0,
                     CCL: row?.ambiental?.CCL ?? 0,
+                    observations_technical: row?.observations_technical ?? "",
+                    observations_environmental: row?.observations_environmental ?? "",
+                    observations_supervision: row?.observations_supervision ?? "",
                 };
             });
         } catch (error) {
@@ -157,41 +162,27 @@ export const ProductList = () => {
     //
     const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
 
-    const statusProduct = [
-        { field: "state", headerName: "ESTADO", width: 150, },
-    ];
+    const statusProduct = getStatusProduct();
 
-    const actionsColumns = [
-        {
-            field: "actions",
-            headerName: "ACCIONES",
-            width: 150,
-            renderCell: (params) => (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteClick(params.row.id)}
-                        style={{marginRight: "10px"}}
-                    >
-                        <FaTrash/>
-                    </Button>
-                    {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
-                        <Button
-                            variant="success"
-                            size="sm"
-                            onClick={() => handleApproveByAudit(params.row.id)}
-                            style={{ marginLeft: '10px' }}
-                        >
-                            <FaCheck/>
-                        </Button>
-                    )}
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
-        },
-    ];
+    const handleDeleteClick = (id) => {
+        setSelectedRowId(id);
+        setShowModal(true);
+    };
+
+    const handleApproveByAudit = async (id, rol, accion) => {
+        try {
+            const { status } = await productServices.productApprove(id);
+            if (status === ResponseStatusEnum.OK) {
+                showAlert("Bien hecho!", "Producto aprobado exitosamente!");
+                await getProductList();
+                handleCloseModal();
+            }
+        } catch (error) {
+            console.error("Error al aprobar el producto:", error);
+        }
+    };
+
+    const actionsColumns = getActionsColumns(userAuth.rol_id, handleDeleteClick, handleApproveByAudit);
 
     const debouncedHandleChange = debounce((field, params, newValue) => {
         params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
@@ -207,33 +198,23 @@ export const ProductList = () => {
         });
     }, 300);
 
-
     const handleSelectChange = (field) => (params) => (event) => {
         const newValue = event.target.value;
         debouncedHandleChange(field, params, newValue);
     };
 
-    const categoriesColumns = getCategoriesColumns(handleSelectChange, userAuth.rol_id);
+    const categoriesColumns = getEnvironmentalCategoriesColumns(handleSelectChange);
 
-    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...statusProduct, ...actionsColumns, ...categoriesColumns];
+    const observationsColumns = getObservationsColumns(userAuth.rol_id);
 
-    const handleDeleteClick = (id) => {
-        setSelectedRowId(id);
-        setShowModal(true);
-    };
-
-    const handleApproveByAudit = async (id) => {
-        try {
-            const { status } = await productServices.productApprove(id);
-            if (status === ResponseStatusEnum.OK) {
-                showAlert("Bien hecho!", "Producto aprobado exitosamente!");
-                await getProductList();
-                handleCloseModal();
-            }
-        } catch (error) {
-            console.error("Error al aprobar el producto:", error);
-        }
-    };
+    const columns = [
+        ...baseColumns,
+        ...dynamicMunicipalityColumns,
+        ...statusProduct,
+        ...actionsColumns,
+        ...( [RolesEnum.ADMIN, RolesEnum.SUPPLIER, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL, RolesEnum.SUPERVISION, RolesEnum.AUDITOR].includes(userAuth.rol_id) ? observationsColumns : [] ),
+        ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? categoriesColumns : [] ),
+    ];
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -297,9 +278,10 @@ export const ProductList = () => {
             }
 
             const products = await productsBeforeSend(editedProducts);
-            const batches = chunkArray(products, 500);
+            console.log('products: ', products);
+            //const batches = chunkArray(products, 500);
 
-            await sendBatchesInParallel(batches);
+            //await sendBatchesInParallel(batches);
 
             showAlert('Bien hecho!', 'Productos actualizados con éxito.');
             setEditedProducts([]);
@@ -335,7 +317,10 @@ export const ProductList = () => {
                 ND: parseInt(product?.ND),
                 RIL: parseInt(product?.RIL),
                 CCL: parseInt(product?.CCL),
-            }
+            },
+            observations_technical: product.observations_technical,
+            observations_environmental: product.observations_environmental,
+            observations_supervision: product.observations_supervision,
         }));
     };
 

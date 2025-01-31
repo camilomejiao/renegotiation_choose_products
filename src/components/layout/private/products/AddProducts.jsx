@@ -43,7 +43,7 @@ export const AddProducts = () => {
     const [loading, setLoading] = useState(false);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, true);
     const actionsColumns = [
         {
             field: 'actions',

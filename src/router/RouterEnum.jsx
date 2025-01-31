@@ -35,4 +35,7 @@ export const RouterEnum = {
 
     //
     Logout: 'logout',
+
+    //
+    Conex: 'conex',
 }
