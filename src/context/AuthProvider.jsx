@@ -38,8 +38,15 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    const handleAuthUpdate = () => {
+        //console.log("Detectado evento 'authUpdated', recargando auth...");
+        authUser();
+    };
+
     useEffect(() => {
         authUser();
+
+        window.addEventListener("authUpdated", handleAuthUpdate);
     }, []);
 
     return(

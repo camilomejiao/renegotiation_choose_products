@@ -34,6 +34,7 @@ export const Routing = () => {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
+
                     <Route path={RouterEnum.Conex } element={ <Conex /> } />
 
                     <Route path="/" element={ <PublicLayout /> }>
