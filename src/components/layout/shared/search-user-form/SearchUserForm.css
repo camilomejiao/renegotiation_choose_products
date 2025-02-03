@@ -1,62 +1,86 @@
 .search-form {
-    justify-content: center;
+    width: 100%;
+    text-align: center;
 }
 
 .search-input {
     border: 2px solid #0056b3 !important;
     border-radius: 10px !important;
-    padding: 10px 20px !important;
+    padding: 10px 15px !important;
     font-weight: bold !important;
     color: #0056b3 !important;
-    width: 80% !important;
+    max-width: 100% !important;
 }
 
 .search-button {
     background-color: #0056b3 !important;
     border: none !important;
     color: white !important;
-    width: 50px !important;
+    width: 60px !important;
     height: 50px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
     border-radius: 50% !important;
+}
+
+.search-select {
+    width: 50% !important;
+    max-width: 100px !important;
+    border-radius: 10px !important;
+    padding: 10px !important;
+    border: 2px solid #0056b3 !important;
 }
 
 .search-helper-text {
     color: #0056b3;
     font-size: 14px;
-    text-align: left;
-    padding-left: 40px;
+    text-align: center;
     margin-top: -5px;
 }
 
-@media (max-width: 768px) {
+/* Ajustes para pantallas medianas */
+@media (max-width: 992px) {
     .search-input {
-        width: 90% !important;
-    }
-
-    .search-helper-text {
-        padding-left: 20px;
+        max-width: 50% !important;
+        text-align: center;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+    }
+
     .search-input {
-        width: 60% !important;
-        padding: 8px 15px !important;
-        font-size: 16px !important;
+        width: 100% !important; /* Se expande al 100% en móviles */
+    }
+
+    .search-select {
+        width: 100% !important; /* Se pone en una línea separada */
     }
 
     .search-button {
-        width: 40px !important;
-        height: 40px !important;
+        width: 100% !important;
+        height: 45px !important;
     }
 
     .search-helper-text {
         font-size: 12px;
-        padding-left: 65px;
-        text-align: left;
+        text-align: center;
         margin-top: 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-input,
+    .search-select {
+        width: 80% !important;
+    }
+
+    .search-button {
+        width: 15% !important;
+    }
+
+    .search-helper-text {
+        font-size: 12px;
+        text-align: center;
     }
 }
