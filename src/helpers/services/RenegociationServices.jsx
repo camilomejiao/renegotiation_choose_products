@@ -17,7 +17,7 @@ class RenegotiationServices {
     }
 
     getUserRenegotiation(type, identificationId) {
-        const url = this.buildUrl(`cub/${identificationId}/`);
+        const url = this.buildUrl(`cub/${type}/${identificationId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

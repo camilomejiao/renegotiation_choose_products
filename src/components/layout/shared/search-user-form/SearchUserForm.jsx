@@ -16,7 +16,7 @@ import {renegotiationServices} from "../../../../helpers/services/RenegociationS
 
 export const SearchUserForm = ({ component, onSearchSuccess }) => {
     const [searchValue, setSearchValue] = useState("");
-    const [searchType, setSearchType] = useState("cedula");
+    const [searchType, setSearchType] = useState("2");
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -87,8 +87,8 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
                                 onChange={(e) => setSearchType(e.target.value)}
                                 className="search-select"
                             >
-                                <option value="cedula">Cédula</option>
-                                <option value="cub">CUB</option>
+                                <option value="2">Cédula</option>
+                                <option value="1">CUB</option>
                             </Form.Select>
 
                             <Form.Control

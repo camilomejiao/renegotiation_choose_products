@@ -70,7 +70,7 @@ export const ProductList = () => {
     //
     const getSupplierId = () => {
         let supplierId = null;
-        if (selectedSupplier && (userAuth.rol_id === RolesEnum.AUDITOR || userAuth.rol_id === RolesEnum.ADMIN)) {
+        if (selectedSupplier && (userAuth.rol_id === RolesEnum.SUPERVISION || userAuth.rol_id === RolesEnum.ADMIN)) {
             supplierId = selectedSupplier.value;
         }
 
@@ -150,7 +150,7 @@ export const ProductList = () => {
                     CCL: row?.ambiental?.CCL ?? 0,
                     observations_technical: row?.observations_technical ?? "",
                     observations_environmental: row?.observations_environmental ?? "",
-                    observations_supervision: row?.observations_supervision ?? "",
+                    observations_territorial: row?.observations_territorial ?? "",
                 };
             });
         } catch (error) {
@@ -212,7 +212,7 @@ export const ProductList = () => {
         ...dynamicMunicipalityColumns,
         ...statusProduct,
         ...actionsColumns,
-        ...( [RolesEnum.ADMIN, RolesEnum.SUPPLIER, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL, RolesEnum.SUPERVISION, RolesEnum.AUDITOR].includes(userAuth.rol_id) ? observationsColumns : [] ),
+        ...( [RolesEnum.ADMIN, RolesEnum.SUPPLIER, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL, RolesEnum.TERRITORIAL, RolesEnum.SUPERVISION].includes(userAuth.rol_id) ? observationsColumns : [] ),
         ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? categoriesColumns : [] ),
     ];
 
@@ -279,9 +279,9 @@ export const ProductList = () => {
 
             const products = await productsBeforeSend(editedProducts);
             console.log('products: ', products);
-            //const batches = chunkArray(products, 500);
+            const batches = chunkArray(products, 500);
 
-            //await sendBatchesInParallel(batches);
+            await sendBatchesInParallel(batches);
 
             showAlert('Bien hecho!', 'Productos actualizados con éxito.');
             setEditedProducts([]);
@@ -320,7 +320,7 @@ export const ProductList = () => {
             },
             observations_technical: product.observations_technical,
             observations_environmental: product.observations_environmental,
-            observations_supervision: product.observations_supervision,
+            observations_territorial: product.observations_territorial,
         }));
     };
 
@@ -365,7 +365,7 @@ export const ProductList = () => {
     const handleEditProducts = () => navigate(`/admin/edit-product`);
 
     useEffect(() => {
-        if(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) {
+        if(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
             getSuppliers();
         }
 
@@ -376,7 +376,7 @@ export const ProductList = () => {
     }, [userAuth.rol_id]);
 
     useEffect(() => {
-        if (selectedSupplier && (userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR)) {
+        if (selectedSupplier && (userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION)) {
             getProductList();
             loadData();
         }
@@ -413,7 +413,7 @@ export const ProductList = () => {
                                 </>
                             )}
 
-                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
+                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
                                 <Col xs={12} md={6} className="d-flex align-items-center">
                                     <Select
                                         value={selectedSupplier}
@@ -498,7 +498,7 @@ export const ProductList = () => {
 
                     {/* Botón Guardar */}
                     <div className="d-flex align-items-end mt-3">
-                        {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.AUDITOR) && (
+                        {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
                             <Button
                                 variant="success"
                                 size="md"

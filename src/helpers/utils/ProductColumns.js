@@ -357,10 +357,21 @@ export const getEnvironmentalCategoriesColumns = (handleSelectChange) => [
 //
 export const getObservationsColumns = (userRole) => [
     {
+        field: "observations_territorial",
+        headerName: "OBSERVACIÓN TERRITORIAL",
+        width: 300,
+        editable: userRole === RolesEnum.TERRITORIAL,
+        renderCell: (params) => (
+            <span style={{ color: params.value ? "black" : "gray" }}>
+                {params.value || "Escribe observación territorial..."}
+            </span>
+        ),
+    },
+    {
         field: "observations_technical",
         headerName: "OBSERVACIÓN TÉCNICA",
         width: 300,
-        editable: userRole === RolesEnum.TECHNICAL || userRole === RolesEnum.AUDITOR,
+        editable: userRole === RolesEnum.TECHNICAL || userRole === RolesEnum.SUPERVISION,
         renderCell: (params) => (
             <span style={{ color: params.value ? "black" : "gray" }}>
                 {params.value || "Escribe observación técnica..."}
@@ -378,17 +389,6 @@ export const getObservationsColumns = (userRole) => [
             </span>
         ),
     },
-    {
-        field: "observations_supervision",
-        headerName: "OBSERVACIÓN SUPERVISIÓN",
-        width: 300,
-        editable: userRole === RolesEnum.SUPERVISION,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value || "Escribe observación supervisión..."}
-            </span>
-        ),
-    }
 ];
 
 export const getActionsColumns = (userRole, handleDeleteClick, handleApproveByAudit) => [
@@ -415,9 +415,9 @@ export const getActionsColumns = (userRole, handleDeleteClick, handleApproveByAu
                 {[
                     { rol: RolesEnum.TECHNICAL, label: "Técnica" },
                     { rol: RolesEnum.ENVIRONMENTAL, label: "Ambiental" },
-                    { rol: RolesEnum.SUPERVISION, label: "Supervisión" },
+                    { rol: RolesEnum.TERRITORIAL, label: "Supervisión" },
                     { rol: RolesEnum.ADMIN, label: "ADMIN" },
-                    { rol: RolesEnum.AUDITOR, label: "AUDITOR" },
+                    { rol: RolesEnum.SUPERVISION, label: "AUDITOR" },
                 ].map(({ rol, label }) => (
                     userRole === rol && (
                         <div key={rol} style={{ display: "flex", gap: "5px" }}>

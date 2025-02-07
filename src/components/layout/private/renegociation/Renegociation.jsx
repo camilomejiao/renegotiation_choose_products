@@ -18,6 +18,7 @@ import { LineDetail } from "../../shared/Modals/LineDetail";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {AuthorizationSection} from "../../shared/authorization-section/AuthorizationSection";
 
 export const Renegociation = () => {
 
@@ -58,7 +59,7 @@ export const Renegociation = () => {
 
     const getInformationRenegotiation = async (identification) => {
         try {
-            const {data, status} = await renegotiationServices.getUserRenegotiation(identification);
+            const {data, status} = await renegotiationServices.getUserRenegotiation(2, identification);
             if(status === ResponseStatusEnum.OK) {
                 if (data?.plan_id) {
                     const { data: lines } = await renegotiationServices.getLine(data.plan_id);
@@ -412,53 +413,58 @@ export const Renegociation = () => {
                         </div>
                     )}
 
-                    {/* Nueva sección para subir archivos */}
-                    <Row className="justify-content-start align-items-center mt-4">
-                        {/* Subir Plan Firmado */}
-                        <Col xs={6} md={2} className="mb-3">
-                            <Button
-                                variant="secondary"
-                                onClick={() => handleUploadFile(engagementId, 'acuerdo')}
-                            >
-                                Subir Plan Firmado
-                            </Button>
+                    <Row className="justify-content-end">
+                        <Col md={5}>
+                            <AuthorizationSection userData={userData} wide={12} />
                         </Col>
+                        <Col md={7} className="mt-4">
+                            {/* Nueva sección para subir archivos */}
+                            <Row className="justify-content-end">
+                                {/* Subir Plan Firmado */}
+                                <Col xs={6} md={4} >
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => handleUploadFile(engagementId, 'acuerdo')}
+                                    >
+                                        Subir Plan Firmado
+                                    </Button>
+                                </Col>
 
-                        {/* Ver Plan Firmado */}
-                        <Col xs={6} md={4} className="mb-3">
-                            <Button
-                                variant="info"
-                                onClick={() => handleDownload(engagementId, "acuerdo")}
-                            >
-                                Ver Plan Firmado <FaEye className="me-2" />
-                            </Button>
+                                {/* Ver Plan Firmado */}
+                                <Col xs={6} md={5} >
+                                    <Button
+                                        variant="info"
+                                        onClick={() => handleDownload(engagementId, "acuerdo")}
+                                    >
+                                        Ver Plan Firmado <FaEye className="me-2" />
+                                    </Button>
+                                </Col>
+                            </Row>
+
+                            {/* Nueva sección para subir archivos */}
+                            <Row className="justify-content-end mt-4">
+                                {/* Subir Legalización */}
+                                <Col xs={6} md={4} >
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => handleUploadFile(engagementId, 'legalizacion')}
+                                    >
+                                        Subir Legalización
+                                    </Button>
+                                </Col>
+
+                                {/* Ver Legalización */}
+                                <Col xs={6} md={5} >
+                                    <Button
+                                        variant="info"
+                                        onClick={() => handleDownload(engagementId, "legalizacion")}
+                                    >
+                                        Ver Legalización <FaEye className="me-2" />
+                                    </Button>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
-
-                    {/* Nueva sección para subir archivos */}
-                    <Row className="justify-content-start align-items-center">
-
-                        {/* Subir Legalización */}
-                        <Col xs={6} md={2} className="mb-3">
-                            <Button
-                                variant="secondary"
-                                onClick={() => handleUploadFile(engagementId, 'legalizacion')}
-                            >
-                                Subir Legalización
-                            </Button>
-                        </Col>
-
-                        {/* Ver Legalización */}
-                        <Col xs={6} md={4} className="mb-3">
-                            <Button
-                                variant="info"
-                                onClick={() => handleDownload(engagementId, "legalizacion")}
-                            >
-                                Ver Legalización <FaEye className="me-2" />
-                            </Button>
-                        </Col>
-                    </Row>
-
                 </Container>
             </div>
 

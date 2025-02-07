@@ -16,10 +16,11 @@ export const RolesEnum = {
     ADMIN: 1,
     SUPPLIER: 2,
     MANAGEMENT_TECHNICIAN: 3,
-    AUDITOR: 4,
+    SUPERVISION: 4,
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,
-    SUPERVISION: 7
+    TERRITORIAL: 7,
+    PAYMENTS: 8
 }
 
 export const ProductStatusEnum = {
