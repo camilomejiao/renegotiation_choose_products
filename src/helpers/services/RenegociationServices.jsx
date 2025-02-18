@@ -26,8 +26,8 @@ class RenegotiationServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    getLine(planId) {
-        const url = this.buildUrl(`lineas/${planId}/`);
+    getLine(planId, cubId) {
+        const url = this.buildUrl(`lineas/${planId}/${cubId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -42,7 +42,6 @@ class RenegotiationServices {
     }
 
     updateUserInformationRenegotiation(cubId, data) {
-        console.log(cubId, data);
         const url = this.buildUrl(`acuerdo/${cubId}/`)
         return authTokenService.fetchWithAuth(url, {
             method: "PUT",

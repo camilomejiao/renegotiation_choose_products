@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import printJS from "print-js";
-import {Button, Col, Container, Row, Form, Spinner} from "react-bootstrap";
+import { Button, Col, Container, Row, Form, Spinner } from "react-bootstrap";
 import { TextField } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 
@@ -17,13 +17,12 @@ import { PlanInversion } from "./plan/PlanInversion";
 import { LineDetail } from "../../shared/Modals/LineDetail";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
-import {AuthorizationSection} from "../../shared/authorization-section/AuthorizationSection";
-
+import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import { AuthorizationSection } from "../../shared/authorization-section/AuthorizationSection";
 export const Renegociation = () => {
 
     const params = useParams();
-
+    const navigate = useNavigate();
     const planRef = useRef();
 
     const [userData, setUserData] = useState({});
@@ -44,12 +43,17 @@ export const Renegociation = () => {
 
     const getUserInformation = async (cubId) => {
         try {
-            const {data, status} = await userService.userInformation(cubId);
-            if(status === ResponseStatusEnum.OK) {
+            const {data, status} = await renegotiationServices.getUserRenegotiation(1, cubId);
+            if(status === ResponseStatusEnum.OK && Object.keys(data).length > 0) {
                 setUserData(data);
-                setEngagementId(data?.cub_id);
+                setEngagementId(cubId);
                 setComentarios(data?.comentario);
-                await getInformationRenegotiation(data?.identificacion);
+                await getInformationRenegotiation(data?.plan_id, data?.linea_id, cubId);
+            }
+
+            if(Object.keys(data).length === 0) {
+                showError('Error', 'Este usuario tiene un problema, habla con tu administrador');
+                navigate(`/admin/`)
             }
         } catch (error) {
             console.log(error);
@@ -57,21 +61,16 @@ export const Renegociation = () => {
         }
     }
 
-    const getInformationRenegotiation = async (identification) => {
+    const getInformationRenegotiation = async (planId, lineId, cubId) => {
         try {
-            const {data, status} = await renegotiationServices.getUserRenegotiation(2, identification);
-            if(status === ResponseStatusEnum.OK) {
-                if (data?.plan_id) {
-                    const { data: lines } = await renegotiationServices.getLine(data.plan_id);
-                    setLineaOptions(lines);
+            const { data: lines } = await renegotiationServices.getLine(planId, cubId);
+            setLineaOptions(lines);
 
-                    setFormData(prevState => ({
-                        ...prevState,
-                        PlanId: data?.plan_id || "",
-                        LineaId: lines.some(line => line.id === data?.linea_id) ? data.linea_id : "",
-                    }));
-                }
-            }
+            setFormData(prevState => ({
+                ...prevState,
+                PlanId: planId || "",
+                LineaId: lines.some(line => line?.id === lineId) ? lineId : "",
+            }));
         } catch (error) {
             console.log(error);
         }
@@ -96,7 +95,7 @@ export const Renegociation = () => {
         setFormData({ PlanId: planId, LineaId: "" });
 
         if (planId) {
-            const { data } = await renegotiationServices.getLine(planId);
+            const { data } = await renegotiationServices.getLine(planId, engagementId);
             setLineaOptions(data);
         }
     };
@@ -415,7 +414,7 @@ export const Renegociation = () => {
 
                     <Row className="justify-content-end">
                         <Col md={5}>
-                            <AuthorizationSection userData={userData} wide={12} />
+                            <AuthorizationSection component={ComponentEnum.RENEGOTIATION} userData={userData} wide={12} />
                         </Col>
                         <Col md={7} className="mt-4">
                             {/* Nueva sección para subir archivos */}

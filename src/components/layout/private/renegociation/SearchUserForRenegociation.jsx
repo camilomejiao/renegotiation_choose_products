@@ -11,8 +11,8 @@ export const SearchUserForRenegociation = () => {
     const navigate = useNavigate();
 
     const handleSearchSuccess = (userData) => {
-        const { id } = userData;
-        navigate(`/admin/renegociation/${id}`)
+        const { cub_id: cubId } = userData;
+        navigate(`/admin/renegociation/${cubId}`)
     }
 
     return (

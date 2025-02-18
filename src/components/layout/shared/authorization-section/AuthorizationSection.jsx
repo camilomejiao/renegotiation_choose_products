@@ -12,7 +12,7 @@ import { Authorization } from "./authorization/Authorization";
 import {Col, Container, Row} from "react-bootstrap";
 import Select from "react-select";
 
-export const AuthorizationSection = ({userData, wide}) => {
+export const AuthorizationSection = ({component, userData, wide}) => {
 
     //
     const authorizationRef = useRef();
@@ -106,7 +106,7 @@ export const AuthorizationSection = ({userData, wide}) => {
 
             <div style={{ display: "none" }}>
                 <div ref={authorizationRef}>
-                    <Authorization userData={userData} opt1={option1} opt2={option2} opt3={option3} />
+                    <Authorization component={component} userData={userData} opt1={option1} opt2={option2} opt3={option3} />
                 </div>
             </div>
         </>

@@ -19,7 +19,7 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 
 //Css
 import './ReportingSystem.css';
-import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 import {AuthorizationSection} from "../../shared/authorization-section/AuthorizationSection";
 
 export const ReportingSystem = () => {
@@ -148,7 +148,7 @@ export const ReportingSystem = () => {
                 </div>
 
                 {/* Authorization Component */}
-                <AuthorizationSection userData={userData} wide={5} />
+                <AuthorizationSection component={ComponentEnum.USER} userData={userData} wide={5} />
 
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
