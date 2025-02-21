@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col } from "react-bootstrap";
-import { FaEdit, FaPlus, FaSave } from "react-icons/fa";
+import {FaEdit, FaPlus, FaSave, FaThumbsDown, FaThumbsUp} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
 import debounce from "lodash/debounce";
@@ -12,6 +12,7 @@ import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
+import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 
 // Services
 import { productServices } from "../../../../helpers/services/ProductServices";
@@ -19,7 +20,12 @@ import { supplierServices } from "../../../../helpers/services/SupplierServices"
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 // Enum
-import { ProductStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
+import {
+    GeneralStatusProductEnum,
+    ResponseStatusEnum,
+    RolesEnum,
+    StatusTeamProductEnum
+} from "../../../../helpers/GlobalEnum";
 
 //Utils
 import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
@@ -31,7 +37,7 @@ import {
     getStatusProduct,
     getEnvironmentalCategoriesColumns,
     getObservationsColumns,
-    getActionsColumns,
+    getActionsColumns, getEnvironmentalCategories,
 } from "../../../../helpers/utils/ProductColumns";
 
 const PAGE_SIZE = 100;
@@ -54,6 +60,21 @@ export const ProductList = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [environmentalCategoriesColumns, setEnvironmentalCategoriesColumns] = useState([]);
+
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [comment, setComment] = useState('');
+    const [action, setAction] = useState('approve');
+
+    //Usuarios permitidos
+    const allowedRoles = [
+        RolesEnum.ADMIN,
+        RolesEnum.SUPERVISION,
+        RolesEnum.TECHNICAL,
+        RolesEnum.ENVIRONMENTAL,
+        RolesEnum.TERRITORIAL
+    ];
 
     //Obtener la lista de proveedores
     const getSuppliers = async () => {
@@ -95,13 +116,42 @@ export const ProductList = () => {
         }
     };
 
+    // Debounce para evitar actualizaciones continuas
+    const debouncedHandleChange = debounce((field, params, newValue) => {
+        // Actualiza la celda en el DataGrid
+        params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
+
+        // Actualiza el estado de productos editados
+        setEditedProducts((prevState) => {
+            const index = prevState.findIndex((product) => product.id === params.row.id);
+
+            if (index > -1) {
+                prevState[index][field] = newValue;
+            } else {
+                prevState.push({ ...params.row, [field]: newValue });
+            }
+
+            return [...prevState];
+        });
+    }, 300);
+
+    // Método principal para el cambio de selección
+    const handleSelectChange = (field) => (params, newValue) => {
+        debouncedHandleChange(field, params, newValue);
+    };
+
+    const getEnvironmentalColumns = async () => {
+        const columns = await getEnvironmentalCategoriesColumns(handleSelectChange);
+        setEnvironmentalCategoriesColumns(columns);
+    }
+
     //
     const loadData = async () => {
         try {
-            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
+            const [unitData, categoryData, { newDynamicColumns } ] = await Promise.all([
                 getUnitOptions(),
                 getCategoryOptions(),
-                getDynamicColumnsBySupplier(getSupplierId(), true)
+                getDynamicColumnsBySupplier(getSupplierId(), true),
             ]);
 
             setUnitOptions(unitData);
@@ -115,48 +165,78 @@ export const ProductList = () => {
     //
     const normalizeRows = async (supplierId, data) => {
         try {
-            const { municipalities } = await getDynamicColumnsBySupplier(supplierId,true);
+            const { municipalities } = await getDynamicColumnsBySupplier(supplierId, true);
+            const environmentalCategories = await getEnvironmentalCategories();
 
-            return data.map((row) => {
-                // Extraer los precios de los municipios
-                const municipalityPrices = Object.fromEntries(
-                    municipalities.map((municipality) => {
-                        const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
-                        const price = priceData !== undefined ? priceData.valor_unitario : '0.00';
-                        return [`price_${municipality.id}`, price];
-                    })
-                );
-
-                return {
-                    id: row.id,
-                    name: row.nombre,
-                    description: row.especificacion_tecnicas,
-                    brand: row.marca_comercial,
-                    reference: row.referencia,
-                    unit: row.unidad_medida,
-                    category: row.categoria_producto,
-                    ...municipalityPrices,
-                    state: row?.fecha_aprobado !== null ? ProductStatusEnum.APPROVED : ProductStatusEnum.PENDING_APPROVAL,
-                    PNN: row?.ambiental?.PNN ?? 0,
-                    ZRFA: row?.ambiental?.ZRFA ?? 0,
-                    ZRFB: row?.ambiental?.ZRFB ?? 0,
-                    ZRFC: row?.ambiental?.ZRFC ?? 0,
-                    AMEMPre: row?.ambiental?.AMEMPre ?? 0,
-                    AMEMProd: row?.ambiental?.AMEMProd ?? 0,
-                    DRMI: row?.ambiental?.DRMI ?? 0,
-                    RFPN: row?.ambiental?.RFPN ?? 0,
-                    ND: row?.ambiental?.ND ?? 0,
-                    RIL: row?.ambiental?.RIL ?? 0,
-                    CCL: row?.ambiental?.CCL ?? 0,
-                    observations_technical: row?.observations_technical ?? "",
-                    observations_environmental: row?.observations_environmental ?? "",
-                    observations_territorial: row?.observations_territorial ?? "",
-                };
-            });
+            return data.map((row) => ({
+                id: row.id,
+                name: row.nombre,
+                description: row.especificacion_tecnicas,
+                brand: row.marca_comercial,
+                reference: row.referencia,
+                unit: row.unidad_medida,
+                category: row.categoria_producto,
+                state: getProductState(row?.fecha_aprobado),
+                ...extractMunicipalityPrices(row, municipalities),
+                ...buildEnvironmentalData(row, environmentalCategories),
+                ...extractObservations(row?.aprobados),
+            }));
         } catch (error) {
             console.error('Error al normalizar filas:', error);
             return [];
         }
+    };
+
+    //Obtener el estado del producto
+    const getProductState = (approvalDate) => {
+        return approvalDate ? GeneralStatusProductEnum.APPROVED : GeneralStatusProductEnum.PENDING_APPROVAL;
+    }
+
+    //Extraer precios por municipio
+    const extractMunicipalityPrices = (row, municipalities) => {
+        return Object.fromEntries(
+            municipalities.map((municipality) => {
+                const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
+                return [`price_${municipality.id}`, priceData?.valor_unitario ?? '0.00'];
+            })
+        );
+    }
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    //Construir objeto ambiental dinámico
+    const buildEnvironmentalData = (row, categories) => {
+        return Object.fromEntries(
+            categories.map(({codigo}) => [codigo, String(row?.ambiental?.[codigo] ?? 0)])
+        );
+    }
+
+    //Extraer observaciones
+    const extractObservations = (rows) => {
+        const roleMap = {
+            [RolesEnum.TECHNICAL]: { observationKey: "observations_technical", statusKey: "status_technical" },
+            [RolesEnum.ENVIRONMENTAL]: { observationKey: "observations_environmental", statusKey: "status_environmental" },
+            [RolesEnum.TERRITORIAL]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
+        };
+
+        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
+            acc[id] = label;
+            return acc;
+        }, {});
+
+        return rows.reduce((acc, { rol, estado, comentario }) => {
+            const role = roleMap[rol];
+            if (!role) return acc;
+
+            acc[role.observationKey] = comentario ?? "";
+            acc[role.statusKey] = statusMap[estado] ?? "Desconocido";
+
+            return acc;
+        }, {});
     };
 
     //
@@ -169,56 +249,30 @@ export const ProductList = () => {
         setShowModal(true);
     };
 
-    const handleApproveByAudit = async (id, rol, accion) => {
-        try {
-            const { status } = await productServices.productApprove(id);
-            if (status === ResponseStatusEnum.OK) {
-                showAlert("Bien hecho!", "Producto aprobado exitosamente!");
-                await getProductList();
-                handleCloseModal();
-            }
-        } catch (error) {
-            console.error("Error al aprobar el producto:", error);
+    //Manejar selección de filas
+    const handleSelectionChange = (newSelection) => {
+        setSelectedIds(newSelection);
+    };
+
+    const handleOpenModal = () => {
+        if (selectedIds.length === 0) {
+            showInfo('Por favor seleccione al menos un producto.');
+            return;
         }
+        setOpenModal(true);
     };
 
-    const actionsColumns = getActionsColumns(userAuth.rol_id, handleDeleteClick, handleApproveByAudit);
-
-    const debouncedHandleChange = debounce((field, params, newValue) => {
-        params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
-
-        setEditedProducts((prevState) => {
-            const index = prevState.findIndex((product) => product.id === params.row.id);
-            if (index > -1) {
-                prevState[index][field] = newValue;
-            } else {
-                prevState.push({ ...params.row, [field]: newValue });
-            }
-            return [...prevState];
-        });
-    }, 300);
-
-    const handleSelectChange = (field) => (params) => (event) => {
-        const newValue = event.target.value;
-        debouncedHandleChange(field, params, newValue);
-    };
-
-    const categoriesColumns = getEnvironmentalCategoriesColumns(handleSelectChange);
-
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
-
-    const columns = [
-        ...baseColumns,
-        ...dynamicMunicipalityColumns,
-        ...statusProduct,
-        ...actionsColumns,
-        ...( [RolesEnum.ADMIN, RolesEnum.SUPPLIER, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL, RolesEnum.TERRITORIAL, RolesEnum.SUPERVISION].includes(userAuth.rol_id) ? observationsColumns : [] ),
-        ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? categoriesColumns : [] ),
-    ];
-
-    const handleCloseModal = () => {
+    // Cerrar modal confirmación
+    const handleCloseModalConfirm = () => {
         setShowModal(false);
         selectedRowId(null);
+    };
+
+    // Cerrar modal aprobacion
+    const handleCloseModalApproved = () => {
+        setOpenModal(false);
+        setComment('');
+        setAction('approve');
     };
 
     const handleConfirmDelete = async () => {
@@ -227,30 +281,48 @@ export const ProductList = () => {
             if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente!");
                 await getProductList();
-                handleCloseModal();
+                handleCloseModalConfirm();
             }
             if (status === ResponseStatusEnum.FORBIDDEN) {
                 showInfo("Atención!", "No puedes borrar este producto ya aprobado!");
-                handleCloseModal();
+                handleCloseModalConfirm();
             }
         } catch (error) {
             console.error("Error al eliminar el producto:", error);
         }
     };
 
-    const handleSearchQueryChange = (e) => {
-        const query = e.target.value;
-        setSearchQuery(query);
-
-        const filtered = productList.filter(product =>
-            product.name.toLowerCase().includes(query.toLowerCase()) ||
-            product.description.toLowerCase().includes(query.toLowerCase()) ||
-            product.brand.toLowerCase().includes(query.toLowerCase()) ||
-            product.state.toLowerCase().includes(query.toLowerCase())
-        );
-
-        setFilteredData(filtered);
+    const handleApproveByAudit = async (ids, accion, comment) => {
+        try {
+            let letter = accion === 'approve' ? 'Aprobado' : 'Denegado'
+            let data = {
+                ids: ids,
+                estado: accion === 'approve' ? 1 : 0,
+                comentario: comment
+            }
+            const { status } = await productServices.productApprove(data);
+            if (status === ResponseStatusEnum.OK) {
+                showAlert("Bien hecho!", `Producto ${letter} exitosamente!`);
+                await getProductList();
+                handleCloseModalApproved();
+            }
+        } catch (error) {
+            console.error("Error al aprobar el producto:", error);
+        }
     };
+
+    const actionsColumns = getActionsColumns(userAuth.rol_id, handleDeleteClick, handleApproveByAudit);
+
+    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+
+    const columns = [
+        ...baseColumns,
+        ...dynamicMunicipalityColumns,
+        ...statusProduct,
+        ...actionsColumns,
+        ...( allowedRoles.includes(userAuth.rol_id) ? observationsColumns : [] ),
+        ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? environmentalCategoriesColumns : [] ),
+    ];
 
     //
     const handleRowUpdate = (newRow, oldRow) => {
@@ -278,7 +350,6 @@ export const ProductList = () => {
             }
 
             const products = await productsBeforeSend(editedProducts);
-            console.log('products: ', products);
             const batches = chunkArray(products, 500);
 
             await sendBatchesInParallel(batches);
@@ -293,8 +364,12 @@ export const ProductList = () => {
     };
 
     //
-    const productsBeforeSend = (inputData) => {
+    const productsBeforeSend = async (inputData) => {
+        //Obtener el id del proveedor
         const supplierId = parseInt(getSupplierId());
+        //Obtener claves ambientales
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
+
         return inputData.map((product) => ({
             id: product.id,
             proveedor_id: supplierId,
@@ -305,23 +380,17 @@ export const ProductList = () => {
             unidad_medida: product.unit,
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
-            ambiental: {
-                PNN: parseInt(product?.PNN),
-                ZRFA: parseInt(product?.ZRFA),
-                ZRFB: parseInt(product?.ZRFB),
-                ZRFC: parseInt(product?.ZRFC),
-                AMEMPre: parseInt(product?.AMEMPre),
-                AMEMProd: parseInt(product?.AMEMProd),
-                DRMI: parseInt(product?.DRMI),
-                RFPN: parseInt(product?.RFPN),
-                ND: parseInt(product?.ND),
-                RIL: parseInt(product?.RIL),
-                CCL: parseInt(product?.CCL),
-            },
+            ambiental: buildData(product, environmentalKeys),
             observations_technical: product.observations_technical,
             observations_environmental: product.observations_environmental,
             observations_territorial: product.observations_territorial,
         }));
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, parseInt(product[key])])
+        );
     };
 
     //Enviar lotes en paralelo con control de concurrencia
@@ -350,7 +419,7 @@ export const ProductList = () => {
     };
 
     const sendBatchToService = async (batch) => {
-        const { data, status } = await productServices.edit(batch, selectedSupplier.value);
+        const {data, status} = await productServices.edit(batch, selectedSupplier.value);
         if (status !== ResponseStatusEnum.OK) {
             throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
         }
@@ -360,160 +429,210 @@ export const ProductList = () => {
     const showAlert = (title, message) => AlertComponent.success(title, message);
 
     const showInfo = (title, message) => AlertComponent.info(title, message);
-    const handleCreateProducts = () => navigate(`/admin/create-products`);
 
-    const handleEditProducts = () => navigate(`/admin/edit-product`);
+    const handleSearchQueryChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filtered = productList.filter(product =>
+            product.name.toLowerCase().includes(query.toLowerCase()) ||
+            product.description.toLowerCase().includes(query.toLowerCase()) ||
+            product.brand.toLowerCase().includes(query.toLowerCase()) ||
+            product.state.toLowerCase().includes(query.toLowerCase())
+        );
+
+        setFilteredData(filtered);
+    };
+
+    //Aprobación o Denegación
+    const handleSubmit = async () => {
+        try {
+            await handleApproveByAudit(selectedIds, action, comment);
+        } catch (error) {
+            console.error('Error en la aprobación:', error);
+        }
+    };
 
     useEffect(() => {
-        if(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
+        if (allowedRoles.includes(userAuth.rol_id)) {
             getSuppliers();
         }
 
-        if(userAuth.rol_id === RolesEnum.SUPPLIER) {
+        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
             getProductList();
             loadData();
         }
     }, [userAuth.rol_id]);
 
     useEffect(() => {
-        if (selectedSupplier && (userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION)) {
+        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
             getProductList();
             loadData();
+            getEnvironmentalColumns();
         }
     }, [selectedSupplier, userAuth.rol_id]);
 
     return (
-        <>
-            <div className="main-container">
-                <HeaderImage
-                    imageHeader={imgPeople}
-                    titleHeader="¡Listado de productos!"
-                />
+            <>
+                <div className="main-container">
+                    <HeaderImage
+                        imageHeader={imgPeople}
+                        titleHeader="¡Listado de productos!"
+                    />
 
-                <div className="container mt-lg-3">
-                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-                            <input
-                                type="text"
-                                placeholder="Buscar..."
-                                value={searchQuery}
-                                onChange={handleSearchQueryChange}
-                                className="input-responsive"
+                    <div className="container mt-lg-3">
+                        <div
+                            className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                                <input
+                                    type="text"
+                                    placeholder="Buscar..."
+                                    value={searchQuery}
+                                    onChange={handleSearchQueryChange}
+                                    className="input-responsive"
+                                />
+
+                                {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
+                                    <>
+                                        <Button onClick={() => navigate(`/admin/create-products`)}
+                                                className="button-order-responsive">
+                                            Agregar productos <FaPlus/>
+                                        </Button>
+
+                                        <Button variant="secondary"
+                                                onClick={() => navigate(`/admin/edit-product`)}
+                                                className="button-order-responsive">
+                                            Editar productos <FaEdit/>
+                                        </Button>
+                                    </>
+                                )}
+
+                                {allowedRoles.includes(userAuth.rol_id) && (
+                                    <Col xs={12} md={6} className="d-flex align-items-center">
+                                        <Select
+                                            value={selectedSupplier}
+                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                            options={suppliers?.map((opt) => ({value: opt.id, label: opt.nombre}))}
+                                            placeholder="Selecciona una compañía"
+                                            classNamePrefix="custom-select"
+                                            className="custom-select w-100"
+                                        />
+                                    </Col>
+                                )}
+                            </div>
+                        </div>
+
+                        <div style={{height: 600, width: "100%"}}>
+                            <DataGrid
+                                checkboxSelection
+                                onRowSelectionModelChange={handleSelectionChange}
+                                columns={columns}
+                                rows={filteredData}
+                                processRowUpdate={handleRowUpdate}
+                                editMode="row"
+                                pagination
+                                page={page}
+                                pageSize={pageSize}
+                                onPageChange={(newPage) => setPage(newPage)}
+                                onPageSizeChange={(newPageSize) => {
+                                    setPageSize(newPageSize);
+                                    setPage(0);
+                                }}
+                                rowsPerPageOptions={[10, 50, 100]}
+                                componentsProps={{
+                                    columnHeader: {
+                                        style: {
+                                            textAlign: "left",
+                                            fontWeight: "bold",
+                                            fontSize: "10px",
+                                            wordWrap: "break-word",
+                                        },
+                                    },
+                                }}
+                                sx={{
+                                    "& .MuiDataGrid-columnHeaders": {
+                                        backgroundColor: "#40A581",
+                                        color: "white",
+                                        fontSize: "12px",
+                                    },
+                                    "& .MuiDataGrid-columnHeader": {
+                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    },
+                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                        backgroundColor: "#40A581 !important",
+                                        color: "white !important",
+                                    },
+                                    "& .MuiDataGrid-cell": {
+                                        fontSize: "12px",
+                                        textAlign: "left",
+                                        justifyContent: "left",
+                                        alignItems: "flex-start",
+                                        display: "flex",
+                                    },
+                                    "& .MuiSelect-root": {
+                                        fontSize: "12px",
+                                        fontFamily: "Arial, sans-serif",
+                                        width: "100%",
+                                    },
+                                    "& .MuiDataGrid-row:hover": {
+                                        backgroundColor: "#E8F5E9",
+                                    },
+                                }}
                             />
 
-                            {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
+                            {/* Modal de confirmación */}
+                            <ConfirmationModal
+                                show={showModal}
+                                title="Confirmación de Eliminación"
+                                message="¿Estás seguro de que deseas eliminar este elemento?"
+                                onConfirm={handleConfirmDelete}
+                                onClose={handleCloseModalConfirm}
+                            />
+
+                            {/* Modal de aprobación/denegación */}
+                            <ApprovedDeniedModal
+                                open={openModal}
+                                onClose={handleCloseModalApproved}
+                                action={action}
+                                setAction={setAction}
+                                comment={comment}
+                                setComment={setComment}
+                                onSubmit={handleSubmit}
+                            />
+                        </div>
+
+                        {/* Botón Guardar */}
+                        <div className="d-flex justify-content-end gap-2 mt-3">
+                            {allowedRoles.includes(userAuth.rol_id) && (
                                 <>
-                                    <Button onClick={handleCreateProducts} className="button-order-responsive">
-                                        Agregar productos <FaPlus />
+                                    <Button
+                                        variant="warning"
+                                        size="md"
+                                        color="primary"
+                                        onClick={handleOpenModal}
+                                        disabled={loading}
+                                    >
+                                        Aprobar <FaThumbsUp  /> / Denegar <FaThumbsDown />
                                     </Button>
 
-                                    <Button variant="secondary" onClick={handleEditProducts} className="button-order-responsive">
-                                        Editar productos <FaEdit />
+                                    <Button
+                                        variant="success"
+                                        size="md"
+                                        onClick={handleSaveProducts}
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
                                     </Button>
                                 </>
                             )}
-
-                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
-                                <Col xs={12} md={6} className="d-flex align-items-center">
-                                    <Select
-                                        value={selectedSupplier}
-                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                        options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
-                                        placeholder="Selecciona una compañía"
-                                        classNamePrefix="custom-select"
-                                        className="custom-select w-100"
-                                    />
-                                </Col>
-                            )}
                         </div>
-                    </div>
 
-                    <div style={{height: 600, width: "100%"}}>
-                        <DataGrid
-                            columns={columns}
-                            rows={filteredData}
-                            processRowUpdate={handleRowUpdate}
-                            editMode="row"
-                            pagination
-                            page={page}
-                            pageSize={pageSize}
-                            onPageChange={(newPage) => setPage(newPage)}
-                            onPageSizeChange={(newPageSize) => {
-                                setPageSize(newPageSize);
-                                setPage(0);
-                            }}
-                            rowsPerPageOptions={[10, 50, 100]}
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left",
-                                        fontWeight: "bold",
-                                        fontSize: "10px",
-                                        wordWrap: "break-word",
-                                    },
-                                },
-                            }}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
-                                    color: "white",
-                                    fontSize: "12px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "12px",
-                                    textAlign: "left",
-                                    justifyContent: "left",
-                                    alignItems: "flex-start",
-                                    display: "flex",
-                                },
-                                "& .MuiSelect-root": {
-                                    fontSize: "12px",
-                                    fontFamily: "Arial, sans-serif",
-                                    width: "100%",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
-                        />
-
-                        <ConfirmationModal
-                            show={showModal}
-                            title="Confirmación de Eliminación"
-                            message="¿Estás seguro de que deseas eliminar este elemento?"
-                            onConfirm={handleConfirmDelete}
-                            onClose={handleCloseModal}
-                        />
-                    </div>
-
-                    {/* Botón Guardar */}
-                    <div className="d-flex align-items-end mt-3">
-                        {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
-                            <Button
-                                variant="success"
-                                size="md"
-                                onClick={handleSaveProducts}
-                                className="ms-auto"
-                                disabled={loading}
-                            >
-                                {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
-                            </Button>
-                        )}
                     </div>
 
                 </div>
-
-            </div>
-        </>
-    );
-};
+            </>
+        );
+    };

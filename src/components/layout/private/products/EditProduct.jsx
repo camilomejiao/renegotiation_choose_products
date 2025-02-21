@@ -19,11 +19,17 @@ import { supplierServices } from "../../../../helpers/services/SupplierServices"
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Utils
-import { chunkArray, extractMunicipios, handleError, showAlert } from "../../../../helpers/utils/utils";
+import {
+    chunkArray,
+    extractMunicipios,
+    handleError,
+    showAlert
+} from "../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
     getDynamicColumnsBySupplier,
+    getEnvironmentalCategories,
     getUnitOptions
 } from "../../../../helpers/utils/ProductColumns";
 
@@ -216,8 +222,10 @@ export const EditProduct = () => {
         return supplierServices.getSupplierId();
     };
 
-    const productsBeforeSend = (inputData) => {
+    const productsBeforeSend = async (inputData) => {
         const supplierId = parseInt(getSupplierId());
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
+
         return inputData.map((product) => ({
             id: product.id,
             proveedor_id: supplierId,
@@ -228,8 +236,20 @@ export const EditProduct = () => {
             unidad_medida: product.unit,
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
-            ambiental: product.ambiental
+            ambiental: buildData(product, environmentalKeys),
         }));
+    };
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, 1])
+        );
     };
 
     //Cargar datos iniciales

@@ -1,6 +1,6 @@
 import { Modal, Button } from "react-bootstrap";
 
-export const LineDetail = ({ show, handleClose, data }) => {
+export const LineDetailModal = ({ show, handleClose, data }) => {
 
     return (
         <Modal show={show} onHide={handleClose} centered size="lg">

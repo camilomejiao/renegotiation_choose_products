@@ -20,7 +20,7 @@ import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 //Utils
 import {
     chunkArray,
-    extractMunicipios, getEnvironmental,
+    extractMunicipios,
     handleError,
     showAlert
 } from "../../../../helpers/utils/utils";
@@ -28,7 +28,8 @@ import {
     getBaseColumns,
     getDynamicColumnsBySupplier,
     getUnitOptions,
-    getCategoryOptions
+    getCategoryOptions,
+    getEnvironmentalCategories
 } from "../../../../helpers/utils/ProductColumns";
 
 export const AddProducts = () => {
@@ -173,7 +174,7 @@ export const AddProducts = () => {
 
         try {
             setLoading(true); // Mostrar indicador de carga
-            const transformedData = transformData(rows); // Transformar los datos
+            const transformedData = await transformData(rows); // Transformar los datos
             const batches = chunkArray(transformedData, 500);
 
             await sendBatchesInParallel(batches);
@@ -191,8 +192,9 @@ export const AddProducts = () => {
     };
 
     //Transformar datos para ajustarlos al formato esperado por la API
-    const transformData = (inputData) => {
+    const transformData = async (inputData) => {
         const supplierId = parseInt(getSupplierId());
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
 
         return inputData.map(product => ({
             proveedor_id: supplierId,
@@ -203,13 +205,25 @@ export const AddProducts = () => {
             unidad_medida: product.unit,
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
-            ambiental: getEnvironmental(),
+            ambiental: buildData(product, environmentalKeys),
         }));
     };
 
     //Obtener el ID del proveedor
     const getSupplierId = () => {
         return supplierServices.getSupplierId();
+    };
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, 1])
+        );
     };
 
     //Enviar lotes en paralelo con control de concurrencia

@@ -14,7 +14,7 @@ import { renegotiationServices } from "../../../../helpers/services/Renegociatio
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import { UserInformation } from "../user-information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
-import { LineDetail } from "../../shared/Modals/LineDetail";
+import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 
 //Enum
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
@@ -477,7 +477,7 @@ export const Renegociation = () => {
             </div>
 
             {/* Modal para detalles de la línea */}
-            <LineDetail show={showModal} handleClose={handleCloseModal} data={lineDetailData} />
+            <LineDetailModal show={showModal} handleClose={handleCloseModal} data={lineDetailData} />
         </>
     )
 

@@ -33,48 +33,17 @@ export const Sidebar = ({userAuth}) => {
         setIsOpen(!isOpen);
     };
 
-    const handleApplication = () => {
-        navigate("/");
-    };
-
-    const handleRenegociation = () => {
-        navigate("/admin/search-user-for-renegociation");
-    };
-
-    const handleOrderReport = () => {
-        navigate(`/admin/order-report`)
-    };
-
-    const handleDeliveries = () => {
-        navigate(`/admin/search-user-for-deliveries`)
-    };
-
-    const handleProducts = () => {
-        navigate(`/admin/products`)
-    };
-
-    const handlePayments = () => {
-        navigate(`/admin/payments`)
-    };
-
-    const handleUsers = () => {
-        navigate(`/admin/users`)
-    };
-
-    const handleReport = () => {
-        navigate(`/admin/company-reports`)
-    };
-
-    const handleLogout = () => {
-        navigate("/admin/logout");
-    };
-
     return (
         <>
             <div className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <Container fluid className="sidebar-content">
                     {/* Perfil del Usuario */}
-                    {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
+                    {(
+                        userAuth.rol_id === RolesEnum.ADMIN ||
+                        userAuth.rol_id === RolesEnum.SUPERVISION ||
+                        userAuth.rol_id === RolesEnum.TECHNICAL ||
+                        userAuth.rol_id === RolesEnum.ENVIRONMENTAL ||
+                        userAuth.rol_id === RolesEnum.TERRITORIAL) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>
@@ -85,23 +54,23 @@ export const Sidebar = ({userAuth}) => {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={handleRenegociation}>
+                                        <div className="dropdown-item" onClick={() => navigate("/admin/search-user-for-renegociation")}>
                                             <FaHandshake className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Renegociación</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleApplication}>
+                                        <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaUsersCog className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleUsers}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/users`)}>
                                             <FaUsers className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleProducts}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handlePayments}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
                                             <FaCcPaypal className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
                                         </div>
@@ -123,11 +92,11 @@ export const Sidebar = ({userAuth}) => {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={handleRenegociation}>
+                                        <div className="dropdown-item" onClick={() => navigate("/admin/search-user-for-renegociation")}>
                                             <FaHandshake className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Renegociación</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleApplication}>
+                                        <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaUsersCog className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
                                         </div>
@@ -149,23 +118,23 @@ export const Sidebar = ({userAuth}) => {
                                 </Accordion.Header>
                                 <Accordion.Body>
                                     <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={handleApplication}>
+                                        <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaShoppingCart className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Solicitud</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleOrderReport}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/order-report`)}>
                                             <FaFileInvoiceDollar className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleDeliveries}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/search-user-for-deliveries`)}>
                                             <FaShippingFast className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Entregas</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleProducts}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Productos</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={handleReport}>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/company-reports`)}>
                                             <FaChartPie className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Reportes general</span>}
                                         </div>
@@ -177,7 +146,7 @@ export const Sidebar = ({userAuth}) => {
                 </Container>
 
                 {/* Toggle Sidebar */}
-                <div className="logout" onClick={handleLogout}>
+                <div className="logout" onClick={() => navigate("/admin/logout")}>
                     <FaSignOutAlt className="logout-icon" />
                     {isOpen && <span className="sidebar-text">Salir</span>}
                 </div>

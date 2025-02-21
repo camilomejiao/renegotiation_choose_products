@@ -15,7 +15,7 @@ export const ResponseStatusEnum = {
 export const RolesEnum = {
     ADMIN: 1,
     SUPPLIER: 2,
-    MANAGEMENT_TECHNICIAN: 3,
+    LINKS_TECHNICIAN: 3,
     SUPERVISION: 4,
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,
@@ -23,9 +23,15 @@ export const RolesEnum = {
     PAYMENTS: 8
 }
 
-export const ProductStatusEnum = {
+export const GeneralStatusProductEnum = {
     APPROVED: 'APROBADO',
     PENDING_APPROVAL: 'PENDIENTE'
+}
+
+export const StatusTeamProductEnum = {
+    DENIED: { id: 0, label: "Denegado" },
+    APPROVED: { id: 1, label: "Aprobado" },
+    UNREVIEWED: { id: 9, label: "Sin Revisar" }
 }
 
 export const ComponentEnum = {
