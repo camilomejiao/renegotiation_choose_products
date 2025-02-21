@@ -91,7 +91,7 @@ export const ProductList = () => {
     //
     const getSupplierId = () => {
         let supplierId = null;
-        if (selectedSupplier && (userAuth.rol_id === RolesEnum.SUPERVISION || userAuth.rol_id === RolesEnum.ADMIN)) {
+        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
             supplierId = selectedSupplier.value;
         }
 
@@ -445,7 +445,7 @@ export const ProductList = () => {
     };
 
     //Aprobación o Denegación
-    const handleSubmit = async () => {
+    const handleApproveDenySubmit = async () => {
         try {
             await handleApproveByAudit(selectedIds, action, comment);
         } catch (error) {
@@ -600,7 +600,7 @@ export const ProductList = () => {
                                 setAction={setAction}
                                 comment={comment}
                                 setComment={setComment}
-                                onSubmit={handleSubmit}
+                                onSubmit={handleApproveDenySubmit}
                             />
                         </div>
 
