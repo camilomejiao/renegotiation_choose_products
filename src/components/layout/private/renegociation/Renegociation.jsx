@@ -19,6 +19,7 @@ import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 //Enum
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 import { AuthorizationSection } from "../../shared/authorization-section/AuthorizationSection";
+import {PlanHistory} from "../../shared/Modals/PlanHistory";
 export const Renegociation = () => {
 
     const params = useParams();
@@ -37,8 +38,10 @@ export const Renegociation = () => {
     const [comentarios, setComentarios] = useState("");
     const [cellPhone, setCellPhone] = useState("");
     const [isReadyToPrintPlan, setIsReadyToPrintPlan] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [showModalLineDatail, setShowModalLineDatail] = useState(false);
     const [lineDetailData, setLineDetailData] = useState("");
+    const [showModalPlanHistory, setShowModalPlanHistory] = useState(false);
+    const [planHistoryData, setPlanHistoryData] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const getUserInformation = async (cubId) => {
@@ -159,7 +162,7 @@ export const Renegociation = () => {
             const {data, status} = await renegotiationServices.getDetailPlan(formData.LineaId);
             if (status === ResponseStatusEnum.OK) {
                 setLineDetailData(data);
-                setShowModal(true);
+                setShowModalLineDatail(true);
             }
         } catch (error) {
             console.log(error);
@@ -167,9 +170,21 @@ export const Renegociation = () => {
         }
     }
 
+    const handlePlanHistory = async () => {
+        try {
+            setPlanHistoryData('');
+            setShowModalPlanHistory(true);
+        } catch (error) {
+            console.log(error);
+            showError(error, 'Error buscando el historico');
+        }
+    }
+
     const handleCloseModal = () => {
-        setShowModal(false);
+        setShowModalLineDatail(false);
         setLineDetailData('');
+        setShowModalPlanHistory(false);
+        setPlanHistoryData('');
     };
 
     //
@@ -286,7 +301,6 @@ export const Renegociation = () => {
         }
     };
 
-
     useEffect(() => {
         if (params.cub_id) {
             getUserInformation(params.cub_id);
@@ -332,7 +346,7 @@ export const Renegociation = () => {
                         </Col>
 
                         {/* Select para Línea */}
-                        <Col xs={12} md={6} className="mb-3">
+                        <Col xs={12} md={5} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Linea</Form.Label>
                                 <Form.Select
@@ -351,15 +365,17 @@ export const Renegociation = () => {
                             </Form.Group>
                         </Col>
 
-                        <Col xs={12} md={2} className="mt-2">
+                        <Col xs={12} md={3} className="mt-2 d-flex gap-2">
                             <Button variant="primary" onClick={() => handleModalDetail()}>
                                 Detalles Plan
                             </Button>
-                        </Col>
 
+                            <Button variant="warning" onClick={() => handlePlanHistory()}>
+                                Historico Plan
+                            </Button>
+                        </Col>
                     </Row>
                     <Row className="justify-content-start align-items-center">
-
                         {/* Campo de texto Comentarios */}
                         <Col xs={12} md={12} className="mb-3">
                             <TextField
@@ -372,7 +388,6 @@ export const Renegociation = () => {
                                 onChange={(e) => setComentarios(e.target.value)}
                             />
                         </Col>
-
                         {/* Campo de texto Teléfono */}
                         <Col xs={12} md={6} className="mb-3">
                             <TextField
@@ -386,8 +401,7 @@ export const Renegociation = () => {
                                 required
                             />
                         </Col>
-
-                        {/* 🔹 Sección para los botones alineados a la derecha */}
+                        {/* Sección para los botones alineados a la derecha */}
                         <Col xs={12} md={6} className="d-flex justify-content-end">
                             <Button
                                 variant="success"
@@ -398,7 +412,7 @@ export const Renegociation = () => {
                                 Guardar
                             </Button>
 
-                            <Button variant="warning" onClick={() => handlePlanToReport()} className="me-2">
+                            <Button variant="danger" onClick={() => handlePlanToReport()} className="me-2">
                                 Generar Plan
                             </Button>
                         </Col>
@@ -413,52 +427,37 @@ export const Renegociation = () => {
                     )}
 
                     <Row className="justify-content-end">
+                        {/* Sección de Autorización */}
                         <Col md={5}>
                             <AuthorizationSection component={ComponentEnum.RENEGOTIATION} userData={userData} wide={12} />
                         </Col>
-                        <Col md={7} className="mt-4">
-                            {/* Nueva sección para subir archivos */}
-                            <Row className="justify-content-end">
-                                {/* Subir Plan Firmado */}
-                                <Col xs={6} md={4} >
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() => handleUploadFile(engagementId, 'acuerdo')}
-                                    >
+
+                        {/* Sección de Botones para Subir/Ver Archivos */}
+                        <Col md={7} className="d-flex flex-column gap-3 mt-4">
+                            {/* Sección 1: Plan Firmado */}
+                            <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
+                                <Col xs={6} md={4} className="d-flex justify-content-center">
+                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleUploadFile(engagementId, 'acuerdo')}>
                                         Subir Plan Firmado
                                     </Button>
                                 </Col>
-
-                                {/* Ver Plan Firmado */}
-                                <Col xs={6} md={5} >
-                                    <Button
-                                        variant="info"
-                                        onClick={() => handleDownload(engagementId, "acuerdo")}
-                                    >
-                                        Ver Plan Firmado <FaEye className="me-2" />
+                                <Col xs={6} md={4} className="d-flex justify-content-center">
+                                    <Button variant="info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "acuerdo")}>
+                                        <FaEye className="me-2" /> Ver Plan Firmado
                                     </Button>
                                 </Col>
                             </Row>
 
-                            {/* Nueva sección para subir archivos */}
-                            <Row className="justify-content-end mt-4">
-                                {/* Subir Legalización */}
-                                <Col xs={6} md={4} >
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() => handleUploadFile(engagementId, 'legalizacion')}
-                                    >
+                            {/* Sección 2: Legalización */}
+                            <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
+                                <Col xs={6} md={4} className="d-flex justify-content-center">
+                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleUploadFile(engagementId, 'legalizacion')}>
                                         Subir Legalización
                                     </Button>
                                 </Col>
-
-                                {/* Ver Legalización */}
-                                <Col xs={6} md={5} >
-                                    <Button
-                                        variant="info"
-                                        onClick={() => handleDownload(engagementId, "legalizacion")}
-                                    >
-                                        Ver Legalización <FaEye className="me-2" />
+                                <Col xs={6} md={4} className="d-flex justify-content-center">
+                                    <Button variant="info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "legalizacion")}>
+                                        <FaEye className="me-2" /> Ver Legalización
                                     </Button>
                                 </Col>
                             </Row>
@@ -477,7 +476,10 @@ export const Renegociation = () => {
             </div>
 
             {/* Modal para detalles de la línea */}
-            <LineDetailModal show={showModal} handleClose={handleCloseModal} data={lineDetailData} />
+            <LineDetailModal show={showModalLineDatail} handleClose={handleCloseModal} data={lineDetailData} />
+
+            {/* Modal Historicos */}
+            <PlanHistory show={showModalPlanHistory} handleClose={handleCloseModal} data={''} />
         </>
     )
 

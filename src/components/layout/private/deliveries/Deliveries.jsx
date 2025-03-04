@@ -56,7 +56,7 @@ export const Deliveries = () => {
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
-            if (userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
+            if (userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
                 const { data, status} = await deliveriesServices.getSuppliers(params.id);
                 if (status === ResponseStatusEnum.OK) {
                     setSuppliers(data);
@@ -426,7 +426,7 @@ export const Deliveries = () => {
 
     //Crear entrega
     const handleCreateDeliveries = async () => {
-        if (!selectedSupplier && userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN) {
+        if (!selectedSupplier && userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN) {
             showError('Error', 'Debe escoger al menos una empresa');
             return;
         }
@@ -656,7 +656,7 @@ export const Deliveries = () => {
                 <div className="deliveries-banner">
                     <Container>
                         <Row className="justify-content-start align-items-center mt-4">
-                            {(userAuth.rol_id === RolesEnum.MANAGEMENT_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
+                            {(userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
                                 <Col xs={12} md={6} className="d-flex align-items-center">
                                     <Select
                                         value={selectedSupplier}
