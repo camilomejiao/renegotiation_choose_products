@@ -331,7 +331,7 @@ export const Renegociation = () => {
                 <Container>
                     <Row className="justify-content-start align-items-center mt-4">
                         {/* Select para Plan */}
-                        <Col xs={12} md={4} className="mb-3">
+                        <Col xs={12} md={3} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Plan</Form.Label>
                                 <Form.Select name="PlanId" value={formData.PlanId} onChange={handlePlanChange}>
@@ -346,7 +346,7 @@ export const Renegociation = () => {
                         </Col>
 
                         {/* Select para Línea */}
-                        <Col xs={12} md={5} className="mb-3">
+                        <Col xs={12} md={6} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Linea</Form.Label>
                                 <Form.Select
@@ -365,7 +365,7 @@ export const Renegociation = () => {
                             </Form.Group>
                         </Col>
 
-                        <Col xs={12} md={3} className="mt-2 d-flex gap-2">
+                        <Col xs={12} md={3} className="justify-content-end mt-2 d-flex gap-2">
                             <Button variant="primary" onClick={() => handleModalDetail()}>
                                 Detalles Plan
                             </Button>
@@ -402,17 +402,18 @@ export const Renegociation = () => {
                             />
                         </Col>
                         {/* Sección para los botones alineados a la derecha */}
-                        <Col xs={12} md={6} className="d-flex justify-content-end">
+                        <Col xs={12} md={6} className="justify-content-end d-flex gap-2">
                             <Button
                                 variant="success"
                                 disabled={!isSaveEnabled}
                                 onClick={handleSaveInformationUser}
-                                className="me-2"
                             >
                                 Guardar
                             </Button>
 
-                            <Button variant="danger" onClick={() => handlePlanToReport()} className="me-2">
+                            <Button
+                                variant="danger"
+                                onClick={() => handlePlanToReport()}>
                                 Generar Plan
                             </Button>
                         </Col>
