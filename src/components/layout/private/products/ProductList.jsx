@@ -426,8 +426,6 @@ export const ProductList = () => {
         return data;
     };
 
-    const showAlert = (title, message) => AlertComponent.success(title, message);
-
     const showInfo = (title, message) => AlertComponent.info(title, message);
 
     const handleSearchQueryChange = (e) => {
