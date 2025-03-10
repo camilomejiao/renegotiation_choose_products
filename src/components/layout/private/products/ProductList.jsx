@@ -71,9 +71,9 @@ export const ProductList = () => {
     const allowedRoles = [
         RolesEnum.ADMIN,
         RolesEnum.SUPERVISION,
+        RolesEnum.TERRITORIAL_LINKS,
         RolesEnum.TECHNICAL,
-        RolesEnum.ENVIRONMENTAL,
-        RolesEnum.LINKS_TECHNICIAN
+        RolesEnum.ENVIRONMENTAL
     ];
 
     //Obtener la lista de proveedores
@@ -220,7 +220,7 @@ export const ProductList = () => {
         const roleMap = {
             [RolesEnum.TECHNICAL]: { observationKey: "observations_technical", statusKey: "status_technical" },
             [RolesEnum.ENVIRONMENTAL]: { observationKey: "observations_environmental", statusKey: "status_environmental" },
-            [RolesEnum.LINKS_TECHNICIAN]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
+            [RolesEnum.TERRITORIAL_LINKS]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
         };
 
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
@@ -232,8 +232,8 @@ export const ProductList = () => {
             const role = roleMap[rol];
             if (!role) return acc;
 
+            acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
             acc[role.observationKey] = comentario ?? "";
-            acc[role.statusKey] = statusMap[estado] ?? "Desconocido";
 
             return acc;
         }, {});
@@ -407,7 +407,7 @@ export const ProductList = () => {
             results.forEach((result, index) => {
                 if (result.status === 'rejected') {
                     errors.push(result.reason); // Guardar el error
-                    console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
+                    //console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
                     handleError('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`)
                 }
             });

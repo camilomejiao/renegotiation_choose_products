@@ -15,7 +15,7 @@ export const ResponseStatusEnum = {
 export const RolesEnum = {
     ADMIN: 1,
     SUPPLIER: 2,
-    LINKS_TECHNICIAN: 3,
+    TERRITORIAL_LINKS: 3,
     SUPERVISION: 4,
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,

@@ -7,7 +7,7 @@ import { supplierServices } from "../services/SupplierServices";
 import { productServices } from "../services/ProductServices";
 
 //Enum
-import { ResponseStatusEnum, RolesEnum } from "../GlobalEnum";
+import {ResponseStatusEnum, RolesEnum, StatusTeamProductEnum} from "../GlobalEnum";
 
 //
 export const getBaseColumns = (unitOptions, categoryOptions, editable = true) => ([
@@ -171,74 +171,84 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange) => {
 };
 
 //
-export const getObservationsColumns = (userRole) => [
-    {
-        field: "observations_territorial",
-        headerName: "Observación Territorial",
-        width: 200,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value || "Observación territorial..."}
+export const getObservationsColumns = (userRole) => {
+    const statusColors = {
+        [StatusTeamProductEnum.DENIED.label]: "red",
+        [StatusTeamProductEnum.APPROVED.label]: "green",
+        [StatusTeamProductEnum.UNREVIEWED.label]: "orange",
+    };
+
+    const renderObservationCell = (params, placeholder) => (
+        <span style={{ color: params.value ? "black" : "gray" }}>
+            {params.value || placeholder}
+        </span>
+    );
+
+    const renderStatusCell = (params) => {
+        return (
+            <span
+                style={{
+                    color: "white",
+                    backgroundColor: statusColors[params.value] || "gray",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    display: "inline-block",
+                    width: "100%",
+                    textTransform: "capitalize",
+                }}
+            >
+                {params.value || "No definido"}
             </span>
-        ),
-    },
-    {
-        field: "status_territorial",
-        headerName: "Estado Territorial",
-        width: 100,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value}
-            </span>
-        ),
-    },
-    {
-        field: "observations_technical",
-        headerName: "Observación técnica",
-        width: 200,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value || "Observación técnica..."}
-            </span>
-        ),
-    },
-    {
-        field: "status_technical",
-        headerName: "Estado técnica",
-        width: 100,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value}
-            </span>
-        ),
-    },
-    {
-        field: "observations_environmental",
-        headerName: "Observación Ambiental",
-        width: 200,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value || "Observación ambiental..."}
-            </span>
-        ),
-    },
-    {
-        field: "status_environmental",
-        headerName: "Estado Ambiental",
-        width: 100,
-        editable: false,
-        renderCell: (params) => (
-            <span style={{ color: params.value ? "black" : "gray" }}>
-                {params.value}
-            </span>
-        ),
-    },
-];
+        );
+    };
+
+    return [
+        {
+            field: "observations_territorial",
+            headerName: "Observación Territorial",
+            width: 200,
+            editable: false,
+            renderCell: (params) => renderObservationCell(params, "Observación territorial..."),
+        },
+        {
+            field: "status_territorial",
+            headerName: "Estado Territorial",
+            width: 120,
+            editable: false,
+            renderCell: renderStatusCell,
+        },
+        {
+            field: "observations_technical",
+            headerName: "Observación Técnica",
+            width: 200,
+            editable: false,
+            renderCell: (params) => renderObservationCell(params, "Observación técnica..."),
+        },
+        {
+            field: "status_technical",
+            headerName: "Estado Técnico",
+            width: 120,
+            editable: false,
+            renderCell: renderStatusCell,
+        },
+        {
+            field: "observations_environmental",
+            headerName: "Observación Ambiental",
+            width: 200,
+            editable: false,
+            renderCell: (params) => renderObservationCell(params, "Observación ambiental..."),
+        },
+        {
+            field: "status_environmental",
+            headerName: "Estado Ambiental",
+            width: 120,
+            editable: false,
+            renderCell: renderStatusCell,
+        },
+    ];
+};
 
 export const getActionsColumns = (userRole, handleDeleteClick, handleApproveByAudit) => [
     {
@@ -262,7 +272,7 @@ export const getActionsColumns = (userRole, handleDeleteClick, handleApproveByAu
 
                 {/* Aprobaciones y rechazos por perfil */}
                 {[
-                    { rol: RolesEnum.LINKS_TECHNICIAN, label: "Supervisión" },
+                    { rol: RolesEnum.SUPERVISION, label: "Supervisión" },
                     { rol: RolesEnum.ADMIN, label: "ADMIN" },
                 ].map(({ rol, label }) => (
                     userRole === rol && (

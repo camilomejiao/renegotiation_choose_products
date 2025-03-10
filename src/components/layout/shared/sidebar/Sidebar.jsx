@@ -76,7 +76,7 @@ export const Sidebar = ({userAuth}) => {
                     )}
 
                     {/* Gestión de Usuarios para Roles Administrativos */}
-                    {(userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN) && (
+                    {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>
