@@ -42,8 +42,7 @@ export const Sidebar = ({userAuth}) => {
                         userAuth.rol_id === RolesEnum.ADMIN ||
                         userAuth.rol_id === RolesEnum.SUPERVISION ||
                         userAuth.rol_id === RolesEnum.TECHNICAL ||
-                        userAuth.rol_id === RolesEnum.ENVIRONMENTAL ||
-                        userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN) && (
+                        userAuth.rol_id === RolesEnum.ENVIRONMENTAL) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>
@@ -65,10 +64,6 @@ export const Sidebar = ({userAuth}) => {
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/users`)}>
                                             <FaUsers className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
-                                            <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
                                             <FaCcPaypal className="sidebar-icon" />
@@ -99,6 +94,10 @@ export const Sidebar = ({userAuth}) => {
                                         <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaUsersCog className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
+                                            <FaDollyFlatbed className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>
