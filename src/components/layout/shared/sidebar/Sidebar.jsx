@@ -43,7 +43,7 @@ export const Sidebar = ({userAuth}) => {
                         userAuth.rol_id === RolesEnum.SUPERVISION ||
                         userAuth.rol_id === RolesEnum.TECHNICAL ||
                         userAuth.rol_id === RolesEnum.ENVIRONMENTAL ||
-                        userAuth.rol_id === RolesEnum.TERRITORIAL) && (
+                        userAuth.rol_id === RolesEnum.LINKS_TECHNICIAN) && (
                         <Accordion>
                             <Card className="accordion-card">
                                 <Accordion.Header>

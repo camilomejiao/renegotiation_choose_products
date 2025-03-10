@@ -73,7 +73,7 @@ export const ProductList = () => {
         RolesEnum.SUPERVISION,
         RolesEnum.TECHNICAL,
         RolesEnum.ENVIRONMENTAL,
-        RolesEnum.TERRITORIAL
+        RolesEnum.LINKS_TECHNICIAN
     ];
 
     //Obtener la lista de proveedores
@@ -220,7 +220,7 @@ export const ProductList = () => {
         const roleMap = {
             [RolesEnum.TECHNICAL]: { observationKey: "observations_technical", statusKey: "status_technical" },
             [RolesEnum.ENVIRONMENTAL]: { observationKey: "observations_environmental", statusKey: "status_environmental" },
-            [RolesEnum.TERRITORIAL]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
+            [RolesEnum.LINKS_TECHNICIAN]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
         };
 
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
