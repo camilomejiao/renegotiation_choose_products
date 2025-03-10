@@ -20,6 +20,7 @@ import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 import { AuthorizationSection } from "../../shared/authorization-section/AuthorizationSection";
 import {PlanHistory} from "../../shared/Modals/PlanHistory";
+import {ConfirmationModal} from "../../shared/Modals/ConfirmationModal";
 export const Renegociation = () => {
 
     const params = useParams();
@@ -43,8 +44,11 @@ export const Renegociation = () => {
     const [showModalPlanHistory, setShowModalPlanHistory] = useState(false);
     const [planHistoryData, setPlanHistoryData] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showModalConfirmation, setShowModalConfirmation] = useState(false);
+    const [uploadParams, setUploadParams] = useState({ cubId: null, type: null });
 
     const getUserInformation = async (cubId) => {
+        setIsLoading(true);
         try {
             const {data, status} = await renegotiationServices.getUserRenegotiation(1, cubId);
             if(status === ResponseStatusEnum.OK && Object.keys(data).length > 0) {
@@ -52,6 +56,7 @@ export const Renegociation = () => {
                 setEngagementId(cubId);
                 setComentarios(data?.comentario);
                 await getInformationRenegotiation(data?.plan_id, data?.linea_id, cubId);
+                await handlePlanHistory(cubId);
             }
 
             if(Object.keys(data).length === 0) {
@@ -61,6 +66,8 @@ export const Renegociation = () => {
         } catch (error) {
             console.log(error);
             showError(error, 'Error buscando el usuario');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -158,6 +165,7 @@ export const Renegociation = () => {
     }
 
     const handleModalDetail = async () => {
+        setIsLoading(true);
         try {
             const {data, status} = await renegotiationServices.getDetailPlan(formData.LineaId);
             if (status === ResponseStatusEnum.OK) {
@@ -167,16 +175,24 @@ export const Renegociation = () => {
         } catch (error) {
             console.log(error);
             showError(error, 'Error buscando el detalle');
+        } finally {
+            setIsLoading(false);
         }
     }
 
-    const handlePlanHistory = async () => {
+    const handlePlanHistory = async (cubId) => {
+        setIsLoading(true);
         try {
-            setPlanHistoryData('');
-            setShowModalPlanHistory(true);
+            const {data, status} = await renegotiationServices.getPlanHistory(cubId);
+            if (status === ResponseStatusEnum.OK) {
+                setPlanHistoryData(data);
+                setShowModalPlanHistory(true);
+            }
         } catch (error) {
             console.log(error);
             showError(error, 'Error buscando el historico');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -185,6 +201,8 @@ export const Renegociation = () => {
         setLineDetailData('');
         setShowModalPlanHistory(false);
         setPlanHistoryData('');
+        setShowModalConfirmation(false);
+        setUploadParams({ cubId: null, type: null });
     };
 
     //
@@ -212,6 +230,18 @@ export const Renegociation = () => {
             documentTitle: 'Plan de Inversión',
         });
     }
+
+    //
+    const handleShowConfirmationModal = (cubId, type) => {
+        setUploadParams({ cubId, type });
+        setShowModalConfirmation(true);
+    };
+
+    //
+    const handleConfirmUpload = () => {
+        handleUploadFile(uploadParams.cubId, uploadParams.type);
+        setShowModalConfirmation(false);
+    };
 
     //
     const handleUploadFile = (cubId, type) => {
@@ -247,22 +277,23 @@ export const Renegociation = () => {
             formData.append("archivo", file);
             formData.append("tipo", type);
 
+            setIsLoading(true);
             try {
                 const { status } = await renegotiationServices.sendEngagement(cubId, formData);
 
-                if (status === ResponseStatusEnum.CREATE) {
+                if (status === ResponseStatusEnum.CREATE || status === ResponseStatusEnum.OK) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
-                if (status === ResponseStatusEnum.BAD_REQUEST ||
-                    status === ResponseStatusEnum.INTERNAL_SERVER_ERROR ||
-                    status !== ResponseStatusEnum.CREATE) {
+                if (status !== ResponseStatusEnum.CREATE) {
                     showError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {
                 console.error("Error al enviar el archivo:", error);
                 showError('Error', 'Error al enviar el archivo');
+            } finally {
+                setIsLoading(false);
             }
         }
     };
@@ -271,9 +302,7 @@ export const Renegociation = () => {
     const handleDownload = async (cubId, type) => {
         try {
             setIsLoading(true);
-
             const {status, blob} = await renegotiationServices.getEngagementDownload(cubId, type);
-
             if (!blob || status !== ResponseStatusEnum.OK) {
                 showError('Error', `Error en la descarga`);
                 throw new Error(`Error en la descarga: ${status}`);
@@ -299,6 +328,11 @@ export const Renegociation = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    //
+    const isValidUserData = () => {
+        return userData.plan_anterior !== "" && userData.linea_anterior !== "";
     };
 
     useEffect(() => {
@@ -370,7 +404,7 @@ export const Renegociation = () => {
                                 Detalles Plan
                             </Button>
 
-                            <Button variant="warning" onClick={() => handlePlanHistory()}>
+                            <Button variant="warning" onClick={() => handlePlanHistory(engagementId)}>
                                 Historico Plan
                             </Button>
                         </Col>
@@ -430,7 +464,13 @@ export const Renegociation = () => {
                     <Row className="justify-content-end">
                         {/* Sección de Autorización */}
                         <Col md={5}>
-                            <AuthorizationSection component={ComponentEnum.RENEGOTIATION} userData={userData} wide={12} />
+                            {isValidUserData() && (
+                                <AuthorizationSection
+                                    component={ComponentEnum.RENEGOTIATION}
+                                    userData={userData}
+                                    wide={12}
+                                />
+                            )}
                         </Col>
 
                         {/* Sección de Botones para Subir/Ver Archivos */}
@@ -438,7 +478,7 @@ export const Renegociation = () => {
                             {/* Sección 1: Plan Firmado */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleUploadFile(engagementId, 'acuerdo')}>
+                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'acuerdo')}>
                                         Subir Plan Firmado
                                     </Button>
                                 </Col>
@@ -452,7 +492,7 @@ export const Renegociation = () => {
                             {/* Sección 2: Legalización */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleUploadFile(engagementId, 'legalizacion')}>
+                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'legalizacion')}>
                                         Subir Legalización
                                     </Button>
                                 </Col>
@@ -480,7 +520,10 @@ export const Renegociation = () => {
             <LineDetailModal show={showModalLineDatail} handleClose={handleCloseModal} data={lineDetailData} />
 
             {/* Modal Historicos */}
-            <PlanHistory show={showModalPlanHistory} handleClose={handleCloseModal} data={''} />
+            <PlanHistory show={showModalPlanHistory} handleClose={handleCloseModal} data={planHistoryData} />
+
+            {/* Modal de Confirmación */}
+            <ConfirmationModal show={showModalConfirmation} onConfirm={handleConfirmUpload} onClose={handleCloseModal} />
         </>
     )
 

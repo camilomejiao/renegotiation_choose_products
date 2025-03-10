@@ -41,6 +41,11 @@ class RenegotiationServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    getPlanHistory(cubId) {
+        const url = this.buildUrl(`acuerdo/historia/${cubId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     updateUserInformationRenegotiation(cubId, data) {
         const url = this.buildUrl(`acuerdo/${cubId}/`)
         return authTokenService.fetchWithAuth(url, {

@@ -262,8 +262,6 @@ export const getActionsColumns = (userRole, handleDeleteClick, handleApproveByAu
 
                 {/* Aprobaciones y rechazos por perfil */}
                 {[
-                    { rol: RolesEnum.TECHNICAL, label: "Técnica" },
-                    { rol: RolesEnum.ENVIRONMENTAL, label: "Ambiental" },
                     { rol: RolesEnum.TERRITORIAL, label: "Supervisión" },
                     { rol: RolesEnum.ADMIN, label: "ADMIN" },
                 ].map(({ rol, label }) => (

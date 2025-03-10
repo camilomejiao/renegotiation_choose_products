@@ -319,7 +319,7 @@ export const ProductList = () => {
         ...baseColumns,
         ...dynamicMunicipalityColumns,
         ...statusProduct,
-        ...actionsColumns,
+        ...( [RolesEnum.SUPPLIER].includes(userAuth.rol_id) ? actionsColumns : []),
         ...( allowedRoles.includes(userAuth.rol_id) ? observationsColumns : [] ),
         ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? environmentalCategoriesColumns : [] ),
     ];
@@ -617,7 +617,10 @@ export const ProductList = () => {
                                     >
                                         Aprobar <FaThumbsUp  /> / Denegar <FaThumbsDown />
                                     </Button>
-
+                                    </>
+                            )}
+                            {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
+                                <>
                                     <Button
                                         variant="success"
                                         size="md"

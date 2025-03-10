@@ -18,18 +18,21 @@ export const PlanHistory = ({ show, handleClose, data }) => {
                             <th style={styles.header}>PLAN</th>
                             <th style={styles.header}>LINEA</th>
                             <th style={styles.header}>FECHA</th>
+                            <th style={styles.header}>RESOLUCIÓN</th>
+                            <th style={styles.header}>FECHA RESOLUCIÓN</th>
                         </tr>
                         </thead>
                         <tbody>
                         {data.map((item, index) => (
                             <tr key={index}>
-                                <td style={styles.cellCenter}>{item.codigo}</td>
-                                <td style={styles.cellLeft}>{item.plan}</td>
-                                <td style={styles.cellCenter}>{item.linea}</td>
-                                <td style={styles.cellCenter}>{item.fecha}</td>
+                                <td style={styles.cellCenter}>{item?.codigo}</td>
+                                <td style={styles.cellLeft}>{item?.plan}</td>
+                                <td style={styles.cellCenter}>{item?.linea}</td>
+                                <td style={styles.cellCenter}>{item?.fecha}</td>
+                                <td style={styles.cellCenter}>{item?.no_resolucion}</td>
+                                <td style={styles.cellCenter}>{item?.fecha_resolucion}</td>
                             </tr>
                         ))}
-
                         </tbody>
                     </table>
                 )}

@@ -1,8 +1,6 @@
 import {ComponentEnum} from "../../../../../helpers/GlobalEnum";
 
 export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
-    console.log('component: ', component);
-    console.log('userData: ', userData);
 
     // Obtener la fecha actual
     const currentDate = new Date();

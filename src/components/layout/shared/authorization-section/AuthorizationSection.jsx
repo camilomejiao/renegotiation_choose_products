@@ -1,4 +1,6 @@
-import {useRef, useState} from "react";
+import { useRef, useState } from "react";
+import Select from "react-select";
+import { Col, Container, Row } from "react-bootstrap";
 import printJS from "print-js";
 
 //Img
@@ -9,8 +11,10 @@ import './AuthorizationSection.css';
 
 //
 import { Authorization } from "./authorization/Authorization";
-import {Col, Container, Row} from "react-bootstrap";
-import Select from "react-select";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
+
+//Enum
+import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 export const AuthorizationSection = ({component, userData, wide}) => {
 
@@ -22,15 +26,28 @@ export const AuthorizationSection = ({component, userData, wide}) => {
     const [option3, setOption3] = useState('');
 
     const options = [
-        ' ',
         'Imposibilidad jurídica',
         'Imposibilidad fáctica',
         'Mayor impacto productivo',
         'Otros componentes no incluidos en el plan de inversión'
     ];
 
+    // Función para validar si se ha seleccionado al menos una opción
+    const isValidSelection = () => {
+        return (
+            (option1 && option1.value && option1.value.trim() !== '') ||
+            (option2 && option2.value && option2.value.trim() !== '') ||
+            (option3 && option3.value && option3.value.trim() !== '')
+        );
+    };
+
     //Imprime la autorización del usuario
     const handlePrintAuthorization = () => {
+        if (component === ComponentEnum.RENEGOTIATION && !isValidSelection()) {
+            AlertComponent.warning("","Debes seleccionar al menos una opción antes de continuar.");
+            return;
+        }
+
         const printContent = `
         <html>
         <head>
