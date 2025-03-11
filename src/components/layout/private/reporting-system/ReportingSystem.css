@@ -34,7 +34,15 @@
 
 /* Estilos específicos para cada tipo de botón */
 .reporting-system-button.unique {
-    color: #BFD732;
+    color: #4badc9;
+}
+
+.reporting-system-button.files {
+    color: #32d7c4;
+}
+
+.reporting-system-button.view-pdf {
+    color: #32d7c4;
 }
 
 .reporting-system-button.deliveries {

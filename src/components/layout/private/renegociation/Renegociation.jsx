@@ -7,7 +7,6 @@ import { TextField } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 
 //Services
-import { userService } from "../../../../helpers/services/UserServices";
 import { renegotiationServices } from "../../../../helpers/services/RenegociationServices";
 
 //Components
