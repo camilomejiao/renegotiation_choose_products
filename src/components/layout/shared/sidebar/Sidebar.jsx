@@ -65,9 +65,13 @@ export const Sidebar = ({userAuth}) => {
                                             <FaUsers className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
-                                            <FaCcPaypal className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
+                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>*/}
+                                        {/*    <FaCcPaypal className="sidebar-icon" />*/}
+                                        {/*    {isOpen && <span className="sidebar-text">Modulo Pagos</span>}*/}
+                                        {/*</div>*/}
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
+                                            <FaDollyFlatbed className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>
