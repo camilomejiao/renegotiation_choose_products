@@ -33,7 +33,6 @@ export const getBaseColumns = (unitOptions, categoryOptions, editable = true) =>
             </Select>
         ),
     },
-    { field: "reference", headerName: "Referencia", width: 150, editable: editable },
     { field: "name", headerName: "Nombre", width: 500, editable: editable },
     { field: "description", headerName: "Descripción", width: 500, editable: editable },
     { field: "brand", headerName: "Marca", width: 300, editable: editable },

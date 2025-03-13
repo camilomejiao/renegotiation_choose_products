@@ -200,7 +200,6 @@ export const AddProducts = () => {
             proveedor_id: supplierId,
             nombre: product.name,
             especificacion_tecnicas: product.description,
-            referencia: product.reference,
             marca_comercial: product.brand,
             unidad_medida: product.unit,
             categoria_producto: product.category,
