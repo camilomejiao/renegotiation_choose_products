@@ -1,6 +1,6 @@
 import { Modal, Button } from "react-bootstrap";
 
-export const LineDetailModal = ({ show, handleClose, data }) => {
+export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
 
     return (
         <Modal show={show} onHide={handleClose} centered size="lg">
@@ -8,54 +8,85 @@ export const LineDetailModal = ({ show, handleClose, data }) => {
                 <Modal.Title>Detalles del plan</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {data.length === 0 ? (
+                {planData.length === 0 ? (
                     <p className="text-center">No hay detalles disponibles.</p>
                 ) : (
-                    <table style={{ borderCollapse: "collapse", width: "100%" }}>
-                        <thead>
-                        <tr>
-                            <th style={styles.header}>CÓDIGO</th>
-                            <th style={styles.header}>DESCRIPCIÓN</th>
-                            <th style={styles.header}>UNIDAD</th>
-                            <th style={styles.header}>CANTIDAD</th>
-                            <th style={styles.header}>COSTO UNITARIO</th>
-                            <th style={styles.header}>COSTO TOTAL</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {data.map((item, index) => (
-                            <tr key={index}>
-                                <td style={styles.cellCenter}>{item.codigo}</td>
-                                <td style={styles.cellLeft}>{item.descripcion}</td>
-                                <td style={styles.cellCenter}>{item.unidad}</td>
-                                <td style={styles.cellCenter}>{item.cantidad}</td>
-                                <td style={styles.cellRight}>
-                                    {parseFloat(item.costo_unitario).toLocaleString("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                    })}
-                                </td>
-                                <td style={styles.cellRight}>
-                                    {item.costo_total.toLocaleString("es-CO", {
-                                        style: "currency",
-                                        currency: "COP",
-                                    })}
-                                </td>
+                    <>
+                        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+                            <thead>
+                            <tr>
+                                <th style={styles.userHeader}>DEPARTAMENTO:</th>
+                                <th style={styles.userText}>{userData?.departamento}</th>
+                                <th style={styles.userHeader}>MUNICIPIO:</th>
+                                <th style={styles.userText}>{userData?.municipio}</th>
+                                <th style={styles.userHeader}>VEREDA:</th>
+                                <th style={styles.userText}>{userData?.vereda}</th>
                             </tr>
-                        ))}
-                        {/* Fila Total */}
-                        <tr>
-                            <td colSpan="5" style={styles.totalLabel}>
-                                Total
-                            </td>
-                            <td style={styles.totalValue}>
-                                {data
-                                    .reduce((total, item) => total + item.costo_total, 0)
-                                    .toLocaleString("es-CO", { style: "currency", currency: "COP" })}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <th style={styles.userHeader}>NOMBRE:</th>
+                                    <th style={styles.userText}>{userData?.nombre} {userData?.apellido} </th>
+                                    <th style={styles.userHeader}>CUB:</th>
+                                    <th style={styles.userText}>{userData?.cub_id}</th>
+                                    <th style={styles.userHeader}>CC:</th>
+                                    <th style={styles.userText}>{userData?.identificacion}</th>
+                                </tr>
+                                <tr>
+                                    <th style={styles.userHeader}>PLAN:</th>
+                                    <th style={styles.userText}>{userData?.plan}</th>
+                                    <th style={styles.userHeader}>LINEA:</th>
+                                    <th style={styles.userText}>{userData?.linea}</th>
+                                    <th style={styles.userHeader}>SALDO:</th>
+                                    <th style={styles.userText}>{userData?.deuda_componente}</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <br/>
+                        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+                            <thead>
+                                <tr>
+                                    <th style={styles.header}>CÓDIGO</th>
+                                    <th style={styles.header}>DESCRIPCIÓN</th>
+                                    <th style={styles.header}>UNIDAD</th>
+                                    <th style={styles.header}>CANTIDAD</th>
+                                    <th style={styles.header}>COSTO UNITARIO</th>
+                                    <th style={styles.header}>COSTO TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {planData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td style={styles.cellCenter}>{item.codigo}</td>
+                                        <td style={styles.cellLeft}>{item.descripcion}</td>
+                                        <td style={styles.cellCenter}>{item.unidad}</td>
+                                        <td style={styles.cellCenter}>{item.cantidad}</td>
+                                        <td style={styles.cellRight}>
+                                            {parseFloat(item.costo_unitario).toLocaleString("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                            })}
+                                        </td>
+                                        <td style={styles.cellRight}>
+                                            {item.costo_total.toLocaleString("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                            })}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {/* Fila Total */}
+                                <tr>
+                                    <td colSpan="5" style={styles.totalLabel}>
+                                        Total
+                                    </td>
+                                    <td style={styles.totalValue}>
+                                        {planData
+                                            .reduce((total, item) => total + item.costo_total, 0)
+                                            .toLocaleString("es-CO", { style: "currency", currency: "COP" })}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </>
                 )}
             </Modal.Body>
             <Modal.Footer>
@@ -69,11 +100,27 @@ export const LineDetailModal = ({ show, handleClose, data }) => {
 
 // Estilos mejor organizados
 const styles = {
+    userHeader: {
+        textAlign: "left",
+        border: "1px solid black",
+        padding: "7px",
+        backgroundColor: "#d7d7d7",
+        fontWeight: "bold",
+        fontSize: "10px"
+    },
+    userText: {
+        textAlign: "left",
+        border: "1px solid black",
+        padding: "8px",
+        backgroundColor: "#f6f6f6",
+        fontWeight: "bold",
+        fontSize: "9px"
+    },
     header: {
         textAlign: "center",
         border: "1px solid black",
         padding: "8px",
-        backgroundColor: "#f8f9fa",
+        backgroundColor: "#dcdcdc",
         fontWeight: "bold",
         fontSize: "10px"
     },

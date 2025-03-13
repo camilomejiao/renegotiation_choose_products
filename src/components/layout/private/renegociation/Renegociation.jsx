@@ -516,7 +516,7 @@ export const Renegociation = () => {
             </div>
 
             {/* Modal para detalles de la línea */}
-            <LineDetailModal show={showModalLineDatail} handleClose={handleCloseModal} data={lineDetailData} />
+            <LineDetailModal show={showModalLineDatail} handleClose={handleCloseModal} userData={userData} planData={lineDetailData} />
 
             {/* Modal Historicos */}
             <PlanHistory show={showModalPlanHistory} handleClose={handleCloseModal} data={planHistoryData} />
