@@ -282,8 +282,10 @@ export const AddProducts = () => {
             <HeaderImage
                 imageHeader={imgPeople}
                 titleHeader={"¡Empieza a agregar tus productos!"}
-                bannerIcon={""}
-                bannerInformation={""}
+                bannerIcon={''}
+                backgroundIconColor={''}
+                bannerInformation={''}
+                backgroundInformationColor={''}
             />
 
             <div className="container mt-lg-3">

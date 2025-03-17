@@ -59,19 +59,19 @@ export const Sidebar = ({userAuth}) => {
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaUsersCog className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
+                                            {isOpen && <span className="sidebar-text">Gestión De Usuarios</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/users`)}>
-                                            <FaUsers className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}
-                                        </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>*/}
-                                        {/*    <FaCcPaypal className="sidebar-icon" />*/}
-                                        {/*    {isOpen && <span className="sidebar-text">Modulo Pagos</span>}*/}
+                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/users`)}>*/}
+                                        {/*    <FaUsers className="sidebar-icon" />*/}
+                                        {/*    {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}*/}
                                         {/*</div>*/}
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
                                             <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
+                                            {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                            <FaCcPaypal className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>
@@ -97,11 +97,11 @@ export const Sidebar = ({userAuth}) => {
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate("/")}>
                                             <FaUsersCog className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Gestión de usuarios</span>}
+                                            {isOpen && <span className="sidebar-text">Gestión De Usuarios</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
                                             <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
+                                            {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
                                         </div>
                                     </div>
                                 </Accordion.Body>
@@ -135,7 +135,11 @@ export const Sidebar = ({userAuth}) => {
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
                                             <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Productos</span>}
+                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
+                                        </div>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                            <FaCcPaypal className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
                                         </div>
                                         <div className="dropdown-item" onClick={() => navigate(`/admin/company-reports`)}>
                                             <FaChartPie className="sidebar-icon" />

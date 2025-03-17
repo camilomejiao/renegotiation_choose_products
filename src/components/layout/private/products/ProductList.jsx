@@ -217,7 +217,10 @@ export const ProductList = () => {
     //Extraer observaciones
     const extractObservations = (rows) => {
         const roleMap = {
-            [RolesEnum.TECHNICAL]: { observationKey: "observations_technical", statusKey: "status_technical" },
+            [RolesEnum.TECHNICAL]: {
+                observationKey: "observations_technical",
+                statusKey: "status_technical"
+            },
             [RolesEnum.ENVIRONMENTAL]: { observationKey: "observations_environmental", statusKey: "status_environmental" },
             [RolesEnum.TERRITORIAL_LINKS]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
         };
@@ -227,12 +230,12 @@ export const ProductList = () => {
             return acc;
         }, {});
 
-        return rows.reduce((acc, { rol, estado, comentario }) => {
+        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
             const role = roleMap[rol];
             if (!role) return acc;
 
             acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
-            acc[role.observationKey] = comentario ?? "";
+            acc[role.observationKey] = `${comentario} \n ${funcionario} ${fecha}` ?? "";
 
             return acc;
         }, {});

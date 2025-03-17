@@ -193,7 +193,9 @@ export const CompanyReport = () => {
                     imageHeader={imgDCSIPeople}
                     titleHeader={'¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
+                    backgroundIconColor={'#f66d1f'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
+                    backgroundInformationColor={'#2148C0'}
                 />
 
                 {isLoading && (

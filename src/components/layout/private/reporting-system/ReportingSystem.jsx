@@ -185,7 +185,9 @@ export const ReportingSystem = () => {
                     imageHeader={imgDCSIPeople}
                     titleHeader={'¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
+                    backgroundIconColor={'#ff5722'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
+                    backgroundInformationColor={'#0056b3'}
                 />
 
                 {/* Contenedor de la información del usuario */}
