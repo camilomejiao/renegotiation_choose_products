@@ -205,6 +205,7 @@ export const AddProducts = () => {
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
             ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {cant: 6, ambiental_key: 'ZRF'}
         }));
     };
 

@@ -177,11 +177,17 @@ export const getObservationsColumns = (userRole) => {
         [StatusTeamProductEnum.UNREVIEWED.label]: "orange",
     };
 
-    const renderObservationCell = (params, placeholder) => (
-        <span style={{ color: params.value ? "black" : "gray" }}>
-            {params.value || placeholder}
-        </span>
-    );
+    const renderObservationCell = (params, placeholder) => {
+        const { comentario, funcionario, fecha } = params.value || {};
+        return (
+            <span style={{ color: comentario ? "black" : "gray" }}>
+                {comentario || placeholder}
+                {funcionario && fecha && (
+                    <span> (Aprobado por: {funcionario} - {fecha})</span>
+                )}
+            </span>
+        );
+    };
 
     const renderStatusCell = (params) => {
         return (

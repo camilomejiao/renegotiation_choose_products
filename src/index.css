@@ -44,7 +44,7 @@ body,
   margin-left: 50px; /* Ancho del sidebar */
   height: calc(100vh - 80px); /* Para ajustar el contenido y permitir scroll */
   overflow-y: auto;
-  background-color: #f9f9f9; /* Ejemplo de fondo para el contenido */
+  background-color: #ffffff; /* Ejemplo de fondo para el contenido */
 }
 
 /* spinner */

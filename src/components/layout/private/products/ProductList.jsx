@@ -221,8 +221,14 @@ export const ProductList = () => {
                 observationKey: "observations_technical",
                 statusKey: "status_technical"
             },
-            [RolesEnum.ENVIRONMENTAL]: { observationKey: "observations_environmental", statusKey: "status_environmental" },
-            [RolesEnum.TERRITORIAL_LINKS]: { observationKey: "observations_territorial", statusKey: "status_territorial" }
+            [RolesEnum.ENVIRONMENTAL]: {
+                observationKey: "observations_environmental",
+                statusKey: "status_environmental"
+            },
+            [RolesEnum.TERRITORIAL_LINKS]: {
+                observationKey: "observations_territorial",
+                statusKey: "status_territorial"
+            }
         };
 
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
@@ -235,7 +241,7 @@ export const ProductList = () => {
             if (!role) return acc;
 
             acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
-            acc[role.observationKey] = `${comentario} \n ${funcionario} ${fecha}` ?? "";
+            acc[role.observationKey] = { comentario, funcionario, fecha };
 
             return acc;
         }, {});
