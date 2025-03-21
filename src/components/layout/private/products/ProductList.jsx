@@ -39,6 +39,7 @@ import {
     getObservationsColumns,
     getActionsColumns, getEnvironmentalCategories,
 } from "../../../../helpers/utils/ProductColumns";
+import {number} from "yup";
 
 const PAGE_SIZE = 100;
 
@@ -140,8 +141,12 @@ export const ProductList = () => {
         debouncedHandleChange(field, params, newValue);
     };
 
+    const handleCustomChange = (params, fieldKey, newValue) => {
+        debouncedHandleChange(fieldKey, params, newValue);
+    };
+
     const getEnvironmentalColumns = async () => {
-        const columns = await getEnvironmentalCategoriesColumns(handleSelectChange);
+        const columns = await getEnvironmentalCategoriesColumns(handleSelectChange, handleCustomChange);
         setEnvironmentalCategoriesColumns(columns);
     }
 
@@ -179,6 +184,7 @@ export const ProductList = () => {
                 ...extractMunicipalityPrices(row, municipalities),
                 ...buildEnvironmentalData(row, environmentalCategories),
                 ...extractObservations(row?.aprobados),
+                ...extractCountEnvironmental(row)
             }));
         } catch (error) {
             console.error('Error al normalizar filas:', error);
@@ -230,12 +236,10 @@ export const ProductList = () => {
                 statusKey: "status_territorial"
             }
         };
-
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
             acc[id] = label;
             return acc;
         }, {});
-
         return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
             const role = roleMap[rol];
             if (!role) return acc;
@@ -246,6 +250,16 @@ export const ProductList = () => {
             return acc;
         }, {});
     };
+
+    //
+    const extractCountEnvironmental = (row) => {
+        if (!row || !row.cantidad_ambiental) {
+            return {customValue: "", selectedCategory: ""};
+        }
+        const { cant, ambiental_key } = row.cantidad_ambiental;
+        return { customValue: cant ?? "", selectedCategory: ambiental_key ?? "" };
+    };
+
 
     //
     const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
@@ -378,6 +392,8 @@ export const ProductList = () => {
         //Obtener claves ambientales
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
+        console.log('inputData: ', inputData);
+
         return inputData.map((product) => ({
             id: product.id,
             proveedor_id: supplierId,
@@ -391,6 +407,7 @@ export const ProductList = () => {
             observations_technical: product.observations_technical,
             observations_environmental: product.observations_environmental,
             observations_territorial: product.observations_territorial,
+            cantidad_ambiental: {cant: parseInt(product.customValue), ambiental_key: product.selectedCategory},
         }));
     };
 

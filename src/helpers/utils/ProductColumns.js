@@ -143,10 +143,11 @@ export const getStatusProduct = () => [
 ];
 
 //Categorías de restricciones ambientales
-export const getEnvironmentalCategoriesColumns = async (handleSelectChange) => {
+export const getEnvironmentalCategoriesColumns = async (handleSelectChange, handleCustomChange) => {
     const categories = await getEnvironmentalCategories();
 
-    return categories.map((category) => ({
+    //Columnas SI/NO por categoría
+    const environmentalColumns = categories.map((category) => ({
         field: category.codigo,
         headerName: `${category.codigo}: ${category.descripcion}`,
         width: 200,
@@ -156,7 +157,7 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange) => {
                 value={String(params.value ?? "")}
                 onChange={(e) => {
                     const newValue = e.target.value;
-                    handleSelectChange(category.codigo)(params, newValue); // Asegúrate de pasar el valor correctamente.
+                    handleSelectChange(category.codigo)(params, newValue);
                 }}
                 fullWidth
             >
@@ -167,6 +168,43 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange) => {
         sortable: false,
         filterable: false,
     }));
+
+    //Columna personalizada con valor numérico y select de categoría
+    const customValueColumn = {
+        field: "custom_category_value",
+        headerName: "Valor Categoría Ambiental",
+        width: 300,
+        editable: false,
+        renderCell: (params) => {
+            return(
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '5px' }}>
+                    <TextField
+                        type="number"
+                        value={params.row.customValue || ""}
+                        onChange={(e) => handleCustomChange(params, "customValue", e.target.value)}
+                        size="small"
+                        style={{ width: "35%" }}
+                    />
+                    <Select
+                        value={params.row.selectedCategory || ""}
+                        onChange={(e) => handleCustomChange(params, "selectedCategory", e.target.value)}
+                        size="small"
+                        style={{ width: "65%" }}
+                    >
+                        {categories.map((cat) => (
+                            <MenuItem key={cat.codigo} value={cat.codigo}>
+                                {cat.descripcion}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
+            );
+        },
+        sortable: false,
+        filterable: false,
+    };
+
+    return [...environmentalColumns, customValueColumn];
 };
 
 //

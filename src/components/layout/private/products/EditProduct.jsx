@@ -235,6 +235,7 @@ export const EditProduct = () => {
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
             ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {cant: 0, ambiental_key: ''},
         }));
     };
 
