@@ -1,0 +1,60 @@
+/* Contenedor azul */
+.supplier-header {
+    background-color: #2148C0;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 180px;
+    margin-top: -47px;
+}
+
+/* Encapsulamos para alinear correctamente */
+.supplier-content {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-top: 40px;
+}
+
+/* Título centrado vertical */
+.supplier-header h2 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Imagen sobresaliente */
+.supplier-img {
+    height: 130px;
+    position: relative;
+    top: 5px;
+}
+
+
+/* Parte verde inferior */
+.supplier-footer {
+    background-color: #AECA13;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    height: 100px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-content img {
+    height: 56px;
+}
+
+.footer-content span {
+    font-size: 28px;
+    font-weight: 600;
+    color: white;
+}
