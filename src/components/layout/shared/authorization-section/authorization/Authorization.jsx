@@ -19,18 +19,18 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
                         <tr>
-                            <td style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>
+                            <th style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>
                                 <img src={img1} alt="" style={{height:'60px'}} />
-                            </td>
-                            <td style={{width:'30%', borderTop: '1px solid black', textAlign:'center'}}>
+                            </th>
+                            <th style={{width:'30%', borderTop: '1px solid black', textAlign:'center'}}>
                                 <h6>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN ACTUALIZADO</h6>
-                            </td>
-                            <td style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', }}>
+                            </th>
+                            <th style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', }}>
                                 <img src={img2} alt="" style={{height:'60px'}} />
-                            </td>
-                            <td style={{width:'0', borderTop: '1px solid black'}} >&nbsp;</td>
-                            <td style={{width:'10%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Actualización Plan No.</td>
-                            <td style={{width:'55%', borderTop: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</td>
+                            </th>
+                            <th style={{width:'0', borderTop: '1px solid black'}} >&nbsp;</th>
+                            <th style={{width:'10%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Actualización Plan No.</th>
+                            <th style={{width:'55%', borderTop: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</th>
                         </tr>
                     </thead>
                 </table>
@@ -38,30 +38,30 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }} >
                     <thead>
                         <tr>
-                            <td style={{ width: '15%', border: '1px solid black' }}><strong>Cédula</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black' }}>{userData.identificacion}</td>
-                            <td style={{ width: '15%', border: '1px solid black' }}><strong>Nombre</strong></td>
-                            <td style={{ width: '35%', border: '1px solid black' }} colSpan="3">{userData.nombre} {userData.apellido}</td>
-                            <td style={{ width: '10%', border: '1px solid black' }}><strong>CUB</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black' }}>{userData.cub_id}</td>
+                            <th style={{ width: '15%', border: '1px solid black' }}><strong>Cédula</strong></th>
+                            <th style={{ width: '15%', border: '1px solid black' }}>{userData.identificacion}</th>
+                            <th style={{ width: '15%', border: '1px solid black' }}><strong>Nombre</strong></th>
+                            <th style={{ width: '35%', border: '1px solid black' }} colSpan="3">{userData.nombre} {userData.apellido}</th>
+                            <th style={{ width: '10%', border: '1px solid black' }}><strong>CUB</strong></th>
+                            <th style={{ width: '15%', border: '1px solid black' }}>{userData.cub_id}</th>
                         </tr>
                         <tr>
-                            <td style={{width:'15%', border: '1px solid black'}}><strong>Departamento</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{userData.departamento}</td>
-                            <td style={{width:'10%', border: '1px solid black'}}><strong>Municipio</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{userData.municipio}</td>
-                            <td style={{width:'15%', border: '1px solid black'}}><strong>Vereda</strong></td>
-                            <td style={{width:'35%', border: '1px solid black'}}>{userData.vereda}</td>
-                            <td style={{width:'15%', border: '1px solid black'}}><strong>Estado</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{userData.estado_cub}</td>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Departamento</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}>{userData.departamento}</th>
+                            <th style={{width:'10%', border: '1px solid black'}}><strong>Municipio</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}>{userData.municipio}</th>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Vereda</strong></th>
+                            <th style={{width:'35%', border: '1px solid black'}}>{userData.vereda}</th>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Estado</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}>{userData.estado_cub}</th>
                         </tr>
                         <tr>
-                            <td style={{width:'15%', border: '1px solid black'}}><strong>Tipo de Línea</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{component === ComponentEnum.RENEGOTIATION ? userData?.plan_anterior : userData.plan}</td>
-                            <td style={{width:'15%', border: '1px solid black'}}><strong>Línea</strong></td>
-                            <td style={{width:'35%', border: '1px solid black'}} colSpan="3">{component === ComponentEnum.RENEGOTIATION ? userData?.linea_anterior : userData.linea}</td>
-                            <td style={{width:'10%', border: '1px solid black'}}><strong>Fecha</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{formattedDate}</td>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Tipo de Línea</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}>{component === ComponentEnum.RENEGOTIATION ? userData?.plan_anterior : userData.plan}</th>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Línea</strong></th>
+                            <th style={{width:'35%', border: '1px solid black'}} colSpan="3">{component === ComponentEnum.RENEGOTIATION ? userData?.linea_anterior : userData.linea}</th>
+                            <th style={{width:'10%', border: '1px solid black'}}><strong>Fecha</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}>{formattedDate}</th>
                         </tr>
                     </thead>
                 </table>
@@ -69,14 +69,14 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
                         <tr>
-                            <td style={{textAlign: 'center', borderBottom: '1px solid black', borderRight: '1px solid black', borderLeft: '1px solid black'}}>
+                            <th style={{textAlign: 'center', borderBottom: '1px solid black', borderRight: '1px solid black', borderLeft: '1px solid black'}}>
                                 <h4>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN</h4>
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
+                            <th style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
                                 <p>Actuando en nombre propio, por medio del presente documento manifiesto lo siguiente:</p>
-                            </td>
+                            </th>
                         </tr>
                     </thead>
                 </table>
@@ -84,27 +84,27 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
                         <tr>
-                            <td style={{ width: '40px', textAlign: 'center', border: '1px solid black'}}>1</td>
-                            <td style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
+                            <th style={{ width: '40px', textAlign: 'center', border: '1px solid black'}}>1</th>
+                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
                                 Que, actuando en pleno ejercicio de mis facultades, de manera libre, consciente e informada
                                 - sin que medie coacción o vicio del consentimiento alguno-, <strong>SOLICITO y/o AUTORIZO</strong>
                                 expresamente la actualización de mi plan de inversión, en el marco de la renegociación del
                                 <strong>Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS).</strong>
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>2</td>
-                            <td style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
+                            <th style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>2</th>
+                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
                                 Que recibí toda la información necesaria de forma clara y comprensible respecto de las
                                 condiciones y restricciones para la actualización de mi plan de inversión. Asimismo, tuve la
                                 oportunidad de formular todas las preguntas pertinentes, las cuales fueron resultadas de
                                 manera satisfactoria.
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>3</td>
-                            <td style={{textAlign: 'left', padding: '10px', border: '1px solid black'}}>Que la presente solicitud de actualización se fundamenta en:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>
+                            <th style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>3</th>
+                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}}>Que la presente solicitud de actualización se fundamenta en:</th>
+                            <th style={{textAlign: 'left', border: '1px solid black'}}>
                                 <table>
                                     <tr>
                                         <td style={{width: '1%', border: '1px solid black'}}>
@@ -121,77 +121,79 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                                         <td style={{width: '1%', border: '1px solid black'}}>{opt3.label || '\u00A0'}</td>
                                     </tr>
                                 </table>
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
+                            <th colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
                                 Conforme los lineamientos adoptados y socializados por la Dirección de Sustitución de
                                 Cultivos de Uso Ilícito. Esta actualización responde a la necesidad de adecuar mi proyecto
                                 productivo a las condiciones normativas, técnicas o de mayor impacto social y productivo,
                                 conforme la causal ya indicada.
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td colSpan="3" style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
+                            <th colSpan="3" style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
                                 <p >Plan de inversión ajustado: {component === ComponentEnum.RENEGOTIATION ? userData?.linea : `____________________________________________ (SI APLICA (no montos))` } </p>
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td style={{width: '40px', textAlign: 'center',border: '1px solid black'}}>4</td>
-                            <td style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
+                            <th style={{width: '40px', textAlign: 'center',border: '1px solid black'}}>4</th>
+                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
                                 Que autorizo a la DSCI para llevar a cabo todas las gestiones administrativas, jurídicas y
                                 operativas necesarias para la actualización solicitada y/o autorizada, comprometiéndome a
                                 cumplir con las disposiciones legales, ambientales y técnicas derivadas de este ajuste, en
                                 plena observancia de la normativa, los principios y objetivos que rigen el <strong>PNIS.</strong>
-                            </td>
+                            </th>
                         </tr>
                         <tr>
-                            <td colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
+                            <th colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
                                 La presente se firma con total conocimiento y aceptación de sus implicaciones legales en la
                                 ubicación y fecha señaladas al inicio de este documento.
-                            </td>
+                            </th>
                         </tr>
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-                    <tr>
-                        <td colSpan="2" style={{fontWeight: 'bold', borderBottom: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Firma Titular</td>
-                        <td style={{borderBottom: 'none', borderRight: '1px solid black'}}>&nbsp;</td>
-                        <td colSpan="3" style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colSpan="2" style={{height: '100px', borderLeft: '1px solid black'}}>&nbsp;</td>
-                        <td style={{borderLeft: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</td>
-                        <td colSpan="3" style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>Nombre Titular</td>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>{userData.nombre} {userData.apellido}</td>
-                        <td style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                        <td style={{borderTop: 'none', borderRight: 'none', borderBottom: 'none'}}>&nbsp;</td>
-                        <td style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>No. Cedula</td>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>{userData.identificacion}</td>
-                        <td style={{borderBottom: 'none', borderRight: '1px solid black'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>Telefono</td>
-                        <td style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>&nbsp;</td>
-                        <td style={{borderBottom: 'none', borderTop: 'none', borderLeft: '1px solid black'}}>&nbsp;</td>
-                        <td style={{fontWeight: 'bold', borderTop: '1px solid black', borderLeft: '1px solid black'}}>Nombre Técnico de Campo
-                        </td>
-                        <td style={{fontWeight: 'bold', borderTop: '1px solid black', borderRight: '1px solid black'}}>Firma Técnico de Campo</td>
-                    </tr>
-                    <tr>
-                        <td colSpan="2" style={{borderLeft: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</td>
-                        <td style={{fontWeight: 'bold', borderRight: '1px solid black'}}>Huella</td>
-                        <td colSpan="2" style={{borderRight: '1px solid black'}}>&nbsp;</td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th colSpan="2" style={{fontWeight: 'bold', borderBottom: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Firma Titular</th>
+                            <th style={{borderBottom: 'none', borderRight: '1px solid black'}}>&nbsp;</th>
+                            <th colSpan="3" style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <th colSpan="2" style={{height: '100px', borderLeft: '1px solid black'}}>&nbsp;</th>
+                            <th style={{borderLeft: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</th>
+                            <th colSpan="3" style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>Nombre Titular</th>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>{userData.nombre} {userData.apellido}</th>
+                            <th style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                            <th style={{borderTop: 'none', borderRight: 'none', borderBottom: 'none'}}>&nbsp;</th>
+                            <th style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>No. Cedula</th>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>{userData.identificacion}</th>
+                            <th style={{borderBottom: 'none', borderRight: '1px solid black'}}>&nbsp;</th>
+                            <th style={{border: 'none'}}>&nbsp;</th>
+                            <th style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>Telefono</th>
+                            <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>&nbsp;</th>
+                            <th style={{borderBottom: 'none', borderTop: 'none', borderLeft: '1px solid black'}}>&nbsp;</th>
+                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderLeft: '1px solid black'}}>Nombre Técnico de Campo
+                            </th>
+                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderRight: '1px solid black'}}>Firma Técnico de Campo</th>
+                        </tr>
+                        <tr>
+                            <th colSpan="2" style={{borderLeft: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</th>
+                            <th style={{fontWeight: 'bold', borderRight: '1px solid black'}}>Huella</th>
+                            <th colSpan="2" style={{borderRight: '1px solid black'}}>&nbsp;</th>
+                        </tr>
+                    </thead>
                 </table>
 
                 <div className="footer" style={{ border: '1px solid black'}}>

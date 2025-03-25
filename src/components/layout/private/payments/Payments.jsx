@@ -13,9 +13,15 @@ import fiduciaria from "../../../../assets/image/payments/fiduciaria.png";
 
 //Css
 import "./Payments.css";
-
+import {useNavigate} from "react-router-dom";
 
 export const Payments = () => {
+
+    const navigate = useNavigate();
+
+    const handleRedirect = () => {
+        navigate("/admin/payments-suppliers");
+    };
 
     return (
         <>
@@ -29,14 +35,14 @@ export const Payments = () => {
             />
 
             <div className="payment-container">
-                <div className="payment-header">
+                <div className="payment-header" onClick={handleRedirect} style={{ cursor: "pointer" }}>
                     <div className="payment-header-content">
                         <h2>Proveedor</h2>
                     </div>
                     <div className="payment-header-text">
                         <p>Ingresa para gestionar los documentos de <br/>tus órdenes de compra</p>
                     </div>
-                    <div className="payment-header-img">
+                    <div className="">
                         <img src={worker} alt="Proveedor" />
                     </div>
                 </div>

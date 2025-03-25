@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 //Components
+import { Conex } from "../components/layout/public/conex/Conex";
 import { PublicLayout } from "../components/layout/public/PublicLayout.jsx";
 import { Login } from "../components/layout/public/auth/login/Login.jsx";
 import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
@@ -17,17 +18,17 @@ import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
 import { ProductList } from "../components/layout/private/products/ProductList";
+import { EditProduct } from "../components/layout/private/products/EditProduct";
 import { AddProducts } from "../components/layout/private/products/AddProducts";
 import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
+import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
+import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
+import { Payments } from "../components/layout/private/payments/Payments";
+import { PaySuppliers } from "../components/layout/private/payments/suppliers/PaySuppliers";
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
-import {EditProduct} from "../components/layout/private/products/EditProduct";
-import {Renegociation} from "../components/layout/private/renegociation/Renegociation";
-import {SearchUserForRenegociation} from "../components/layout/private/renegociation/SearchUserForRenegociation";
-import {Payments} from "../components/layout/private/payments/Payments";
-import {Conex} from "../components/layout/public/conex/Conex";
 
 export const Routing = () => {
     return (
@@ -63,8 +64,9 @@ export const Routing = () => {
                         <Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />
                         <Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />
 
-                        {/* Users */}
+                        {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <Payments /> }  />
+                        <Route path={ RouterEnum.Payments_Suppliers }  element={ <PaySuppliers /> }  />
 
                         {/* Users */}
                         <Route path={ RouterEnum.Users }  element={ <UserList /> }  />

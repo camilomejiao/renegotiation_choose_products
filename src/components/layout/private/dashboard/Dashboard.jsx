@@ -10,7 +10,7 @@ import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
 import { LocationModal } from "../../shared/Modals/LocationModal";
 
 //Enums
-import {ComponentEnum, ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
+import { ComponentEnum, ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
 
 //Services
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
