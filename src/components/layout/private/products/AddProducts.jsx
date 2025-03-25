@@ -6,7 +6,6 @@ import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
 
 // Components
 import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { Footer } from "../../shared/footer/Footer";
 
 // Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
@@ -29,7 +28,8 @@ import {
     getBaseColumns,
     getDynamicColumnsBySupplier,
     getUnitOptions,
-    getCategoryOptions
+    getCategoryOptions,
+    getEnvironmentalCategories
 } from "../../../../helpers/utils/ProductColumns";
 
 export const AddProducts = () => {
@@ -44,7 +44,7 @@ export const AddProducts = () => {
     const [loading, setLoading] = useState(false);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, true);
     const actionsColumns = [
         {
             field: 'actions',
@@ -174,7 +174,7 @@ export const AddProducts = () => {
 
         try {
             setLoading(true); // Mostrar indicador de carga
-            const transformedData = transformData(rows); // Transformar los datos
+            const transformedData = await transformData(rows); // Transformar los datos
             const batches = chunkArray(transformedData, 500);
 
             await sendBatchesInParallel(batches);
@@ -192,24 +192,38 @@ export const AddProducts = () => {
     };
 
     //Transformar datos para ajustarlos al formato esperado por la API
-    const transformData = (inputData) => {
+    const transformData = async (inputData) => {
         const supplierId = parseInt(getSupplierId());
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
 
         return inputData.map(product => ({
             proveedor_id: supplierId,
             nombre: product.name,
             especificacion_tecnicas: product.description,
-            referencia: product.reference,
             marca_comercial: product.brand,
             unidad_medida: product.unit,
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
+            ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {cant: 0, ambiental_key: ''},
         }));
     };
 
     //Obtener el ID del proveedor
     const getSupplierId = () => {
         return supplierServices.getSupplierId();
+    };
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, 1])
+        );
     };
 
     //Enviar lotes en paralelo con control de concurrencia
@@ -269,8 +283,10 @@ export const AddProducts = () => {
             <HeaderImage
                 imageHeader={imgPeople}
                 titleHeader={"¡Empieza a agregar tus productos!"}
-                bannerIcon={""}
-                bannerInformation={""}
+                bannerIcon={''}
+                backgroundIconColor={''}
+                bannerInformation={''}
+                backgroundInformationColor={''}
             />
 
             <div className="container mt-lg-3">
@@ -368,7 +384,7 @@ export const AddProducts = () => {
                 </div>
 
             </div>
-            <Footer/>
+
         </div>
     );
 };

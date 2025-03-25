@@ -3,14 +3,13 @@ import {Col, Container, Dropdown, Row, Spinner} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {FaCalendarAlt} from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 
 //Components
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {CompanyReportPrinting} from "./report/CompanyReportPrinting";
-import {Footer} from "../../shared/footer/Footer";
-import {format} from "date-fns";
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
+import { format } from "date-fns";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
@@ -194,7 +193,9 @@ export const CompanyReport = () => {
                     imageHeader={imgDCSIPeople}
                     titleHeader={'¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
+                    backgroundIconColor={'#f66d1f'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
+                    backgroundInformationColor={'#2148C0'}
                 />
 
                 {isLoading && (
@@ -300,7 +301,6 @@ export const CompanyReport = () => {
                     )}
                 </div>
 
-                <Footer />
             </div>
         </>
     )

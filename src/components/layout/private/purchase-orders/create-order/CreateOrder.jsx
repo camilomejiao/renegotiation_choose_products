@@ -15,7 +15,6 @@ import frame from '../../../../../assets/image/addProducts/Frame.png';
 import './CreateOrder.css';
 
 //Components
-import { Footer } from "../../../shared/footer/Footer";
 import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 import { UserInformation } from "../../user-information/UserInformation";
 import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
@@ -308,7 +307,9 @@ export const CreateOrder = () => {
                     imageHeader={imgPeople}
                     titleHeader={'¡Empieza a agregar tus productos!'}
                     bannerIcon={imgAdd}
+                    backgroundIconColor={'#ff5722'}
                     bannerInformation={'Todo está listo para que completes tu pedido de forma rápida y sencilla.'}
+                    backgroundInformationColor={'#0056b3'}
                 />
 
                 {/* Contenedor de la información del usuario */}
@@ -478,7 +479,7 @@ export const CreateOrder = () => {
                         </Col>
                     </Row>
                 </Container>
-                <Footer />
+
             </div>
 
             <div style={{ display: 'none' }}>

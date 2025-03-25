@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Col, Container, Row } from "react-bootstrap";
 
 //Components
-import { SearchUserForm } from "../search-user-form/SearchUserForm";
-import { Footer } from "../../shared/footer/Footer";
+import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
+
+//Enums
+import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 
 export const SearchUserForDeliveries = () => {
@@ -30,10 +32,9 @@ export const SearchUserForDeliveries = () => {
                 </Row>
 
                 <Row className="justify-content-center mt-4">
-                    <SearchUserForm onSearchSuccess={handleSearchSuccess} />
+                    <SearchUserForm component={ComponentEnum.USER} onSearchSuccess={handleSearchSuccess} />
                 </Row>
 
-                <Footer />
             </Container>
         </>
     );

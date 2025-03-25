@@ -3,6 +3,10 @@ export const RouterEnum = {
 
     RouterAdmin: '/admin',
 
+    //Renegociacion
+    SearchUserForRenegociation: 'search-user-for-renegociation',
+    Renegociation: 'Renegociation/:cub_id',
+
     //Ordenes de compra
     CreateOrder: 'create-order/:id',
     EditOrder: 'edit-order/:order_id/:cub_id',
@@ -21,6 +25,9 @@ export const RouterEnum = {
     Users: 'users',
     CreateUsers: 'create-users',
 
+    //payments
+    Payments: 'payments',
+
     //Reportes
     Reports: 'reports/:id',
     CompanyReport: 'company-reports',
@@ -28,4 +35,7 @@ export const RouterEnum = {
 
     //
     Logout: 'logout',
+
+    //
+    Conex: 'conex',
 }

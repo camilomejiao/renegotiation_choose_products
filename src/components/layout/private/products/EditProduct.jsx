@@ -1,30 +1,35 @@
-import {useEffect, useState} from "react";
-import {Button} from "react-bootstrap";
-import {FaBackspace, FaPlus, FaSave} from "react-icons/fa";
-import {DataGrid} from "@mui/x-data-grid";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+import { FaBackspace, FaPlus, FaSave } from "react-icons/fa";
+import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router-dom";
 
 //Img
 import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
 
-//Modules
-import {HeaderImage} from "../../shared/header-image/HeaderImage";
-import {Footer} from "../../shared/footer/Footer";
+//Components
+import { HeaderImage } from "../../shared/header-image/HeaderImage";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Services
-import {productServices} from "../../../../helpers/services/ProductServices";
-import {supplierServices} from "../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Enums
-import {ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
+import {
+    chunkArray,
+    extractMunicipios,
+    handleError,
+    showAlert
+} from "../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
     getDynamicColumnsBySupplier,
+    getEnvironmentalCategories,
     getUnitOptions
 } from "../../../../helpers/utils/ProductColumns";
 
@@ -80,10 +85,22 @@ export const EditProduct = () => {
                     name: row.nombre,
                     description: row.especificacion_tecnicas,
                     brand: row.marca_comercial,
-                    reference: row.referencia,
                     unit: row.unidad_medida,
                     category: row.categoria_producto,
-                    ...municipalityPrices
+                    ...municipalityPrices,
+                    ambiental: {
+                        PNN: row?.ambiental?.PNN ?? 0,
+                        ZRFA: row?.ambiental?.ZRFA ?? 0,
+                        ZRFB: row?.ambiental?.ZRFB ?? 0,
+                        ZRFC: row?.ambiental?.ZRFC ?? 0,
+                        AMEMPre: row?.ambiental?.AMEMPre ?? 0,
+                        AMEMProd: row?.ambiental?.AMEMProd ?? 0,
+                        DRMI: row?.ambiental?.DRMI ?? 0,
+                        RFPN: row?.ambiental?.RFPN ?? 0,
+                        ND: row?.ambiental?.ND ?? 0,
+                        RIL: row?.ambiental?.RIL ?? 0,
+                        CCL: row?.ambiental?.CCL ?? 0,
+                    }
                 };
             });
         } catch (error) {
@@ -204,19 +221,34 @@ export const EditProduct = () => {
         return supplierServices.getSupplierId();
     };
 
-    const productsBeforeSend = (inputData) => {
+    const productsBeforeSend = async (inputData) => {
         const supplierId = parseInt(getSupplierId());
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
+
         return inputData.map((product) => ({
             id: product.id,
             proveedor_id: supplierId,
             nombre: product.name,
             especificacion_tecnicas: product.description,
             marca_comercial: product.brand,
-            referencia: product.reference,
             unidad_medida: product.unit,
             categoria_producto: product.category,
-            valor_municipio: extractMunicipios(product)
+            valor_municipio: extractMunicipios(product),
+            ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {cant: 0, ambiental_key: ''},
         }));
+    };
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, 1])
+        );
     };
 
     //Cargar datos iniciales
@@ -332,7 +364,7 @@ export const EditProduct = () => {
                     </div>
 
                 </div>
-            <Footer/>
+
             </div>
         </>
     )

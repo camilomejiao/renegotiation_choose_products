@@ -35,20 +35,46 @@ class AuthService {
             });
 
             const resp = await response.json();
-            console.log("resp-login: ", resp);
 
             // Validar si los tokens están presentes
             if (resp.access && resp.refresh) {
-                const decodeToken = this.decodeToken(resp.access);
-                this.saveToLocalStorage(resp, decodeToken);
+                const decodeToken = await this.decodeToken(resp.access);
+                await this.saveToLocalStorage(resp, decodeToken);
             } else {
                 console.error("Error: Los tokens no están presentes en la respuesta");
             }
-
             return resp;
         } catch (error) {
             console.error("Error en el login:", error);
             throw error;
+        }
+    }
+
+    async conex(data) {
+        const url = this.buildUrl(`validar/`);
+        const headers = {
+            "Content-Type": "application/json"
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers,
+                mode: "cors",
+            });
+
+            const resp = await response.json();
+
+            if (resp.access && resp.refresh) {
+                const decodeToken = await this.decodeToken(resp.access);
+                await this.saveToLocalStorage(resp, decodeToken);
+            } else {
+                console.error("Error: Los tokens no están presentes en la respuesta");
+            }
+            return resp;
+        } catch (error) {
+            console.error("Error en el conex:", error);
         }
     }
 

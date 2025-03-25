@@ -6,12 +6,11 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import './Dashboard.css';
 
 //Component
-import { Footer } from "../../shared/footer/Footer";
-import { SearchUserForm } from "../search-user-form/SearchUserForm";
+import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
 import { LocationModal } from "../../shared/Modals/LocationModal";
 
 //Enums
-import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
+import {ComponentEnum, ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
 
 //Services
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
@@ -92,10 +91,8 @@ export const Dashboard = () => {
                 </Row>
 
                 <Row className="justify-content-center mt-4">
-                    <SearchUserForm onSearchSuccess={handleSearchSuccess} />
+                    <SearchUserForm component={ComponentEnum.USER} onSearchSuccess={handleSearchSuccess} />
                 </Row>
-
-                <Footer />
             </Container>
 
             <LocationModal

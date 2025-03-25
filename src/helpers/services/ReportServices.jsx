@@ -42,6 +42,14 @@ class ReportServices {
         const url = this.buildUrl(`proveedor/${cubId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
+
+    uploadFileReport(cubId, formData) {
+        const url = Global.url + `cub/consolidado/${cubId}/`;
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: formData,
+        });
+    }
 }
 
 export const reportServices = new ReportServices();

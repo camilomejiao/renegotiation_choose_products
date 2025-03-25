@@ -47,19 +47,25 @@ class ProductServices {
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
-    productApprove(productId) {
-        const url = this.buildUrl(`aprobar/${productId}/`);
+    productApprove(data) {
+        const url = this.buildUrl(`aprobar/multiple/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
+            body: JSON.stringify(data),
         });
     }
 
-    edit(products) {
-        const url = this.buildUrl(`bulk/modificar/`);
+    edit(products, supplierId) {
+        const url = this.buildUrl(`bulk/modificar/?proveedor=${supplierId}`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),
         });
+    }
+
+    getCategoriesENVIRONMENTAL() {
+        const url = this.buildUrl(`categorias/1/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 }
 

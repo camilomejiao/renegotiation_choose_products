@@ -1,4 +1,6 @@
-export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
+import {ComponentEnum} from "../../../../../helpers/GlobalEnum";
+
+export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
 
     // Obtener la fecha actual
     const currentDate = new Date();
@@ -55,9 +57,9 @@ export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
                         </tr>
                         <tr>
                             <td style={{width:'15%', border: '1px solid black'}}><strong>Tipo de Línea</strong></td>
-                            <td style={{width:'15%', border: '1px solid black'}}>{userData.plan}</td>
+                            <td style={{width:'15%', border: '1px solid black'}}>{component === ComponentEnum.RENEGOTIATION ? userData?.plan_anterior : userData.plan}</td>
                             <td style={{width:'15%', border: '1px solid black'}}><strong>Línea</strong></td>
-                            <td style={{width:'35%', border: '1px solid black'}} colSpan="3">{userData.linea}</td>
+                            <td style={{width:'35%', border: '1px solid black'}} colSpan="3">{component === ComponentEnum.RENEGOTIATION ? userData?.linea_anterior : userData.linea}</td>
                             <td style={{width:'10%', border: '1px solid black'}}><strong>Fecha</strong></td>
                             <td style={{width:'15%', border: '1px solid black'}}>{formattedDate}</td>
                         </tr>
@@ -131,7 +133,7 @@ export const Authorization = ({ userData, opt1, opt2, opt3 }) => {
                         </tr>
                         <tr>
                             <td colSpan="3" style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
-                                <p >Plan de inversión ajustado:____________________________________________ (SI APLICA (no montos))</p>
+                                <p >Plan de inversión ajustado: {component === ComponentEnum.RENEGOTIATION ? userData?.linea : `____________________________________________ (SI APLICA (no montos))` } </p>
                             </td>
                         </tr>
                         <tr>

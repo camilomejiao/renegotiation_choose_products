@@ -10,15 +10,19 @@
 }
 
 .overlay-text {
-    top: 50%;
+    top: 40%;
     left: 0;
     transform: translateY(-50%);
     color: white;
 }
 
+.title-header {
+    font-size: 50px;
+    font-weight: 700;
+}
+
 /* Contenedor del ícono */
 .icon-wrapper {
-    background-color: #ff5722; /* Color de fondo naranja para el ícono */
     border-radius: 50%;
     padding: 10px;
     z-index: 1;
@@ -33,13 +37,12 @@
 
 /* Banner pequeño de información */
 .small-banner {
-    background-color: #0056b3;
     border-radius: 5px;
-    margin-top: -70px;
+    margin-top: -85px;
     padding-left: 60px;
     position: relative;
     width: 35%;
-    font-size: 18px;
+    font-size: 25px;
 }
 
 @media (max-width: 768px) {

@@ -54,7 +54,9 @@ export const EditOrder = () => {
                     imageHeader={imgPeople}
                     titleHeader={'¡Empieza a editar tus productos!'}
                     bannerIcon={imgAdd}
+                    backgroundIconColor={'#ff5722'}
                     bannerInformation={'Todo está listo para que completes tu pedido de forma rápida y sencilla.'}
+                    backgroundInformationColor={'#0056b3'}
                 />
 
                 {/* Contenedor de la información del usuario */}
