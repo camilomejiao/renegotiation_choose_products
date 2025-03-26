@@ -39,7 +39,6 @@
 /* Ajustes para pantallas medianas */
 @media (max-width: 992px) {
     .search-input {
-        max-width: 50% !important;
         text-align: center;
     }
 }
@@ -49,17 +48,8 @@
         flex-direction: column;
     }
 
-    .search-input {
-        width: 100% !important; /* Se expande al 100% en móviles */
-    }
-
     .search-select {
-        width: 100% !important; /* Se pone en una línea separada */
-    }
-
-    .search-button {
         width: 100% !important;
-        height: 45px !important;
     }
 
     .search-helper-text {
@@ -70,9 +60,16 @@
 }
 
 @media (max-width: 576px) {
-    .search-input,
+    .search-form2 {
+        margin-left: 130px;
+    }
+
+    .search-input {
+       max-width: 47% !important;
+    }
+
     .search-select {
-        width: 80% !important;
+        width: 25% !important;
     }
 
     .search-button {
