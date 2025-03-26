@@ -81,7 +81,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             <Form className="search-form" onSubmit={handleSearch}>
                 <Row className="g-2 justify-content-center align-items-center">
                     {component === ComponentEnum.RENEGOTIATION ? (
-                        <Col xs={12} sm={7} md={6} className="d-flex align-items-center gap-2">
+                        <Col xs={12} sm={7} md={6} className="d-flex align-items-start gap-2">
                             <Form.Select
                                 value={searchType}
                                 onChange={(e) => setSearchType(e.target.value)}
@@ -106,7 +106,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
                             </Button>
                         </Col>
                     ) : (
-                        <Col xs={12} sm={7} md={6} className="d-flex align-items-center">
+                        <Col xs={12} sm={7} md={6} className="search-form2 d-flex align-items-end gap-2">
                             <Form.Control
                                 type="number"
                                 min="1"
