@@ -11,9 +11,37 @@ import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 
 //Css
 import './PaySuppliers.css';
+import {useState} from "react";
+import {Button, Spinner} from "react-bootstrap";
+import {DataGrid} from "@mui/x-data-grid";
+import {FaSave} from "react-icons/fa";
 
 export const PaySuppliers = () => {
 
+    const [showCreateCollectionAccount, setShowCreateCollectionAccount] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCreateCollectionAccount = () => {
+        setShowCreateCollectionAccount(true);
+
+    }
+
+    const CreateCollectionAccountColumns = [
+        { field: "id", headerName: "ID", width: 150 },
+        { field: "name", headerName: "Nombre", width: 150 },
+        { field: "identification", headerName: "Identificacion", width: 150 },
+    ];
+
+    //Manejar selección de filas
+    const handleSelectionChange = (newSelection) => {
+        setSelectedIds(newSelection);
+    };
+
+    //
+    const handleSaveUsers = () => {
+
+    }
 
     return (
         <>
@@ -33,15 +61,72 @@ export const PaySuppliers = () => {
                 </div>
             </div>
             <div className="supplier-footer">
-                <div className="footer-content">
+                <div className="footer-content" onClick={handleCreateCollectionAccount} style={{ cursor: "pointer" }}>
                     <img src={imgHead} alt="Ícono calendario" />
                     <span>Crear nueva cuenta de cobro</span>
-                    <img src={imgPlus} alt="Plus" />
+                    <img src={imgPlus} alt="Plus"  />
                 </div>
             </div>
 
-            <div>
-                Lista
+            {isLoading && (
+                <div className="spinner-container">
+                    <Spinner animation="border" variant="success" />
+                    <span>Cargando...</span>
+                </div>
+            )}
+
+            <div  className="container mt-lg-5">
+                {showCreateCollectionAccount && (
+                    <>
+                        <div style={{height: 500, width: "100%"}}>
+                            <DataGrid
+                                checkboxSelection
+                                onRowSelectionModelChange={handleSelectionChange}
+                                rows={''}
+                                columns={CreateCollectionAccountColumns}
+                                sx={{
+                                    "& .MuiDataGrid-columnHeaders": {
+                                        backgroundColor: "#40A581",
+                                        color: "white",
+                                        fontSize: "14px",
+                                    },
+                                    "& .MuiDataGrid-columnHeader": {
+                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    },
+                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                        backgroundColor: "#40A581 !important",
+                                        color: "white !important",
+                                    },
+                                    "& .MuiDataGrid-cell": {
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                    },
+                                    "& .MuiDataGrid-row:hover": {
+                                        backgroundColor: "#E8F5E9",
+                                    },
+                                }}
+                            />
+
+                        </div>
+
+                        <div className="d-flex justify-content-end gap-2 mt-3" >
+                            <Button
+                                variant="success"
+                                size="md"
+                                onClick={handleSaveUsers}
+                            >
+                                Guardar <FaSave/>
+                            </Button>
+                        </div>
+                    </>
+                )}
+
+
             </div>
 
         </>

@@ -123,6 +123,7 @@ export const Renegociation = () => {
     };
 
     const handleSaveInformationUser = async () => {
+        setIsLoading(true);
         let updateData = {
             plan: formData.PlanId,
             linea: formData.LineaId,
@@ -144,6 +145,8 @@ export const Renegociation = () => {
         } catch (error) {
             console.log(error);
             showError(error, 'Error al actualizar la información');
+        } finally {
+            setIsLoading(false);
         }
     }
 

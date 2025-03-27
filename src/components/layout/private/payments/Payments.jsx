@@ -42,7 +42,7 @@ export const Payments = () => {
                     <div className="payment-header-text">
                         <p>Ingresa para gestionar los documentos de <br/>tus órdenes de compra</p>
                     </div>
-                    <div className="">
+                    <div className="payment-header-img">
                         <img src={worker} alt="Proveedor" />
                     </div>
                 </div>

@@ -503,8 +503,7 @@ export const ProductList = () => {
                     />
 
                     <div className="container mt-lg-3">
-                        <div
-                            className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
                             <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
                                 <input
                                     type="text"
