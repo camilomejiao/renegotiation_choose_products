@@ -51,7 +51,6 @@ export const Renegociation = () => {
         try {
             const {data, status} = await renegotiationServices.getUserRenegotiation(1, cubId);
             if(status === ResponseStatusEnum.OK && Object.keys(data).length > 0) {
-                console.log('data: ', data);
                 setUserData(data);
                 setEngagementId(cubId);
                 setComentarios(data?.comentario);
