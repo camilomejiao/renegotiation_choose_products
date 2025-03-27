@@ -27,11 +27,22 @@ export const PaySuppliers = () => {
 
     }
 
+    //
     const CreateCollectionAccountColumns = [
         { field: "id", headerName: "ID", width: 150 },
         { field: "name", headerName: "Nombre", width: 150 },
         { field: "identification", headerName: "Identificacion", width: 150 },
     ];
+
+    //
+    const statusCollectionAccountColumns = [
+        { field: "id", headerName: "ID", width: 150 },
+        { field: "name", headerName: "Nombre", width: 150 },
+        { field: "identification", headerName: "Identificacion", width: 150 },
+        { field: "territorial_status", headerName: "Territorial", width: 150 },
+        { field: "tecnical_status", headerName: "Tecnico", width: 150 },
+        { field: "supervision_status", headerName: "Supervisión", width: 150 },
+    ]
 
     //Manejar selección de filas
     const handleSelectionChange = (newSelection) => {
@@ -125,6 +136,41 @@ export const PaySuppliers = () => {
                         </div>
                     </>
                 )}
+
+                <div style={{height: 500, width: "100%"}}>
+                    <DataGrid
+                        checkboxSelection
+                        rows={''}
+                        columns={statusCollectionAccountColumns}
+                        sx={{
+                            "& .MuiDataGrid-columnHeaders": {
+                                backgroundColor: "#40A581",
+                                color: "white",
+                                fontSize: "14px",
+                            },
+                            "& .MuiDataGrid-columnHeader": {
+                                textAlign: "center",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            },
+                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                backgroundColor: "#40A581 !important",
+                                color: "white !important",
+                            },
+                            "& .MuiDataGrid-cell": {
+                                fontSize: "14px",
+                                textAlign: "center",
+                                justifyContent: "center",
+                                display: "flex",
+                            },
+                            "& .MuiDataGrid-row:hover": {
+                                backgroundColor: "#E8F5E9",
+                            },
+                        }}
+                    />
+
+                </div>
 
 
             </div>

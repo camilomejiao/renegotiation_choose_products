@@ -51,6 +51,7 @@ export const Renegociation = () => {
         try {
             const {data, status} = await renegotiationServices.getUserRenegotiation(1, cubId);
             if(status === ResponseStatusEnum.OK && Object.keys(data).length > 0) {
+                console.log('data: ', data);
                 setUserData(data);
                 setEngagementId(cubId);
                 setComentarios(data?.comentario);
@@ -110,7 +111,9 @@ export const Renegociation = () => {
     };
 
     // Lógica para habilitar/deshabilitar el botón de guardar
-    const isSaveEnabled = (comentarios || cellPhone) && (formData.PlanId && formData.LineaId);
+    const isSaveEnabled = () => {
+        return comentarios && cellPhone && formData.PlanId && formData.LineaId && (formData.LineaId !== userData.linea_id);
+    }
 
     //
     const showAlert = (title, message) => {
@@ -422,6 +425,7 @@ export const Renegociation = () => {
                                 fullWidth
                                 value={comentarios}
                                 onChange={(e) => setComentarios(e.target.value)}
+                                required
                             />
                         </Col>
                         {/* Campo de texto Teléfono */}
@@ -441,7 +445,7 @@ export const Renegociation = () => {
                         <Col xs={12} md={6} className="justify-content-end d-flex gap-2">
                             <Button
                                 variant="success"
-                                disabled={!isSaveEnabled}
+                                disabled={!isSaveEnabled()}
                                 onClick={handleSaveInformationUser}
                             >
                                 Guardar
