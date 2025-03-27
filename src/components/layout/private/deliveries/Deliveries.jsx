@@ -237,17 +237,17 @@ export const Deliveries = () => {
                         >
                             <FaPencilAlt/>
                         </Button>
-                        <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDeleteDelivery(params.row.id)}
-                            style={{marginRight: "10px"}}
-                            disabled={isButtonDisabled(params.row)}
-                        >
-                            <FaTrash/>
-                        </Button>
                         {(userAuth.rol_id === RolesEnum.SUPERVISION || userAuth.rol_id === RolesEnum.ADMIN) && (
                             <>
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleDeleteDelivery(params.row.id)}
+                                    style={{marginRight: "10px"}}
+                                    disabled={isButtonDisabled(params.row)}
+                                >
+                                    <FaTrash/>
+                                </Button>
                                 <Button
                                     variant="success"
                                     size="sm"
@@ -528,6 +528,7 @@ export const Deliveries = () => {
         setIsLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
+            console.log('data:', data);
             setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
@@ -836,8 +837,8 @@ export const Deliveries = () => {
                     {isReadyToPrintDeliveryInformation && (
                         <div ref={deliveryReportRef}>
                             <DeliveryReport deliveryInformation={deliveryInformation} />
-                            <div className="page-break"></div>
-                            <PhotographicEvidenceReport deliveryInformation={deliveryInformation} />
+                            {/*<div className="page-break"></div>*/}
+                            {/*<PhotographicEvidenceReport deliveryInformation={deliveryInformation} />*/}
                         </div>
                     )}
                 </div>

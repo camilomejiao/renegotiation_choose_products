@@ -15,7 +15,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
 
     const products = deliveryInformation?.items;
     const totalValorFinal = products.reduce((sum, item) => {
-        if (item.estado === 1) {
+        if (item.estado === 1 || item.estado === 3) {
             const valorFinal = parseFloat(item.valor_final);
             return sum + valorFinal;
         }
@@ -208,7 +208,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     </thead>
                     <tbody>
                         {products?.map((product) => {
-                            if(product?.estado === 1) {
+                            if(product?.estado === 1 || product.estado === 3) {
                                 const valorFinal = parseFloat(product?.valor_final);
                                 const cantidad = product?.cantidad;
                                 const estado = deliveryStatus.find(status => status.id === product?.estado);
