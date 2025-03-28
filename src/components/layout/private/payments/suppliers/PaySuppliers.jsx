@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
+import { DataGrid } from "@mui/x-data-grid";
+import { FaSave } from "react-icons/fa";
 
 //Img
 import imgPayments from "../../../../../assets/image/payments/pay-supplier.png";
@@ -11,10 +15,6 @@ import { HeaderImage } from "../../../shared/header-image/HeaderImage";
 
 //Css
 import './PaySuppliers.css';
-import {useState} from "react";
-import {Button, Spinner} from "react-bootstrap";
-import {DataGrid} from "@mui/x-data-grid";
-import {FaSave} from "react-icons/fa";
 
 export const PaySuppliers = () => {
 
