@@ -277,7 +277,7 @@ export const EditProduct = () => {
                             />
 
                             <Button onClick={handleCreateProducts} className="button-order-responsive">
-                                Agregar productos <FaPlus />
+                                <FaPlus /> Agregar productos
                             </Button>
 
                             <Button
@@ -285,7 +285,7 @@ export const EditProduct = () => {
                                 size="md"
                                 onClick={handleBack}
                                 className="button-order-responsive">
-                                Atras <FaBackspace />
+                                <FaBackspace /> Atras
                             </Button>
                         </div>
                     </div>
@@ -359,7 +359,7 @@ export const EditProduct = () => {
                             className="ms-auto"
                             disabled={loading}
                         >
-                            {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
+                            <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
                         </Button>
                     </div>
 

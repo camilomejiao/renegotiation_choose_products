@@ -24,12 +24,12 @@ import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
-import { PaymentsMenu } from "../components/layout/private/payments/payments-menu/PaymentsMenu";
-import { PaySuppliers } from "../components/layout/private/payments/suppliers/PaySuppliers";
+import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
+import { PaySuppliers } from "../components/layout/private/payments/suppliers/pay-suppliers/PaySuppliers";
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
-import {BeneficiaryReview} from "../components/layout/private/payments/beneficiary-review.jsx/BeneficiaryReview";
+import {BeneficiaryReview} from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
 
 export const Routing = () => {
     return (

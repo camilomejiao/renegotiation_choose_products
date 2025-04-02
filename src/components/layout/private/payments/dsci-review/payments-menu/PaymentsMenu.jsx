@@ -2,16 +2,16 @@
 import { useNavigate } from "react-router-dom";
 
 //Components
-import { HeaderImage } from "../../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header-image/HeaderImage";
 
 //Img
-import imgPayments from "../../../../../assets/image/payments/payments.png";
-import imgAdd from "../../../../../assets/image/payments/imgPay.png";
-import territorial from "../../../../../assets/image/payments/territorial.png";
-import tecnico from "../../../../../assets/image/payments/tecnico.png";
-import supervision from "../../../../../assets/image/payments/supervision.png";
-import pagos from "../../../../../assets/image/payments/pagos.png";
-import fiduciaria from "../../../../../assets/image/payments/fiduciaria.png";
+import imgPayments from "../../../../../../assets/image/payments/payments.png";
+import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
+import territorial from "../../../../../../assets/image/payments/territorial.png";
+import tecnico from "../../../../../../assets/image/payments/tecnico.png";
+import supervision from "../../../../../../assets/image/payments/supervision.png";
+import pagos from "../../../../../../assets/image/payments/pagos.png";
+import fiduciaria from "../../../../../../assets/image/payments/fiduciaria.png";
 
 //Css
 import "./PaymentsMenu.css";

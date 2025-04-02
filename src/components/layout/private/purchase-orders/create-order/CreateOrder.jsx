@@ -418,7 +418,9 @@ export const CreateOrder = () => {
                                         </td>
                                         <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
                                         <td>
-                                            <Button variant="danger" size="sm" onClick={() => handleDeleteItem(index)}>
+                                            <Button variant="danger"
+                                                    size="sm"
+                                                    onClick={() => handleDeleteItem(index)}>
                                                 <FaTrashAlt />
                                             </Button>
                                         </td>

@@ -1,0 +1,36 @@
+/* Solo afecta los Accordions dentro de la clase custom-accordion */
+.custom-accordion .accordion-item {
+    border: none;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+/* Estilo del Header SOLO para este Accordion */
+.custom-accordion .accordion-button {
+    background-color: #40A581;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px !important;
+    padding: 15px;
+}
+
+.custom-accordion .accordion-button:not(.collapsed) {
+    background-color: #36926F;
+    color: white;
+}
+
+/* Icono de expansión SOLO en este Accordion */
+.custom-accordion .accordion-button::after {
+    filter: brightness(100);
+}
+
+/* Cuerpo del Accordion SOLO para este */
+.custom-accordion .accordion-body {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px !important;
+    font-size: 16px;
+    line-height: 1.5;
+}
