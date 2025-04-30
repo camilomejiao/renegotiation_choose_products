@@ -103,6 +103,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
                                         </div>
+                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                            <FaCcPaypal className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
+                                        </div>
                                     </div>
                                 </Accordion.Body>
                             </Card>

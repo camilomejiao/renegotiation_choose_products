@@ -1,5 +1,5 @@
 
-import { useNavigate } from "react-router-dom";
+import {useNavigate, useOutletContext} from "react-router-dom";
 
 //Components
 import { HeaderImage } from "../../../../shared/header-image/HeaderImage";
@@ -13,10 +13,22 @@ import supervision from "../../../../../../assets/image/payments/supervision.png
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 import fiduciaria from "../../../../../../assets/image/payments/fiduciaria.png";
 
+//Enum
+import { RolesEnum } from "../../../../../../helpers/GlobalEnum";
+
 //Css
 import "./PaymentsMenu.css";
 
+const userCards = [
+    { title: "Territorial", role: RolesEnum.TERRITORIAL_LINKS, key: "territorial", img: territorial },
+    { title: "Técnico", role: RolesEnum.TECHNICAL, key: "tecnico", img: tecnico },
+    { title: "Supervisión", role: RolesEnum.SUPERVISION, key: "supervision", img: supervision },
+    { title: "Pagos", role: RolesEnum.PAYMENTS, key: "pagos", img: pagos },
+];
+
 export const PaymentsMenu = () => {
+    const { userAuth } = useOutletContext();
+    console.log(userAuth);
 
     const navigate = useNavigate();
 
@@ -40,41 +52,35 @@ export const PaymentsMenu = () => {
                 <div className="revisions">
                     <h3>Revisiones</h3>
                     <div className="payment-cards">
-                        <div className="payment-card" onClick={() => handleRedirect('territorial')} style={{ cursor: "pointer" }}>
-                            <p className="payment-card-title">Territorial</p>
-                            <img src={territorial} alt="Territorial" />
-                        </div>
-                        <div className="payment-card" onClick={() => handleRedirect('tecnico')} style={{ cursor: "pointer" }}>
-                            <p className="payment-card-title">Técnico</p>
-                            <img src={tecnico} alt="Técnico" />
-                        </div>
-                        <div className="payment-card" onClick={() => handleRedirect('pagos')} style={{ cursor: "pointer" }}>
-                            <p className="payment-card-title">Pagos</p>
-                            <img src={pagos} alt="Pagos" />
-                        </div>
-                        <div className="payment-card" onClick={() => handleRedirect('supervision')} style={{ cursor: "pointer" }}>
-                            <p className="payment-card-title">Supervisión</p>
-                            <img src={supervision} alt="Supervisión" />
-                        </div>
+                        {userCards.map(card => (
+                            <div
+                                key={card.key}
+                                className={`payment-card ${userAuth.rol_id !== card.role ? "disabled" : ""}`}
+                                onClick={() => userAuth.rol_id === card.role && handleRedirect(card.key)}
+                                style={{ cursor: userAuth.rol_id === card.role ? "pointer" : "not-allowed" }}
+                            >
+                                <p className="payment-card-title">{card.title}</p>
+                                <img src={card.img} alt={card.title} />
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 <div className="payment-status">
-                    <div>
+                    <div className="payment-srarys-content">
                         <h3>Estado</h3>
                         <div className="payment-status-card">
                             <p className="payment-status-text">Fiduciaria</p>
                             <img src={fiduciaria} alt="Fiduciaria" />
                         </div>
                     </div>
-                    <div>
-                        <h3>Estado</h3>
+                    <div className="payment-srarys-content">
+                        <h3>Conciliación</h3>
                         <div className="payment-status-card">
-                            <p className="payment-status-text">Fiduciaria</p>
+                            <p className="payment-status-text">Conciliación</p>
                             <img src={fiduciaria} alt="Fiduciaria" />
                         </div>
                     </div>
-
                 </div>
             </div>
 

@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import Select from "react-select";
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
-import {FaCheck, FaFilePdf, FaPencilAlt, FaTrash} from "react-icons/fa";
+import {FaCheck, FaCheckDouble, FaFilePdf, FaPencilAlt, FaTrash} from "react-icons/fa";
 import printJS from "print-js";
 import {DataGrid} from "@mui/x-data-grid";
 
@@ -24,7 +24,6 @@ import './Deliveries.css';
 
 //Enum
 import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
-import { PhotographicEvidenceReport } from "./photographic-evidence-report/photographicEvidenceReport";
 import { UserInformation } from "../user-information/UserInformation";
 
 
@@ -88,6 +87,7 @@ export const Deliveries = () => {
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
+            console.log(data);
             if(status === ResponseStatusEnum.OK) {
                 return {
                     urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
@@ -98,6 +98,22 @@ export const Deliveries = () => {
             console.error("Error fetching deliveries:", error);
         }
     }
+
+    //
+    const normalizeDeliveryRows = async (data) => {
+        return await Promise.all(
+            data.map(async (row) => {
+                const deliveryIdInfo = await getDeliveryUrl(row.id);
+                return {
+                    id: row.id,
+                    date: row.fecha_creacion.split("T")[0],
+                    supplier: row.proveedor,
+                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
+                    actions: { approved: deliveryIdInfo?.approved }
+                };
+            })
+        );
+    };
 
     //
     const getUserInformation = async (cubId) => {
@@ -237,7 +253,7 @@ export const Deliveries = () => {
                         >
                             <FaPencilAlt/>
                         </Button>
-                        {(userAuth.rol_id === RolesEnum.SUPERVISION || userAuth.rol_id === RolesEnum.ADMIN) && (
+                        {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && (
                             <>
                                 <Button
                                     variant="danger"
@@ -257,27 +273,22 @@ export const Deliveries = () => {
                                 </Button>
                             </>
                         )}
+                        {(userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && (
+                            <>
+                                <Button
+                                    variant="success"
+                                    size="sm"
+                                    onClick={() => handleApproveByAudit(params.row.id)}
+                                >
+                                    <FaCheckDouble/>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 );
             },
         },
     ];
-
-    //
-    const normalizeDeliveryRows = async (data) => {
-        return await Promise.all(
-            data.map(async (row) => {
-                const deliveryIdInfo = await getDeliveryUrl(row.id);
-                return {
-                    id: row.id,
-                    date: row.fecha_creacion.split("T")[0],
-                    supplier: row.proveedor,
-                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
-                    actions: { approved: deliveryIdInfo?.approved }
-                };
-            })
-        );
-    };
 
     //
     const handleUploadFile = (rowId) => {
@@ -608,7 +619,7 @@ export const Deliveries = () => {
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
-                showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
+                showError('Error', `${data}`);
             }
         } catch (error) {
             showError('Error al guardar los productos', `${error}`);
