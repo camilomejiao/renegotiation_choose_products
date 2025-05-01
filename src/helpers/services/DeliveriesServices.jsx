@@ -85,10 +85,11 @@ class DeliveriesServices {
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
-    approveDelivery(deliveryId) {
+    approveDelivery(deliveryId, payload) {
         const url = this.buildUrl(`aprobar/${deliveryId}/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
+            body: JSON.stringify(payload),
         });
     }
 

@@ -1,4 +1,4 @@
-import { Button, Form, FormCheck, Modal } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 
 export const ApprovedDeniedModal = ({
        open,
@@ -18,27 +18,17 @@ export const ApprovedDeniedModal = ({
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group className="mb-3" >
+                        <Form.Group className="mb-3">
                             <Form.Label>Seleccione una acción:</Form.Label>
-                            <div className="d-flex gap-3">
-                                <FormCheck
-                                    type="checkbox"
-                                    label="Aprobar"
-                                    name="action"
-                                    value="approve"
-                                    checked={action === 'approve'}
-                                    onChange={(e) => setAction(e.target.value)}
-                                />
-                                <FormCheck
-                                    type="checkbox"
-                                    label="Denegar"
-                                    name="action"
-                                    value="deny"
-                                    checked={action === 'deny'}
-                                    onChange={(e) => setAction(e.target.value)}
-                                />
-                            </div>
+                            <Form.Select
+                                value={action}
+                                onChange={(e) => setAction(e.target.value)}
+                            >
+                                <option value="approve">Aprobar</option>
+                                <option value="deny">Denegar</option>
+                            </Form.Select>
                         </Form.Group>
+
 
                         <Form.Group className="mb-3" >
                             <Form.Label>Comentario</Form.Label>

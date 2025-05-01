@@ -115,16 +115,16 @@ export const HeadLineReport = ({dataReport}) => {
                                 const producto = proveedor.productos[productoKey];
                                 return (
                                     <tr key={`${key}-${productoIndex}`}>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto.nombre}</td>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto.nombre}</td>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto.marca}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor.nombre}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor.nit}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto.unidad}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto.precio.toLocaleString()}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto.cantidad}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto.descuento}%</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto.total.toLocaleString()}</td>
+                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.nombre}</td>
+                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.descripcion}</td>
+                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.marca}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nombre}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nit}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.unidad}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.precio.toLocaleString()}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.cantidad}</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.descuento}%</td>
+                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.total.toLocaleString()}</td>
                                     </tr>
                                 );
                             });

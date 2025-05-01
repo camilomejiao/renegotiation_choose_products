@@ -29,7 +29,7 @@ export const AuthorizationSection = ({component, userData, wide}) => {
         'Imposibilidad jurídica',
         'Imposibilidad fáctica',
         'Mayor impacto productivo',
-        'Otros componentes no incluidos en el plan de inversión'
+        //'Otros componentes no incluidos en el plan de inversión'
     ];
 
     // Función para validar si se ha seleccionado al menos una opción

@@ -4,11 +4,13 @@ import Select from "react-select";
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {FaCheck, FaCheckDouble, FaFilePdf, FaPencilAlt, FaTrash} from "react-icons/fa";
 import printJS from "print-js";
-import {DataGrid} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
 //Components
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { UserInformation } from "../user-information/UserInformation";
+import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -24,8 +26,6 @@ import './Deliveries.css';
 
 //Enum
 import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
-import { UserInformation } from "../user-information/UserInformation";
-
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -51,6 +51,12 @@ export const Deliveries = () => {
     const [deliveryInformation, setDeliveryInformation] = useState({});
     const [isReadyToPrintDeliveryInformation, setIsReadyToPrintDeliveryInformation] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    //
+    const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [comment, setComment] = useState('');
+    const [action, setAction] = useState('approve');
 
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
@@ -87,11 +93,11 @@ export const Deliveries = () => {
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
-            console.log(data);
             if(status === ResponseStatusEnum.OK) {
                 return {
                     urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
-                    approved: data?.fecha_aprobado === null ? parseInt(0) : data?.fecha_aprobado,
+                    approvedTechnical: data?.fecha_aprobado_tecnica === null ? parseInt(0) : data?.fecha_aprobado_tecnica,
+                    approvedTerritorial: data?.fecha_aprobado_territorial === null ? parseInt(0) : data?.fecha_aprobado_territorial,
                 }
             }
         } catch (error) {
@@ -109,7 +115,10 @@ export const Deliveries = () => {
                     date: row.fecha_creacion.split("T")[0],
                     supplier: row.proveedor,
                     evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
-                    actions: { approved: deliveryIdInfo?.approved }
+                    actions: {
+                        approvedTechnical: deliveryIdInfo?.approvedTechnical ?? 0,
+                        approvedTerritorial: deliveryIdInfo?.approvedTerritorial ?? 0,
+                    }
                 };
             })
         );
@@ -129,7 +138,7 @@ export const Deliveries = () => {
     }
 
     const isButtonDisabled = (row) => {
-        return row.actions.approved !== 0 && userAuth.rol_id === RolesEnum.SUPPLIER;
+        return row.actions.approvedTerritorial === 1;
     };
 
     // Definición de las columnas de entregas
@@ -267,18 +276,24 @@ export const Deliveries = () => {
                                 <Button
                                     variant="success"
                                     size="sm"
-                                    onClick={() => handleApproveByAudit(params.row.id)}
+                                    onClick={() => {
+                                        setSelectedDeliveryId(params.row.id);
+                                        setOpenModal(true);
+                                    }}
                                 >
                                     <FaCheck/>
                                 </Button>
                             </>
                         )}
-                        {(userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && (
+                        {((userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && params?.row?.action?.approvedTerritorial === 1) && (
                             <>
                                 <Button
                                     variant="success"
                                     size="sm"
-                                    onClick={() => handleApproveByAudit(params.row.id)}
+                                    onClick={() => {
+                                        setSelectedDeliveryId(params.row.id);
+                                        setOpenModal(true);
+                                    }}
                                 >
                                     <FaCheckDouble/>
                                 </Button>
@@ -488,18 +503,34 @@ export const Deliveries = () => {
         }
     }
 
-    //
-    const handleApproveByAudit = async (id) => {
+    const handleApproveByAudit = async () => {
+        if (!action && comment.trim() === "") {
+            showError("Validación", "Debes seleccionar una acción o escribir un comentario.");
+            return;
+        }
+
         try {
-            const { status} = await deliveriesServices.approveDelivery(id);
+            const aprobado = action === 'approve' ? 1 : 0;
+            const payload = {
+                aprobado,
+                observacion: comment
+            };
+
+            const { status } = await deliveriesServices.approveDelivery(selectedDeliveryId, payload);
             if (status === ResponseStatusEnum.OK) {
-                showAlert('Éxito', 'Entrega auditada exitosamente');
-                window.location.reload();
+                showAlert("Bien hecho!", `Entrega ${action === 'approve' ? 'Aprobada' : 'Denegada'} exitosamente!`);
+                handleCloseModalApproved();
             }
         } catch (error) {
-            console.error("Error eliminando la entrega:", error);
+            console.error("Error al aprobar la entrega:", error);
         }
-    }
+    };
+
+    const handleCloseModalApproved = () => {
+        setOpenModal(false);
+        setComment('');
+        setAction('approve');
+    };
 
     //Guardar evidencias
     const handleFileChange = async (file, deliveryId, fileName) => {
@@ -539,7 +570,6 @@ export const Deliveries = () => {
         setIsLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
-            console.log('data:', data);
             setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
@@ -853,6 +883,17 @@ export const Deliveries = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Modal de aprobación/denegación */}
+                <ApprovedDeniedModal
+                    open={openModal}
+                    onClose={handleCloseModalApproved}
+                    action={action}
+                    setAction={setAction}
+                    comment={comment}
+                    setComment={setComment}
+                    onSubmit={handleApproveByAudit}
+                />
 
             </div>
         </>
