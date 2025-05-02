@@ -11,7 +11,6 @@ import {
     FaUsersCog,
     FaRegBuilding,
     FaDollyFlatbed,
-    FaUsers,
     FaUser,
     FaHandshake,
     FaHardHat,
@@ -23,7 +22,6 @@ import './Sidebar.css';
 
 //Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
-
 
 export const Sidebar = ({userAuth}) => {
     const navigate = useNavigate();
@@ -69,10 +67,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
                                             <FaCcPaypal className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
-                                        </div>
+                                        </div>*/}
                                     </div>
                                 </Accordion.Body>
                             </Card>
@@ -103,6 +101,10 @@ export const Sidebar = ({userAuth}) => {
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
                                         </div>
+                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                            <FaCcPaypal className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
+                                        </div>*/}
                                     </div>
                                 </Accordion.Body>
                             </Card>
@@ -137,7 +139,7 @@ export const Sidebar = ({userAuth}) => {
                                             <FaDollyFlatbed className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Productos</span>}
                                         </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
+                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments-suppliers`)}>
                                             <FaCcPaypal className="sidebar-icon" />
                                             {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
                                         </div>*/}

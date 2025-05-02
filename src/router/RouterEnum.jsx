@@ -27,6 +27,7 @@ export const RouterEnum = {
 
     //payments
     Payments: 'payments',
+    PaymentsRole: 'payments/:role',
     Payments_Suppliers: 'payments-suppliers',
 
     //Reportes

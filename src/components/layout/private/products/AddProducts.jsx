@@ -305,14 +305,14 @@ export const AddProducts = () => {
                             onClick={handleUploadTable}
                             className="button-order-responsive"
                         >
-                            Reiniciar tabla <FaBroom/>
+                            <FaBroom/> Reiniciar tabla
                         </Button>
                         <Button
                             variant="secondary"
                             size="md"
                             onClick={handleBack}
                             className="button-order-responsive">
-                            Atras <FaBackspace />
+                            <FaBackspace /> Atras
                         </Button>
                     </div>
                 </div>
@@ -379,7 +379,7 @@ export const AddProducts = () => {
                         className="ms-auto"
                         disabled={loading}
                     >
-                        {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
+                        <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
                     </Button>
                 </div>
 

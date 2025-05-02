@@ -1,14 +1,16 @@
-import {useEffect, useRef, useState} from "react";
-import {useNavigate, useOutletContext, useParams} from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
-import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
-import {FaCheck, FaFilePdf, FaPencilAlt, FaTrash} from "react-icons/fa";
+import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import {FaCheck, FaCheckDouble, FaClipboardCheck, FaFilePdf, FaPencilAlt, FaTimes, FaTrash} from "react-icons/fa";
 import printJS from "print-js";
-import {DataGrid} from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
 //Components
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { UserInformation } from "../user-information/UserInformation";
+import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -24,9 +26,6 @@ import './Deliveries.css';
 
 //Enum
 import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
-import { PhotographicEvidenceReport } from "./photographic-evidence-report/photographicEvidenceReport";
-import { UserInformation } from "../user-information/UserInformation";
-
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -53,6 +52,12 @@ export const Deliveries = () => {
     const [isReadyToPrintDeliveryInformation, setIsReadyToPrintDeliveryInformation] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    //
+    const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [comment, setComment] = useState('');
+    const [action, setAction] = useState('approve');
+
     //Trae las compañias con las que el usuario realizó compras
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
@@ -75,6 +80,7 @@ export const Deliveries = () => {
 
     //Listado de entregas al titular
     const getListDeliveriesToUser = async (cubId) => {
+        setIsLoading(true);
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
@@ -82,6 +88,8 @@ export const Deliveries = () => {
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -91,13 +99,33 @@ export const Deliveries = () => {
             if(status === ResponseStatusEnum.OK) {
                 return {
                     urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
-                    approved: data?.fecha_aprobado === null ? parseInt(0) : data?.fecha_aprobado,
+                    approvedTechnical: data?.aprobado_tecnica,
+                    approvedTerritorial: data?.aprobado_territorial,
                 }
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
         }
     }
+
+    //
+    const normalizeDeliveryRows = async (data) => {
+        return await Promise.all(
+            data.map(async (row) => {
+                const deliveryIdInfo = await getDeliveryUrl(row.id);
+                return {
+                    id: row.id,
+                    date: row.fecha_creacion.split("T")[0],
+                    supplier: row.proveedor,
+                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
+                    actions: {
+                        approvedTechnical: deliveryIdInfo?.approvedTechnical,
+                        approvedTerritorial: deliveryIdInfo?.approvedTerritorial,
+                    }
+                };
+            })
+        );
+    };
 
     //
     const getUserInformation = async (cubId) => {
@@ -112,9 +140,35 @@ export const Deliveries = () => {
         }
     }
 
+    //
     const isButtonDisabled = (row) => {
-        return row.actions.approved !== 0 && userAuth.rol_id === RolesEnum.SUPPLIER;
+        if((row.actions.approvedTerritorial === true || row.actions.approvedTerritorial === false) && (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.TECHNICAL)) {
+            return true;
+        }
     };
+
+    //
+    const isButtonDisabledTecnical = (row) => {
+        const { approvedTerritorial, approvedTechnical } = row.actions;
+
+        if(userAuth.rol_id === RolesEnum.TECHNICAL &&
+            (approvedTerritorial === true || approvedTechnical === true || approvedTechnical === false)) {
+            return true;
+        }
+        return false;
+    };
+
+
+    //
+    const renderApprovalIcon = (status) => {
+        if (status === 1 || status === true) {
+            return <FaCheck title="Aprobado" style={{ backgroundColor: "#FFF", color: "#28A745" }} />;
+        }
+        if (status === 0 || status === false) {
+            return <FaTimes title="Denegado" style={{ color: "#DC3545" }} />;
+        }
+        return <FaClipboardCheck title="Pendiente de revisión" style={{ color: "#FFC107" }} />;
+    }
 
     // Definición de las columnas de entregas
     const deliveryColumns = [
@@ -237,7 +291,7 @@ export const Deliveries = () => {
                         >
                             <FaPencilAlt/>
                         </Button>
-                        {(userAuth.rol_id === RolesEnum.SUPERVISION || userAuth.rol_id === RolesEnum.ADMIN) && (
+                        {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && (
                             <>
                                 <Button
                                     variant="danger"
@@ -248,12 +302,33 @@ export const Deliveries = () => {
                                 >
                                     <FaTrash/>
                                 </Button>
+                                {params.row.evidencePdf?.urlFile !== 0 && (
+                                    <Button
+                                        style={{ backgroundColor: "#FFF", marginRight: "10px" }}
+                                        size="sm"
+                                        onClick={() => {
+                                            setSelectedDeliveryId(params.row.id);
+                                            setOpenModal(true);
+                                        }}
+                                        disabled={isButtonDisabled(params.row)}
+                                    >
+                                        {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
+                                    </Button>
+                                )}
+                            </>
+                        )}
+                        {((userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && params.row.evidencePdf?.urlFile !== 0) && (
+                            <>
                                 <Button
                                     variant="success"
                                     size="sm"
-                                    onClick={() => handleApproveByAudit(params.row.id)}
+                                    onClick={() => {
+                                        setSelectedDeliveryId(params.row.id);
+                                        setOpenModal(true);
+                                    }}
+                                    disabled={isButtonDisabledTecnical(params.row)}
                                 >
-                                    <FaCheck/>
+                                    <FaCheckDouble/>
                                 </Button>
                             </>
                         )}
@@ -262,22 +337,6 @@ export const Deliveries = () => {
             },
         },
     ];
-
-    //
-    const normalizeDeliveryRows = async (data) => {
-        return await Promise.all(
-            data.map(async (row) => {
-                const deliveryIdInfo = await getDeliveryUrl(row.id);
-                return {
-                    id: row.id,
-                    date: row.fecha_creacion.split("T")[0],
-                    supplier: row.proveedor,
-                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
-                    actions: { approved: deliveryIdInfo?.approved }
-                };
-            })
-        );
-    };
 
     //
     const handleUploadFile = (rowId) => {
@@ -477,18 +536,35 @@ export const Deliveries = () => {
         }
     }
 
-    //
-    const handleApproveByAudit = async (id) => {
+    const handleApproveByAudit = async () => {
+        if (!action || comment.trim() === "") {
+            showError("Validación", "Debes seleccionar una acción o escribir un comentario.");
+            return;
+        }
+
         try {
-            const { status} = await deliveriesServices.approveDelivery(id);
+            const aprobado = action === 'approve' ? 1 : 0;
+            const payload = {
+                aprobado,
+                observacion: comment
+            };
+
+            const { status } = await deliveriesServices.approveDelivery(selectedDeliveryId, payload);
             if (status === ResponseStatusEnum.OK) {
-                showAlert('Éxito', 'Entrega auditada exitosamente');
-                window.location.reload();
+                getListDeliveriesToUser(params.id);
+                showAlert("Bien hecho!", `Entrega ${action === 'approve' ? 'Aprobada' : 'Denegada'} exitosamente!`);
+                handleCloseModalApproved();
             }
         } catch (error) {
-            console.error("Error eliminando la entrega:", error);
+            console.error("Error al aprobar la entrega:", error);
         }
-    }
+    };
+
+    const handleCloseModalApproved = () => {
+        setOpenModal(false);
+        setComment('');
+        setAction('approve');
+    };
 
     //Guardar evidencias
     const handleFileChange = async (file, deliveryId, fileName) => {
@@ -528,7 +604,6 @@ export const Deliveries = () => {
         setIsLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
-            console.log('data:', data);
             setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
@@ -608,7 +683,7 @@ export const Deliveries = () => {
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
-                showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
+                showError('Error', `${data}`);
             }
         } catch (error) {
             showError('Error al guardar los productos', `${error}`);
@@ -657,26 +732,37 @@ export const Deliveries = () => {
                 <div className="deliveries-banner">
                     <Container>
                         <Row className="justify-content-start align-items-center mt-4">
-                            {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) && (
-                                <Col xs={12} md={6} className="d-flex align-items-center">
-                                    <Select
-                                        value={selectedSupplier}
-                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                        options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
-                                        placeholder="Selecciona una compañía"
-                                        classNamePrefix="custom-select"
-                                        className="custom-select w-100"
-                                    />
-                                </Col>
-                            )}
-                            <Col xs={12} md={6} className="d-flex align-items-center justify-content-md-start justify-content-center">
-                                <button onClick={handleCreateDeliveries} className="deliveries-button deliveries d-flex align-items-center">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    CREAR ENTREGAS
-                                </button>
-                            </Col>
-                        </Row>
+                            <>
+                                {(userAuth.rol_id === RolesEnum.ADMIN) && (
+                                    <Col xs={12} md={6} className="d-flex align-items-center">
+                                        <Select
+                                            value={selectedSupplier}
+                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                            options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
+                                            placeholder="Selecciona una compañía"
+                                            classNamePrefix="custom-select"
+                                            className="custom-select w-100"
+                                        />
+                                    </Col>
+                                )}
 
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPPLIER) && (
+                                    <Col
+                                        xs={12}
+                                        md={6}
+                                        className="d-flex align-items-center justify-content-md-start justify-content-center"
+                                    >
+                                        <button
+                                            onClick={handleCreateDeliveries}
+                                            className="deliveries-button deliveries d-flex align-items-center"
+                                        >
+                                            <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                            CREAR ENTREGAS
+                                        </button>
+                                    </Col>
+                                )}
+                            </>
+                        </Row>
                     </Container>
                 </div>
 
@@ -689,6 +775,7 @@ export const Deliveries = () => {
 
                 <div className="">
                     <Container>
+                        <hr/>
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
                             <>
                                 <DataGrid
@@ -842,6 +929,17 @@ export const Deliveries = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Modal de aprobación/denegación */}
+                <ApprovedDeniedModal
+                    open={openModal}
+                    onClose={handleCloseModalApproved}
+                    action={action}
+                    setAction={setAction}
+                    comment={comment}
+                    setComment={setComment}
+                    onSubmit={handleApproveByAudit}
+                />
 
             </div>
         </>

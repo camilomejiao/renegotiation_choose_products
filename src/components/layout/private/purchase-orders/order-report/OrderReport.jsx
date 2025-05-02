@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import {FaBroom, FaPencilAlt, FaSearch, FaTrash} from "react-icons/fa";
+import { FaBroom, FaPencilAlt, FaSearch, FaTrash } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 
 // Image
@@ -220,7 +220,7 @@ export const OrderReport = () => {
                                 onClick={handleSearch}
                                 className="button-order-responsive"
                             >
-                                Buscar <FaSearch />
+                                <FaSearch /> Buscar
                             </Button>
                             <Button
                                 variant="secondary"
@@ -228,7 +228,7 @@ export const OrderReport = () => {
                                 onClick={handleClearSearch}
                                 className="button-order-responsive"
                             >
-                                Limpiar <FaBroom />
+                                <FaBroom /> Limpiar
                             </Button>
                         </div>
                     </div>

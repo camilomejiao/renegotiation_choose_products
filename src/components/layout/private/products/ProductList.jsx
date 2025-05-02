@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col } from "react-bootstrap";
-import {FaEdit, FaPlus, FaSave, FaThumbsDown, FaThumbsUp} from "react-icons/fa";
+import { FaEdit, FaPlus, FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
 import debounce from "lodash/debounce";
@@ -517,13 +517,13 @@ export const ProductList = () => {
                                     <>
                                         <Button onClick={() => navigate(`/admin/create-products`)}
                                                 className="button-order-responsive">
-                                            Agregar productos <FaPlus/>
+                                            <FaPlus/> Agregar productos
                                         </Button>
 
                                         <Button variant="secondary"
                                                 onClick={() => navigate(`/admin/edit-product`)}
                                                 className="button-order-responsive">
-                                            Editar productos <FaEdit/>
+                                            <FaEdit/> Editar productos
                                         </Button>
                                     </>
                                 )}
@@ -636,7 +636,7 @@ export const ProductList = () => {
                                         onClick={handleOpenModal}
                                         disabled={loading}
                                     >
-                                        Aprobar <FaThumbsUp  /> / Denegar <FaThumbsDown />
+                                        <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
                                     </Button>
                                     </>
                             )}
@@ -648,7 +648,7 @@ export const ProductList = () => {
                                         onClick={handleSaveProducts}
                                         disabled={loading}
                                     >
-                                        {loading ? "Guardando..." : "Guardar Productos"} <FaSave/>
+                                        <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
                                     </Button>
                                 </>
                             )}

@@ -208,7 +208,7 @@ export const CreateOrder = () => {
         }
 
         if (status === ResponseStatusEnum.BAD_REQUEST) {
-            AlertComponent.error('Error al guardar los productos', data.items[0].discount);
+            AlertComponent.error('Error al guardar los productos', data);
         }
     };
 
@@ -222,6 +222,7 @@ export const CreateOrder = () => {
 
     //Maneja el error en caso de fallo de la llamada
     const handleError = (error, title) => {
+        console.log('error: ', error, 'title: ', title);
         const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
         AlertComponent.error(title,errorMessage);
     };
@@ -418,7 +419,9 @@ export const CreateOrder = () => {
                                         </td>
                                         <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
                                         <td>
-                                            <Button variant="danger" size="sm" onClick={() => handleDeleteItem(index)}>
+                                            <Button variant="danger"
+                                                    size="sm"
+                                                    onClick={() => handleDeleteItem(index)}>
                                                 <FaTrashAlt />
                                             </Button>
                                         </td>

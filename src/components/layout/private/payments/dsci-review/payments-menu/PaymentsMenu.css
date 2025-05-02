@@ -8,52 +8,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Header */
-.payment-header {
-    display: flex;
-    align-items: center;
-    background-color: #2148C0;
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    height: 160px;
-    position: relative;
-}
-
-.payment-header-content {
-    margin-left: 30px;
-    display: flex;
-    align-items: center;
-}
-
-.payment-header-content h2 {
-    font-weight: 900;
-    font-size: 40px;
-    line-height: 100%;
-    margin: 0;
-}
-
-.payment-header-text {
-    display: flex;
-    align-items: center;
-    margin-left: 60px;
-    max-width: 600px;
-}
-
-.payment-header-text p {
-    font-weight: 300;
-    font-size: 18px;
-    line-height: 120%;
-    margin: 0;
-}
-
-.payment-header-img img {
-    position: absolute;
-    right: 30px;
-    bottom: 0;
-    height: 150px;
-}
-
 /* Revisiones */
 .revisions {
     margin-top: 20px;
@@ -67,6 +21,7 @@
 .payment-cards {
     display: flex;
     gap: 40px;
+    flex-wrap: nowrap;
 }
 
 .payment-card {
@@ -97,6 +52,10 @@
 /* Estado */
 .payment-status {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
 }
 
 .payment-status h3 {
@@ -110,8 +69,8 @@
     background: #A2DDF6;
     padding: 20px;
     border-radius: 8px;
-    height: 80px;
-    width: 48%;
+    height: 85px;
+    width: 100%;
 }
 
 .payment-status-text {
@@ -124,4 +83,29 @@
 
 .payment-status-card img {
     width: 80px;
+    margin-left: 20px;
+}
+
+@media (max-width: 768px) {
+    .revisions {
+        margin-right: 30px;
+    }
+
+    .payment-cards {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .payment-card {
+        width: 100%;
+    }
+
+    .payment-srarys-content {
+        width: 100%;
+        margin-right: 30px;
+    }
+
+    .payment-status-item {
+        flex: 1 1 100%;
+    }
 }

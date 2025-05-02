@@ -1,0 +1,114 @@
+.content-review-documents {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(147, 53, 53, 0.1);
+}
+
+.button-group-review {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.button-download {
+    width: 300px !important;
+    height: 60px;
+    background-color: #40A581;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.button-download img {
+    width: 40px;
+    height: 40px;
+}
+
+.total {
+    width: 290px !important;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 800;
+    background-color: #AECA13;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    text-align: center;
+}
+
+.btn-approve {
+    width: 220px;
+    height: 60px;
+    background-color: #f6801f;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.btn-deny {
+    width: 220px;
+    height: 60px;
+    background-color: #b22e2e;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.btn-back {
+    width: 220px;
+    height: 60px;
+    background-color: #575454;
+    color: white;
+    border-radius: 15px;
+    border: none;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.btn-approve img,
+.btn-deny img,
+.btn-back img {
+    width: 40px;
+    height: 40px;
+    filter: grayscale(100%) brightness(1000%);
+}
+
+.observations {
+    margin: auto !important;
+    max-width: 1000px;
+}
+
+.observations label {
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 100%;
+    color: #2148C0;
+}
+
+.observations img {
+    width: 50px;
+    height: 50px;
+}
+
+.observations textarea {
+    width: 100% !important;
+    height: 135px !important;
+    border-radius: 35px !important;
+    padding: 10px !important;
+    border: 4px solid #2148C0 !important;
+}

@@ -36,7 +36,10 @@ export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
                                     <th style={styles.userHeader}>LINEA:</th>
                                     <th style={styles.userText}>{userData?.linea}</th>
                                     <th style={styles.userHeader}>SALDO:</th>
-                                    <th style={styles.userText}>{userData?.deuda_componente}</th>
+                                    <th style={styles.userText}>
+                                        $ {parseInt(userData.deuda_componente).toLocaleString("es-CO")}
+                                    </th>
+
                                 </tr>
                             </thead>
                         </table>
@@ -48,8 +51,6 @@ export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
                                     <th style={styles.header}>DESCRIPCIÓN</th>
                                     <th style={styles.header}>UNIDAD</th>
                                     <th style={styles.header}>CANTIDAD</th>
-                                    <th style={styles.header}>COSTO UNITARIO</th>
-                                    <th style={styles.header}>COSTO TOTAL</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,31 +60,8 @@ export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
                                         <td style={styles.cellLeft}>{item.descripcion}</td>
                                         <td style={styles.cellCenter}>{item.unidad}</td>
                                         <td style={styles.cellCenter}>{item.cantidad}</td>
-                                        <td style={styles.cellRight}>
-                                            {parseFloat(item.costo_unitario).toLocaleString("es-CO", {
-                                                style: "currency",
-                                                currency: "COP",
-                                            })}
-                                        </td>
-                                        <td style={styles.cellRight}>
-                                            {item.costo_total.toLocaleString("es-CO", {
-                                                style: "currency",
-                                                currency: "COP",
-                                            })}
-                                        </td>
                                     </tr>
                                 ))}
-                                {/* Fila Total */}
-                                <tr>
-                                    <td colSpan="5" style={styles.totalLabel}>
-                                        Total
-                                    </td>
-                                    <td style={styles.totalValue}>
-                                        {planData
-                                            .reduce((total, item) => total + item.costo_total, 0)
-                                            .toLocaleString("es-CO", { style: "currency", currency: "COP" })}
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </>

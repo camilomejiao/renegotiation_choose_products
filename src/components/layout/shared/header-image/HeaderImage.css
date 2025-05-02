@@ -26,8 +26,8 @@
     border-radius: 50%;
     padding: 10px;
     z-index: 1;
-    top: -90px;
-    left: 28%;
+    top: -95px;
+    left: 26%;
 }
 
 .icon-large {
@@ -41,8 +41,8 @@
     margin-top: -85px;
     padding-left: 60px;
     position: relative;
-    width: 35%;
-    font-size: 25px;
+    width: 40%;
+    font-size: 20px;
 }
 
 @media (max-width: 768px) {

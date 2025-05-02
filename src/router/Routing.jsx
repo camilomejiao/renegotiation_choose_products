@@ -24,11 +24,12 @@ import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
-import { Payments } from "../components/layout/private/payments/Payments";
-import { PaySuppliers } from "../components/layout/private/payments/suppliers/PaySuppliers";
+import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
+import { PaySuppliers } from "../components/layout/private/payments/suppliers/pay-suppliers/PaySuppliers";
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
+import {BeneficiaryReview} from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
 
 export const Routing = () => {
     return (
@@ -65,7 +66,8 @@ export const Routing = () => {
                         <Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />
 
                         {/* Payments */}
-                        <Route path={ RouterEnum.Payments }  element={ <Payments /> }  />
+                        <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
+                        <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryReview /> }  />
                         <Route path={ RouterEnum.Payments_Suppliers }  element={ <PaySuppliers /> }  />
 
                         {/* Users */}

@@ -88,14 +88,14 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
 
                                 return (
                                     <tr key={index + '-' + idx}>
-                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto.nombre}</td>
-                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto.nombre}</td>
-                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto.marca}</td>
-                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{cubData.nombre}</td>
-                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{cubData.cedula} - {cubData.cub_id}</td>
-                                        <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto.unidad}</td>
-                                        <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto.cantidad}</td>
-                                        <td style={{ width: '25px', textAlign: 'center', border: '1px solid black' }}>${producto.precio.toLocaleString()}</td>
+                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto?.nombre}</td>
+                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto?.descripcion}</td>
+                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{producto?.marca}</td>
+                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{cubData?.nombre}</td>
+                                        <td style={{ width: '30px', textAlign: 'left', border: '1px solid black' }}>{cubData?.cedula} - {cubData?.cub_id}</td>
+                                        <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto?.unidad}</td>
+                                        <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto?.cantidad}</td>
+                                        <td style={{ width: '25px', textAlign: 'center', border: '1px solid black' }}>${producto?.precio.toLocaleString()}</td>
                                         <td style={{ textAlign: 'center', border: '1px solid black' }}>{producto.descuento}%</td>
                                         <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto.total.toLocaleString()}</td>
                                     </tr>
