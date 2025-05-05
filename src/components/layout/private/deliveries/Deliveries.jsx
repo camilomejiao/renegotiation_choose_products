@@ -142,7 +142,11 @@ export const Deliveries = () => {
 
     //
     const isButtonDisabled = (row) => {
-        if((row.actions.approvedTerritorial === true || row.actions.approvedTerritorial === false) && (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.TECHNICAL)) {
+        if((row.actions.approvedTerritorial === true ||
+            row.actions.approvedTerritorial === false) &&
+            (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS ||
+             userAuth.rol_id === RolesEnum.TECHNICAL ||
+             userAuth.rol_id === RolesEnum.SUPPLIER)) {
             return true;
         }
     };
@@ -151,8 +155,7 @@ export const Deliveries = () => {
     const isButtonDisabledTecnical = (row) => {
         const { approvedTerritorial, approvedTechnical } = row.actions;
 
-        if(userAuth.rol_id === RolesEnum.TECHNICAL &&
-            (approvedTerritorial === true || approvedTechnical === true || approvedTechnical === false)) {
+        if(approvedTechnical === true || approvedTechnical === false) {
             return true;
         }
         return false;
@@ -278,7 +281,7 @@ export const Deliveries = () => {
         {
             field: "actions",
             headerName: "ACCIONES",
-            width: 150,
+            width: 200,
             renderCell: (params) => {
                 return (
                     <div>
@@ -320,7 +323,7 @@ export const Deliveries = () => {
                         {((userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && params.row.evidencePdf?.urlFile !== 0) && (
                             <>
                                 <Button
-                                    variant="success"
+                                    style={{ backgroundColor: "#FFF" }}
                                     size="sm"
                                     onClick={() => {
                                         setSelectedDeliveryId(params.row.id);
@@ -328,7 +331,7 @@ export const Deliveries = () => {
                                     }}
                                     disabled={isButtonDisabledTecnical(params.row)}
                                 >
-                                    <FaCheckDouble/>
+                                    {renderApprovalIcon(params.row.actions?.approvedTechnical)}
                                 </Button>
                             </>
                         )}
