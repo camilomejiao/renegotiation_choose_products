@@ -493,11 +493,11 @@ export const Deliveries = () => {
             return;
         }
         setListDeliveriesToUser([]);
-        setShowDeliveryForm(true);
 
         const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
 
         try {
+            setIsLoading(true);
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
             if (status === ResponseStatusEnum.OK) {
@@ -507,6 +507,7 @@ export const Deliveries = () => {
                     quantityToDeliver: product.cantidad
                 }));
                 setDeliveryProducts(normalizeProductsToBeDeliveredRows(updatedData));
+                setShowDeliveryForm(true);
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
@@ -514,6 +515,8 @@ export const Deliveries = () => {
             }
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
