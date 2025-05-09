@@ -175,11 +175,12 @@ export const AddProducts = () => {
         try {
             setLoading(true); // Mostrar indicador de carga
             const transformedData = await transformData(rows); // Transformar los datos
-            const batches = chunkArray(transformedData, 500);
+            const batches = chunkArray(transformedData, 250);
 
             await sendBatchesInParallel(batches);
 
             showAlert('', 'Todos los productos se han creado exitosamente');
+            navigate('/admin/products');
 
             // Limpiamos la tabla
             setRows([]);
