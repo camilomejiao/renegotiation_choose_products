@@ -61,6 +61,7 @@ export const ProductList = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingTable, setLoadingTable] = useState(false);
     const [environmentalCategoriesColumns, setEnvironmentalCategoriesColumns] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState([]);
@@ -105,6 +106,7 @@ export const ProductList = () => {
 
     //Obtener la lista de productos
     const getProductList = async () => {
+        setLoadingTable(true);
         try {
             const { data, status } = await productServices.getProductList(getSupplierId());
             if (status === ResponseStatusEnum.OK) {
@@ -114,6 +116,8 @@ export const ProductList = () => {
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
+        } finally {
+            setLoadingTable(false)
         }
     };
 
@@ -554,6 +558,7 @@ export const ProductList = () => {
 
                         <div style={{height: 600, width: "100%"}}>
                             <DataGrid
+                                loading={loadingTable}
                                 checkboxSelection
                                 onRowSelectionModelChange={handleSelectionChange}
                                 columns={columns}
