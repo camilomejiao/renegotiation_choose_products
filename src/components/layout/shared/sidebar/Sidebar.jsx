@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {createElement, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { Container, Accordion, Card } from 'react-bootstrap';
 import {
@@ -17,153 +17,87 @@ import {
     FaCcPaypal
 } from 'react-icons/fa';
 
-//Css
 import './Sidebar.css';
-
-//Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
 
-export const Sidebar = ({userAuth}) => {
+const menuConfig = {
+    [RolesEnum.ADMIN]: [
+        { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
+        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+    ],
+    [RolesEnum.SUPERVISION]: [
+        { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
+        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+    ],
+    [RolesEnum.ENVIRONMENTAL]: [
+        { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
+        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+    ],
+    [RolesEnum.TECHNICAL]: [
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+    ],
+    [RolesEnum.TERRITORIAL_LINKS]: [
+        { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
+        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+    ],
+    [RolesEnum.SUPPLIER]: [
+        { path: "/", icon: FaShoppingCart, label: "Solicitud" },
+        { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
+        { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo Productos" },
+        { path: "/admin/company-reports", icon: FaChartPie, label: "Reportes general" },
+    ]
+};
+
+export const Sidebar = ({ userAuth }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
+    const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const role = userAuth?.rol_id;
+    const items = menuConfig[role] || [];
+    const title = role === RolesEnum.SUPPLIER ? 'Proveedor' : role === RolesEnum.TERRITORIAL_LINKS ? 'Tecnico Territorio' : 'Perfil';
+    const titleIcon = role === RolesEnum.SUPPLIER ? FaRegBuilding : role === RolesEnum.TERRITORIAL_LINKS ? FaHardHat : FaUser;
 
     return (
-        <>
-            <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-                <Container fluid className="sidebar-content">
-                    {/* Perfil del Usuario */}
-                    {(
-                        userAuth.rol_id === RolesEnum.ADMIN ||
-                        userAuth.rol_id === RolesEnum.SUPERVISION ||
-                        userAuth.rol_id === RolesEnum.TECHNICAL ||
-                        userAuth.rol_id === RolesEnum.ENVIRONMENTAL) && (
-                        <Accordion>
-                            <Card className="accordion-card">
-                                <Accordion.Header>
-                                    <div className="accordion-toggle">
-                                        <FaUser className="sidebar-icon" />
-                                        {isOpen && <span className="sidebar-text">Perfil</span>}
-                                    </div>
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                    <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={() => navigate("/admin/search-user-for-renegociation")}>
-                                            <FaHandshake className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Renegociación</span>}
+        <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+            <Container fluid className="sidebar-content">
+                {items.length > 0 && (
+                    <Accordion>
+                        <Card className="accordion-card">
+                            <Accordion.Header>
+                                <div className="accordion-toggle">
+                                    {titleIcon && createElement(titleIcon, { className: "sidebar-icon" })}
+                                    {isOpen && <span className="sidebar-text">{title}</span>}
+                                </div>
+                            </Accordion.Header>
+                            <Accordion.Body>
+                                <div className="dropdown-content">
+                                    {items.map(({ path, icon: Icon, label }) => (
+                                        <div className="dropdown-item" key={path} onClick={() => navigate(path)}>
+                                            <Icon className="sidebar-icon" />
+                                            {isOpen && <span className="sidebar-text">{label}</span>}
                                         </div>
-                                        <div className="dropdown-item" onClick={() => navigate("/")}>
-                                            <FaUsersCog className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Gestión De Usuarios</span>}
-                                        </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/users`)}>*/}
-                                        {/*    <FaUsers className="sidebar-icon" />*/}
-                                        {/*    {isOpen && <span className="sidebar-text">Modulo Usuarios</span>}*/}
-                                        {/*</div>*/}
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
-                                            <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
-                                        </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
-                                            <FaCcPaypal className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
-                                        </div>*/}
-                                    </div>
-                                </Accordion.Body>
-                            </Card>
-                        </Accordion>
-                    )}
+                                    ))}
+                                </div>
+                            </Accordion.Body>
+                        </Card>
+                    </Accordion>
+                )}
+            </Container>
 
-                    {/* Gestión de Usuarios para Roles Administrativos */}
-                    {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                        <Accordion>
-                            <Card className="accordion-card">
-                                <Accordion.Header>
-                                    <div className="accordion-toggle">
-                                        <FaHardHat className="sidebar-icon" />
-                                        {isOpen && <span className="sidebar-text">Tecnico Territorio</span>}
-                                    </div>
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                    <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={() => navigate("/admin/search-user-for-renegociation")}>
-                                            <FaHandshake className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Renegociación</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate("/")}>
-                                            <FaUsersCog className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Gestión De Usuarios</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
-                                            <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo De Productos</span>}
-                                        </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments`)}>
-                                            <FaCcPaypal className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo De Pagos</span>}
-                                        </div>*/}
-                                    </div>
-                                </Accordion.Body>
-                            </Card>
-                        </Accordion>
-                    )}
-
-                    {/* Acordeón para Proveedores */}
-                    {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
-                        <Accordion>
-                            <Card className="accordion-card">
-                                <Accordion.Header>
-                                    <div className="accordion-toggle">
-                                        <FaRegBuilding className="sidebar-icon" />
-                                        {isOpen && <span className="sidebar-text">Proveedores</span>}
-                                    </div>
-                                </Accordion.Header>
-                                <Accordion.Body>
-                                    <div className="dropdown-content">
-                                        <div className="dropdown-item" onClick={() => navigate("/")}>
-                                            <FaShoppingCart className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Solicitud</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/order-report`)}>
-                                            <FaFileInvoiceDollar className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Ordenes de compra</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/search-user-for-deliveries`)}>
-                                            <FaShippingFast className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Entregas</span>}
-                                        </div>
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/products`)}>
-                                            <FaDollyFlatbed className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Productos</span>}
-                                        </div>
-                                        {/*<div className="dropdown-item" onClick={() => navigate(`/admin/payments-suppliers`)}>
-                                            <FaCcPaypal className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Modulo Pagos</span>}
-                                        </div>*/}
-                                        <div className="dropdown-item" onClick={() => navigate(`/admin/company-reports`)}>
-                                            <FaChartPie className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">Reportes general</span>}
-                                        </div>
-                                    </div>
-                                </Accordion.Body>
-                            </Card>
-                        </Accordion>
-                    )}
-                </Container>
-
-                {/* Toggle Sidebar */}
-                <div className="logout" onClick={() => navigate("/admin/logout")}>
-                    <FaSignOutAlt className="logout-icon" />
-                    {isOpen && <span className="sidebar-text">Salir</span>}
-                </div>
-                <div className="sidebar-toggle" onClick={toggleSidebar}>
-                    <FaBars className="toggle-icon" />
-                </div>
+            <div className="logout" onClick={() => navigate("/admin/logout")}>
+                <FaSignOutAlt className="logout-icon" />
+                {isOpen && <span className="sidebar-text">Salir</span>}
             </div>
-        </>
-
+            <div className="sidebar-toggle" onClick={toggleSidebar}>
+                <FaBars className="toggle-icon" />
+            </div>
+        </div>
     );
 };

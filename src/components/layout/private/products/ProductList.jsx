@@ -315,6 +315,7 @@ export const ProductList = () => {
     };
 
     const handleApproveByAudit = async (ids, accion, comment) => {
+        setLoading(true);
         try {
             let letter = accion === 'approve' ? 'Aprobado' : 'Denegado'
             let data = {
@@ -330,6 +331,8 @@ export const ProductList = () => {
             }
         } catch (error) {
             console.error("Error al aprobar el producto:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -392,7 +395,7 @@ export const ProductList = () => {
         //Obtener claves ambientales
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
-        console.log('inputData: ', inputData);
+        //console.log('inputData: ', inputData);
 
         return inputData.map((product) => ({
             id: product.id,
@@ -542,6 +545,12 @@ export const ProductList = () => {
                                 )}
                             </div>
                         </div>
+
+                        {loading && (
+                            <div className="overlay">
+                                <div className="loader">Cargando...</div>
+                            </div>
+                        )}
 
                         <div style={{height: 600, width: "100%"}}>
                             <DataGrid

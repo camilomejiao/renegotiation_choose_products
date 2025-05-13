@@ -172,6 +172,7 @@ export const AddProducts = () => {
             return;
         }
 
+
         try {
             setLoading(true); // Mostrar indicador de carga
             const transformedData = await transformData(rows); // Transformar los datos
