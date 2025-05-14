@@ -96,7 +96,7 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                                         <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto?.unidad}</td>
                                         <td style={{ width: '30px', textAlign: 'center', border: '1px solid black' }}>{producto?.cantidad}</td>
                                         <td style={{ width: '25px', textAlign: 'center', border: '1px solid black' }}>${producto?.precio.toLocaleString()}</td>
-                                        <td style={{ textAlign: 'center', border: '1px solid black' }}>{producto.descuento}%</td>
+                                        <td style={{ textAlign: 'center', border: '1px solid black' }}>{Number(producto.descuento) % 1 === 0 ? Number(producto.descuento) : Number(producto.descuento).toFixed(3).replace(/\.?0+$/, '')}%</td>
                                         <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto.total.toLocaleString()}</td>
                                     </tr>
                                 );

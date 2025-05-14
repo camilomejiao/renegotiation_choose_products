@@ -171,17 +171,19 @@ export const CreateOrder = () => {
 
     //Calcula el total por cada item y mapea los datos necesarios
     const calculateItemsWithTotal = () => {
-        return items.map((item) => {
-            const discountRate = parseFloat(item.discount) || 0;
-            const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - discountRate / 100));
-            return {
-                producto: item.id,
-                discount: item.discount || 0,
-                cantidad: item.quantity,
-                valor_unitario: parseFloat(item.valor_unitario),
-                valor_final: totalByItem
-            };
-        });
+        return items
+            .filter(item => item.quantity > 0)
+            .map(item => {
+                const discountRate = parseFloat(item.discount) || 0;
+                const totalByItem = Math.ceil(item.valor_unitario * item.quantity * (1 - discountRate / 100));
+                return {
+                    producto: item.id,
+                    discount: item.discount || 0,
+                    cantidad: item.quantity,
+                    valor_unitario: parseFloat(item.valor_unitario),
+                    valor_final: totalByItem
+                };
+            });
     };
 
     //Construye la estructura de datos a enviar
@@ -270,6 +272,11 @@ export const CreateOrder = () => {
 
     const getSupplierLocation = () => {
         return supplierServices.getLocation();
+    }
+
+    //
+    const validateProducts = () => {
+        return total === 0;
     }
 
     useEffect(() => {
@@ -469,7 +476,7 @@ export const CreateOrder = () => {
                                 variant="success"
                                 size="lg"
                                 onClick={handleSaveProduct}
-                                disabled={items.length === 0}
+                                disabled={validateProducts()}
                                 className="button-responsive"
                                 style={{
                                     backgroundColor: items.length === 0 ? "#ccc" : "#BFD732",

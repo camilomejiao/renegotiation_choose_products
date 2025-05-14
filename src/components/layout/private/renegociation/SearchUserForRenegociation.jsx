@@ -5,7 +5,6 @@ import { Col, Container, Row } from "react-bootstrap";
 import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
-
 export const SearchUserForRenegociation = () => {
 
     const navigate = useNavigate();
