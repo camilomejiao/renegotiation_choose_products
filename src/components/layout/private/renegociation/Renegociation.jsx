@@ -71,17 +71,19 @@ export const Renegociation = () => {
     }
 
     const getInformationRenegotiation = async (planId, lineId, cubId) => {
-        try {
-            const { data: lines } = await renegotiationServices.getLine(planId, cubId);
-            setLineaOptions(lines);
+        if(planId !== 0 && lineId !== 0) {
+            try {
+                const { data: lines } = await renegotiationServices.getLine(planId, cubId);
+                setLineaOptions(lines);
 
-            setFormData(prevState => ({
-                ...prevState,
-                PlanId: planId || "",
-                LineaId: lines.some(line => line?.id === lineId) ? lineId : "",
-            }));
-        } catch (error) {
-            console.log(error);
+                setFormData(prevState => ({
+                    ...prevState,
+                    PlanId: planId || "",
+                    LineaId: lines.some(line => line?.id === lineId) ? lineId : "",
+                }));
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
@@ -104,7 +106,7 @@ export const Renegociation = () => {
         setFormData({ PlanId: planId, LineaId: "" });
 
         if (planId) {
-            const { data } = await renegotiationServices.getLine(planId, engagementId);
+            const { data, status } = await renegotiationServices.getLine(planId, engagementId);
             setLineaOptions(data);
         }
     };
@@ -112,6 +114,10 @@ export const Renegociation = () => {
     // Lógica para habilitar/deshabilitar el botón de guardar
     const isSaveEnabled = () => {
         return comentarios && cellPhone && formData.PlanId && formData.LineaId && (formData.LineaId !== userData.linea_id);
+    }
+
+    const isHandlePlanEnabled = () => {
+        return formData.PlanId === '' || formData.LineaId === '';
     }
 
     //
@@ -127,8 +133,8 @@ export const Renegociation = () => {
     const handleSaveInformationUser = async () => {
         setIsLoading(true);
         let updateData = {
-            plan: formData.PlanId,
-            linea: formData.LineaId,
+            plan: formData?.PlanId,
+            linea: formData?.LineaId,
             telefono: cellPhone,
             comentario: comentarios
         }
@@ -372,11 +378,11 @@ export const Renegociation = () => {
                         <Col xs={12} md={3} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Plan</Form.Label>
-                                <Form.Select name="PlanId" value={formData.PlanId} onChange={handlePlanChange}>
+                                <Form.Select name="PlanId" value={formData?.PlanId} onChange={handlePlanChange}>
                                     <option value="">Seleccione Plan...</option>
-                                    {planOptions.map((plan) => (
-                                        <option key={plan.id} value={plan.id}>
-                                            {plan.nombre}
+                                    {planOptions?.map((plan) => (
+                                        <option key={plan?.id} value={plan?.id}>
+                                            {plan?.nombre}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -389,14 +395,14 @@ export const Renegociation = () => {
                                 <Form.Label>Linea</Form.Label>
                                 <Form.Select
                                     name="LineaId"
-                                    value={formData.LineaId}
+                                    value={formData?.LineaId}
                                     onChange={(e) => setFormData({ ...formData, LineaId: e.target.value })}
                                     disabled={!formData.PlanId}
                                 >
                                     <option value="">Seleccione Linea...</option>
-                                    {lineaOptions.map((linea) => (
-                                        <option key={linea.id} value={linea.id}>
-                                            {linea.nombre}
+                                    {lineaOptions?.map((linea) => (
+                                        <option key={linea?.id} value={linea?.id}>
+                                            {linea?.nombre}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -452,6 +458,7 @@ export const Renegociation = () => {
 
                             <Button
                                 variant="danger"
+                                disabled={isHandlePlanEnabled()}
                                 onClick={() => handlePlanToReport()}>
                                 Generar Plan
                             </Button>
