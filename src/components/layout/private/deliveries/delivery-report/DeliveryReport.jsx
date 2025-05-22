@@ -201,9 +201,9 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Activo productivo adquirido</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Descripción detallada</td>
                             <td style={{textAlign: 'center', border: '1px solid black', width: '50px', fontSize: '9px'}}>Unidad de medida y/o presentación</td>
+                            <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Estado</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Cantidad</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Valor Total</td>
-                            <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Estado</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -218,9 +218,9 @@ export const DeliveryReport = ({deliveryInformation}) => {
                                         <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.nombre}</td>
                                         <td style={{textAlign: 'left', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.especificacion_tecnicas}</td>
                                         <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{product?.producto?.unidad}</td>
+                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{estado.label}</td>
                                         <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{cantidad}</td>
                                         <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{valorFinal.toLocaleString('es-CO')}</td>
-                                        <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>{estado.label}</td>
                                     </tr>
                                 );
                             }
@@ -232,7 +232,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                 <table style={{borderCollapse: 'collapse', width: '100%'}}>
                     <thead>
                         <tr>
-                            <td style={{textAlign: 'right', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black', width: '85%'}}>Total</td>
+                            <td style={{textAlign: 'right', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black', width: '89%'}}>Total</td>
                             <td style={{textAlign: 'center', borderLeft: '1px solid black', borderRight: '1px solid black', borderBottom: '1px solid black'}}>{totalValorFinal.toLocaleString('es-CO')}</td>
                         </tr>
                     </thead>
@@ -241,7 +241,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                 <table style={{borderCollapse: 'collapse', width: '100%'}}>
                     <thead>
                         <tr>
-                            <td colSpan="4" style={{textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black'}}>
+                            <td colSpan={5} style={{textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black', padding: '10px'}}>
                                 <b>Con la suscripción de la presente acta manifiesto que los elementos recibidos los voy
                                     a utilizar única y exclusivamente para el desarrollo de mi proyecto productivo como
                                     titular de la DSCI y que acepto que se realicen las labores de seguimiento y/o verificación
@@ -249,23 +249,16 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={4} style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>&nbsp;</td>
+                            <td style={{width: '25%', textAlign: 'center', border: '1px solid black', padding: '15px'}}>Nombre completo del titular</td>
+                            <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>Número de identificación</td>
+                            <td style={{width: '10%', textAlign: 'center', border: '1px solid black'}}>CUB</td>
+                            <td style={{width: '25%', textAlign: 'center', border: '1px solid black'}}>firma</td>
+                            <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>huella</td>
                         </tr>
                         <tr>
-                            <td style={{width: '30%', textAlign: 'center', border: '1px solid black', padding: '15px'}}>Nombre completo del titular</td>
-                            <td style={{width: '30%', textAlign: 'center', border: '1px solid black'}}>Número de identificación</td>
-                            <td style={{width: '15%', textAlign: 'center', border: '1px solid black'}}>CUB</td>
-                            <td style={{textAlign: 'center', border: '1px solid black'}}>firma y/o huella</td>
-                        </tr>
-                        <tr>
-                            <td style={{height: '30px', textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.nombre + ' ' + deliveryInformation?.cub?.apellido}</td>
+                            <td style={{height: '60px', textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.nombre + ' ' + deliveryInformation?.cub?.apellido}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.identificacion}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.cub_id}</td>
-                            <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td style={{height: '30px', textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
-                            <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
@@ -277,7 +270,8 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         <tr>
                             <td style={{
                                 textAlign: 'center',
-                                border: '1px solid black',
+                                borderLeft: '1px solid black',
+                                borderRight: '1px solid black',
                                 backgroundColor: 'gray'
                             }}>
                                 <h4> OBSERVACIONES Y PENDIENTES </h4>
