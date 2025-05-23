@@ -249,18 +249,23 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{width: '25%', textAlign: 'center', border: '1px solid black', padding: '15px'}}>Nombre completo del titular</td>
+                            <td style={{width: '25%', textAlign: 'center', border: '1px solid black', padding: '10px'}}>Nombre completo del titular</td>
                             <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>Número de identificación</td>
                             <td style={{width: '10%', textAlign: 'center', border: '1px solid black'}}>CUB</td>
                             <td style={{width: '25%', textAlign: 'center', border: '1px solid black'}}>firma</td>
                             <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>huella</td>
                         </tr>
                         <tr>
-                            <td style={{height: '60px', textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.nombre + ' ' + deliveryInformation?.cub?.apellido}</td>
+                            <td style={{height: '55px', textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.nombre + ' ' + deliveryInformation?.cub?.apellido}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.identificacion}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>{deliveryInformation?.cub?.cub_id}</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
                             <td style={{textAlign: 'center', border: '1px solid black'}}>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td colSpan={5} style={{textAlign: 'center', border: '1px solid black'}}>
+                                <b>NOTA: En caso de que el titular no sepa o no pueda firmar, deberá adjuntar copia de su cédula de ciudadania</b>
+                            </td>
                         </tr>
                     </thead>
                 </table>
