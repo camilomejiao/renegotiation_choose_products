@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
-import {FaCheck, FaCheckDouble, FaClipboardCheck, FaFilePdf, FaPencilAlt, FaTimes, FaTrash} from "react-icons/fa";
+import {FaCheck, FaClipboardCheck, FaFilePdf, FaPencilAlt, FaTimes, FaTrash } from "react-icons/fa";
 import printJS from "print-js";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -84,7 +84,9 @@ export const Deliveries = () => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
-                setListDeliveriesToUser(await normalizeDeliveryRows(data));
+                const rows = await normalizeDeliveryRows(data);
+                console.log("Rows entregas normalizadas", rows);
+                setListDeliveriesToUser(rows);
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -112,12 +114,12 @@ export const Deliveries = () => {
     const normalizeDeliveryRows = async (data) => {
         return await Promise.all(
             data.map(async (row) => {
-                const deliveryIdInfo = await getDeliveryUrl(row.id);
+                const deliveryIdInfo = await getDeliveryUrl(row?.id);
                 return {
-                    id: row.id,
-                    date: row.fecha_creacion.split("T")[0],
-                    supplier: row.proveedor,
-                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile },
+                    id: row?.id,
+                    date: row?.fecha_creacion.split("T")[0],
+                    supplier: row?.proveedor,
+                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile ?? "" },
                     actions: {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
                         approvedTerritorial: deliveryIdInfo?.approvedTerritorial,
@@ -160,7 +162,6 @@ export const Deliveries = () => {
         }
         return false;
     };
-
 
     //
     const renderApprovalIcon = (status) => {
@@ -264,11 +265,11 @@ export const Deliveries = () => {
                             Subir PDF
                         </Button>
 
-                        {(params.row.evidencePdf.urlFile !== 0) && (
+                        {(params?.row?.evidencePdf?.urlFile !== 0) && (
                             <Button
                                 variant="success"
                                 size="sm"
-                                onClick={() => handleViewFile(params.row.evidencePdf.urlFile)}
+                                onClick={() => handleViewFile(params?.row?.evidencePdf?.urlFile)}
                                 style={{marginLeft: "10px"}}
                             >
                                 Ver PDF
@@ -395,7 +396,7 @@ export const Deliveries = () => {
                         overflow: "visible",
                     }}
                 >
-                    {params.value}
+                    {params?.value}
                 </div>
             ),
         },
@@ -413,7 +414,7 @@ export const Deliveries = () => {
                         overflow: "visible",
                     }}
                 >
-                    {params.value}
+                    {params?.value}
                 </div>
             ),
         },
@@ -427,10 +428,10 @@ export const Deliveries = () => {
                     <Form.Control
                         type="number"
                         className="small-input form-control-sm"
-                        value={params.row.quantityToBeDelivered}
+                        value={params?.row?.quantityToBeDelivered}
                         min="0"
                         onChange={(e) =>
-                            handleQuantityChange(params.row.id, e.target.value)
+                            handleQuantityChange(params?.row?.id, e.target.value)
                         }
                         style={{
                             width: "100%",
@@ -449,9 +450,9 @@ export const Deliveries = () => {
             renderCell: (params) => {
                 return (
                     <select
-                        value={params.row.state}
+                        value={params?.row?.state}
                         onChange={(e) =>
-                            handleStatusChange(params.row.id, parseInt(e.target.value))
+                            handleStatusChange(params?.row?.id, parseInt(e.target.value))
                         }
                         style={{
                             width: "100%",
@@ -464,8 +465,8 @@ export const Deliveries = () => {
                         }}
                     >
                         {deliveryStatus.map((option) => (
-                            <option key={option.id} value={option.id}>
-                                {option.label}
+                            <option key={option?.id} value={option?.id}>
+                                {option?.label}
                             </option>
                         ))}
                     </select>
@@ -477,12 +478,12 @@ export const Deliveries = () => {
     //
     const normalizeProductsToBeDeliveredRows = (data) => {
         return data.map((row) => ({
-            id: row.id,
-            name: row.nombre,
-            description: row.descripcion,
-            amount: row.cantidad,
-            quantityToBeDelivered: row.quantityToDeliver || 0,
-            state: row.estado,
+            id: row?.id,
+            name: row?.nombre,
+            description: row?.descripcion,
+            amount: row?.cantidad,
+            quantityToBeDelivered: row?.quantityToDeliver || 0,
+            state: row?.estado,
         }));
     }
 
@@ -675,9 +676,9 @@ export const Deliveries = () => {
         try {
             //
             const dataSaveProducts = deliveryProducts.map(prod => ({
-                producto: prod.id,
-                cantidad: prod.quantityToBeDelivered,
-                estado: prod.state
+                producto: prod?.id,
+                cantidad: prod?.quantityToBeDelivered,
+                estado: prod?.state
             }));
 
             const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
@@ -739,7 +740,7 @@ export const Deliveries = () => {
                     <Container>
                         <Row className="justify-content-start align-items-center mt-4">
                             <>
-                                {(userAuth.rol_id === RolesEnum.ADMIN) && (
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                     <Col xs={12} md={6} className="d-flex align-items-center">
                                         <Select
                                             value={selectedSupplier}
@@ -752,7 +753,7 @@ export const Deliveries = () => {
                                     </Col>
                                 )}
 
-                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPPLIER) && (
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPPLIER || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                     <Col
                                         xs={12}
                                         md={6}

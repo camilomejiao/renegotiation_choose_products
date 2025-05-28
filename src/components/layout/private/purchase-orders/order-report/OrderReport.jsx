@@ -117,11 +117,11 @@ export const OrderReport = () => {
     // Normaliza los datos recibidos del backend
     const normalizeRows = (data) => {
         return data.map((row) => ({
-            id: row.id,
-            cub_id: row.cub?.id || "",
-            cub_identificacion: row.cub?.identificacion || "",
-            cub_nombre: row.cub?.nombre || "",
-            cub_apellido: row.cub?.apellido || "",
+            id: row?.id,
+            cub_id: row?.cub?.id || "",
+            cub_identificacion: row?.cub?.identificacion || "",
+            cub_nombre: row?.cub?.nombre || "",
+            cub_apellido: row?.cub?.apellido || "",
             valor_total: parseFloat(row?.valor_total) || 0,
             fecha_registro: row?.fecha_registro,
         }));
