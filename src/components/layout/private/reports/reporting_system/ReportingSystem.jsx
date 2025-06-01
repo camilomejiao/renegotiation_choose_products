@@ -4,28 +4,28 @@ import { Col, Container, Row, Spinner } from "react-bootstrap";
 import printJS from "print-js";
 
 //img
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
-import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
-import imgFrame from "../../../../assets/image/icons/frame.png";
-import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
-import glass from "../../../../assets/image/icons/magnifying_glass.png";
+import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
+import imgFrame from "../../../../../assets/image/icons/frame.png";
+import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
+import glass from "../../../../../assets/image/icons/magnifying_glass.png";
 
 //Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { UserInformation } from "../user-information/UserInformation";
-import { HeadLineReport } from "./user-report/HeadLineReport";
-import { AuthorizationSection } from "../../shared/authorization-section/AuthorizationSection";
-import { handleError, showAlert } from "../../../../helpers/utils/utils";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { UserInformation } from "../../user_information/UserInformation";
+import { HeadLineReport } from "./user_report/HeadLineReport";
+import { AuthorizationSection } from "../../../shared/authorization_section/AuthorizationSection";
+import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 
 //Services
-import { userService } from "../../../../helpers/services/UserServices";
-import { reportServices } from "../../../../helpers/services/ReportServices";
+import { userService } from "../../../../../helpers/services/UserServices";
+import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Css
 import './ReportingSystem.css';
 
 //Enum
-import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ComponentEnum, ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 export const ReportingSystem = () => {
     const params = useParams();

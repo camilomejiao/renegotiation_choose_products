@@ -2,7 +2,7 @@
 import {useNavigate, useOutletContext} from "react-router-dom";
 
 //Components
-import { HeaderImage } from "../../../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/payments.png";

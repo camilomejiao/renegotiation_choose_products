@@ -7,25 +7,25 @@ import { FaCalendarAlt } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 
 //Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
 import { format } from "date-fns";
-import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Img
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
-import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
-import imgFrame1 from "../../../../assets/image/icons/frame.png";
-import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
+import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
+import imgFrame1 from "../../../../../assets/image/icons/frame.png";
+import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
 
 //Services
-import { reportServices } from "../../../../helpers/services/ReportServices";
+import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Css
 import "./CompanyReport.css";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 export const CompanyReport = () => {
 

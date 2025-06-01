@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Col, Container, Row } from "react-bootstrap";
 
 //Components
-import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
+import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
 
 //Enums
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";

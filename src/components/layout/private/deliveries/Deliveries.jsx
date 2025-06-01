@@ -9,7 +9,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Components
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
-import { UserInformation } from "../user-information/UserInformation";
+import { UserInformation } from "../user_information/UserInformation";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 
 //Img

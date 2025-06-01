@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 
 //Components
-import { HeaderImage} from "../../../shared/header-image/HeaderImage";
-import { UserInformation } from "../../user-information/UserInformation";
+import { HeaderImage} from "../../../shared/header_image/HeaderImage";
+import { UserInformation } from "../../user_information/UserInformation";
 
 //Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";

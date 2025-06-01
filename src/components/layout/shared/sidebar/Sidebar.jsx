@@ -1,4 +1,4 @@
-import {createElement, useState} from 'react';
+import { createElement, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Container, Accordion, Card } from 'react-bootstrap';
 import {
@@ -14,50 +14,85 @@ import {
     FaUser,
     FaHandshake,
     FaHardHat,
-    FaCcPaypal
 } from 'react-icons/fa';
+import { MdCampaign, MdPeople } from "react-icons/md";
+import { BsCashStack, BsShieldCheck } from "react-icons/bs";
 
+//Css
 import './Sidebar.css';
+
+//Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
 
 const menuConfig = {
     [RolesEnum.ADMIN]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/admin/users", icon: MdPeople, label: "Usuarios" },
+        { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
+        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPERVISION]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
+    ],
+    [RolesEnum.PAYMENTS]: [
+        { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TECHNICAL]: [
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
+        // {
+        //     label: "Renegociación",
+        //     icon: FaHandshake,
+        //     children: [
+        //         { path: "/admin/renegotiation/create", icon: MdCampaign, label: "Creación" },
+        //         { path: "/admin/renegotiation/edit", icon: MdCampaign, label: "Edición" },
+        //     ]
+        // },
+        { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
+        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
         { path: "/", icon: FaShoppingCart, label: "Solicitud" },
         { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
         { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo Productos" },
+        //{ path: "/admin/payments-suppliers", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/company-reports", icon: FaChartPie, label: "Reportes general" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ]
 };
 
 export const Sidebar = ({ userAuth }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
+    const [openSubmenus, setOpenSubmenus] = useState({});
 
     const toggleSidebar = () => setIsOpen(!isOpen);
+
+    const toggleSubmenu = (label) => {
+        setOpenSubmenus((prev) => ({ ...prev, [label]: !prev[label] }));
+    };
 
     const role = userAuth?.rol_id;
     const items = menuConfig[role] || [];
@@ -78,12 +113,47 @@ export const Sidebar = ({ userAuth }) => {
                             </Accordion.Header>
                             <Accordion.Body>
                                 <div className="dropdown-content">
-                                    {items.map(({ path, icon: Icon, label }) => (
-                                        <div className="dropdown-item" key={path} onClick={() => navigate(path)}>
-                                            <Icon className="sidebar-icon" />
-                                            {isOpen && <span className="sidebar-text">{label}</span>}
-                                        </div>
-                                    ))}
+                                    {items.map((item) => {
+                                        if (item.children && Array.isArray(item.children)) {
+                                            const isSubmenuOpen = openSubmenus[item.label];
+
+                                            return (
+                                                <div className={`dropdown-item has-submenu ${isSubmenuOpen ? "expanded" : ""}`} key={item.label}>
+                                                    <div className="submenu-header" onClick={() => toggleSubmenu(item.label)}>
+                                                        {createElement(item.icon, { className: "sidebar-icon" })}
+                                                        {isOpen && (
+                                                            <>
+                                                                <span className="sidebar-text">{item.label}</span>
+                                                                <span className="submenu-toggle">{isSubmenuOpen ? "▲" : "▼"}</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    {isSubmenuOpen && (
+                                                        <div className="submenu-body">
+                                                            {item.children.map((subItem) => (
+                                                                <div
+                                                                    className="dropdown-item sub-item"
+                                                                    key={subItem.path}
+                                                                    onClick={() => navigate(subItem.path)}
+                                                                >
+                                                                    {subItem?.icon && createElement(subItem.icon, { className: "sidebar-icon" })}
+                                                                    {isOpen && <span className="sidebar-text ms-4">{subItem.label}</span>}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        }
+
+                                        const Icon = item.icon;
+                                        return (
+                                            <div className="dropdown-item" key={item.path} onClick={() => navigate(item.path)}>
+                                                {Icon && <Icon className="sidebar-icon" />}
+                                                {isOpen && <span className="sidebar-text">{item.label}</span>}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </Accordion.Body>
                         </Card>
@@ -91,13 +161,10 @@ export const Sidebar = ({ userAuth }) => {
                 )}
             </Container>
 
-            <div className="logout" onClick={() => navigate("/admin/logout")}>
-                <FaSignOutAlt className="logout-icon" />
-                {isOpen && <span className="sidebar-text">Salir</span>}
-            </div>
             <div className="sidebar-toggle" onClick={toggleSidebar}>
                 <FaBars className="toggle-icon" />
             </div>
         </div>
     );
+
 };

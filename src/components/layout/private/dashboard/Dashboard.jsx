@@ -6,7 +6,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import './Dashboard.css';
 
 //Component
-import { SearchUserForm } from "../../shared/search-user-form/SearchUserForm";
+import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
 import { LocationModal } from "../../shared/Modals/LocationModal";
 
 //Enums

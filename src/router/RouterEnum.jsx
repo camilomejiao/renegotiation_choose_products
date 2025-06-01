@@ -1,6 +1,11 @@
 
 export const RouterEnum = {
 
+    //Public
+    Login: 'login',
+    SupplierRegistration: 'supplier-registration',
+
+    //Private
     RouterAdmin: '/admin',
 
     //Renegociacion
@@ -29,6 +34,10 @@ export const RouterEnum = {
     Payments: 'payments',
     PaymentsRole: 'payments/:role',
     Payments_Suppliers: 'payments-suppliers',
+
+    //Suppliers
+    CreateCallsSuppliers: 'create-calls-suppliers',
+    SupplierValidation: 'supplier-validation',
 
     //Reportes
     Reports: 'reports/:id',

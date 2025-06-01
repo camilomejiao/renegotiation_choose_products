@@ -1,10 +1,10 @@
 /* Sidebar cerrado */
 .sidebar {
-    width: 70px; /* Ancho reducido por defecto */
+    width: 70px;
     position: fixed;
-    top: 80px; /* Ajusta según la altura del header */
+    top: 80px;
     left: 0;
-    height: calc(100vh - 80px); /* Altura del viewport menos la altura del header */
+    height: calc(100vh - 80px);
     background-color: #41a581;
     transition: width 0.3s ease;
     overflow: hidden;
@@ -16,10 +16,10 @@
 
 /* Sidebar abierto */
 .sidebar.open {
-    width: 150px; /* Ancho cuando está expandido */
+    width: 150px;
 }
 
-/* Estilos para el contenido del sidebar */
+/* Contenido del sidebar */
 .sidebar-content {
     margin-top: 20px;
     display: flex;
@@ -27,9 +27,9 @@
     align-items: center;
 }
 
-/* Iconos y texto en el Sidebar */
+/* Iconos y texto */
 .sidebar-icon {
-    font-size: 24px; /* Tamaño de icono en pantallas grandes */
+    font-size: 20px;
     color: white;
     margin-top: 5px;
     margin-bottom: 10px;
@@ -37,15 +37,15 @@
 
 .sidebar-text {
     color: white;
-    font-size: 12px;
-    margin-left: 10px;
+    font-size: 10px;
+    margin-left: 9px;
     display: inline-block;
     max-width: 100px;
     white-space: normal;
     word-break: break-word;
 }
 
-/* Estilos del acordeón */
+/* Acordeón */
 .accordion {
     background-color: transparent;
     width: 100%;
@@ -69,7 +69,7 @@
     text-align: left;
 }
 
-/* Estilo para los items del dropdown */
+/* Dropdown general */
 .dropdown-content {
     display: flex;
     flex-direction: column;
@@ -81,7 +81,7 @@
     color: white;
     padding: 8px;
     cursor: pointer;
-    width: 100%; /* Asegura que ocupe el ancho completo */
+    width: 100%;
     text-align: left;
 }
 
@@ -89,7 +89,48 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Botón de colapso/expansión del Sidebar */
+/* Submenús */
+.dropdown-item.has-submenu {
+    width: 100%;
+}
+
+.submenu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: white;
+    cursor: pointer;
+}
+
+.submenu-toggle {
+    margin-left: auto;
+    font-size: 10px;
+    padding-left: 5px;
+}
+
+.submenu-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.sub-item {
+    color: white;
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+}
+
+.sub-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Toggle sidebar */
 .sidebar-toggle {
     position: absolute;
     bottom: 20px;
@@ -104,22 +145,10 @@
     color: white;
 }
 
-/* Logout */
-.logout {
-    position: absolute;
-    bottom: 80px;
-    width: 100%;
-    display: flex;
-    cursor: pointer;
-    font-size: 24px;
-    color: white;
-    margin-left: 40px;
-}
-
-/* Estilos responsivos para pantallas medianas (hasta 768px) */
+/* Responsivo */
 @media (max-width: 768px) {
     .sidebar {
-        width: 60px; /* Sidebar más estrecho en pantallas medianas */
+        width: 60px;
     }
 
     .sidebar.open {
@@ -127,52 +156,50 @@
     }
 
     .sidebar-text {
-        display: none; /* Ocultar el texto cuando está cerrado en pantallas medianas */
+        display: none;
     }
 
     .sidebar.open .sidebar-text {
-        display: inline; /* Mostrar el texto cuando está expandido */
+        display: inline;
     }
 
     .sidebar-icon {
-        font-size: 22px; /* Iconos un poco más pequeños en pantallas medianas */
+        font-size: 22px;
     }
 }
 
-/* Estilos adicionales para pantallas pequeñas (hasta 576px) */
 @media (max-width: 576px) {
     .sidebar {
-        width: 50px; /* Sidebar aún más estrecho en pantallas pequeñas */
+        width: 50px;
     }
 
     .sidebar.open {
-        width: 120px; /* Ancho cuando está expandido en pantallas pequeñas */
+        width: 120px;
     }
 
     .sidebar-icon {
-        font-size: 18px; /* Tamaño de icono más pequeño en pantallas pequeñas */
+        font-size: 18px;
     }
 
     .sidebar-text {
-        font-size: 12px; /* Texto más pequeño en pantallas pequeñas */
+        font-size: 12px;
     }
 }
 
-/* Estilos para pantallas extra pequeñas (425px y menores) */
 @media (max-width: 425px) {
     .sidebar {
-        width: 50px; /* Sidebar más pequeño en pantallas extra pequeñas */
+        width: 50px;
     }
 
     .sidebar.open {
-        width: 120px; /* Ancho cuando está expandido en pantallas extra pequeñas */
+        width: 120px;
     }
 
     .sidebar-icon {
-        font-size: 18px; /* Tamaño de icono aún más pequeño en pantallas extra pequeñas */
+        font-size: 18px;
     }
 
     .sidebar-text {
-        font-size: 12px; /* Texto más pequeño en pantallas extra pequeñas */
+        font-size: 12px;
     }
 }

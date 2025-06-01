@@ -8,7 +8,7 @@ import imgHead from "../../../../../../assets/image/payments/head-calendar.png";
 import imgPlus from "../../../../../../assets/image/payments/plus.png";
 
 //Components
-import { HeaderImage } from "../../../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import { CreateCollectionAccount } from "../create-collection-account/CreateCollectionAccount";
 import { ListCollectionAccount } from "../list-collection-account/ListCollectionAccount";
 

@@ -5,17 +5,17 @@ import { Button } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
 
 // Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 
 // Img
-import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Services
-import { productServices } from "../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Utils
 import {
@@ -23,14 +23,14 @@ import {
     extractMunicipios,
     handleError,
     showAlert
-} from "../../../../helpers/utils/utils";
+} from "../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getDynamicColumnsBySupplier,
     getUnitOptions,
     getCategoryOptions,
     getEnvironmentalCategories
-} from "../../../../helpers/utils/ProductColumns";
+} from "../../../../../helpers/utils/ProductColumns";
 
 export const AddProducts = () => {
 
@@ -44,7 +44,17 @@ export const AddProducts = () => {
     const [loading, setLoading] = useState(false);
     const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
 
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, true);
+    //
+    const handleRowUpdate = (newRow) => {
+        setRows(prevRows => {
+            const updated = prevRows.map((row) => row.id === newRow.id ? newRow : row);
+            setFilteredRows(updated);
+            return updated;
+        });
+        return newRow;
+    };
+
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, true);
     const actionsColumns = [
         {
             field: 'actions',
@@ -141,7 +151,7 @@ export const AddProducts = () => {
         const defaultValues = {
             name: "Producto sin nombre", // Valor por defecto para el nombre
             description: "Descripción no disponible", // Valor por defecto para la descripción
-            unit: "Unidad", // Valor por defecto para la unidad
+            unit: "UNIDAD", // Valor por defecto para la unidad
             category: "Piscicultura", // Valor por defecto para la categoría
         };
 
@@ -172,10 +182,9 @@ export const AddProducts = () => {
             return;
         }
 
-
         try {
-            setLoading(true); // Mostrar indicador de carga
-            const transformedData = await transformData(rows); // Transformar los datos
+            setLoading(true);
+            const transformedData = await transformData(rows);
             const batches = chunkArray(transformedData, 250);
 
             await sendBatchesInParallel(batches);
@@ -264,8 +273,11 @@ export const AddProducts = () => {
 
     // Función para eliminar un elemento de la tabla
     const handleDeleteClick = (id) => {
-        const updatedRows = filteredRows.filter((row) => row.id !== id);
-        setFilteredRows(updatedRows);
+        setRows(prevRows => {
+            const updated = prevRows.filter(row => row.id !== id);
+            setFilteredRows(updated);
+            return updated;
+        });
     };
 
     // Cargar datos iniciales
@@ -330,6 +342,8 @@ export const AddProducts = () => {
                         rows={filteredRows}
                         columns={columns}
                         pagination
+                        processRowUpdate={handleRowUpdate}
+                        editMode="row"
                         pageSize={100}
                         rowsPerPageOptions={[100, 500, 1000]}
                         checkboxSelection

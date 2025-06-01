@@ -50,7 +50,7 @@ class DeliveriesServices {
     }
 
     // Obtener productos de una entrega
-    getProductsFromADelivery(deliveryId) {
+    getProductsFromDelivery(deliveryId) {
         const url = this.buildUrl(`${deliveryId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }

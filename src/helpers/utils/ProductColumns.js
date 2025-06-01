@@ -10,52 +10,67 @@ import { productServices } from "../services/ProductServices";
 import {ResponseStatusEnum, RolesEnum, StatusTeamProductEnum} from "../GlobalEnum";
 
 //
-export const getBaseColumns = (unitOptions, categoryOptions, editable = true) => ([
-    { field: "id", headerName: "ID", width: 80 },
+export const getBaseColumns = (unitOptions, categoryOptions, handleRowUpdate, editable = true) => ([
+    { field: "id", headerName: "ID", width: 70 },
     {
         field: "category",
         headerName: "Categoría",
-        width: 300,
-        editable: editable,
-        renderCell: (params) => (
-            <Select
-                value={params.value || ""}
-                onChange={(e) =>
-                    params.api.updateRows([{ id: params.row.id, category: e.target.value }])
-                }
-                fullWidth
-            >
-                {categoryOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                        {option.nombre}
-                    </MenuItem>
-                ))}
-            </Select>
-        ),
+        width: 200,
+        renderCell: (params) => {
+            const handleChange = (e) => {
+                const newValue = e.target.value;
+                const newRow = { ...params.row, category: newValue };
+                params.api.updateRows([newRow]);
+                handleRowUpdate(newRow, params.row);
+            };
+
+            return (
+                <Select
+                    value={params.row.category || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    size="small"
+                >
+                    {categoryOptions.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.nombre}
+                        </MenuItem>
+                    ))}
+                </Select>
+            );
+        },
     },
-    { field: "name", headerName: "Nombre", width: 500, editable: editable },
-    { field: "description", headerName: "Descripción", width: 500, editable: editable },
-    { field: "brand", headerName: "Marca", width: 300, editable: editable },
+    { field: "name", headerName: "Nombre", width: 300, editable },
+    { field: "description", headerName: "Descripción", width: 300, editable: editable },
+    { field: "brand", headerName: "Marca", width: 150, editable: editable },
     {
         field: "unit",
         headerName: "Unidad",
-        width: 300,
+        width: 200,
         editable: editable,
-        renderCell: (params) => (
-            <Select
-                value={params.value || ""}
-                onChange={(e) =>
-                    params.api.updateRows([{ id: params.row.id, unit: e.target.value }])
-                }
-                fullWidth
-            >
-                {unitOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                        {option.nombre}
-                    </MenuItem>
-                ))}
-            </Select>
-        ),
+        renderCell: (params) => {
+            const handleChange = (e) => {
+                const newValue = e.target.value;
+                const newRow = { ...params.row, unit: newValue };
+                params.api.updateRows([newRow]);
+                handleRowUpdate(newRow, params.row);
+            };
+
+            return (
+                <Select
+                    value={params.row.unit || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    size="small"
+                >
+                    {unitOptions.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                            {option.nombre}
+                        </MenuItem>
+                    ))}
+                </Select>
+            );
+        },
     },
 ]);
 
@@ -137,6 +152,7 @@ export const getEnvironmentalCategories = async () => {
         return [];
     }
 };
+
 //
 export const getStatusProduct = () => [
     { field: "state", headerName: "ESTADO", width: 150, },

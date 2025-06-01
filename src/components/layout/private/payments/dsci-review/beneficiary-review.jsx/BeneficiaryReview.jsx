@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 //Components
-import { HeaderImage } from "../../../../shared/header-image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import { BeneficiaryList } from "../beneficiary-list/BeneficiaryList";
 import { ReviewDocuments } from "../review-documents/ReviewDocuments";
 

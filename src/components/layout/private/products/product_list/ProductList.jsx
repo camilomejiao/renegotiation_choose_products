@@ -7,17 +7,17 @@ import Select from "react-select";
 import debounce from "lodash/debounce";
 
 // Img
-import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
-import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
+import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
-import { productServices } from "../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../helpers/services/SupplierServices";
-import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { productServices } from "../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 // Enum
 import {
@@ -25,10 +25,10 @@ import {
     ResponseStatusEnum,
     RolesEnum,
     StatusTeamProductEnum
-} from "../../../../helpers/GlobalEnum";
+} from "../../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../helpers/utils/utils";
+import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
@@ -38,7 +38,7 @@ import {
     getEnvironmentalCategoriesColumns,
     getObservationsColumns,
     getActionsColumns, getEnvironmentalCategories,
-} from "../../../../helpers/utils/ProductColumns";
+} from "../../../../../helpers/utils/ProductColumns";
 import {number} from "yup";
 
 const PAGE_SIZE = 100;
@@ -255,7 +255,7 @@ export const ProductList = () => {
         }, {});
     };
 
-    //
+    //Limit enviromental
     const extractCountEnvironmental = (row) => {
         if (!row || !row.cantidad_ambiental) {
             return {customValue: "", selectedCategory: ""};
@@ -264,9 +264,24 @@ export const ProductList = () => {
         return { customValue: cant ?? "", selectedCategory: ambiental_key ?? "" };
     };
 
+    //
+    const handleRowUpdate = (newRow, oldRow) => {
+        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+            setEditedProducts(prevState => {
+                const index = prevState.findIndex(product => product.id === newRow.id);
+                if (index > -1) {
+                    prevState[index] = newRow;
+                } else {
+                    prevState.push(newRow);
+                }
+                return [...prevState];
+            });
+        }
+        return newRow;
+    };
 
     //
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, false);
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, false);
 
     const statusProduct = getStatusProduct();
 
@@ -354,22 +369,6 @@ export const ProductList = () => {
     ];
 
     //
-    const handleRowUpdate = (newRow, oldRow) => {
-        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-            setEditedProducts(prevState => {
-                const index = prevState.findIndex(product => product.id === newRow.id);
-                if (index > -1) {
-                    prevState[index] = newRow;
-                } else {
-                    prevState.push(newRow);
-                }
-                return [...prevState];
-            });
-        }
-        return newRow;
-    };
-
-    //
     const handleSaveProducts = async () => {
         try {
             setLoading(true);
@@ -399,8 +398,6 @@ export const ProductList = () => {
         //Obtener claves ambientales
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
-        //console.log('inputData: ', inputData);
-
         return inputData.map((product) => ({
             id: product.id,
             proveedor_id: supplierId,
@@ -418,6 +415,7 @@ export const ProductList = () => {
         }));
     };
 
+    //
     const buildData = (product, keys) => {
         return Object.fromEntries(
             keys.map((key) => [key, parseInt(product[key])])
@@ -559,10 +557,10 @@ export const ProductList = () => {
                         <div style={{height: 600, width: "100%"}}>
                             <DataGrid
                                 loading={loadingTable}
-                                checkboxSelection
-                                onRowSelectionModelChange={handleSelectionChange}
                                 columns={columns}
                                 rows={filteredData}
+                                checkboxSelection
+                                onRowSelectionModelChange={handleSelectionChange}
                                 processRowUpdate={handleRowUpdate}
                                 editMode="row"
                                 pagination

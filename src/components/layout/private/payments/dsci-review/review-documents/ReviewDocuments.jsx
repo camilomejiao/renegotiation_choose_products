@@ -3,7 +3,7 @@ import { Form, Col, Row } from "react-bootstrap";
 import { FaStepBackward } from "react-icons/fa";
 
 //Components
-import { UserInformation } from "../../../user-information/UserInformation";
+import { UserInformation } from "../../../user_information/UserInformation";
 
 //Img
 import downloadImg from "../../../../../../assets/image/payments/download.png";

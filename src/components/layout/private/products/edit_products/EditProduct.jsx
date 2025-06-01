@@ -5,18 +5,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 
 //Img
-import imgPeople from "../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Components
-import { HeaderImage } from "../../shared/header-image/HeaderImage";
-import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
-import { productServices } from "../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 
 //Enums
-import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Utils
 import {
@@ -24,14 +24,14 @@ import {
     extractMunicipios,
     handleError,
     showAlert
-} from "../../../../helpers/utils/utils";
+} from "../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
     getDynamicColumnsBySupplier,
     getEnvironmentalCategories,
     getUnitOptions
-} from "../../../../helpers/utils/ProductColumns";
+} from "../../../../../helpers/utils/ProductColumns";
 
 const PAGE_SIZE = 50;
 
@@ -126,26 +126,7 @@ export const EditProduct = () => {
         }
     };
 
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, true);
-    const columns = [...baseColumns, ...dynamicMunicipalityColumns];
-
-    const handleSearchQueryChange = (e) => {
-        const query = e.target.value;
-        setSearchQuery(query);
-
-        const filtered = productList.filter(product =>
-            product.name.toLowerCase().includes(query.toLowerCase()) ||
-            product.description.toLowerCase().includes(query.toLowerCase()) ||
-            product.brand.toLowerCase().includes(query.toLowerCase())
-        );
-
-        setFilteredData(filtered);
-    };
-
-    const handleCreateProducts = () => navigate('/admin/create-products');
-
-    const handleBack = () => navigate('/admin/products');
-
+    //
     const handleRowUpdate = (newRow, oldRow) => {
         if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
             setEditedProducts(prevState => {
@@ -160,6 +141,27 @@ export const EditProduct = () => {
         }
         return newRow;
     };
+
+    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, true);
+    const columns = [...baseColumns, ...dynamicMunicipalityColumns];
+
+    const handleSearchQueryChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filtered = productList.filter(product =>
+            product.name.toLowerCase().includes(query.toLowerCase()) ||
+            product.description.toLowerCase().includes(query.toLowerCase()) ||
+            product.brand.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredData(filtered);
+    };
+
+    //
+    const handleCreateProducts = () => navigate('/admin/create-products');
+
+    //
+    const handleBack = () => navigate('/admin/products');
 
     const handleSaveProducts = async () => {
         try {

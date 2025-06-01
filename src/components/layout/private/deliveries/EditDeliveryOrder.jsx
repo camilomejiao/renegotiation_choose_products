@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
-import { Button, Container, Form } from "react-bootstrap";
+import {Button, Container, Form, Spinner} from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
-import { FaSync } from "react-icons/fa";
+
+//Img
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 //Services
 import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
-import Swal from "sweetalert2";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
-
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -26,8 +25,11 @@ export const EditDeliveryOrder = () => {
 
     const params = useParams();
     const navigate = useNavigate();
+
+    const deliverId =  params.id;
     const [listDeliveryProducts, setListDeliveryProducts] = useState([]);
     const [cubId, setCubId] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
     const columns = [
         { field: "id", headerName: "COD", flex: 0.5 },
@@ -121,34 +123,12 @@ export const EditDeliveryOrder = () => {
                 );
             },
         },
-        {
-            field: "actions",
-            headerName: "ACCIONES",
-            width: 150,
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <Button
-                            variant="success"
-                            size="sm"
-                            onClick={() =>
-                                handleSaveProduct(params.row)
-                            }
-                            style={{ marginRight: "10px" }}
-                        >
-                            <FaSync />
-                        </Button>
-                    </div>
-                )},
-            sortable: false,
-            filterable: false,
-        },
     ];
 
     //
     const getDeliveryById = async (id) => {
         try {
-            const {data, status} = await deliveriesServices.getProductsFromADelivery(id);
+            const {data, status} = await deliveriesServices.getProductsFromDelivery(id);
             if (status === ResponseStatusEnum.OK) {
                 setCubId(data.cub?.id);
                 setListDeliveryProducts(normalizeRows(data.items));
@@ -160,13 +140,13 @@ export const EditDeliveryOrder = () => {
 
     const normalizeRows = (data) => {
         return data.map((row) => ({
-            id: row.id,
-            name: row.producto.nombre,
-            description: row.producto.especificacion_tecnicas,
-            amount: row.cantidad,
-            quantityToBeDelivered: row.quantityToDeliver || row.cantidad,
-            state: row.estado,
-            price: parseFloat(row.valor_final),
+            id: row?.id,
+            name: row?.producto.nombre,
+            description: row?.producto.especificacion_tecnicas,
+            amount: row?.cantidad,
+            quantityToBeDelivered: row?.quantityToDeliver || row?.cantidad,
+            state: row?.estado,
+            price: parseFloat(row?.valor_final),
         }));
     }
 
@@ -191,16 +171,18 @@ export const EditDeliveryOrder = () => {
     };
 
     //
-    const handleSaveProduct = async (product) => {
+    const handleSaveProduct = async () => {
+        setIsLoading(true);
         try {
-            //
-            const dataSaveProducts = {
-                cantidad: product.quantityToBeDelivered,
-                estado: product.state,
-                valor_final: product.price
-            };
+            const dataSaveProducts = listDeliveryProducts.map(prod => ({
+                producto: prod?.id,
+                cantidad: prod?.quantityToBeDelivered,
+                estado: prod?.state
+            }));
 
-            const {data, status} = await deliveriesServices.editDelivery(product.id, dataSaveProducts);
+            console.log('params.id: ', params.id, 'dataSaveProducts: ', dataSaveProducts);
+
+            const {data, status} = await deliveriesServices.editDelivery(deliverId, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Producto actualizado correctamente.')
             }
@@ -210,6 +192,8 @@ export const EditDeliveryOrder = () => {
             }
         } catch (error) {
             showError('Error al guardar los productos', `${error}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -242,6 +226,13 @@ export const EditDeliveryOrder = () => {
                         <h1>¡Editar entrega de productos!</h1>
                     </div>
                 </div>
+
+                {isLoading && (
+                    <div className="spinner-container">
+                        <Spinner animation="border" variant="success" />
+                        <span>Editando productos...</span>
+                    </div>
+                )}
 
                 <div className="p-5">
                     <Container>
@@ -291,7 +282,6 @@ export const EditDeliveryOrder = () => {
                             }}
                         />
 
-
                         <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                             <Button
                                 variant="success"
@@ -305,6 +295,20 @@ export const EditDeliveryOrder = () => {
                                 }}
                             >
                                 <i className="fas fa-save me-2"></i>ATRÁS
+                            </Button>
+
+                            <Button
+                                variant="success"
+                                size="lg"
+                                onClick={handleSaveProduct}
+                                className="responsive-button"
+                                style={{
+                                    backgroundColor: "#BFD732",
+                                    borderColor: "#BFD732",
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                <i className="fas fa-save me-2"></i>EDITAR ENTREGA
                             </Button>
                         </div>
 

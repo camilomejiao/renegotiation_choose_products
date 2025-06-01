@@ -11,13 +11,13 @@ import { renegotiationServices } from "../../../../helpers/services/Renegociatio
 
 //Components
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
-import { UserInformation } from "../user-information/UserInformation";
+import { UserInformation } from "../user_information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
 import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 
 //Enum
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
-import { AuthorizationSection } from "../../shared/authorization-section/AuthorizationSection";
+import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import {PlanHistory} from "../../shared/Modals/PlanHistory";
 import {ConfirmationModal} from "../../shared/Modals/ConfirmationModal";
 export const Renegociation = () => {

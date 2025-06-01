@@ -15,9 +15,9 @@ import frame from '../../../../../assets/image/addProducts/Frame.png';
 import './CreateOrder.css';
 
 //Components
-import { HeaderImage } from "../../../shared/header-image/HeaderImage";
-import { UserInformation } from "../../user-information/UserInformation";
-import { CompanyReportPrinting } from "../../ReportsCompany/report/CompanyReportPrinting";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { UserInformation } from "../../user_information/UserInformation";
+import { CompanyReportPrinting } from "../../reports/report_company/report/CompanyReportPrinting";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services

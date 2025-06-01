@@ -1,35 +1,42 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-//Components
+/* Components */
 import { Conex } from "../components/layout/public/conex/Conex";
+
+//Public
 import { PublicLayout } from "../components/layout/public/PublicLayout.jsx";
 import { Login } from "../components/layout/public/auth/login/Login.jsx";
+import { SupplierRegistration } from "../components/layout/public/suppliers/SupplierRegistration";
+
+//Private
 import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard.jsx";
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
-import { CreateOrder } from "../components/layout/private/purchase-orders/create-order/CreateOrder";
-import { EditOrder } from "../components/layout/private/purchase-orders/edit-order-products/EditOrder";
-import { ReportingSystem } from "../components/layout/private/reporting-system/ReportingSystem";
-import { CompanyReport } from "../components/layout/private/ReportsCompany/CompanyReport";
-import { OrderReport } from "../components/layout/private/purchase-orders/order-report/OrderReport";
+import { CreateOrder } from "../components/layout/private/purchase_orders/create_order/CreateOrder";
+import { EditOrder } from "../components/layout/private/purchase_orders/edit_order_products/EditOrder";
+import { ReportingSystem } from "../components/layout/private/reports/reporting_system/ReportingSystem";
+import { CompanyReport } from "../components/layout/private/reports/report_company/CompanyReport";
+import { OrderReport } from "../components/layout/private/purchase_orders/order_report/OrderReport";
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
-import { ProductList } from "../components/layout/private/products/ProductList";
-import { EditProduct } from "../components/layout/private/products/EditProduct";
-import { AddProducts } from "../components/layout/private/products/AddProducts";
+import { ProductList } from "../components/layout/private/products/product_list/ProductList";
+import { EditProduct } from "../components/layout/private/products/edit_products/EditProduct";
+import { AddProducts } from "../components/layout/private/products/create_products/AddProducts";
 import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
 import { PaySuppliers } from "../components/layout/private/payments/suppliers/pay-suppliers/PaySuppliers";
+import { BeneficiaryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
+import { CreateCallSuppliers } from "../components/layout/private/suppliers/calls_suppliers/CreateCallSuppliers";
+import { SupplierValidation } from "../components/layout/private/suppliers/supplier_validation/SupplierValidation";
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
-import {BeneficiaryReview} from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
 
 export const Routing = () => {
     return (
@@ -41,7 +48,8 @@ export const Routing = () => {
 
                     <Route path="/" element={ <PublicLayout /> }>
                         <Route index element={ <Login /> } />
-                        <Route path="login" element={ <Login /> } />
+                        <Route path={ RouterEnum.Login } element={ <Login /> } />
+                        <Route path={ RouterEnum.SupplierRegistration } element={ <SupplierRegistration /> } />
                     </Route>
 
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
@@ -73,6 +81,10 @@ export const Routing = () => {
                         {/* Users */}
                         <Route path={ RouterEnum.Users }  element={ <UserList /> }  />
                         <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
+
+                        {/* Suppliers */}
+                        <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />
+                        <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
 
                         {/* Reportes */}
                         <Route path={ RouterEnum.Reports }  element={ <ReportingSystem /> }  />
