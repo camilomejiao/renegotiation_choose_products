@@ -28,7 +28,7 @@ export const EditDeliveryOrder = () => {
 
     const deliverId =  params.id;
     const [listDeliveryProducts, setListDeliveryProducts] = useState([]);
-    const [cubId, setCubId] = useState(0);
+    const [deliveryId, setDeliveryId] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
     const columns = [
@@ -130,7 +130,7 @@ export const EditDeliveryOrder = () => {
         try {
             const {data, status} = await deliveriesServices.getProductsFromDelivery(id);
             if (status === ResponseStatusEnum.OK) {
-                setCubId(data.cub?.id);
+                setDeliveryId(data.cub?.id);
                 setListDeliveryProducts(normalizeRows(data.items));
             }
         } catch (error) {
@@ -175,7 +175,7 @@ export const EditDeliveryOrder = () => {
         setIsLoading(true);
         try {
             const dataSaveProducts = listDeliveryProducts.map(prod => ({
-                producto: prod?.id,
+                id: prod?.id,
                 cantidad: prod?.quantityToBeDelivered,
                 estado: prod?.state
             }));
@@ -185,6 +185,7 @@ export const EditDeliveryOrder = () => {
             const {data, status} = await deliveriesServices.editDelivery(deliverId, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Producto actualizado correctamente.')
+                navigate(`/admin/deliveries/${deliveryId}`)
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
@@ -208,7 +209,7 @@ export const EditDeliveryOrder = () => {
     };
 
     const handleBack = () => {
-        navigate(`/admin/deliveries/${cubId}`)
+        navigate(`/admin/deliveries/${deliveryId}`)
     }
 
     useEffect(() => {
