@@ -172,15 +172,20 @@ export const EditDeliveryOrder = () => {
 
     //
     const handleSaveProduct = async () => {
-        setIsLoading(true);
+        const hasProductsWithInvalidState = listDeliveryProducts.every(prod => prod?.state === 0);
+
+        if (hasProductsWithInvalidState) {
+            showError('Error', 'No puedes poner todos los productos en estado de "No entregado".');
+            return;
+        }
+
         try {
+            setIsLoading(true);
             const dataSaveProducts = listDeliveryProducts.map(prod => ({
                 id: prod?.id,
                 cantidad: prod?.quantityToBeDelivered,
                 estado: prod?.state
             }));
-
-            console.log('params.id: ', params.id, 'dataSaveProducts: ', dataSaveProducts);
 
             const {data, status} = await deliveriesServices.editDelivery(deliverId, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
@@ -189,7 +194,7 @@ export const EditDeliveryOrder = () => {
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
-                showError('Error', `${data.message + ' ,debes entregar al menos un producto'}`);
+                showError('Error', `${data?.errores[0]?.mensaje} con id: ${data?.errores[0]?.id}`);
             }
         } catch (error) {
             showError('Error al guardar los productos', `${error}`);

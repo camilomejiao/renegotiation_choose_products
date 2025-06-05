@@ -85,7 +85,6 @@ export const Deliveries = () => {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
                 const rows = await normalizeDeliveryRows(data);
-                console.log("Rows entregas normalizadas", rows);
                 setListDeliveriesToUser(rows);
             }
         } catch (error) {
@@ -707,6 +706,10 @@ export const Deliveries = () => {
         AlertComponent.error(title, message);
     };
 
+    const refreshPage = () => {
+        window.location.reload()
+    }
+
     useEffect(() => {
         if(isReadyToPrintDeliveryInformation) {
          handlePDFPrint();
@@ -896,7 +899,7 @@ export const Deliveries = () => {
                                     <Button
                                         variant="success"
                                         size="lg"
-                                        onClick={() => navigate(-1)}
+                                        onClick={() => navigate(refreshPage())}
                                         className="responsive-button mb-2 mb-md-0"
                                         style={{
                                             backgroundColor: "#2148C0",
