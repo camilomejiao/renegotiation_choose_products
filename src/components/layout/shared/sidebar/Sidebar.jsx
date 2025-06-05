@@ -37,7 +37,7 @@ const menuConfig = {
     [RolesEnum.SUPERVISION]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de Productos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.PAYMENTS]: [
@@ -47,7 +47,7 @@ const menuConfig = {
     [RolesEnum.ENVIRONMENTAL]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Modulo De Productos" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de Productos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TECHNICAL]: [
@@ -59,7 +59,7 @@ const menuConfig = {
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
-        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
+        //{ path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         // {
         //     label: "Renegociación",
         //     icon: FaHandshake,
@@ -68,8 +68,8 @@ const menuConfig = {
         //         { path: "/admin/renegotiation/edit", icon: MdCampaign, label: "Edición" },
         //     ]
         // },
-        { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
-        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
+        //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
