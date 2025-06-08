@@ -294,7 +294,10 @@ export const Deliveries = () => {
                         >
                             <FaPencilAlt/>
                         </Button>
-                        {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && (
+                        {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS ||
+                          userAuth.rol_id === RolesEnum.TECHNICAL ||
+                          userAuth.rol_id === RolesEnum.SUPPLIER ||
+                          userAuth.rol_id === RolesEnum.ADMIN) && (
                             <>
                                 <Button
                                     variant="danger"
