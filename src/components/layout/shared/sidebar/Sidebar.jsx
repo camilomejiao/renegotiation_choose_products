@@ -52,13 +52,14 @@ const menuConfig = {
     ],
     [RolesEnum.TECHNICAL]: [
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
+        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
         //{ path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         // {
         //     label: "Renegociación",
