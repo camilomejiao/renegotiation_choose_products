@@ -171,6 +171,15 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                         Teléfono: 4221030, Ext 7002 <br />
                     </p>
                 </div>
+
+                <div>
+                    <p style={{ textAlign: 'justify', padding: '5px' }}>
+                        Nota: Una vez suscrita la presente orden de compra, cualquier otra orden anterior aceptada por el
+                        beneficiario del programa PNIS se entenderá revocada en su integridad y, en consecuencia, queda sin
+                        efectos jurídicos. No habrá lugar a reclamación alguna por ninguna de las partes, entendiéndose que
+                        todos los efectos de la orden de compra previa se revocan por la voluntad de ambas partes.<br />
+                    </p>
+                </div>
             </div>
         </>
     )
