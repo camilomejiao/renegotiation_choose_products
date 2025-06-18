@@ -15,6 +15,23 @@
     padding: 15px;
 }
 
+/* */
+
+.accordion-outer-scroll {
+    max-height: 500px; /* o lo que necesites */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding-right: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.accordion-scroll-body {
+    max-height: 300px; /* ajusta a lo que necesites */
+    overflow-y: auto;
+    padding-right: 10px; /* para que no se corte el scroll */
+}
+
 .custom-accordion .accordion-button:not(.collapsed) {
     background-color: #36926F;
     color: white;

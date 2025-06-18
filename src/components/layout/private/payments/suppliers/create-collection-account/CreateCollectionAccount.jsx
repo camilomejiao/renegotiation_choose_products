@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "react-bootstrap";
 import { FaSave, FaStepBackward } from "react-icons/fa";
+import {paymentServices} from "../../../../../../helpers/services/PaymentServices";
+import {ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
 
 export const CreateCollectionAccount = ({ onBack }) => {
 
     const [selectedIds, setSelectedIds] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [sendingData, setSendingData] = useState(false);
 
     //
     const statusCollectionAccountColumns = [
@@ -19,13 +22,13 @@ export const CreateCollectionAccount = ({ onBack }) => {
     ]
 
     const getBeneficiaryList = () => {
-        //setLoading(true);
+        setLoading(true);
         try {
 
         } catch (error) {
 
         } finally {
-            //setLoading(true);
+            setLoading(false);
         }
     }
 
@@ -35,14 +38,21 @@ export const CreateCollectionAccount = ({ onBack }) => {
     };
 
     //
-    const handleSaveUsers = () => {
-        //setLoading(true)
+    const handleSaveUsers = async () => {
+        setSendingData(true)
+
+        const payload = [selectedIds];
+        console.log('payload: ', payload);
+
         try {
+            const {data, status} = await paymentServices.createCollectionAccounts(payload);
+            if (status === ResponseStatusEnum.OK) {
 
+            }
         } catch (error) {
-
+            console.error("Error creando la cuenta de cobro:", error);
         } finally {
-            setLoading(false)
+            setSendingData(false)
         }
     }
 
@@ -52,6 +62,13 @@ export const CreateCollectionAccount = ({ onBack }) => {
 
     return (
         <>
+
+            {sendingData && (
+                <div className="overlay">
+                    <div className="loader">Enviando informacion...</div>
+                </div>
+            )}
+
             <div style={{height: 500, width: "100%"}}>
                 <DataGrid
                     checkboxSelection

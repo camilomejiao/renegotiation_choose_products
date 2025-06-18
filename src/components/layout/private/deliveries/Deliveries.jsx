@@ -540,6 +540,10 @@ export const Deliveries = () => {
             if (status === ResponseStatusEnum.METHOD_NOT_ALLOWED) {
                 showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÓN');
             }
+
+            if (status === ResponseStatusEnum.FORBIDDEN) {
+                showError('Error', 'NO SE PUEDE ELIMINAR ESTA ENTREGA');
+            }
         } catch (error) {
             console.error("Error eliminando la entrega:", error);
         }

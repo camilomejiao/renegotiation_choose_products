@@ -37,7 +37,7 @@ const menuConfig = {
     [RolesEnum.SUPERVISION]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de Productos" },
+        { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.PAYMENTS]: [
@@ -60,7 +60,7 @@ const menuConfig = {
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        //{ path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
+        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         // {
         //     label: "Renegociación",
         //     icon: FaHandshake,
@@ -75,10 +75,10 @@ const menuConfig = {
     ],
     [RolesEnum.SUPPLIER]: [
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Productos" },
-        { path: "/", icon: FaShoppingCart, label: "Solicitud" },
+        { path: "/", icon: FaShoppingCart, label: "Carrito de compras" },
         { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
         { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
-        //{ path: "/admin/payments-suppliers", icon: BsCashStack, label: "Pagos" },
+        { path: "/admin/payments-suppliers", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/company-reports", icon: FaChartPie, label: "Reportes general" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ]

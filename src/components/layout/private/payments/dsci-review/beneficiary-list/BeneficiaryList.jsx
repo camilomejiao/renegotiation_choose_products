@@ -1,14 +1,17 @@
 import { DataGrid } from "@mui/x-data-grid";
 import {useEffect, useState} from "react";
+import {paymentServices} from "../../../../../../helpers/services/PaymentServices";
+import {ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
 
 const data = [
-    {id: 1, cub_id: 123, name: 'camilo', identification: '1014208665', supplier: 'Jurado' },
-    {id: 2, cub_id: 12345, name: 'camilo M', identification: '1014208666', supplier: 'Las gemelas' }
+    {id: 14, cub_id: 123, name: 'camilo', identification: '1014208665', supplier: 'Jurado' },
+    {id: 15, cub_id: 12345, name: 'camilo M', identification: '1014208666', supplier: 'Las gemelas' }
 ]
 
 export const BeneficiaryList = ({ onRowSelect }) => {
 
     const [loading, setLoading] = useState(false);
+    const [dataTable, setDataTable] = useState([]);
 
     const beneficiaryColumns = [
         { field: "id", headerName: "ID", width: 80 },
@@ -18,14 +21,17 @@ export const BeneficiaryList = ({ onRowSelect }) => {
         { field: "supplier", headerName: "Proveedor", width: 300 },
     ];
 
-    const getBeneficiaryList = () => {
-        //setLoading(true);
+    const getBeneficiaryList = async () => {
+        setLoading(true);
         try {
-
+            const {data, status} = await paymentServices.getApprovedDeliveries();
+            if(status === ResponseStatusEnum.OK) {
+                setDataTable(data);
+            }
         } catch (error) {
-
+            console.error("Error obteniendo las entregas:", error);
         } finally {
-            //setLoading(true);
+            setLoading(false);
         }
     }
 

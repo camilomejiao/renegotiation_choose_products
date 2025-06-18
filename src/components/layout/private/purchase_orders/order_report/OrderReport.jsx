@@ -157,10 +157,15 @@ export const OrderReport = () => {
     // Confirma la eliminación de un registro
     const handleConfirmDelete = async () => {
         try {
-            const { status } = await purchaseOrderServices.removeOrder(selectedId);
+            const { data, status } = await purchaseOrderServices.removeOrder(selectedId);
             if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert("Bien hecho!", "Orden eliminada exitosamente!");
                 await getPurcharseOrder();
+                handleCloseModal();
+            }
+
+            if (status === ResponseStatusEnum.FORBIDDEN) {
+                showError("Error", `${data}`);
                 handleCloseModal();
             }
         } catch (error) {

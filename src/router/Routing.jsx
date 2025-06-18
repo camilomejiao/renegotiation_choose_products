@@ -37,6 +37,7 @@ import { SupplierValidation } from "../components/layout/private/suppliers/suppl
 
 //Enum
 import { RouterEnum } from "./RouterEnum";
+import {ReviewDocuments} from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
 
 export const Routing = () => {
     return (
@@ -76,6 +77,7 @@ export const Routing = () => {
                         {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
                         <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryReview /> }  />
+                        <Route path={ RouterEnum.ReviewPaymentsBeneficiaryId }  element={ <ReviewDocuments /> }  />
                         <Route path={ RouterEnum.Payments_Suppliers }  element={ <PaySuppliers /> }  />
 
                         {/* Users */}

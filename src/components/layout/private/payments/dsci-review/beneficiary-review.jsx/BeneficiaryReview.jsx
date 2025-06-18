@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 
 //Components
@@ -20,11 +20,10 @@ import './BeneficiaryReview.css';
 export const BeneficiaryReview = () => {
 
     const params = useParams();
+    const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
     const [img, setImg] = useState('');
-    const [cubId, setCubId] = useState(null);
-    const [showBeneficiaryList, setShowBeneficiaryList] = useState(true);
 
     const capitalizeFirstLetter = (text) => {
         return text
@@ -56,13 +55,7 @@ export const BeneficiaryReview = () => {
     }
 
     const handleRowSelect = (id) => {
-        setCubId(id);
-        setShowBeneficiaryList(false);
-    }
-
-    const handleBack = () => {
-        setShowBeneficiaryList(true);
-        setCubId(null);
+        navigate(`/admin/payments-beneficiary/${id}/${params.role}`);
     }
 
     useEffect(() => {
@@ -91,11 +84,7 @@ export const BeneficiaryReview = () => {
             </div>
 
             <div className="container mt-lg-5">
-                {showBeneficiaryList ? (
-                    <BeneficiaryList onRowSelect={handleRowSelect} />
-                ) : (
-                    <ReviewDocuments cubId={cubId} onBack={handleBack} />
-                )}
+                <BeneficiaryList onRowSelect={handleRowSelect} />
             </div>
 
         </>
