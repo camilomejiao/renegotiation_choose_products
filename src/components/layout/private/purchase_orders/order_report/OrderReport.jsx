@@ -33,6 +33,7 @@ export const OrderReport = () => {
         pageSize: PAGE_SIZE,
     }); //Paginación
     const [isLoading, setIsLoading] = useState(false);
+    const [informationLoadingText, setInformationLoadingText] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -72,6 +73,7 @@ export const OrderReport = () => {
     // Obtener órdenes de compra
     const getPurcharseOrder = async () => {
         setIsLoading(true);
+        setInformationLoadingText('Cargando ordenes...');
         try {
             const { page, pageSize } = paginationModel;
             const url = buildUrl(page + 1, pageSize, isSearchActive ? searchQuery : "");
@@ -156,6 +158,8 @@ export const OrderReport = () => {
 
     // Confirma la eliminación de un registro
     const handleConfirmDelete = async () => {
+        setIsLoading(true);
+        setInformationLoadingText('Eliminando orden...');
         try {
             const { data, status } = await purchaseOrderServices.removeOrder(selectedId);
             if (status === ResponseStatusEnum.NO_CONTENT) {
@@ -165,12 +169,14 @@ export const OrderReport = () => {
             }
 
             if (status === ResponseStatusEnum.FORBIDDEN) {
-                showError("Error", `${data}`);
+                showError("Error", `No se puede eliminar orde porque ${data}`);
                 handleCloseModal();
             }
         } catch (error) {
             console.error("Error al eliminar el elemento:", error);
             showError("Error", "No se pudo eliminar la orden");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -240,7 +246,7 @@ export const OrderReport = () => {
 
                     {isLoading && (
                         <div className="overlay">
-                            <div className="loader">Cargando Ordenes...</div>
+                            <div className="loader">{informationLoadingText}</div>
                         </div>
                     )}
 
