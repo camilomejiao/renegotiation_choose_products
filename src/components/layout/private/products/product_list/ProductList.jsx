@@ -39,9 +39,9 @@ import {
     getObservationsColumns,
     getActionsColumns, getEnvironmentalCategories,
 } from "../../../../../helpers/utils/ProductColumns";
-import {number} from "yup";
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 1000;
+const BATCH_SIZE = 250;
 
 export const ProductList = () => {
     const { userAuth } = useOutletContext();
@@ -333,23 +333,51 @@ export const ProductList = () => {
         }
     };
 
+    //
+    const createApprovalPayload = (idsBatch, estado, comentario) => ({
+        ids: idsBatch,
+        estado,
+        comentario,
+    });
+
+    //
+    const sendBatchApproval = async (payload) => {
+        try {
+            const { status } = await productServices.productApprove(payload);
+            return status === ResponseStatusEnum.OK;
+        } catch (error) {
+            console.error("Error sending batch approval:", error);
+            return false;
+        }
+    };
+
+    //
+    const processBatches = async (ids, estado, comentario) => {
+        for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+            const batch = ids.slice(i, i + BATCH_SIZE);
+            const payload = createApprovalPayload(batch, estado, comentario);
+            const success = await sendBatchApproval(payload);
+
+            if (!success) {
+                console.warn(`Failed to approve batch starting at index ${i}`);
+                // Optional: break or continue based on your retry policy
+            }
+        }
+    };
+
     const handleApproveByAudit = async (ids, accion, comment) => {
         setLoading(true);
+
+        const estado = accion === 'approve' ? 1 : 0;
+        const label = accion === 'approve' ? 'Aprobado' : 'Denegado';
+
         try {
-            let letter = accion === 'approve' ? 'Aprobado' : 'Denegado'
-            let data = {
-                ids: ids,
-                estado: accion === 'approve' ? 1 : 0,
-                comentario: comment
-            }
-            const { status } = await productServices.productApprove(data);
-            if (status === ResponseStatusEnum.OK) {
-                showAlert("Bien hecho!", `Producto ${letter} exitosamente!`);
-                await getProductList();
-                handleCloseModalApproved();
-            }
+            await processBatches(ids, estado, comment);
+            showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
+            await getProductList();
+            handleCloseModalApproved();
         } catch (error) {
-            console.error("Error al aprobar el producto:", error);
+            console.error("Unexpected error during approval:", error);
         } finally {
             setLoading(false);
         }

@@ -276,8 +276,8 @@ export const CreateOrder = () => {
 
     //
     const validateProducts = () => {
-        return total === 0;
-    }
+        return total === 0 || saldoRestante <= 0 ;
+    };
 
     useEffect(() => {
         const subtotal = items.reduce((acc, item) => {
@@ -479,7 +479,7 @@ export const CreateOrder = () => {
                                 disabled={validateProducts()}
                                 className="button-responsive"
                                 style={{
-                                    backgroundColor: items.length === 0 ? "#ccc" : "#BFD732",
+                                    backgroundColor: validateProducts() ? "#ccc" : "#BFD732",
                                     borderColor: "#BFD732",
                                     fontWeight: "bold",
                                 }}
