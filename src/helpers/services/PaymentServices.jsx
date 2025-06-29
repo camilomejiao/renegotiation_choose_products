@@ -1,5 +1,5 @@
-import {Global} from "../Global";
-import {authTokenService} from "./AuthTokenService";
+import { Global } from "../Global";
+import { authTokenService } from "./AuthTokenService";
 
 
 class PaymentServices {

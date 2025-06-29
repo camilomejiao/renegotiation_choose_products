@@ -203,7 +203,7 @@ export const ProductList = () => {
     const getProductState = (approvalDate, approvalList) => {
         //Si todos están aprobados
         const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
-        if (allApproved) {
+        if (allApproved && approvalDate) {
             return GeneralStatusProductEnum.APPROVED;
         }
 
@@ -213,7 +213,9 @@ export const ProductList = () => {
             return GeneralStatusProductEnum.REFUSED;
         }
 
-        return GeneralStatusProductEnum.PENDING_APPROVAL;
+        if(!approvalDate) {
+            return GeneralStatusProductEnum.PENDING_APPROVAL;
+        }
     };
 
     //Extraer precios por municipio
