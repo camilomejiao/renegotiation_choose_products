@@ -38,3 +38,9 @@
         height: 35px;
     }
 }
+
+@media (max-width: 325px) {
+    .portal-title {
+        line-height: 25px;
+    }
+}
