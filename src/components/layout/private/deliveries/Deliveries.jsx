@@ -294,35 +294,40 @@ export const Deliveries = () => {
                         >
                             <FaPencilAlt/>
                         </Button>
-                        {(userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS ||
-                          userAuth.rol_id === RolesEnum.TECHNICAL ||
-                          userAuth.rol_id === RolesEnum.SUPPLIER ||
-                          userAuth.rol_id === RolesEnum.ADMIN) && (
+                        {[
+                            RolesEnum.TERRITORIAL_LINKS,
+                            RolesEnum.TECHNICAL,
+                            RolesEnum.SUPPLIER,
+                            RolesEnum.ADMIN,
+                        ].includes(userAuth.rol_id) && (
                             <>
                                 <Button
                                     variant="danger"
                                     size="sm"
                                     onClick={() => handleDeleteDelivery(params.row.id)}
-                                    style={{marginRight: "10px"}}
+                                    style={{ marginRight: "10px" }}
                                     disabled={isButtonDisabled(params.row)}
                                 >
-                                    <FaTrash/>
+                                    <FaTrash />
                                 </Button>
-                                {params.row.evidencePdf?.urlFile !== 0 && (
-                                    <Button
-                                        style={{ backgroundColor: "#FFF", marginRight: "10px" }}
-                                        size="sm"
-                                        onClick={() => {
-                                            setSelectedDeliveryId(params.row.id);
-                                            setOpenModal(true);
-                                        }}
-                                        disabled={isButtonDisabled(params.row)}
-                                    >
-                                        {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
-                                    </Button>
-                                )}
+
+                                {params.row.evidencePdf?.urlFile !== 0 &&
+                                    userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS && (
+                                        <Button
+                                            style={{ backgroundColor: "#FFF", marginRight: "10px" }}
+                                            size="sm"
+                                            onClick={() => {
+                                                setSelectedDeliveryId(params.row.id);
+                                                setOpenModal(true);
+                                            }}
+                                            disabled={isButtonDisabled(params.row)}
+                                        >
+                                            {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
+                                        </Button>
+                                    )}
                             </>
                         )}
+
                         {((userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && params.row.evidencePdf?.urlFile !== 0) && (
                             <>
                                 <Button
@@ -499,11 +504,22 @@ export const Deliveries = () => {
 
         const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
 
+        setIsLoading(true);
         try {
-            setIsLoading(true);
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
-            if (status === ResponseStatusEnum.OK) {
+            if (data.length <= 0) {
+                showInfo("Error", "No tienes productos pendientes");
+                setShowDeliveryForm(false);
+
+                setTimeout(() => {
+                    refreshPage();
+                }, 2000);
+
+                return;
+            }
+
+            if (status === ResponseStatusEnum.OK  && data.length > 0) {
                 const updatedData = data.map(product => ({
                     ...product,
                     estado: 1,
@@ -513,7 +529,7 @@ export const Deliveries = () => {
                 setShowDeliveryForm(true);
             }
 
-            if(status === ResponseStatusEnum.BAD_REQUEST) {
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
                 showError("Error", "Error al obtener las órdenes de compra");
             }
         } catch (error) {
@@ -711,6 +727,10 @@ export const Deliveries = () => {
     //
     const showError = (title, message) => {
         AlertComponent.error(title, message);
+    };
+
+    const showInfo = (title, message) => {
+        AlertComponent.info(title, message);
     };
 
     const refreshPage = () => {

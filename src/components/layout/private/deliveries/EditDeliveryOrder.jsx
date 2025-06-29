@@ -74,11 +74,15 @@ export const EditDeliveryOrder = () => {
             headerName: "CANT. A ENTREGAR",
             flex: 1,
             renderCell: (params) => {
+                if (!params?.row) {
+                    console.warn("renderCell: fila vacía en quantityToBeDelivered", params);
+                    return "–";
+                }
                 return (
                     <Form.Control
                         type="number"
                         className="small-input form-control-sm"
-                        value={params.row.quantityToBeDelivered}
+                        value={params.row.quantityToBeDelivered ?? 0}
                         min="0"
                         onChange={(e) =>
                             handleQuantityChange(params.row.id, e.target.value)
@@ -127,29 +131,43 @@ export const EditDeliveryOrder = () => {
 
     //
     const getDeliveryById = async (id) => {
+        setIsLoading(true);
         try {
             const {data, status} = await deliveriesServices.getProductsFromDelivery(id);
             if (status === ResponseStatusEnum.OK) {
-                setDeliveryId(data.cub?.id);
-                setListDeliveryProducts(normalizeRows(data.items));
+                const normalized = normalizeRows(data?.items);
+                setDeliveryId(data?.cub?.id);
+                setListDeliveryProducts(normalized);
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
     const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            name: row?.producto.nombre,
-            description: row?.producto.especificacion_tecnicas,
-            amount: row?.cantidad,
-            quantityToBeDelivered: row?.quantityToDeliver || row?.cantidad,
-            state: row?.estado,
-            price: parseFloat(row?.valor_final),
-        }));
-    }
+        return data.map((row, index) => {
+            try {
+                return {
+                    id: Number(row?.id),
+                    name: row?.producto?.nombre || "Sin nombre",
+                    description: row?.producto?.especificacion_tecnicas || "Sin descripción",
+                    amount: Number(row?.cantidad) || 0,
+                    quantityToBeDelivered: row?.quantityToDeliver !== undefined
+                        ? Number(row.quantityToDeliver)
+                        : Number(row?.cantidad),
+                    state: Number(row?.estado) ?? 0,
+                    price: parseFloat(row?.valor_final) || 0,
+                };
+            } catch (error) {
+                console.error(`Error procesando fila en index ${index}:`, row, error);
+                return { id: index, name: "Error", description: "Error en los datos", amount: 0, quantityToBeDelivered: 0, state: 0, price: 0 };
+            }
+        });
+    };
 
+    //
     const handleQuantityChange = (id, value) => {
         const newProducts = listDeliveryProducts.map((product) => {
             if (product.id === id) {
@@ -160,6 +178,7 @@ export const EditDeliveryOrder = () => {
         setListDeliveryProducts(newProducts);
     };
 
+    //
     const handleStatusChange = (id, value) => {
         const newProducts = listDeliveryProducts.map((product) => {
             if (product.id === id) {
@@ -246,6 +265,7 @@ export const EditDeliveryOrder = () => {
                         <DataGrid
                             rows={listDeliveryProducts}
                             columns={columns}
+                            loading={isLoading}
                             pageSize={5}
                             rowsPerPageOptions={[5, 10, 20]}
                             disableColumnMenu

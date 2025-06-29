@@ -23,7 +23,6 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import {useNavigate, useParams} from "react-router-dom";
 
-
 export const ReviewDocuments = () => {
 
     const params = useParams();

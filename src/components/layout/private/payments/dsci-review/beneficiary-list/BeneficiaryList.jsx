@@ -1,57 +1,82 @@
 import { DataGrid } from "@mui/x-data-grid";
-import {useEffect, useState} from "react";
-import {paymentServices} from "../../../../../../helpers/services/PaymentServices";
-import {ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
-
-const data = [
-    {id: 14, cub_id: 123, name: 'camilo', identification: '1014208665', supplier: 'Jurado' },
-    {id: 15, cub_id: 12345, name: 'camilo M', identification: '1014208666', supplier: 'Las gemelas' }
-]
+import { useEffect, useState } from "react";
+import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 export const BeneficiaryList = ({ onRowSelect }) => {
 
     const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+    const [rowCount, setRowCount] = useState(0);
 
     const beneficiaryColumns = [
-        { field: "id", headerName: "ID", width: 80 },
-        { field: "cub_id", headerName: "CUB", width: 80 },
-        { field: "name", headerName: "Name", width: 400 },
-        { field: "identification", headerName: "Identificación", width: 300 },
-        { field: "supplier", headerName: "Proveedor", width: 300 },
+        { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "cub_id", headerName: "CUB", width: 100 },
+        { field: "name", headerName: "Beneficiario", width: 300 },
+        { field: "identification", headerName: "Identificación", width: 200 },
+        { field: "supplier_name", headerName: "Proveedor", width: 350 },
+        { field: "supplier_nit", headerName: "Proveedor", width: 150 },
     ];
 
-    const getBeneficiaryList = async () => {
+    const getBeneficiaryList = async (pageToFetch = 1) => {
         setLoading(true);
         try {
-            const {data, status} = await paymentServices.getApprovedDeliveries();
+            const { data, status } = await paymentServices.getApprovedDeliveries(pageToFetch);
             if(status === ResponseStatusEnum.OK) {
-                setDataTable(data);
+                const rows = await normalizeRows(data.results);
+                setDataTable(rows);
+                setRowCount(data.count);
             }
         } catch (error) {
             console.error("Error obteniendo las entregas:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const normalizeRows = async (data) => {
+        return data.map((row) => ({
+            id: row?.id,
+            cub_id: row?.beneficiario?.id,
+            name: `${row?.beneficiario?.nombre ?? ''} ${row?.beneficiario?.apellido ?? ''}`,
+            identification: row?.beneficiario?.identificacion,
+            supplier_name: row?.proveedor?.nombre,
+            supplier_nit: row?.proveedor?.nit,
+        }));
     }
 
     const handleRowClick = (params) => {
-        console.log(params.row, params.id);
         onRowSelect(params.id);
     }
 
     useEffect(() => {
-        getBeneficiaryList()
-    }, []);
+        getBeneficiaryList(page + 1);
+    }, [page]);
 
     return (
         <>
-            <div style={{height: 500, width: "100%"}}>
+            <div style={{ height: 500, width: "100%" }}>
                 <DataGrid
                     columns={beneficiaryColumns}
-                    rows={data}
+                    rows={dataTable}
                     loading={loading}
                     onRowClick={handleRowClick}
+                    page={page}
+                    pageSize={pageSize}
+                    rowCount={rowCount}
+                    pagination
+                    paginationMode="server"
+                    onPageChange={(newPage) => {
+                        setPage(newPage);
+                        getBeneficiaryList(newPage + 1);
+                    }}
+                    onPageSizeChange={(newPageSize) => {
+                        setPageSize(newPageSize);
+                        setPage(0);
+                        getBeneficiaryList(1);
+                    }}
                     sx={{
                         "& .MuiDataGrid-columnHeaders": {
                             backgroundColor: "#40A581",
@@ -86,6 +111,7 @@ export const BeneficiaryList = ({ onRowSelect }) => {
                     }}
                 />
             </div>
+
         </>
     )
 }
