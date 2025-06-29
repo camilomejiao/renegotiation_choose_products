@@ -80,6 +80,7 @@ export const ProductList = () => {
 
     //Obtener la lista de proveedores
     const getSuppliers = async () => {
+        setLoading(true);
         try {
             const { data, status } = await supplierServices.getSuppliersAll();
             if (status === ResponseStatusEnum.OK) {
@@ -87,6 +88,8 @@ export const ProductList = () => {
             }
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -178,13 +181,13 @@ export const ProductList = () => {
             const environmentalCategories = await getEnvironmentalCategories();
 
             return data.map((row) => ({
-                id: row.id,
-                name: row.nombre,
-                description: row.especificacion_tecnicas,
-                brand: row.marca_comercial,
-                unit: row.unidad_medida,
-                category: row.categoria_producto,
-                state: getProductState(row?.fecha_aprobado),
+                id: row?.id,
+                name: row?.nombre,
+                description: row?.especificacion_tecnicas,
+                brand: row?.marca_comercial,
+                unit: row?.unidad_medida,
+                category: row?.categoria_producto,
+                state: getProductState(row?.fecha_aprobado, row?.aprobados),
                 ...extractMunicipalityPrices(row, municipalities),
                 ...buildEnvironmentalData(row, environmentalCategories),
                 ...extractObservations(row?.aprobados),
@@ -196,10 +199,22 @@ export const ProductList = () => {
         }
     };
 
-    //Obtener el estado del producto
-    const getProductState = (approvalDate) => {
-        return approvalDate ? GeneralStatusProductEnum.APPROVED : GeneralStatusProductEnum.PENDING_APPROVAL;
-    }
+    //
+    const getProductState = (approvalDate, approvalList) => {
+        //Si todos están aprobados
+        const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
+        if (allApproved) {
+            return GeneralStatusProductEnum.APPROVED;
+        }
+
+        //Si alguno está rechazado
+        const hasRejected = approvalList.some(item => item.estado === StatusTeamProductEnum.DENIED.id);
+        if (hasRejected && !approvalDate) {
+            return GeneralStatusProductEnum.REFUSED;
+        }
+
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
+    };
 
     //Extraer precios por municipio
     const extractMunicipalityPrices = (row, municipalities) => {

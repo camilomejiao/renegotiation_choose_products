@@ -24,7 +24,8 @@ export const RolesEnum = {
 
 export const GeneralStatusProductEnum = {
     APPROVED: 'APROBADO',
-    PENDING_APPROVAL: 'PENDIENTE'
+    PENDING_APPROVAL: 'PENDIENTE',
+    REFUSED: 'RECHAZADO'
 }
 
 export const StatusTeamProductEnum = {
