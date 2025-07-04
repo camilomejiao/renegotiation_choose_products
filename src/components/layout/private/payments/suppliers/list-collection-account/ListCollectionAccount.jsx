@@ -24,6 +24,7 @@ export const ListCollectionAccount = () => {
         setInformationLoadingText("Obteniendo información");
         try {
             const { data, status } = await paymentServices.getCollectionAccounts(pageToFetch);
+            console.log(data);
             if (status === ResponseStatusEnum.OK) {
                 setCollectionAccounts(data?.results);
                 const totalPages = Math.ceil(data.count / data.results.length);

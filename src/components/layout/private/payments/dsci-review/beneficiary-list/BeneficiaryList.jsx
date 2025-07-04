@@ -8,7 +8,7 @@ export const BeneficiaryList = ({ onRowSelect }) => {
     const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
 
     const beneficiaryColumns = [
@@ -17,13 +17,13 @@ export const BeneficiaryList = ({ onRowSelect }) => {
         { field: "name", headerName: "Beneficiario", width: 300 },
         { field: "identification", headerName: "Identificación", width: 200 },
         { field: "supplier_name", headerName: "Proveedor", width: 350 },
-        { field: "supplier_nit", headerName: "Proveedor", width: 150 },
+        { field: "supplier_nit", headerName: "Nit", width: 150 },
     ];
 
-    const getBeneficiaryList = async (pageToFetch = 1) => {
+    const getDeliveryList = async (pageToFetch = 1, sizeToFetch) => {
         setLoading(true);
         try {
-            const { data, status } = await paymentServices.getApprovedDeliveries(pageToFetch);
+            const { data, status } = await paymentServices.getApprovedDeliveries(pageToFetch, sizeToFetch);
             if(status === ResponseStatusEnum.OK) {
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
@@ -52,31 +52,25 @@ export const BeneficiaryList = ({ onRowSelect }) => {
     }
 
     useEffect(() => {
-        getBeneficiaryList(page + 1);
-    }, [page]);
+        getDeliveryList(page + 1, pageSize);
+    }, [page, pageSize]);
 
     return (
         <>
             <div style={{ height: 500, width: "100%" }}>
                 <DataGrid
-                    columns={beneficiaryColumns}
                     rows={dataTable}
+                    columns={beneficiaryColumns}
                     loading={loading}
-                    onRowClick={handleRowClick}
-                    page={page}
-                    pageSize={pageSize}
-                    rowCount={rowCount}
-                    pagination
                     paginationMode="server"
-                    onPageChange={(newPage) => {
-                        setPage(newPage);
-                        getBeneficiaryList(newPage + 1);
+                    rowCount={rowCount}
+                    pageSizeOptions={[50, 100]}
+                    paginationModel={{ page, pageSize }}
+                    onPaginationModelChange={({ page, pageSize }) => {
+                        setPage(page);
+                        setPageSize(pageSize);
                     }}
-                    onPageSizeChange={(newPageSize) => {
-                        setPageSize(newPageSize);
-                        setPage(0);
-                        getBeneficiaryList(1);
-                    }}
+                    onRowClick={handleRowClick}
                     sx={{
                         "& .MuiDataGrid-columnHeaders": {
                             backgroundColor: "#40A581",
@@ -111,7 +105,6 @@ export const BeneficiaryList = ({ onRowSelect }) => {
                     }}
                 />
             </div>
-
         </>
     )
 }

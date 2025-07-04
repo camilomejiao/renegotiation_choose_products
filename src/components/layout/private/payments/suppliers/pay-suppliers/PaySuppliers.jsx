@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -9,7 +9,6 @@ import imgPlus from "../../../../../../assets/image/payments/plus.png";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { CreateCollectionAccount } from "../create-collection-account/CreateCollectionAccount";
 import { ListCollectionAccount } from "../list-collection-account/ListCollectionAccount";
 
 //Css
@@ -17,14 +16,10 @@ import './PaySuppliers.css';
 
 export const PaySuppliers = () => {
 
-    const [showCreateCollectionAccount, setShowCreateCollectionAccount] = useState(false);
+    const navigate = useNavigate();
 
     const handleCreateCollectionAccount = () => {
-        setShowCreateCollectionAccount(true);
-    }
-
-    const handleBack = () => {
-        setShowCreateCollectionAccount(false);
+        navigate(`/admin/payments-suppliers/create-collection-account`);
     }
 
     return (
@@ -53,11 +48,7 @@ export const PaySuppliers = () => {
             </div>
 
             <div  className="container mt-lg-5">
-                {showCreateCollectionAccount ? (
-                    <CreateCollectionAccount onBack={handleBack} />
-                ) : (
-                    <ListCollectionAccount  />
-                )}
+                <ListCollectionAccount  />
             </div>
 
         </>

@@ -34,7 +34,8 @@ export const RouterEnum = {
     Payments: 'payments',
     PaymentsRole: 'payments/:role',
     ReviewPaymentsBeneficiaryId: 'payments-beneficiary/:id/:role',
-    Payments_Suppliers: 'payments-suppliers',
+    PaymentsSuppliersList: 'payments-suppliers',
+    CreateCollectionAccount: 'payments-suppliers/create-collection-account',
 
     //Suppliers
     CreateCallsSuppliers: 'create-calls-suppliers',

@@ -8,6 +8,9 @@ import { PublicLayout } from "../components/layout/public/PublicLayout.jsx";
 import { Login } from "../components/layout/public/auth/login/Login.jsx";
 import { SupplierRegistration } from "../components/layout/public/suppliers/SupplierRegistration";
 
+//Enum
+import { RouterEnum } from "./RouterEnum";
+
 //Private
 import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard.jsx";
@@ -34,10 +37,10 @@ import { PaySuppliers } from "../components/layout/private/payments/suppliers/pa
 import { BeneficiaryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
 import { CreateCallSuppliers } from "../components/layout/private/suppliers/calls_suppliers/CreateCallSuppliers";
 import { SupplierValidation } from "../components/layout/private/suppliers/supplier_validation/SupplierValidation";
-
-//Enum
-import { RouterEnum } from "./RouterEnum";
 import {ReviewDocuments} from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
+import {
+    CreateCollectionAccount
+} from "../components/layout/private/payments/suppliers/create-collection-account/CreateCollectionAccount";
 
 export const Routing = () => {
     return (
@@ -78,7 +81,8 @@ export const Routing = () => {
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
                         <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryReview /> }  />
                         <Route path={ RouterEnum.ReviewPaymentsBeneficiaryId }  element={ <ReviewDocuments /> }  />
-                        <Route path={ RouterEnum.Payments_Suppliers }  element={ <PaySuppliers /> }  />
+                        <Route path={ RouterEnum.PaymentsSuppliersList }  element={ <PaySuppliers /> }  />
+                        <Route path={ RouterEnum.CreateCollectionAccount }  element={ <CreateCollectionAccount /> }  />
 
                         {/* Users */}
                         <Route path={ RouterEnum.Users }  element={ <UserList /> }  />
