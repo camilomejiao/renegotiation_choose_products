@@ -9,6 +9,9 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 
 //Enums
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+
+const CHUNK_SIZE = 250;
 
 export const CreateCollectionAccount = () => {
 
@@ -24,12 +27,13 @@ export const CreateCollectionAccount = () => {
 
     //
     const statusCollectionAccountColumns = [
-        { field: "id", headerName: "ID", width: 150 },
-        { field: "name", headerName: "Nombre", width: 150 },
-        { field: "identification", headerName: "Identificacion", width: 150 },
-        { field: "territorial_status", headerName: "Territorial", width: 150 },
-        { field: "tecnical_status", headerName: "Tecnico", width: 150 },
-        { field: "supervision_status", headerName: "Supervisión", width: 150 },
+        { field: "id", headerName: "ID", width: 80 },
+        { field: "cub_id", headerName: "Cub", width: 90 },
+        { field: "name", headerName: "Beneficiario", width: 300 },
+        { field: "identification", headerName: "Identificacion", width: 200 },
+        { field: "date", headerName: "Fecha", width: 150 },
+        { field: "amount", headerName: "Cantidad de Productos", width: 150 },
+        { field: "amount_of_money", headerName: "Valor", width: 150 },
     ]
 
     const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch) => {
@@ -55,8 +59,9 @@ export const CreateCollectionAccount = () => {
             cub_id: row?.beneficiario?.id,
             name: `${row?.beneficiario?.nombre ?? ''} ${row?.beneficiario?.apellido ?? ''}`,
             identification: row?.beneficiario?.identificacion,
-            supplier_name: row?.proveedor?.nombre,
-            supplier_nit: row?.proveedor?.nit,
+            date: row?.fecha_creacion.split('T')[0],
+            amount: row?.cantidad_productos,
+            amount_of_money: parseFloat(row?.valor).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
         }));
     }
 
@@ -65,25 +70,56 @@ export const CreateCollectionAccount = () => {
         setSelectedIds(newSelection);
     };
 
-    //
-    const handleSaveUsers = async () => {
-        setSendingData(true)
 
-        const payload = [selectedIds];
-        console.log('payload: ', payload);
+    const handleSaveUsers = async () => {
+        setSendingData(true);
+        const blocks = splitIntoChunks(selectedIds, CHUNK_SIZE);
 
         try {
-            const {data, status} = await paymentServices.createCollectionAccounts(payload);
-            console.log(data);
-            if (status === ResponseStatusEnum.OK) {
-
-            }
+            await sendAllChunks(blocks);
+            AlertComponent.success("Éxito", "Todas las cuentas de cobro se crearon correctamente.");
+            navigate('admin/payments-suppliers');
         } catch (error) {
-            console.error("Error creando la cuenta de cobro:", error);
+            console.error("Error al crear cuentas de cobro:", error);
+            AlertComponent.error("Error", `${error}`);
         } finally {
-            setSendingData(false)
+            setSendingData(false);
         }
-    }
+    };
+
+    //Dividimos un array en bloques de tamaño n
+    const splitIntoChunks = (array, size) => {
+        const result = [];
+        for (let i = 0; i < array.length; i += size) {
+            result.push(array.slice(i, i + size));
+        }
+        return result;
+    };
+
+    //Envíamos todos los bloques en serie (uno por uno)
+    const sendAllChunks = async (chunks) => {
+        for (let i = 0; i < chunks.length; i++) {
+            await sendChunk(chunks[i], i);
+        }
+    };
+
+    //Envíamos un solo bloque al backend
+    const sendChunk = async (chunk, index) => {
+        const payload = {
+            entregas_ids: chunk,
+        };
+
+        const { data, status } = await paymentServices.createCollectionAccounts(payload);
+
+        // ✅ Acepta 200 o 201 como exitosos
+        if (![ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(status)) {
+            AlertComponent.error("Error", `❌ Error en el bloque ${index + 1}: ${JSON.stringify(data)}`);
+            throw new Error(`❌ Error en el bloque ${index + 1}: ${JSON.stringify(data)}`);
+        }
+
+        console.log(`✅ Bloque ${index + 1} creado con éxito`, data);
+    };
+
 
     const onBack = () => {
         navigate(`/admin/payments-suppliers`);

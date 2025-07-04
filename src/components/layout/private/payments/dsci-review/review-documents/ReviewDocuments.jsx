@@ -59,8 +59,6 @@ export const ReviewDocuments = () => {
     };
 
     const approveAndDeny = async (accion) => {
-        console.log("Comentarios guardados:", comments);
-
         if (accion === 'denegar' && !comments.trim()) {
             AlertComponent.warning("Debe escribir una observación para denegar la entrega.");
             setLoading(false);
