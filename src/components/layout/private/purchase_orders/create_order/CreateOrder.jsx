@@ -199,7 +199,7 @@ export const CreateOrder = () => {
 
     //Maneja la respuesta del servicio y muestra la alerta correspondiente
     const handleSaveResponse = (data, status) => {
-        if (status === ResponseStatusEnum.CREATE) {
+        if (status === ResponseStatusEnum.CREATED) {
             setSaldoRestante(parseFloat(data?.cub?.monto_proveedores));
             AlertComponent.success('Bien hecho!', 'Productos guardados exitosamente');
             resetProductList();

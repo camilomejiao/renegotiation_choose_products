@@ -612,14 +612,14 @@ export const Deliveries = () => {
             try {
                 const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
-                if (status === ResponseStatusEnum.CREATE) {
+                if (status === ResponseStatusEnum.CREATED) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
                 if (status === ResponseStatusEnum.BAD_REQUEST ||
                     status === ResponseStatusEnum.INTERNAL_SERVER_ERROR ||
-                    status !== ResponseStatusEnum.CREATE) {
+                    status !== ResponseStatusEnum.CREATED) {
                     showError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {

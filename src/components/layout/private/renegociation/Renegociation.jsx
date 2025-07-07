@@ -291,12 +291,12 @@ export const Renegociation = () => {
             try {
                 const { status } = await renegotiationServices.sendEngagement(cubId, formData);
 
-                if (status === ResponseStatusEnum.CREATE || status === ResponseStatusEnum.OK) {
+                if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
-                if (status !== ResponseStatusEnum.CREATE) {
+                if (status !== ResponseStatusEnum.CREATED) {
                     showError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {

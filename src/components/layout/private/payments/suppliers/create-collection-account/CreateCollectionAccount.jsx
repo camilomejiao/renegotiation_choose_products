@@ -78,7 +78,7 @@ export const CreateCollectionAccount = () => {
         try {
             await sendAllChunks(blocks);
             AlertComponent.success("Éxito", "Todas las cuentas de cobro se crearon correctamente.");
-            navigate('admin/payments-suppliers');
+            navigate('/admin/payments-suppliers');
         } catch (error) {
             console.error("Error al crear cuentas de cobro:", error);
             AlertComponent.error("Error", `${error}`);
@@ -112,7 +112,7 @@ export const CreateCollectionAccount = () => {
         const { data, status } = await paymentServices.createCollectionAccounts(payload);
 
         // ✅ Acepta 200 o 201 como exitosos
-        if (![ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(status)) {
+        if (![ResponseStatusEnum.CREATED].includes(status)) {
             AlertComponent.error("Error", `❌ Error en el bloque ${index + 1}: ${JSON.stringify(data)}`);
             throw new Error(`❌ Error en el bloque ${index + 1}: ${JSON.stringify(data)}`);
         }

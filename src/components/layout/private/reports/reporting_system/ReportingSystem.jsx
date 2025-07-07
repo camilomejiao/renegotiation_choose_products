@@ -95,12 +95,12 @@ export const ReportingSystem = () => {
             try {
                 const { status } = await reportServices.uploadFileReport(cubId, formData);
 
-                if (status === ResponseStatusEnum.CREATE || status === ResponseStatusEnum.OK) {
+                if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
-                if (status !== ResponseStatusEnum.CREATE) {
+                if (status !== ResponseStatusEnum.CREATED) {
                     handleError('Error', 'Error al enviar el archivo');
                 }
             } catch (error) {
