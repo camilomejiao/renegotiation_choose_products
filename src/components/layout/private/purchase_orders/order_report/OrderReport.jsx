@@ -250,7 +250,7 @@ export const OrderReport = () => {
                         </div>
                     )}
 
-                    <div className="responsive-container">
+                    <div style={{ height: 500, width: "100%" }}>
                         <DataGrid
                             columns={columns}
                             rows={purcharseOrder}

@@ -26,8 +26,8 @@ class PaymentServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    approveOrDenyPayments(payload, id, action) {
-        const url = this.buildUrl(`entregas-revision/${id}/${action}/`);
+    approveOrDenyPayments(payload, id) {
+        const url = this.buildUrl(`entregas-revision/${id}/aprobar/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(payload),

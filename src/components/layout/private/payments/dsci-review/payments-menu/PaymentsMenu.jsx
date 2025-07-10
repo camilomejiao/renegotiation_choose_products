@@ -66,22 +66,28 @@ export const PaymentsMenu = () => {
                     </div>
                 </div>
 
-                <div className="payment-status">
-                    <div className="payment-srarys-content">
-                        <h3>Estado</h3>
-                        <div className="payment-status-card">
-                            <p className="payment-status-text">Fiduciaria</p>
-                            <img src={fiduciaria} alt="Fiduciaria" />
-                        </div>
-                    </div>
-                    <div className="payment-srarys-content">
-                        <h3>Conciliación</h3>
-                        <div className="payment-status-card">
-                            <p className="payment-status-text">Conciliación</p>
-                            <img src={fiduciaria} alt="Fiduciaria" />
-                        </div>
-                    </div>
-                </div>
+                {
+                    [RolesEnum.ADMIN, RolesEnum.PAYMENTS].includes(userAuth.rol_id) && (
+                        <>
+                            <div className="payment-status">
+                                <div className="payment-srarys-content">
+                                    <h3>Estado</h3>
+                                    <div className="payment-status-card">
+                                        <p className="payment-status-text">Fiduciaria</p>
+                                        <img src={fiduciaria} alt="Fiduciaria" />
+                                    </div>
+                                </div>
+                                <div className="payment-srarys-content">
+                                    <h3>Conciliación</h3>
+                                    <div className="payment-status-card">
+                                        <p className="payment-status-text">Conciliación</p>
+                                        <img src={fiduciaria} alt="Fiduciaria" />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )
+                }
             </div>
 
         </>
