@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Form, Col, Row } from "react-bootstrap";
 import { FaStepBackward } from "react-icons/fa";
 
 //Components
 import { UserInformation } from "../../../user_information/UserInformation";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 
 //helper
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
@@ -12,6 +14,8 @@ import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 import downloadImg from "../../../../../../assets/image/payments/download.png";
 import checkImg from "../../../../../../assets/image/payments/check.png";
 import closeImg from "../../../../../../assets/image/payments/close.png";
+import imgPayments from "../../../../../../assets/image/payments/payments.png";
+import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 
 //Css
 import './ReviewDocuments.css';
@@ -21,7 +25,6 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
-import { useNavigate, useParams } from "react-router-dom";
 
 export const ReviewDocuments = () => {
 
@@ -117,6 +120,15 @@ export const ReviewDocuments = () => {
 
     return (
         <>
+            <HeaderImage
+                imageHeader={imgPayments}
+                titleHeader={'Proceso de pago'}
+                bannerIcon={imgAdd}
+                backgroundIconColor={'#2148C0'}
+                bannerInformation={'Aquí podrás revisar el detalle de cada entrega para orden de pago.'}
+                backgroundInformationColor={'#F66D1F'}
+            />
+
             <div className="content-review-documents">
 
                 {!loading && beneficiaryInformation?.beneficiario && (
