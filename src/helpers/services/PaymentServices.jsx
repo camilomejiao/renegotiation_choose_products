@@ -49,12 +49,17 @@ class PaymentServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    createCollectionAccounts(payload) {
-        const url = this.buildUrl(`cuentas-cobro/`);
+    createCollectionAccounts(formData) {
+        const url = this.buildUrl(`informacion-pago/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: JSON.stringify(payload),
+            body: formData,
         });
+    }
+
+    downloadFile(id) {
+        const url = this.buildUrl(`archivos-entrega/${id}/descargar/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
 }

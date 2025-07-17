@@ -15,8 +15,6 @@ import imgPayments from "../../../../../../assets/image/payments/pay-supplier.pn
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import imgWorker from "../../../../../../assets/image/payments/worker.png";
 
-const CHUNK_SIZE = 250;
-
 export const CreateCollectionAccount = () => {
     const navigate = useNavigate();
 
@@ -81,6 +79,7 @@ export const CreateCollectionAccount = () => {
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
+        console.log(name, files);
         setFormFields({ ...formFields, [name]: files[0] });
     };
 
@@ -90,7 +89,15 @@ export const CreateCollectionAccount = () => {
     };
 
     const handleSaveUsers = async () => {
-        if (!formFields.tipoCuenta || !formFields.numeroCuenta || !formFields.entidadBancaria || !formFields.certificadoBancario || !formFields.rut || !formFields.detalleCuenta) {
+        console.log(formFields.tipoCuenta, formFields.numeroCuenta, formFields.entidadBancaria, formFields.certificadoBancario, formFields.rut, formFields.detalleCuenta);
+        if (
+            !formFields.tipoCuenta ||
+            !formFields.numeroCuenta ||
+            !formFields.entidadBancaria ||
+            !formFields.certificadoBancario ||
+            !formFields.rut ||
+            !formFields.detalleCuenta
+        ) {
             AlertComponent.error("Error", "Todos los campos del formulario son obligatorios.");
             return;
         }
@@ -107,7 +114,12 @@ export const CreateCollectionAccount = () => {
         formData.append("certificado_bancario_pdf", formFields.certificadoBancario);
         formData.append("rut_pdf", formFields.rut);
         formData.append("solicitud_cuenta_pdf", formFields.detalleCuenta);
-        formData.append("entregas_ids", JSON.stringify(selectedIds));
+
+        selectedIds.forEach(id => {
+            formData.append("entregas_ids", id);
+        });
+
+        console.log(formData);
 
         try {
             setSendingData(true);
@@ -170,8 +182,8 @@ export const CreateCollectionAccount = () => {
                                 required
                             >
                                 <option value="">Seleccione...</option>
-                                <option value="Ahorros">Ahorros</option>
-                                <option value="Corriente">Corriente</option>
+                                <option value="AHO">Ahorros</option>
+                                <option value="COR">Corriente</option>
                             </select>
                         </Col>
                         <Col xs={12} sm={6} md={4}>
@@ -205,7 +217,7 @@ export const CreateCollectionAccount = () => {
                             <input
                                 type="file"
                                 className="form-control"
-                                name="certificado_bancario"
+                                name="certificadoBancario"
                                 onChange={handleFileChange}
                                 accept="application/pdf"
                             />
@@ -225,7 +237,7 @@ export const CreateCollectionAccount = () => {
                             <input
                                 type="file"
                                 className="form-control"
-                                name="detalle"
+                                name="detalleCuenta"
                                 onChange={handleFileChange}
                                 accept="application/pdf"
                             />

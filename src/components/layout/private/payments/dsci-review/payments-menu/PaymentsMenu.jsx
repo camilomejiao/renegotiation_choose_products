@@ -28,13 +28,16 @@ const userCards = [
 
 export const PaymentsMenu = () => {
     const { userAuth } = useOutletContext();
-    console.log(userAuth);
 
     const navigate = useNavigate();
 
     const handleRedirect = (role) => {
         navigate(`/admin/payments/${role}`);
     };
+
+    const handleFiduciary = () => {
+        navigate(`/admin/fiduciary/list-account-suppliers`);
+    }
 
     return (
         <>
@@ -72,7 +75,11 @@ export const PaymentsMenu = () => {
                             <div className="payment-status">
                                 <div className="payment-srarys-content">
                                     <h3>Estado</h3>
-                                    <div className="payment-status-card">
+                                    <div
+                                        className="payment-status-card"
+                                        onClick={() => handleFiduciary()}
+                                        style={{ cursor: "pointer" }}
+                                    >
                                         <p className="payment-status-text">Fiduciaria</p>
                                         <img src={fiduciaria} alt="Fiduciaria" />
                                     </div>

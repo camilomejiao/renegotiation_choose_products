@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { BeneficiaryList } from "../beneficiary-list/BeneficiaryList";
+import { BeneficiaryDeliveryList } from "../beneficiary-delivery-list/BeneficiaryDeliveryList";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -14,9 +14,9 @@ import supervision from "../../../../../../assets/image/payments/supervision.png
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 
 //Css
-import './BeneficiaryReview.css';
+import './BeneficiaryDeliveryReview.css';
 
-export const BeneficiaryReview = () => {
+export const BeneficiaryDeliveryReview = () => {
 
     const params = useParams();
     const navigate = useNavigate();
@@ -83,7 +83,7 @@ export const BeneficiaryReview = () => {
             </div>
 
             <div className="container mt-lg-5">
-                <BeneficiaryList onRowSelect={handleRowSelect} />
+                <BeneficiaryDeliveryList onRowSelect={handleRowSelect} />
             </div>
 
         </>

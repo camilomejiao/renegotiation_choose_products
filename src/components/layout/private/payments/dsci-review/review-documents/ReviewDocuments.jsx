@@ -117,17 +117,19 @@ export const ReviewDocuments = () => {
                 <Row className="button-group-review mt-5">
                     <button
                         className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.documentos_descargables?.soportes_zip)}
+                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
                     >
                         <img src={downloadImg} alt=""/> Plan de inversión
                     </button>
                     <button
                         className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.documentos_descargables?.soportes_zip)}
+                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
                     >
                         <img src={downloadImg} alt=""/> Orden de compra
                     </button>
-                    <button className="button-download">
+                    <button className="button-download"
+                            onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
+                    >
                         <img src={downloadImg} alt=""/> Acta de entrega
                     </button>
                     <div className="total">

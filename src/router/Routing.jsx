@@ -34,13 +34,17 @@ import { SearchUserForRenegociation } from "../components/layout/private/renegoc
 import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
 import { PaySuppliers } from "../components/layout/private/payments/suppliers/pay-suppliers/PaySuppliers";
-import { BeneficiaryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryReview";
+import { BeneficiaryDeliveryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
 import { CreateCallSuppliers } from "../components/layout/private/suppliers/calls_suppliers/CreateCallSuppliers";
 import { SupplierValidation } from "../components/layout/private/suppliers/supplier_validation/SupplierValidation";
 import {ReviewDocuments} from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
 import {
     CreateCollectionAccount
 } from "../components/layout/private/payments/suppliers/create-collection-account/CreateCollectionAccount";
+import {ListAccountOfSuppliers} from "../components/layout/private/payments/fiduciary/list-account-suppliers/ListAccountOfSuppliers";
+import {
+    CollectionAccountDetails
+} from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
 
 export const Routing = () => {
     return (
@@ -79,10 +83,14 @@ export const Routing = () => {
 
                         {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
-                        <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryReview /> }  />
+                        <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryDeliveryReview /> }  />
                         <Route path={ RouterEnum.ReviewPaymentsBeneficiaryId }  element={ <ReviewDocuments /> }  />
                         <Route path={ RouterEnum.PaymentsSuppliersList }  element={ <PaySuppliers /> }  />
                         <Route path={ RouterEnum.CreateCollectionAccount }  element={ <CreateCollectionAccount /> }  />
+
+                        {/* Fiduciary */}
+                        <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
+                        <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
 
                         {/* Users */}
                         <Route path={ RouterEnum.Users }  element={ <UserList /> }  />

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
-export const BeneficiaryList = ({ onRowSelect }) => {
+export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
@@ -64,7 +64,7 @@ export const BeneficiaryList = ({ onRowSelect }) => {
                     loading={loading}
                     paginationMode="server"
                     rowCount={rowCount}
-                    pageSizeOptions={[50, 100]}
+                    pageSizeOptions={[25, 50, 100]}
                     paginationModel={{ page, pageSize }}
                     onPaginationModelChange={({ page, pageSize }) => {
                         setPage(page);
