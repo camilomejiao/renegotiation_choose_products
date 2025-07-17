@@ -118,7 +118,8 @@ export const ReportingSystem = () => {
             handleError('Error', 'No hay un archivo cargado para este producto.');
             return;
         }
-        window.open(pdfUrl, '_blank');
+        const fullUrl = `${process.env.REACT_APP_API_URL}${pdfUrl}`;
+        window.open(fullUrl, '_blank');
     };
 
     //Imprime el reporte de compras del usuario

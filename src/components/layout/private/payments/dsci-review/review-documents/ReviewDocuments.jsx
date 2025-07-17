@@ -50,12 +50,28 @@ export const ReviewDocuments = () => {
     }
 
     //
-    const handleViewFile = (pdfUrl) => {
+    const handleViewFile = async (pdfUrl) => {
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
             return;
         }
-        window.open(pdfUrl, '_blank');
+        setLoading(true);
+        try {
+            setInformationLoadingText("Obteniendo archivo");
+            const {blob, status} = await paymentServices.downloadFile(pdfUrl?.id);
+            if(status === ResponseStatusEnum.OK) {
+                const blobUrl = window.URL.createObjectURL(blob);
+                window.open(blobUrl, '_blank');
+            }
+
+            if(status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+        } catch (error) {
+            console.error("Error al aprobar o denegar:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const approveAndDeny = async (accion) => {
@@ -86,7 +102,6 @@ export const ReviewDocuments = () => {
             console.error("Error al aprobar o denegar:", error);
         } finally {
             setLoading(false);
-
         }
     };
 
@@ -117,18 +132,18 @@ export const ReviewDocuments = () => {
                 <Row className="button-group-review mt-5">
                     <button
                         className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
+                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.pdf)}
                     >
                         <img src={downloadImg} alt=""/> Plan de inversión
                     </button>
                     <button
                         className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
+                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.pdf)}
                     >
                         <img src={downloadImg} alt=""/> Orden de compra
                     </button>
                     <button className="button-download"
-                            onClick={() => handleViewFile(beneficiaryInformation?.archivos?.soportes_zip)}
+                            onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_de_entrega)}
                     >
                         <img src={downloadImg} alt=""/> Acta de entrega
                     </button>
