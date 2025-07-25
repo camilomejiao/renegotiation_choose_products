@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
-import {Accordion, Col, Row} from "react-bootstrap";
+import { useOutletContext } from "react-router-dom";
+import { Accordion, Col, Row } from "react-bootstrap";
+
+//Css
 import './ListCollectionAccount.css';
+
+//Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
+
+//Enum
+import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 export const ListCollectionAccount = () => {
+
+    const { userAuth } = useOutletContext();
 
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [page, setPage] = useState(1);
@@ -19,21 +29,31 @@ export const ListCollectionAccount = () => {
     const [collectionAccounts, setCollectionAccounts] = useState([]);
     const [detailCollectionAccounts, setDetailCollectionAccounts] = useState({});
 
-    const getListCollectionAccount = async (pageToFetch = 1) => {
+    const getSupplierId = () => {
+        let supplierId = null;
+        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
+            supplierId = supplierServices.getSupplierId();
+        }
+
+        return supplierId;
+    }
+
+    const getListCollectionAccount = async (pageToFetch = 1, sizeToFetch) => {
         setLoading(true);
         setInformationLoadingText("Obteniendo información");
         try {
-            const { data, status } = await paymentServices.getCollectionAccounts(pageToFetch);
-            console.log(data);
+            console.log(pageToFetch, sizeToFetch, getSupplierId());
+            const { data, status } = await paymentServices.getCollectionAccounts(pageToFetch, sizeToFetch, Number(getSupplierId()));
             if (status === ResponseStatusEnum.OK) {
                 setCollectionAccounts(data?.results);
                 const totalPages = Math.ceil(data.count / data.results.length);
+                console.log(totalPages);
                 setPagination({
                     next: data.next,
                     previous: data.previous,
                     count: data.count,
                     currentPage: page,
-                    totalPages: totalPages,
+                    totalPages: isNaN(totalPages) ? 1 : totalPages,
                 });
             }
         } catch (error) {
@@ -66,8 +86,8 @@ export const ListCollectionAccount = () => {
     };
 
     useEffect(() => {
-        getListCollectionAccount(1);
-    }, []);
+        getListCollectionAccount(1, 100);
+    }, [page]);
 
     return (
         <>
@@ -95,7 +115,7 @@ export const ListCollectionAccount = () => {
                                                     <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
                                                 </Col>
                                                 <Col md={6}>
-                                                    <strong>💰 Valor total:</strong> ${account?.valor_total.toLocaleString()}
+                                                    <strong>💰 Valor total:</strong> ${parseFloat(account?.valor_total).toLocaleString()}
                                                 </Col>
                                             </Row>
 

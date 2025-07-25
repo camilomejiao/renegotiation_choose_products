@@ -21,8 +21,8 @@ class PaymentServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    getReviewApprovedDeliveriesById(beneficiaryId) {
-        const url = this.buildUrl(`entregas-revision/${beneficiaryId}/`);
+    getReviewApprovedDeliveriesById(deliveryId) {
+        const url = this.buildUrl(`entregas-revision/${deliveryId}/detalle/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -34,9 +34,12 @@ class PaymentServices {
         });
     }
 
-    getCollectionAccounts(page = 1) {
-        const url = this.buildUrl(`cuentas-cobro/?page=${page}`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    getCollectionAccounts(page = 1, pageSize = 100, supplierId) {
+        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}`;
+        if (supplierId) {
+            url += `&proveedor_id=${supplierId}`;
+        }
+        return authTokenService.fetchWithAuth(this.buildUrl(url), { method: "GET" });
     }
 
     getDetailCollectionAccounts(accountId) {
@@ -61,6 +64,7 @@ class PaymentServices {
         const url = this.buildUrl(`archivos-entrega/${id}/descargar/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
+
 
 }
 

@@ -89,7 +89,6 @@ export const CreateCollectionAccount = () => {
     };
 
     const handleSaveUsers = async () => {
-        console.log(formFields.tipoCuenta, formFields.numeroCuenta, formFields.entidadBancaria, formFields.certificadoBancario, formFields.rut, formFields.detalleCuenta);
         if (
             !formFields.tipoCuenta ||
             !formFields.numeroCuenta ||
@@ -114,12 +113,7 @@ export const CreateCollectionAccount = () => {
         formData.append("certificado_bancario_pdf", formFields.certificadoBancario);
         formData.append("rut_pdf", formFields.rut);
         formData.append("solicitud_cuenta_pdf", formFields.detalleCuenta);
-
-        selectedIds.forEach(id => {
-            formData.append("entregas_ids", id);
-        });
-
-        console.log(formData);
+        formData.append("entregas_ids", selectedIds.join(","));
 
         try {
             setSendingData(true);

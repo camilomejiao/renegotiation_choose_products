@@ -36,12 +36,11 @@ export const ReviewDocuments = () => {
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [beneficiaryInformation, setBeneficiaryInformation] = useState({});
 
-    const getBeneficiaryInformation = async (cubId) => {
+    const getBeneficiaryInformation = async (deliberyId) => {
         setLoading(true);
         try {
             setInformationLoadingText("Obteniendo información");
-            const {data, status} = await paymentServices.getReviewApprovedDeliveriesById(cubId);
-            console.log(data);
+            const {data, status} = await paymentServices.getReviewApprovedDeliveriesById(deliberyId);
             if(status === ResponseStatusEnum.OK) {
                 setBeneficiaryInformation(data);
             }
@@ -54,24 +53,18 @@ export const ReviewDocuments = () => {
 
     //
     const handleViewFile = async (pdfUrl) => {
+        console.log(pdfUrl);
         if (!pdfUrl) {
-            AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
+            AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
             return;
         }
         setLoading(true);
         try {
             setInformationLoadingText("Obteniendo archivo");
-            const {blob, status} = await paymentServices.downloadFile(pdfUrl?.id);
-            if(status === ResponseStatusEnum.OK) {
-                const blobUrl = window.URL.createObjectURL(blob);
-                window.open(blobUrl, '_blank');
-            }
-
-            if(status === ResponseStatusEnum.NOT_FOUND) {
-                AlertComponent.error('Error', 'No se puede descargar el archivo.');
-            }
+            const fullUrl = `${process.env.REACT_APP_API_URL}/archivos/${pdfUrl?.url_descarga}`;
+            window.open(fullUrl, '_blank');
         } catch (error) {
-            console.error("Error al aprobar o denegar:", error);
+            console.error("Error al descargar archivo:", error);
         } finally {
             setLoading(false);
         }
@@ -141,30 +134,47 @@ export const ReviewDocuments = () => {
                     </div>
                 )}
 
-                <Row className="button-group-review mt-5">
-                    <button
-                        className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.pdf)}
-                    >
-                        <img src={downloadImg} alt=""/> Plan de inversión
-                    </button>
-                    <button
-                        className="button-download"
-                        onClick={() => handleViewFile(beneficiaryInformation?.archivos?.pdf)}
-                    >
-                        <img src={downloadImg} alt=""/> Orden de compra
-                    </button>
-                    <button className="button-download"
-                            onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_de_entrega)}
-                    >
-                        <img src={downloadImg} alt=""/> Acta de entrega
-                    </button>
-                    <div className="total">
-                        Total: <strong> $ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</strong>
-                    </div>
+                <Row className="review-section">
+                    <Col md={6} xs={12} className="observations-history">
+                        <h5 className="section-title">Historial de revisiones</h5>
+                        {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
+                            <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
+                                <div><strong>Usuario:</strong> {rev.usuario}</div>
+                                <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
+                                <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
+                                <div><strong>Observación:</strong> {rev.observacion}</div>
+                            </div>
+                        ))}
+                    </Col>
+
+                    <Col md={5} xs={12} className="documents-download">
+                        <h5 className="section-title mb-4">Documentos adjuntos</h5>
+                        {beneficiaryInformation?.archivos?.plan_inversion?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.plan_inversion)}>
+                                <img src={downloadImg} alt="" /> Plan de inversión
+                            </button>
+                        )}
+                        {beneficiaryInformation?.archivos?.orden_compra?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.orden_compra)}>
+                                <img src={downloadImg} alt="" /> Orden de compra
+                            </button>
+                        )}
+                        {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
+                                <img src={downloadImg} alt="" /> Acta de entrega
+                            </button>
+                        )}
+
+                        <div className="total">
+                            Total: <strong>$ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        })}</strong>
+                        </div>
+                    </Col>
                 </Row>
 
-                <Row className="observations mt-5 my-3">
+                <Row className="observations my-3">
                     <Col>
                         <Form.Label><img src={closeImg} alt=""/> Observaciones</Form.Label>
                         <Form.Control

@@ -8,7 +8,8 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 //img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-
+import {paymentServices} from "../../../../../../helpers/services/PaymentServices";
+import {ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
 
 export const ListAccountOfSuppliers = () => {
 
@@ -21,22 +22,39 @@ export const ListAccountOfSuppliers = () => {
     const [rowCount, setRowCount] = useState(0);
 
     const columns = [
-        { field: "id", headerName: "N° Cuenta de Cobro", width: 250 },
-        { field: "date", headerName: "Fecha Creación", width: 200 },
-        { field: "supplier_nit", headerName: "Nit", width: 250 },
+        { field: "id", headerName: "ID", width: 180 },
+        { field: "collection_account", headerName: "N° Cuenta de Cobro", width: 180 },
+        { field: "date", headerName: "Fecha Creación", width: 180 },
+        { field: "supplier_nit", headerName: "Nit", width: 180 },
         { field: "supplier_name", headerName: "Proveedor", width: 380 },
         { field: "total", headerName: "Valor Total", width: 200 },
     ];
 
-    const getAccountOfSuppliers = (pageToFetch = 1, sizeToFetch) => {
+    const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch) => {
         setLoading(true);
         try {
-
+            const {data, status} = await paymentServices.getCollectionAccounts(pageToFetch, sizeToFetch);
+            if(status === ResponseStatusEnum.OK) {
+                const rows = await normalizeRows(data.results);
+                setDataTable(rows);
+                setRowCount(data.count);
+            }
         } catch (error) {
             console.error("Error obteniendo las entregas:", error);
         } finally {
             setLoading(false);
         }
+    }
+
+    const normalizeRows = async (data) => {
+        return data.map((row) => ({
+            id: row?.id,
+            collection_account: row?.numero,
+            date: row?.fecha_cuenta_cobro.split("T")[0],
+            supplier_name: row?.nombre_proveedor,
+            supplier_nit: row?.nit_proveedor,
+            total: `$ ${parseFloat(row?.valor_total).toLocaleString()}`,
+        }));
     }
 
     const handleRowClick = (params) => {
