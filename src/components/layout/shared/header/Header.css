@@ -23,7 +23,7 @@
 
 @media (max-width: 768px) {
     .portal-title {
-        font-size: 40px;
+        font-size: 30px;
         line-height: 60px;
     }
 }
@@ -39,8 +39,14 @@
     }
 }
 
+@media (max-width: 375px) {
+    .portal-title {
+        line-height: 13px;
+    }
+}
+
 @media (max-width: 325px) {
     .portal-title {
-        line-height: 25px;
+        line-height: 14px;
     }
 }

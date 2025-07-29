@@ -1,24 +1,31 @@
 import { Global } from "../Global.jsx";
 import { authTokenService } from "./AuthTokenService";
 
+/**
+ * Servicio para gestionar productos y operaciones asociadas a órdenes de compra.
+ */
 class ProductForPurchaseOrderServices {
     constructor() {
         this.baseUrl = Global.url + "producto/";
     }
 
     /**
-     * Genera la URL completa para los endpoints de productos.
-     * @param {string} endpoint - Endpoint relativo.
-     * @returns {string} - URL completa.
+     * Construye la URL completa para un endpoint relativo de productos.
+     * @param {string} endpoint - Ruta relativa del endpoint.
+     * @returns {string} URL completa del endpoint.
      */
     buildUrl(endpoint) {
         return this.baseUrl + endpoint;
     }
 
+    // =============================
+    // CONSULTA DE PRODUCTOS
+    // =============================
+
     /**
-     * Buscar un producto por nombre.
-     * @param {string} searchData - Término de búsqueda.
-     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     * Busca productos por nombre o término de búsqueda.
+     * @param {string} searchData - Término de búsqueda del producto.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     searchProduct(searchData) {
         const url = this.buildUrl(`buscar/${searchData}/`);
@@ -26,19 +33,23 @@ class ProductForPurchaseOrderServices {
     }
 
     /**
-     * Obtener un producto por su ID.
-     * @param {number} id - ID del producto.
-     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     * Obtiene un producto por su ID.
+     * @param {number|string} id - ID del producto a consultar.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getProductId(id) {
         const url = this.buildUrl(`${id}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    // =============================
+    // OPERACIONES DE ORDEN
+    // =============================
+
     /**
-     * Guardar productos.
-     * @param {object} products - Productos a guardar.
-     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     * Guarda una orden de productos.
+     * @param {object} products - Objeto con los productos a guardar.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     saveOrderProducts(products) {
         const url = Global.url + "orden/";

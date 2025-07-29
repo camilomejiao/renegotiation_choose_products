@@ -1,7 +1,7 @@
 /* ========== CONTENEDOR PRINCIPAL ========== */
 .content-review-documents {
     max-width: 1200px;
-    margin: 50px;
+    margin: 50px auto;
     padding: 25px;
     background: #fff;
     border-radius: 10px;

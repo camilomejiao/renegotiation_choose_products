@@ -1,5 +1,9 @@
-import {Col, Container, Row} from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
+
+//Img
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
+
+//Css
 import './UserInformation.css';
 
 export const UserInformation = ({userData}) => {
@@ -22,24 +26,86 @@ export const UserInformation = ({userData}) => {
                             </div>
                         </Col>
                         <Col xs={12} className="user-details mt-5">
-                            <Row>
-                               {/* <Col md={6} lg={4} className="user-detail-item">
-                                    <strong>
-                                        Saldo: ${parseInt(userData?.deuda_componente).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                                    </strong>
-                                </Col>*/}
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Departamento:</strong> {userData?.departamento}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Municipio:</strong> {userData?.municipio}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Vereda:</strong> {userData?.vereda}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Estado:</strong> {userData?.estado_cub}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Actividad:</strong> {userData?.actividad}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Tipo de persona:</strong> {userData?.tipo}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Teléfono:</strong> {userData?.telefono}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Plan:</strong> {userData?.plan}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Línea:</strong> {userData?.linea}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Restricción:</strong> {userData?.restriccion}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Etnia:</strong> {userData?.etnico}</Col>
-                                <Col md={6} lg={4} className="user-detail-item"><strong>Observaciones:</strong> {userData?.restriccion}</Col>
+                            <Row className="gx-0 gy-3 px-2">
+                                {/* Ubicación */}
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Departamento</span>
+                                        <div className="value">{userData?.departamento}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Municipio</span>
+                                        <div className="value">{userData?.municipio}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Vereda</span>
+                                        <div className="value">{userData?.vereda}</div>
+                                    </div>
+                                </div>
+
+                                {/* Información del CUB */}
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Estado</span>
+                                        <div className="value">{userData?.estado_cub}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Actividad</span>
+                                        <div className="value">{userData?.actividad}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Tipo de persona</span>
+                                        <div className="value">{userData?.tipo}</div>
+                                    </div>
+                                </div>
+
+                                {/* Contacto */}
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Teléfono</span>
+                                        <div className="value">{userData?.telefono}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Plan</span>
+                                        <div className="value">{userData?.plan}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Línea</span>
+                                        <div className="value">{userData?.linea}</div>
+                                    </div>
+                                </div>
+
+                                {/* Otros */}
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Restricción</span>
+                                        <div className="value">{userData?.restriccion}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Etnia</span>
+                                        <div className="value">{userData?.etnico}</div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-lg-4 px-2">
+                                    <div className="user-detail-item bg-card">
+                                        <span className="label">Observaciones</span>
+                                        <div className="value">{userData?.restriccion}</div>
+                                    </div>
+                                </div>
                             </Row>
                         </Col>
                     </Row>

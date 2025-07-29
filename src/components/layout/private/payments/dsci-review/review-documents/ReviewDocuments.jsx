@@ -53,7 +53,6 @@ export const ReviewDocuments = () => {
 
     //
     const handleViewFile = async (pdfUrl) => {
-        console.log(pdfUrl);
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
             return;
@@ -61,8 +60,16 @@ export const ReviewDocuments = () => {
         setLoading(true);
         try {
             setInformationLoadingText("Obteniendo archivo");
-            const fullUrl = `${process.env.REACT_APP_API_URL}/archivos/${pdfUrl?.url_descarga}`;
-            window.open(fullUrl, '_blank');
+
+            const { blob, status } = await paymentServices.downloadFile(pdfUrl?.url_descarga);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const file = new Blob([blob], { type: "application/pdf" });
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            } else if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
         } catch (error) {
             console.error("Error al descargar archivo:", error);
         } finally {
@@ -139,7 +146,7 @@ export const ReviewDocuments = () => {
                         <h5 className="section-title">Historial de revisiones</h5>
                         {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
                             <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
-                                <div><strong>Usuario:</strong> {rev.usuario}</div>
+                                <div><strong>Usuario:</strong> {rev.correo}</div>
                                 <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
                                 <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
                                 <div><strong>Observación:</strong> {rev.observacion}</div>
@@ -174,13 +181,13 @@ export const ReviewDocuments = () => {
                     </Col>
                 </Row>
 
-                <Row className="observations my-3">
+                <Row className="observations my-3 mt-3">
                     <Col>
-                        <Form.Label><img src={closeImg} alt=""/> Observaciones</Form.Label>
                         <Form.Control
                             as="textarea"
                             rows={3}
                             value={comments}
+                            placeholder="Observaciones"
                             onChange={(e) => setComments(e.target.value)}  />
                     </Col>
                 </Row>

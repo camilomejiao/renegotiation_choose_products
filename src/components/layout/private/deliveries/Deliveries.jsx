@@ -285,15 +285,23 @@ export const Deliveries = () => {
             renderCell: (params) => {
                 return (
                     <div>
-                        <Button
-                            variant="warning"
-                            size="sm"
-                            onClick={() => handleEditDelivery(params.row.id) }
-                            style={{marginRight: "10px"}}
-                            disabled={isButtonDisabled(params.row)}
-                        >
-                            <FaPencilAlt/>
-                        </Button>
+                        {[
+                            RolesEnum.TERRITORIAL_LINKS,
+                            RolesEnum.SUPPLIER,
+                            RolesEnum.ADMIN,
+                        ].includes(userAuth.rol_id) && (
+                            <>
+                                <Button
+                                    variant="warning"
+                                    size="sm"
+                                    onClick={() => handleEditDelivery(params.row.id) }
+                                    style={{marginRight: "10px"}}
+                                    disabled={isButtonDisabled(params.row)}
+                                >
+                                    <FaPencilAlt/>
+                                </Button>
+                            </>
+                        )},
                         {[
                             RolesEnum.TERRITORIAL_LINKS,
                             RolesEnum.TECHNICAL,
@@ -311,24 +319,25 @@ export const Deliveries = () => {
                                     <FaTrash />
                                 </Button>
 
-                                {params.row.evidencePdf?.urlFile !== 0 &&
-                                    userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS && (
-                                        <Button
-                                            style={{ backgroundColor: "#FFF", marginRight: "10px" }}
-                                            size="sm"
-                                            onClick={() => {
-                                                setSelectedDeliveryId(params.row.id);
-                                                setOpenModal(true);
-                                            }}
-                                            disabled={isButtonDisabled(params.row)}
-                                        >
-                                            {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
-                                        </Button>
-                                    )}
+                                {params.row.evidencePdf?.urlFile !== 0 && userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS && (
+                                    <Button
+                                        style={{ backgroundColor: "#FFF", marginRight: "10px" }}
+                                        size="sm"
+                                        onClick={() => {
+                                            setSelectedDeliveryId(params.row.id);
+                                            setOpenModal(true);
+                                        }}
+                                        disabled={isButtonDisabled(params.row)}
+                                    >
+                                        {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
+                                    </Button>
+                                )}
                             </>
                         )}
 
-                        {((userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN) && params.row.evidencePdf?.urlFile !== 0) && (
+                        {(
+                            (userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN)
+                            && params.row.evidencePdf?.urlFile !== 0) && (
                             <>
                                 <Button
                                     style={{ backgroundColor: "#FFF" }}

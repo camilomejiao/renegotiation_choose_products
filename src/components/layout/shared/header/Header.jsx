@@ -10,7 +10,7 @@ export const Header = () => {
                 <Row className="align-items-center">
                     <Col md={8} xs={8} className="d-flex align-items-center">
                         <h1 className="portal-title">
-                            Portal de <span className="portal-title-highlight">Proveedores</span>
+                            Portal de <span className="portal-title-highlight">Proveedores PNIS</span>
                         </h1>
                     </Col>
                     <Col md={4} xs={4} className="d-flex justify-content-end">

@@ -16,6 +16,7 @@ export const ListCollectionAccount = () => {
 
     const { userAuth } = useOutletContext();
 
+    const [loading, setLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({
@@ -25,7 +26,6 @@ export const ListCollectionAccount = () => {
         currentPage: 1,
         totalPages: 1,
     });
-    const [loading, setLoading] = useState(false);
     const [collectionAccounts, setCollectionAccounts] = useState([]);
     const [detailCollectionAccounts, setDetailCollectionAccounts] = useState({});
 
@@ -64,7 +64,7 @@ export const ListCollectionAccount = () => {
     };
 
     const getDetailCollectionAccount = async (accountId) => {
-        if (detailCollectionAccounts[accountId]) return; // evitar recarga innecesaria
+        if (detailCollectionAccounts[accountId]) return;
         try {
             const { data, status } = await paymentServices.getDetailCollectionAccounts(accountId);
             if (status === ResponseStatusEnum.OK) {

@@ -1,34 +1,46 @@
 import { Global } from "../Global.jsx";
 import { authTokenService } from "./AuthTokenService";
 
+/**
+ * Servicio para gestionar órdenes de compra.
+ * Permite obtener, eliminar y operar sobre registros de órdenes.
+ */
 class PurchaseOrderServices {
     constructor() {
         this.baseUrl = Global.url + "orden/";
     }
 
     /**
-     * Genera la URL completa para los endpoints de órdenes de compra.
-     * @param {string} endpoint - Endpoint relativo.
-     * @returns {string} - URL completa.
+     * Construye la URL completa para un endpoint de orden de compra.
+     * @param {string} endpoint - Ruta relativa del endpoint.
+     * @returns {string} URL completa del endpoint.
      */
     buildUrl(endpoint) {
         return this.baseUrl + endpoint;
     }
 
+    // =============================
+    // CONSULTAS
+    // =============================
+
     /**
-     * Obtener todas las órdenes de compra paginadas.
-     * @param {number} page - Número de página.
-     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     * Obtiene todas las órdenes de compra de forma paginada.
+     * @param {number} page - Número de página a consultar.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getAll(page) {
         const url = this.buildUrl(`${page}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    // =============================
+    // ELIMINACIÓN
+    // =============================
+
     /**
-     * Eliminar una orden de compra por su ID.
-     * @param {number} orderId - ID de la orden.
-     * @returns {Promise<object>} - Promesa con los datos de la respuesta.
+     * Elimina una orden de compra específica por su ID.
+     * @param {number|string} orderId - ID de la orden de compra a eliminar.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     removeOrder(orderId) {
         const url = this.buildUrl(`${orderId}/`);
