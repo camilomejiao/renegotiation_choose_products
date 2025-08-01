@@ -120,7 +120,7 @@ export const OrderReport = () => {
     const normalizeRows = (data) => {
         return data.map((row) => ({
             id: row?.id,
-            cub_id: row?.cub?.id || "",
+            cub_id: row?.cub?.cub_id || "",
             cub_identificacion: row?.cub?.identificacion || "",
             cub_nombre: row?.cub?.nombre || "",
             cub_apellido: row?.cub?.apellido || "",

@@ -20,10 +20,10 @@ import { RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import "./PaymentsMenu.css";
 
 const userCards = [
+    { title: "Pagos", role: RolesEnum.PAYMENTS, key: "pagos", img: pagos },
     { title: "Territorial", role: RolesEnum.TERRITORIAL_LINKS, key: "territorial", img: territorial },
     { title: "Técnico", role: RolesEnum.TECHNICAL, key: "tecnico", img: tecnico },
     { title: "Supervisión", role: RolesEnum.SUPERVISION, key: "supervision", img: supervision },
-    { title: "Pagos", role: RolesEnum.PAYMENTS, key: "pagos", img: pagos },
 ];
 
 export const PaymentsMenu = () => {

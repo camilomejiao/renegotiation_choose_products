@@ -676,7 +676,7 @@ export const Deliveries = () => {
         printJS({
             printable: printContent,
             type: 'raw-html',
-            documentTitle: 'Reporte Entrega',
+            documentTitle: 'Acta De Entrega',
         });
     }
 
