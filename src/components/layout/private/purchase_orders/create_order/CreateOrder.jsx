@@ -224,7 +224,6 @@ export const CreateOrder = () => {
 
     //Maneja el error en caso de fallo de la llamada
     const handleError = (error, title) => {
-        console.log('error: ', error, 'title: ', title);
         const errorMessage = error.response?.data?.message || error.message || 'Error desconocido';
         AlertComponent.error(title,errorMessage);
     };

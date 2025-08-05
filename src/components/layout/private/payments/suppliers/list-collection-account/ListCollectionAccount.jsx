@@ -42,12 +42,10 @@ export const ListCollectionAccount = () => {
         setLoading(true);
         setInformationLoadingText("Obteniendo información");
         try {
-            console.log(pageToFetch, sizeToFetch, getSupplierId());
             const { data, status } = await paymentServices.getCollectionAccounts(pageToFetch, sizeToFetch, Number(getSupplierId()));
             if (status === ResponseStatusEnum.OK) {
                 setCollectionAccounts(data?.results);
                 const totalPages = Math.ceil(data.count / data.results.length);
-                console.log(totalPages);
                 setPagination({
                     next: data.next,
                     previous: data.previous,

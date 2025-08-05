@@ -79,7 +79,6 @@ export const CreateCollectionAccount = () => {
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
-        console.log(name, files);
         setFormFields({ ...formFields, [name]: files[0] });
     };
 

@@ -67,7 +67,9 @@ export const ReviewDocuments = () => {
                 const file = new Blob([blob], { type: "application/pdf" });
                 const fileURL = URL.createObjectURL(file);
                 window.open(fileURL, '_blank');
-            } else if (status === ResponseStatusEnum.NOT_FOUND) {
+            }
+
+            if (status === ResponseStatusEnum.NOT_FOUND) {
                 AlertComponent.error('Error', 'No se puede descargar el archivo.');
             }
         } catch (error) {
@@ -96,7 +98,6 @@ export const ReviewDocuments = () => {
         try {
             setInformationLoadingText("Guardando");
             const {data, status} = await paymentServices.approveOrDenyPayments(payload, params.id, accion);
-            console.log(data);
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success('', `${accion} exitosamente!`);
                 navigate(`/admin/payments/${params.role}`);

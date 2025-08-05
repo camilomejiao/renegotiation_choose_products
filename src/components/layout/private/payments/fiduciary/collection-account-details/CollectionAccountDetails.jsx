@@ -45,7 +45,6 @@ export const CollectionAccountDetails = () => {
     };
 
     const handleViewFile = async (pdfUrl) => {
-        console.log(pdfUrl);
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
             return;
@@ -74,8 +73,6 @@ export const CollectionAccountDetails = () => {
         setLoading(true);
         try {
             setInformationLoadingText("Generando documento");
-            console.log("Generar documento PDF para cuenta:", accountInformation?.cuenta_cobro?.numero);
-
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
         } finally {

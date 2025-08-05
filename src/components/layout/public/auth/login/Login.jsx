@@ -49,7 +49,6 @@ export const Login = () => {
             return data;
         });
 
-        //console.log(respServicesLogin);
         if(!respServicesLogin.access && !respServicesLogin.refresh) {
             AlertComponent.error('Oops...', respServicesLogin.message);
         } else {
