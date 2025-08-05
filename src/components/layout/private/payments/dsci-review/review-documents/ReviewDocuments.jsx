@@ -4,7 +4,7 @@ import { Form, Col, Row } from "react-bootstrap";
 import { FaStepBackward } from "react-icons/fa";
 
 //Components
-import { UserInformation } from "../../../user_information/UserInformation";
+import { UserInformation } from "../../../../shared/user_information/UserInformation";
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 
 //helper

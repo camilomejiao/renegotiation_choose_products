@@ -3,7 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 
 //Components
 import { HeaderImage} from "../../../shared/header_image/HeaderImage";
-import { UserInformation } from "../../user_information/UserInformation";
+import { UserInformation } from "../../../shared/user_information/UserInformation";
 
 //Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";

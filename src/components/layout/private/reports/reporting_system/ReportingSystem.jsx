@@ -12,7 +12,7 @@ import glass from "../../../../../assets/image/icons/magnifying_glass.png";
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { UserInformation } from "../../user_information/UserInformation";
+import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { HeadLineReport } from "./user_report/HeadLineReport";
 import { AuthorizationSection } from "../../../shared/authorization_section/AuthorizationSection";
 import { handleError, showAlert } from "../../../../../helpers/utils/utils";
