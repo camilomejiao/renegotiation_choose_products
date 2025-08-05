@@ -9,7 +9,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Components
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
-import { UserInformation } from "../user_information/UserInformation";
+import { UserInformation } from "../../shared/user_information/UserInformation";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 
 //Img
@@ -301,7 +301,7 @@ export const Deliveries = () => {
                                     <FaPencilAlt/>
                                 </Button>
                             </>
-                        )},
+                        )}
                         {[
                             RolesEnum.TERRITORIAL_LINKS,
                             RolesEnum.TECHNICAL,

@@ -11,7 +11,7 @@ import { renegotiationServices } from "../../../../helpers/services/Renegociatio
 
 //Components
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
-import { UserInformation } from "../user_information/UserInformation";
+import { UserInformation } from "../../shared/user_information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
 import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 
