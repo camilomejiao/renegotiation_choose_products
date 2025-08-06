@@ -389,6 +389,7 @@ export const Deliveries = () => {
 
     //
     const handleViewFile = (pdfUrl) => {
+        console.log(pdfUrl);
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
             return;
