@@ -1,0 +1,174 @@
+/* Banner de entregas */
+.deliveries-banner {
+    background-color: #fff;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    position: relative;
+}
+
+/* Botón de entregas */
+.deliveries-button {
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.deliveries-button img.button-icon {
+    margin-right: 10px;
+    width: 30px;
+}
+
+.deliveries-button.deliveries {
+    color: #e5e5d1;
+    background-color: brown;
+}
+
+/* Contenedor de información adicional (si aplica) */
+.deliveries-info {
+    background-color: #F1FFFA;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* Contenedor de los botones */
+.button-container {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Dropdown de react-select */
+.css-26l3qy-menu { /* Clase estándar del menú de react-select */
+    z-index: 1000 !important; /* Asegura que el menú sea visible */
+}
+
+.css-1okebmr-indicatorSeparator {
+    display: none; /* Oculta la línea separadora de los indicadores */
+}
+
+/* Control de react-select */
+.custom-select__control {
+    width: 100% !important;
+    font-size: 14px;
+    z-index: 1000 !important;
+}
+
+/* Estilo general para los botones responsivos */
+.responsive-button {
+    padding: 12px 24px;
+    font-weight: bold;
+    font-size: 18px;
+    width: auto;
+}
+
+.custom-dropdown { /* Renombrado de custom-select */
+    margin-right: 10px;
+}
+
+.deliveries-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .deliveries-banner {
+        padding: 10px;
+    }
+
+    .deliveries-button {
+        font-size: 14px;
+        padding: 8px 16px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .custom-select__control {
+        width: 90%;
+        font-size: 12px;
+    }
+
+    .button-container {
+        justify-content: center;
+    }
+
+    .responsive-button {
+        width: 50% !important;
+        font-size: 16px !important;
+        padding: 8px 16px !important;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+@media (max-width: 576px) {
+    .deliveries-button {
+        font-size: 12px;
+        padding: 6px 12px;
+        width: 35%;
+        margin-right: 250px;
+    }
+
+    .custom-select__control {
+        font-size: 12px;
+    }
+
+    .responsive-button {
+        width: 50% !important;
+        font-size: 14px !important;
+        padding: 8px 16px !important;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+/* Botones */
+.button-grid-cell {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Custom file input */
+.custom-file-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    background-color: #1abcd9;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+}
+
+.custom-file-input {
+    display: none;
+}
+
+.custom-file-label:hover {
+    background-color: #0056b3;
+}
+
+.page-break {
+    page-break-after: always;
+}

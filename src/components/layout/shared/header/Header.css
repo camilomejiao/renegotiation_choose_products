@@ -1,0 +1,52 @@
+.header {
+    background-color: #ffffff;
+    border-bottom: 2px solid #046999;
+    padding: 10px 20px;
+}
+
+.portal-title {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 50px;
+    font-weight: 400;
+    color: #046999;
+    margin: 0;
+}
+
+.portal-title-highlight {
+    color: #2E7D32;
+}
+
+.header-logo {
+    height: 50px;
+    margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+    .portal-title {
+        font-size: 30px;
+        line-height: 60px;
+    }
+}
+
+@media (max-width: 576px) {
+    .portal-title {
+        font-size: 20px;
+        text-align: left;
+    }
+
+    .header-logo {
+        height: 35px;
+    }
+}
+
+@media (max-width: 375px) {
+    .portal-title {
+        line-height: 13px;
+    }
+}
+
+@media (max-width: 325px) {
+    .portal-title {
+        line-height: 14px;
+    }
+}

@@ -1,0 +1,101 @@
+/* Estilos del encabezado con imagen de fondo */
+.header-image {
+    position: relative;
+    height: 200px;
+}
+
+.background-image {
+    object-fit: cover;
+    height: 100%;
+}
+
+.overlay-text {
+    top: 40%;
+    left: 0;
+    transform: translateY(-50%);
+    color: white;
+}
+
+.title-header {
+    font-size: 50px;
+    font-weight: 700;
+}
+
+/* Contenedor del ícono */
+.icon-wrapper {
+    border-radius: 50%;
+    padding: 10px;
+    z-index: 1;
+    top: -95px;
+    left: 26%;
+}
+
+.icon-large {
+    width: 90px;
+    height: 90px;
+}
+
+/* Banner pequeño de información */
+.small-banner {
+    border-radius: 5px;
+    margin-top: -85px;
+    padding-left: 60px;
+    position: relative;
+    width: 40%;
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .header-image {
+        height: 150px;
+    }
+
+    .overlay-text h1 {
+        font-size: 24px;
+    }
+
+    /* Icono y banner en tabletas */
+    .icon-large {
+        width: 70px;
+        height: 70px;
+    }
+
+    .icon-wrapper {
+        top: -60px;
+        left: 29%;
+        transform: translateX(-50%);
+    }
+
+    .small-banner {
+        width: 50%;
+        margin-top: -40px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-image {
+        height: 120px;
+    }
+
+    .overlay-text h1 {
+        font-size: 20px;
+    }
+
+    /* Icono y banner en móviles */
+    .icon-large {
+        width: 60px;
+        height: 60px;
+    }
+
+    .icon-wrapper {
+        left: 17%;
+    }
+
+    .small-banner {
+        width: 80%;
+        margin-top: -45px;
+        padding-left: 20px;
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,107 @@
+html,
+body,
+#root,
+.app,
+.content {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /*width: 100%;*/
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+}
+
+/*html,*/
+/*body,*/
+/*#root {*/
+/*  height: 100%;*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  font-family: 'Nunito', sans-serif;*/
+/*  display: flex;*/
+/*  flex-direction: column; !* Diseño en columna *!*/
+/*}*/
+
+/*.app {*/
+/*  flex: 1; !* Toma el espacio disponible *!*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*}*/
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; /* Ajusta según sea necesario */
+  z-index: 1000;
+  background-color: #fff;
+  border-bottom: 10px solid #046999;
+}
+
+.content {
+  margin-top: 80px; /* Altura del header */
+  margin-left: 50px; /* Ancho del sidebar */
+  height: calc(100vh - 80px); /* Para ajustar el contenido y permitir scroll */
+  overflow-y: auto;
+  background-color: #ffffff; /* Ejemplo de fondo para el contenido */
+}
+
+/* spinner */
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.spinner-container span {
+  margin-left: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on Hover */
+::-webkit-scrollbar-track:hover {
+  background: #555;
+}
+
+.page-not-found {
+  width: auto;
+  height: auto;
+  text-align: center;
+}
+
+/* Fondo translúcido */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Indicador de carga */
+.loader {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}

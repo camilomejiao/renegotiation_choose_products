@@ -1,0 +1,205 @@
+/* Sidebar cerrado */
+.sidebar {
+    width: 70px;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    height: calc(100vh - 80px);
+    background-color: #41a581;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Sidebar abierto */
+.sidebar.open {
+    width: 150px;
+}
+
+/* Contenido del sidebar */
+.sidebar-content {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Iconos y texto */
+.sidebar-icon {
+    font-size: 20px;
+    color: white;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.sidebar-text {
+    color: white;
+    font-size: 10px;
+    margin-left: 9px;
+    display: inline-block;
+    max-width: 100px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Acordeón */
+.accordion {
+    background-color: transparent;
+    width: 100%;
+}
+
+.accordion .accordion-card {
+    background-color: transparent;
+    border: none;
+}
+
+.accordion-body {
+    padding: 0 !important;
+}
+
+.accordion .accordion-button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+}
+
+/* Dropdown general */
+.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dropdown-item {
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Submenús */
+.dropdown-item.has-submenu {
+    width: 100%;
+}
+
+.submenu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: white;
+    cursor: pointer;
+}
+
+.submenu-toggle {
+    margin-left: auto;
+    font-size: 10px;
+    padding-left: 5px;
+}
+
+.submenu-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.sub-item {
+    color: white;
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+}
+
+.sub-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Toggle sidebar */
+.sidebar-toggle {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.toggle-icon {
+    font-size: 24px;
+    color: white;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .sidebar.open {
+        width: 150px;
+    }
+
+    .sidebar-text {
+        display: none;
+    }
+
+    .sidebar.open .sidebar-text {
+        display: inline;
+    }
+
+    .sidebar-icon {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 50px;
+    }
+
+    .sidebar.open {
+        width: 120px;
+    }
+
+    .sidebar-icon {
+        font-size: 18px;
+    }
+
+    .sidebar-text {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 425px) {
+    .sidebar {
+        width: 50px;
+    }
+
+    .sidebar.open {
+        width: 120px;
+    }
+
+    .sidebar-icon {
+        font-size: 18px;
+    }
+
+    .sidebar-text {
+        font-size: 12px;
+    }
+}
