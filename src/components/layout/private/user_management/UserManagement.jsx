@@ -4,30 +4,33 @@ import { Col, Container, Row, Spinner } from "react-bootstrap";
 import printJS from "print-js";
 
 //img
-import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
-import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
-import imgFrame from "../../../../../assets/image/icons/frame.png";
-import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
-import glass from "../../../../../assets/image/icons/magnifying_glass.png";
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
+import imgFrame from "../../../../assets/image/icons/frame.png";
+import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
+import glass from "../../../../assets/image/icons/magnifying_glass.png";
 
 //Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { UserInformation } from "../../../shared/user_information/UserInformation";
-import { HeadLineReport } from "./user_report/HeadLineReport";
-import { AuthorizationSection } from "../../../shared/authorization_section/AuthorizationSection";
-import { handleError, showAlert } from "../../../../../helpers/utils/utils";
+import { HeaderImage } from "../../shared/header_image/HeaderImage";
+import { UserInformation } from "../../shared/user_information/UserInformation";
+import { ConsolidatedPurchaseReport } from "./user_report/ConsolidatedPurchaseReport";
+import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
+import { handleError, showAlert } from "../../../../helpers/utils/utils";
 
 //Services
-import { userService } from "../../../../../helpers/services/UserServices";
-import { reportServices } from "../../../../../helpers/services/ReportServices";
+import { userService } from "../../../../helpers/services/UserServices";
+import { reportServices } from "../../../../helpers/services/ReportServices";
+import { filesServices } from "../../../../helpers/services/FilesServices";
 
 //Css
-import './ReportingSystem.css';
+import './UserManagement.css';
 
 //Enum
-import { ComponentEnum, ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
-export const ReportingSystem = () => {
+
+export const UserManagement = () => {
     const params = useParams();
     const navigate = useNavigate();
 
@@ -38,7 +41,7 @@ export const ReportingSystem = () => {
     const [userData, setUserData] = useState({});
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [isReadyToPrintHeadLineInformation, setIsReadyToPrintHeadLineInformation] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [consolidated, setConsolidated] = useState("")
 
     //Obtiene la información del usuario
@@ -91,9 +94,9 @@ export const ReportingSystem = () => {
             const formData = new FormData();
             formData.append("ruta", file);
 
-            setIsLoading(true);
+            setLoading(true);
             try {
-                const { status } = await reportServices.uploadFileReport(cubId, formData);
+                const { status } = await filesServices.uploadFileReport(cubId, formData);
 
                 if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
@@ -107,24 +110,40 @@ export const ReportingSystem = () => {
                 console.error("Error al enviar el archivo:", error);
                 handleError('Error', 'Error al enviar el archivo');
             } finally {
-                setIsLoading(false);
+                setLoading(false);
             }
         }
     };
 
     //
-    const handleViewFile = (pdfUrl) => {
+    const handleViewFile = async (pdfUrl) => {
         if (!pdfUrl) {
             handleError('Error', 'No hay un archivo cargado para este producto.');
             return;
         }
-        const fullUrl = `${process.env.REACT_APP_API_URL}${pdfUrl}`;
-        window.open(fullUrl, '_blank');
+
+        try {
+            setLoading(true);
+            const {blob, status} = await filesServices.downloadFile(pdfUrl);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const file = new Blob([blob], {type: "application/pdf"});
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            }
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+        } catch (error) {
+            console.error("Error al descargar archivo:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     //Imprime el reporte de compras del usuario
     const handleHeadlineInformationToReport = async (cubId) => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const { data, status} = await reportServices.headlineReport(cubId);
             if(status === ResponseStatusEnum.OK) {
@@ -134,7 +153,7 @@ export const ReportingSystem = () => {
         } catch (error) {
             console.error("Error obteniendo el reporte:", error);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     }
 
@@ -194,7 +213,7 @@ export const ReportingSystem = () => {
                 {/* Contenedor de la información del usuario */}
                 <UserInformation userData={userData} />
 
-                {isLoading && (
+                {loading && (
                     <div className="spinner-container">
                         <Spinner animation="border" variant="success" />
                         <span>Cargando...</span>
@@ -245,7 +264,7 @@ export const ReportingSystem = () => {
                 <div style={{ display: 'none' }}>
                     {isReadyToPrintHeadLineInformation && (
                         <div ref={headlineReportRef}>
-                            <HeadLineReport dataReport={headLineInformation} />
+                            <ConsolidatedPurchaseReport dataReport={headLineInformation} />
                         </div>
                     )}
                 </div>

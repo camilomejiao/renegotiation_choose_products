@@ -53,23 +53,6 @@ class ReportServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    // =============================
-    // CARGA DE ARCHIVOS
-    // =============================
-
-    /**
-     * Subir archivo de reporte consolidado para un CUB.
-     * @param {number} cubId - ID del CUB.
-     * @param {FormData} formData - Archivo a subir (como FormData).
-     * @returns {Promise<Response>} - Promesa con la respuesta del servidor.
-     */
-    uploadFileReport(cubId, formData) {
-        const url = `${Global.url}cub/consolidado/${cubId}/`;
-        return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: formData,
-        });
-    }
 }
 
 export const reportServices = new ReportServices();

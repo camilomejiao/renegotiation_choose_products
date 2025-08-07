@@ -19,7 +19,7 @@ import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
 import { CreateOrder } from "../components/layout/private/purchase_orders/create_order/CreateOrder";
 import { EditOrder } from "../components/layout/private/purchase_orders/edit_order_products/EditOrder";
-import { ReportingSystem } from "../components/layout/private/reports/reporting_system/ReportingSystem";
+import { UserManagement } from "../components/layout/private/user_management/UserManagement";
 import { CompanyReport } from "../components/layout/private/reports/report_company/CompanyReport";
 import { OrderReport } from "../components/layout/private/purchase_orders/order_report/OrderReport";
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
@@ -101,7 +101,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
 
                         {/* Reportes */}
-                        <Route path={ RouterEnum.Reports }  element={ <ReportingSystem /> }  />
+                        <Route path={ RouterEnum.Reports }  element={ <UserManagement /> }  />
                         <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
                         <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
 
