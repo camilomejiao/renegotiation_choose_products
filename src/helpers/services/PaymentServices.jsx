@@ -124,19 +124,6 @@ class PaymentServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    // =============================
-    // DESCARGAS
-    // =============================
-
-    /**
-     * Descarga un archivo del servidor a partir de su ruta.
-     * @param {string} route - Ruta del archivo.
-     * @returns {Promise<Response>} Respuesta del servidor.
-     */
-    downloadFile(route) {
-        const url = `${Global.url}archivo/descargar_archivo?ruta=${route}`;
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
 }
 
 export const paymentServices = new PaymentServices();
