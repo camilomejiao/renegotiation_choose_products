@@ -26,6 +26,7 @@ import './Deliveries.css';
 
 //Enum
 import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
+import {filesServices} from "../../../../helpers/services/FilesServices";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -50,7 +51,7 @@ export const Deliveries = () => {
     const [deliveryProducts, setDeliveryProducts] = useState([]);
     const [deliveryInformation, setDeliveryInformation] = useState({});
     const [isReadyToPrintDeliveryInformation, setIsReadyToPrintDeliveryInformation] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     //
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
@@ -80,7 +81,7 @@ export const Deliveries = () => {
 
     //Listado de entregas al titular
     const getListDeliveriesToUser = async (cubId) => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
@@ -90,7 +91,7 @@ export const Deliveries = () => {
         } catch (error) {
             console.error("Error fetching deliveries:", error);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     }
 
@@ -388,13 +389,29 @@ export const Deliveries = () => {
     };
 
     //
-    const handleViewFile = (pdfUrl) => {
-        console.log(pdfUrl);
+    const handleViewFile = async (pdfUrl) => {
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
             return;
         }
-        window.open(pdfUrl, '_blank');
+
+        try {
+            setLoading(true);
+            const {blob, status} = await filesServices.downloadFile(pdfUrl);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const file = new Blob([blob], {type: "application/pdf"});
+                const fileURL = URL.createObjectURL(file);
+                window.open(fileURL, '_blank');
+            }
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+        } catch (error) {
+            console.error("Error al descargar archivo:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     //
@@ -514,7 +531,7 @@ export const Deliveries = () => {
 
         const dataSupplier = selectedSupplier ? selectedSupplier.value : suppliers[0].id;
 
-        setIsLoading(true);
+        setLoading(true);
         try {
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
@@ -545,7 +562,7 @@ export const Deliveries = () => {
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     }
 
@@ -640,7 +657,7 @@ export const Deliveries = () => {
     };
 
     const handleDeliveryInformationReport = async (deliveryId) => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
             setDeliveryInformation(data);
@@ -649,7 +666,7 @@ export const Deliveries = () => {
             console.error("Error obteniendo el reporte:", error);
             showError('Error', 'Error obteniendo el reporte:');
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     }
 
@@ -813,7 +830,7 @@ export const Deliveries = () => {
                     </Container>
                 </div>
 
-                {isLoading && (
+                {loading && (
                     <div className="spinner-container">
                         <Spinner animation="border" variant="success" />
                         <span>Cargando...</span>

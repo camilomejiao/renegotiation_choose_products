@@ -22,6 +22,7 @@ import './ReviewDocuments.css';
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
+import { filesServices } from "../../../../../../helpers/services/FilesServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
@@ -61,7 +62,7 @@ export const ReviewDocuments = () => {
         try {
             setInformationLoadingText("Obteniendo archivo");
 
-            const { blob, status } = await paymentServices.downloadFile(pdfUrl?.url_descarga);
+            const { blob, status } = await filesServices.downloadFile(pdfUrl?.url_descarga);
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const file = new Blob([blob], { type: "application/pdf" });
