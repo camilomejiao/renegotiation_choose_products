@@ -237,7 +237,7 @@ export const UserManagement = () => {
                                     DOCUMENTOS SOPORTE
                                 </button>
 
-                                {consolidated !== "" && (
+                                {consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
@@ -246,6 +246,7 @@ export const UserManagement = () => {
                                         VER PDF
                                     </button>
                                 )}
+
                             </Col>
                             <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
                                 <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
