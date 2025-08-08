@@ -237,7 +237,7 @@ export const UserManagement = () => {
                                     DOCUMENTOS SOPORTE
                                 </button>
 
-                                {consolidated !== "" && (
+                                {consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
