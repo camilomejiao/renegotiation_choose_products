@@ -109,20 +109,20 @@ export const CollectionAccountDetails = () => {
                     <Row className="mb-4">
                         <Col md={5}>
                             <h5 className="section-title">Proveedor</h5>
-                            <div><strong>Nombre:</strong> {accountInformation.proveedor.nombre}</div>
-                            <div><strong>NIT:</strong> {accountInformation.proveedor.nit}</div>
-                            <div><strong>Cuenta N°:</strong> {accountInformation.cuenta_cobro.numero}</div>
+                            <div><strong>Nombre:</strong> {accountInformation?.proveedor.nombre}</div>
+                            <div><strong>NIT:</strong> {accountInformation?.proveedor.nit}</div>
+                            <div><strong>Cuenta N°:</strong> {accountInformation?.cuenta_cobro.numero}</div>
                         </Col>
 
                         <Col md={3}>
                             <h5 className="section-title">Cuenta bancaria</h5>
-                            <div><strong>Entidad:</strong> {accountInformation.banco.entidad_bancaria}</div>
-                            <div><strong>Número:</strong> {accountInformation.banco.numero_cuenta}</div>
+                            <div><strong>Entidad:</strong> {accountInformation?.banco?.entidad_bancaria}</div>
+                            <div><strong>Número:</strong> {accountInformation?.banco?.numero_cuenta}</div>
                         </Col>
 
                         <Col md={4}>
                             <div className="total">
-                                Total: <strong>$ {parseFloat(accountInformation.cuenta_cobro.valor_total).toLocaleString('es-CO')}</strong>
+                                Total: <strong>$ {parseFloat(accountInformation?.cuenta_cobro.valor_total).toLocaleString('es-CO')}</strong>
                             </div>
                         </Col>
                     </Row>
@@ -130,22 +130,22 @@ export const CollectionAccountDetails = () => {
                     <Row className="mb-4">
                         <Col md={6}>
                             <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation.archivos.solicitud_cuenta)}>
+                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.solicitud_cuenta)}>
                                 <img src={downloadImg} alt="" /> Solicitud cuenta
                             </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation.archivos.certificado_bancario)}>
+                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
                             </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation.archivos.rut)}>
+                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
                                 <img src={downloadImg} alt="" /> RUT
                             </button>
                         </Col>
 
                         <Col md={6}>
                             <h5 className="section-title">Entregas</h5>
-                            {accountInformation.detalles.map((item, idx) => (
+                            {accountInformation?.detalles.map((item, idx) => (
                                 <div key={idx} className="revision-box">
-                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item.entrega.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
+                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
                                 </div>
                             ))}
                         </Col>

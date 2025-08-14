@@ -40,7 +40,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         return data.map((row) => ({
             id: row?.id,
             cub_id: row?.beneficiario?.id,
-            name: `${row?.beneficiario?.nombre ?? ''} ${row?.beneficiario?.apellido ?? ''}`,
+            name: `${row?.beneficiario?.nombre_completo ?? ''}`,
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
