@@ -38,3 +38,8 @@ export const ComponentEnum = {
     RENEGOTIATION: 'RENEGOTIATION',
     USER: 'USER',
 }
+
+export const UploadFileEnum = {
+    FE: 'fe',
+    PDF: 'pdf'
+}

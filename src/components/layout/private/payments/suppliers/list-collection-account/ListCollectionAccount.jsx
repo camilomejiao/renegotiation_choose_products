@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
+import { FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
 
 //Css
 import './ListCollectionAccount.css';
@@ -83,6 +84,39 @@ export const ListCollectionAccount = () => {
         }
     };
 
+    const renderEstadoIcon = (estado) => {
+        switch (estado) {
+            case "APROBADO":
+                return (
+                    <>
+                        <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                        APROBADO
+                    </>
+                );
+            case "ACTIVO":
+                return (
+                    <>
+                        <FaHourglassHalf style={{ color: "orange", marginRight: "8px" }} />
+                        PENDIENTE
+                    </>
+                );
+            case "RECHAZADO":
+                return (
+                    <>
+                        <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
+                        RECHAZADO
+                    </>
+                );
+            default:
+                return (
+                    <>
+                        <FaInfoCircle style={{ color: "gray", marginRight: "8px" }} />
+                        DESCONOCIDO
+                    </>
+                );
+        }
+    };
+
     useEffect(() => {
         getListCollectionAccount(1, 100);
     }, [page]);
@@ -103,7 +137,10 @@ export const ListCollectionAccount = () => {
                 <Accordion className="custom-accordion" onSelect={handleAccordionSelect}>
                     {collectionAccounts.map((account, index) => (
                         <Accordion.Item eventKey={index.toString()} key={account?.id}>
-                            <Accordion.Header>📌 {account?.numero}</Accordion.Header>
+                            <Accordion.Header>
+                                📌 {account?.numero} -
+                                Estado: { renderEstadoIcon(account?.estado_nombre) }
+                            </Accordion.Header>
                             <Accordion.Body>
                                 <div className="accordion-scroll-body">
                                     {detailCollectionAccounts[account.id] ? (
