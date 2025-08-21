@@ -25,8 +25,9 @@ import { supplierServices } from "../../../../helpers/services/SupplierServices"
 import './Deliveries.css';
 
 //Enum
-import { ResponseStatusEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
-import {filesServices} from "../../../../helpers/services/FilesServices";
+import {ResponseStatusEnum, RolesEnum, UploadFileEnum} from "../../../../helpers/GlobalEnum";
+import { filesServices } from "../../../../helpers/services/FilesServices";
+import {FEModal} from "../../shared/Modals/FEModal";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -35,6 +36,36 @@ const deliveryStatus = [
     //{ id: 2, label: "PENDIENTE POR ENTREGAR" },
     { id: 3, label: "ENTREGA PARCIAL" }
 ];
+
+const MAX_SIZE = 10 * 1024 * 1024;
+
+// ============================
+//   HELPERS / CONSTANTS
+// ============================
+
+/**
+ * Devuelve true si la fila tiene número de factura electrónica (FE).
+ * @param {Object} row - Fila del DataGrid.
+ */
+const hasFeNumber = (row) => row?.fe_number;
+/** Roles que pueden editar entregas. */
+const canEditRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+
+/** Roles que pueden eliminar entregas. */
+const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+
+/**
+ * Devuelve true si la fila tiene consolidado PDF cargado.
+ * @param {Object} row - Fila del DataGrid.
+ */
+const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl);
+
+/**
+ * Devuelve la URL del archivo FE (factura electrónica) de la fila.
+ * @param {Object} row - Fila del DataGrid.
+ */
+const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
+
 
 export const Deliveries = () => {
 
@@ -59,7 +90,17 @@ export const Deliveries = () => {
     const [comment, setComment] = useState('');
     const [action, setAction] = useState('approve');
 
-    //Trae las compañias con las que el usuario realizó compras
+    // FE modal state
+    const [showFeModal, setShowFeModal] = useState(false);
+    const [feDeliveryId, setFeDeliveryId] = useState(null);
+    const [feLoading, setFeLoading] = useState(false);
+
+
+    /**
+     * Obtiene los proveedores asociados al usuario autenticado.
+     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION → consulta todos los proveedores del titular.
+     * - Si el usuario es SUPPLIER → consulta solo su proveedor.
+     */
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
             if (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
@@ -79,10 +120,13 @@ export const Deliveries = () => {
         }
     }
 
-    //Listado de entregas al titular
+    /**
+     * Lista las entregas asociadas a un titular (CUB).
+     * @param {number} cubId - ID del titular (CUB).
+     */
     const getListDeliveriesToUser = async (cubId) => {
-        setLoading(true);
         try {
+            setLoading(true);
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
                 const rows = await normalizeDeliveryRows(data);
@@ -95,14 +139,22 @@ export const Deliveries = () => {
         }
     }
 
+    /**
+     * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
+     * @param {number} deliveryId - ID de la entrega.
+     * @returns {Object} Información de archivos y estados de aprobación.
+     */
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
             if(status === ResponseStatusEnum.OK) {
                 return {
-                    urlFile: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
+                    consolidatedFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
+                    feFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[1]?.ruta,
                     approvedTechnical: data?.aprobado_tecnica,
                     approvedTerritorial: data?.aprobado_territorial,
+                    fe_number: data?.numero_fe,
+                    statusDelivery: data?.estado
                 }
             }
         } catch (error) {
@@ -110,7 +162,11 @@ export const Deliveries = () => {
         }
     }
 
-    //
+    /**
+     * Normaliza el arreglo de entregas para adaptarlo al DataGrid.
+     * @param {Array} data - Lista de entregas obtenida desde el backend.
+     * @returns {Array} Entregas normalizadas con campos fe_number, evidencePdf, etc.
+     */
     const normalizeDeliveryRows = async (data) => {
         return await Promise.all(
             data.map(async (row) => {
@@ -119,7 +175,12 @@ export const Deliveries = () => {
                     id: row?.id,
                     date: row?.fecha_creacion.split("T")[0],
                     supplier: row?.proveedor,
-                    evidencePdf: { urlFile: deliveryIdInfo?.urlFile ?? "" },
+                    fe_number: deliveryIdInfo?.fe_number,
+                    statusDelivery: deliveryIdInfo?.statusDelivery ?? "",
+                    evidencePdf: {
+                        consolidatedFileUrl: deliveryIdInfo?.consolidatedFileUrl ?? "",
+                        feFileUrl: deliveryIdInfo?.feFileUrl ?? ""
+                    },
                     actions: {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
                         approvedTerritorial: deliveryIdInfo?.approvedTerritorial,
@@ -129,7 +190,10 @@ export const Deliveries = () => {
         );
     };
 
-    //
+    /**
+     * Obtiene información del titular (datos personales).
+     * @param {number} cubId - ID del titular.
+     */
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userService.userInformation(cubId);
@@ -142,18 +206,22 @@ export const Deliveries = () => {
         }
     }
 
-    //
-    const isButtonDisabled = (row) => {
+    /**
+     * Determina si un botón debe estar deshabilitado según:
+     * - Estado de aprobación (territorial o técnica).
+     * - Rol del usuario autenticado.
+     */
+    const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
         if((row.actions.approvedTerritorial === true ||
             row.actions.approvedTerritorial === false) &&
-            (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS ||
-             userAuth.rol_id === RolesEnum.TECHNICAL ||
-             userAuth.rol_id === RolesEnum.SUPPLIER)) {
+            (rolId === RolesEnum.TERRITORIAL_LINKS ||
+             rolId === RolesEnum.TECHNICAL ||
+             rolId === RolesEnum.SUPPLIER)) {
             return true;
         }
     };
 
-    //
+    /**  Determina si el botón técnico debe estar deshabilitado según aprobación. */
     const isButtonDisabledTecnical = (row) => {
         const { approvedTerritorial, approvedTechnical } = row.actions;
 
@@ -163,7 +231,7 @@ export const Deliveries = () => {
         return false;
     };
 
-    //
+    /** Renderiza el ícono de aprobación (aprobado, denegado o pendiente). */
     const renderApprovalIcon = (status) => {
         if (status === 1 || status === true) {
             return <FaCheck title="Aprobado" style={{ backgroundColor: "#FFF", color: "#28A745" }} />;
@@ -174,193 +242,223 @@ export const Deliveries = () => {
         return <FaClipboardCheck title="Pendiente de revisión" style={{ color: "#FFC107" }} />;
     }
 
-    // Definición de las columnas de entregas
+    /** Renderiza el botón de generación de acta de entrega. */
+    const renderGeneratePdfCell = (params) => (
+        <div>
+            <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleDeliveryInformationReport(params.row.id)}
+                title="Generar acta de entrega (PDF)"
+            >
+                <FaFilePdf />
+            </Button>
+        </div>
+    );
+
+    /** Renderiza botones de evidencia PDF (subir/ver consolidado). */
+    const renderEvidenceCell = (params) => {
+        const row = params.row;
+        return (
+            <div>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleUploadFile(row.id, UploadFileEnum.PDF)}
+                    disabled={isButtonDisabled(row)}
+                    title="Subir consolidado de entrega (PDF)"
+                >
+                    Subir PDF
+                </Button>
+
+                {hasPdfConsolidado(row) && (
+                    <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleViewFile(row.evidencePdf.consolidatedFileUrl)}
+                        style={{ marginLeft: 10 }}
+                        title="Ver consolidado"
+                    >
+                        Ver PDF
+                    </Button>
+                )}
+            </div>
+        );
+    };
+
+
+    /** Renderiza la celda de FE (cargar/ver/editar factura electrónica). */
+    const renderFeCell = (params) => {
+        const row = params.row;
+        const canEdit = canEditRoles.includes(userAuth.rol_id);
+        const fePdfUrl = getFePdfUrl(row);
+
+        // 1) Sin consolidado -> no hacer nada
+        if (!hasPdfConsolidado(row)) return <span>—</span>;
+
+        // 2) Con consolidado pero SIN FE -> botón para cargar FE (PDF + número)
+        if (!hasFeNumber(row)) {
+            return (
+                <div>
+                    <Button
+                        variant="info"
+                        size="sm"
+                        onClick={() => openFeModal(row.id)}
+                        disabled={isButtonDisabled(row) || !canEdit}
+                        title="Adjuntar factura electrónica (PDF) y número de FE"
+                    >
+                        Subir FE
+                    </Button>
+                </div>
+            );
+        }
+
+        // 3) Con FE -> mostrar "Ver FE" (si hay PDF FE) + número + botón editar (si procede)
+        return (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span>{row.fe_number}</span>
+                {fePdfUrl && (
+                    <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleViewFile(fePdfUrl)}
+                        title="Ver factura electrónica"
+                    >
+                        Ver FE
+                    </Button>
+                )}
+
+                {canEdit && (
+                    <Button
+                        variant="warning"
+                        size="sm"
+                        onClick={() => openFeModal(row.id)}
+                        disabled={isButtonDisabled(row)}
+                        title="Editar FE"
+                    >
+                        Subir FE
+                    </Button>
+                )}
+            </div>
+        );
+    };
+
+    /** Renderiza botones de acciones (editar, eliminar, aprobar). */
+    const renderActionsCell = (params) => {
+        const row = params.row;
+        const canEdit = canEditRoles.includes(userAuth.rol_id);
+        const canDelete = canDeleteRoles.includes(userAuth.rol_id);
+        const isTL = userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS;
+        const isTechOrAdmin = userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN;
+
+        return (
+            <div>
+                {canEdit && (
+                    <Button
+                        variant="warning"
+                        size="sm"
+                        onClick={() => handleEditDelivery(row.id)}
+                        style={{ marginRight: 10 }}
+                        disabled={isButtonDisabled(row)}
+                        title="Editar entrega"
+                    >
+                        <FaPencilAlt />
+                    </Button>
+                )}
+
+                {canDelete && (
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteDelivery(row.id)}
+                        style={{ marginRight: 10 }}
+                        disabled={isButtonDisabled(row)}
+                        title="Eliminar entrega"
+                    >
+                        <FaTrash />
+                    </Button>
+                )}
+
+                {/* Aprobación Territorial (solo si hay consolidado) */}
+                {hasPdfConsolidado(row) && isTL && (
+                    <Button
+                        style={{ backgroundColor: "#FFF", marginRight: 10 }}
+                        size="sm"
+                        onClick={() => {
+                            setSelectedDeliveryId(row.id);
+                            setOpenModal(true);
+                        }}
+                        disabled={isButtonDisabled(row)}
+                        title="Aprobación territorial"
+                    >
+                        {renderApprovalIcon(row.actions?.approvedTerritorial)}
+                    </Button>
+                )}
+
+                {/* Aprobación Técnica/Admin (solo si hay consolidado) */}
+                {hasPdfConsolidado(row) && isTechOrAdmin && (
+                    <Button
+                        style={{ backgroundColor: "#FFF" }}
+                        size="sm"
+                        onClick={() => {
+                            setSelectedDeliveryId(row.id);
+                            setOpenModal(true);
+                        }}
+                        disabled={isButtonDisabledTecnical(row)}
+                        title="Aprobación técnica"
+                    >
+                        {renderApprovalIcon(row.actions?.approvedTechnical)}
+                    </Button>
+                )}
+            </div>
+        );
+    };
+
+    //===== Columnas =====
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
         { field: "supplier", headerName: "PROVEEDOR", width: 250 },
-        // {
-        //     field: "evidence",
-        //     headerName: "EVIDENCIAS",
-        //     width: 300,
-        //     renderCell: (params) => (
-        //         <div
-        //             style={{
-        //                 display: "flex",
-        //                 flexWrap: "wrap",
-        //                 gap: "8px",
-        //             }}
-        //         >
-        //             {[1, 2, 3, 4, 5, 6].map((fileNumber) => (
-        //                 <Button
-        //                     key={fileNumber}
-        //                     variant="primary"
-        //                     size="sm"
-        //                     onClick={() => {
-        //                         const input = document.createElement("input");
-        //                         input.type = "file";
-        //                         input.accept = "image/*";
-        //                         input.style.display = "none";
-        //                         input.onchange = (e) =>
-        //                             handleFileChange(
-        //                                 e,
-        //                                 params.row.id,
-        //                                 `imagen${fileNumber}`
-        //                             );
-        //                         document.body.appendChild(input);
-        //                         input.click();
-        //                         document.body.removeChild(input);
-        //                     }}
-        //                     style={{
-        //                         flex: "none",
-        //                         width: "100px",
-        //                         textAlign: "center",
-        //                         padding: "2px 4px",
-        //                         fontSize: "12px",
-        //                         lineHeight: "1",
-        //                         borderRadius: "12px",
-        //                     }}
-        //                 >
-        //                     Imagen {fileNumber} <FaFileUpload />
-        //                 </Button>
-        //             ))}
-        //         </div>
-        //     ),
-        //     sortable: false,
-        //     filterable: false,
-        // },
         {
             field: "generatePdf",
-            headerName: "GENERAR PDF",
+            headerName: "GENERAR ACTA DE ENTREGA",
             width: 150,
-            renderCell: (params) => (
-                <div>
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() =>
-                            handleDeliveryInformationReport(params.row.id)
-                        }
-                    >
-                        <FaFilePdf />
-                    </Button>
-                </div>
-            ),
+            renderCell: renderGeneratePdfCell,
             sortable: false,
             filterable: false,
         },
         {
             field: "evidencePdf",
-            headerName: "EVIDENCIAS PDF",
-            width: 200,
-            renderCell: (params) => {
-                return (
-                    <div>
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => handleUploadFile(params.row.id)}
-                            disabled={isButtonDisabled(params.row)}
-                        >
-                            Subir PDF
-                        </Button>
-
-                        {(params?.row?.evidencePdf?.urlFile !== 0) && (
-                            <Button
-                                variant="success"
-                                size="sm"
-                                onClick={() => handleViewFile(params?.row?.evidencePdf?.urlFile)}
-                                style={{marginLeft: "10px"}}
-                            >
-                                Ver PDF
-                            </Button>
-                        )}
-                    </div>
-                )
-            }
+            headerName: "CONSOLIDADO DE ENTREGA",
+            width: 220,
+            renderCell: renderEvidenceCell,
+            sortable: false,
+            filterable: false,
         },
+        {
+            field: "fe_number",
+            headerName: "NÚMERO FE",
+            width: 250,
+            renderCell: renderFeCell,
+            sortable: true,
+            filterable: true,
+        },
+        { field: "statusDelivery", headerName: "ESTADO", width: 150 },
         {
             field: "actions",
             headerName: "ACCIONES",
-            width: 200,
-            renderCell: (params) => {
-                return (
-                    <div>
-                        {[
-                            RolesEnum.TERRITORIAL_LINKS,
-                            RolesEnum.SUPPLIER,
-                            RolesEnum.ADMIN,
-                        ].includes(userAuth.rol_id) && (
-                            <>
-                                <Button
-                                    variant="warning"
-                                    size="sm"
-                                    onClick={() => handleEditDelivery(params.row.id) }
-                                    style={{marginRight: "10px"}}
-                                    disabled={isButtonDisabled(params.row)}
-                                >
-                                    <FaPencilAlt/>
-                                </Button>
-                            </>
-                        )}
-                        {[
-                            RolesEnum.TERRITORIAL_LINKS,
-                            RolesEnum.TECHNICAL,
-                            RolesEnum.SUPPLIER,
-                            RolesEnum.ADMIN,
-                        ].includes(userAuth.rol_id) && (
-                            <>
-                                <Button
-                                    variant="danger"
-                                    size="sm"
-                                    onClick={() => handleDeleteDelivery(params.row.id)}
-                                    style={{ marginRight: "10px" }}
-                                    disabled={isButtonDisabled(params.row)}
-                                >
-                                    <FaTrash />
-                                </Button>
-
-                                {params.row.evidencePdf?.urlFile !== 0 && userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS && (
-                                    <Button
-                                        style={{ backgroundColor: "#FFF", marginRight: "10px" }}
-                                        size="sm"
-                                        onClick={() => {
-                                            setSelectedDeliveryId(params.row.id);
-                                            setOpenModal(true);
-                                        }}
-                                        disabled={isButtonDisabled(params.row)}
-                                    >
-                                        {renderApprovalIcon(params.row.actions?.approvedTerritorial)}
-                                    </Button>
-                                )}
-                            </>
-                        )}
-
-                        {(
-                            (userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN)
-                            && params.row.evidencePdf?.urlFile !== 0) && (
-                            <>
-                                <Button
-                                    style={{ backgroundColor: "#FFF" }}
-                                    size="sm"
-                                    onClick={() => {
-                                        setSelectedDeliveryId(params.row.id);
-                                        setOpenModal(true);
-                                    }}
-                                    disabled={isButtonDisabledTecnical(params.row)}
-                                >
-                                    {renderApprovalIcon(params.row.actions?.approvedTechnical)}
-                                </Button>
-                            </>
-                        )}
-                    </div>
-                );
-            },
+            width: 260,
+            renderCell: renderActionsCell,
+            sortable: false,
+            filterable: false,
         },
     ];
 
-    //
-    const handleUploadFile = (rowId) => {
+    /**
+     * Lanza input file oculto para subir consolidado PDF.
+     * Actualiza el estado de la fila una vez subido.
+     */
+    const handleUploadFile = (rowId, fileName) => {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "application/pdf";
@@ -370,7 +468,7 @@ export const Deliveries = () => {
         input.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                handleFileChange(file, rowId, "pdf");
+                handleFileChange(file, rowId, fileName);
 
                 // Actualizar la fila correspondiente con el nombre del archivo
                 setListDeliveriesToUser((prevRows) =>
@@ -388,7 +486,10 @@ export const Deliveries = () => {
         document.body.removeChild(input);
     };
 
-    //
+    /**
+     * Descarga y abre un PDF en nueva pestaña.
+     * @param {string} pdfUrl - URL del archivo PDF.
+     */
     const handleViewFile = async (pdfUrl) => {
         if (!pdfUrl) {
             AlertComponent.error('Error', 'No hay un archivo cargado para este producto.');
@@ -509,7 +610,7 @@ export const Deliveries = () => {
         },
     ];
 
-    //
+    /** Normaliza productos para mostrarlos en tabla de productos a entregar. */
     const normalizeProductsToBeDeliveredRows = (data) => {
         return data.map((row) => ({
             id: row?.id,
@@ -577,7 +678,7 @@ export const Deliveries = () => {
             const { status} = await deliveriesServices.removeDelivery(id);
             if (status === ResponseStatusEnum.NO_CONTENT) {
                 showAlert('Éxito', 'Entrega eliminada exitosamente');
-                window.location.reload();
+                refreshPage();
             }
 
             if (status === ResponseStatusEnum.METHOD_NOT_ALLOWED) {
@@ -622,26 +723,42 @@ export const Deliveries = () => {
         setAction('approve');
     };
 
-    //Guardar evidencias
-    const handleFileChange = async (file, deliveryId, fileName) => {
+    /**
+     * Maneja el envío de archivos al backend (consolidado o FE).
+     * @param {File}   file
+     * @param {number} deliveryId
+     * @param {string} fileName - "pdf" (consolidado) | "fe" (factura electrónica)
+     * @param {string} [numeroFE] - Solo se envía cuando fileName === "fe"
+     */
+    const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
-            // Validar el tipo de archivo
-            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+            //Validar el tipo de archivo
+            const allowedTypes = ['application/pdf'];
             if (!allowedTypes.includes(file.type)) {
-                showError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
+                showError('Archivo no válido', 'Solo se permiten archivos PDF.');
+                return;
+            }
+
+            //Validar el tamaño del archivo
+            if (file.size > MAX_SIZE) {
+                showError('Archivo muy grande', 'El PDF no debe superar 10 MB.');
                 return;
             }
 
             const formData = new FormData();
             formData.append("ruta", file);
             formData.append("indice", fileName);
+            if (fileName === UploadFileEnum.FE && numeroFE) {
+                formData.append("numero_fe", numeroFE);
+            }
 
             try {
                 const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === ResponseStatusEnum.CREATED) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
-                    window.location.reload();
+                    //refreshPage();
+                    await getListDeliveriesToUser(params.id);
                 }
 
                 if (status === ResponseStatusEnum.BAD_REQUEST ||
@@ -698,7 +815,7 @@ export const Deliveries = () => {
         });
     }
 
-    //
+    /** Maneja cambio de cantidad a entregar en tabla de productos. */
     const handleQuantityChange = (id, value) => {
         const newProducts = deliveryProducts.map((product) => {
             if (product.id === id) {
@@ -709,7 +826,7 @@ export const Deliveries = () => {
         setDeliveryProducts(newProducts);
     };
 
-    //
+    /** Maneja cambio de estado de producto (entregado, no entregado, parcial). */
     const handleStatusChange = (id, value) => {
         const newProducts = deliveryProducts.map((product) => {
             if (product.id === id) {
@@ -720,7 +837,7 @@ export const Deliveries = () => {
         setDeliveryProducts(newProducts);
     };
 
-    //
+    /** Maneja cambio de estado de producto (entregado, no entregado, parcial). */
     const handleSaveProduct = async () => {
         try {
             //
@@ -735,7 +852,7 @@ export const Deliveries = () => {
             const {data, status} = await deliveriesServices.saveProducts(dataSupplier, params.id, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
                 showAlert('Éxito', 'Productos entregados correctamente.')
-                window.location.reload();
+                refreshPage();
             }
 
             if(status === ResponseStatusEnum.BAD_REQUEST) {
@@ -745,6 +862,41 @@ export const Deliveries = () => {
             showError('Error al guardar los productos', `${error}`);
         }
     };
+
+    /** */
+    const openFeModal = (deliveryId) => {
+        setFeDeliveryId(deliveryId);
+        setShowFeModal(true);
+    };
+
+    /** */
+    const closeFeModal = () => {
+        setShowFeModal(false);
+        setFeDeliveryId(null);
+    };
+
+    /** */
+        // Único método que maneja ambos datos
+    const handleSaveFe = async ({ feNumber, feFile }) => {
+            try {
+                setFeLoading(true);
+
+                // Guardas FE (archivo + número)
+                await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
+
+                // Refrescas la tabla completa
+                await getListDeliveriesToUser(params.id);
+
+                showAlert("¡Listo!", "Factura electrónica registrada.");
+                closeFeModal();
+            } catch (error) {
+                console.error(error);
+                showError("Error", "No se pudo registrar la FE.");
+            } finally {
+                setFeLoading(false);
+            }
+        };
+
 
     //
     const showAlert = (title, message) => {
@@ -1003,6 +1155,14 @@ export const Deliveries = () => {
                     comment={comment}
                     setComment={setComment}
                     onSubmit={handleApproveByAudit}
+                />
+
+                {/* Modal de FE */}
+                <FEModal
+                    show={showFeModal}
+                    onClose={closeFeModal}
+                    loading={feLoading}
+                    onSave={handleSaveFe}
                 />
 
             </div>

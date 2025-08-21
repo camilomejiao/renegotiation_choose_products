@@ -24,7 +24,6 @@ export const CreateCollectionAccount = () => {
         entidadBancaria: '',
         certificadoBancario: null,
         rut: null,
-        detalleCuenta: null
     });
 
     const [dataTable, setDataTable] = useState([]);
@@ -93,8 +92,7 @@ export const CreateCollectionAccount = () => {
             !formFields.numeroCuenta ||
             !formFields.entidadBancaria ||
             !formFields.certificadoBancario ||
-            !formFields.rut ||
-            !formFields.detalleCuenta
+            !formFields.rut
         ) {
             AlertComponent.error("Error", "Todos los campos del formulario son obligatorios.");
             return;
@@ -111,7 +109,6 @@ export const CreateCollectionAccount = () => {
         formData.append("entidad_bancaria", formFields.entidadBancaria);
         formData.append("certificado_bancario_pdf", formFields.certificadoBancario);
         formData.append("rut_pdf", formFields.rut);
-        formData.append("solicitud_cuenta_pdf", formFields.detalleCuenta);
         formData.append("entregas_ids", selectedIds.join(","));
 
         try {
@@ -221,16 +218,6 @@ export const CreateCollectionAccount = () => {
                                 type="file"
                                 className="form-control"
                                 name="rut"
-                                onChange={handleFileChange}
-                                accept="application/pdf"
-                            />
-                        </Col>
-                        <Col xs={12} md={4}>
-                            <label className="form-label fw-semibold">Detalle cuenta de cobro (PDF) <span className="text-danger">*</span></label>
-                            <input
-                                type="file"
-                                className="form-control"
-                                name="detalleCuenta"
                                 onChange={handleFileChange}
                                 accept="application/pdf"
                             />
