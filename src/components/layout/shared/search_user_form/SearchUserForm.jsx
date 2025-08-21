@@ -126,7 +126,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             </Form>
 
             <p className="search-helper-text mt-2">
-                {searchType === "2" ? "Ingrese número de C.C" : "Ingrese número del CUB"}
+                {searchType === "2" ? "Ingrese número de cédula del titular PNIS" : "Ingrese número del CUB del titular PNIS"}
             </p>
         </Col>
 
