@@ -176,6 +176,16 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                                 Adicionalmente, dicho incumplimiento podrá conllevar el retiro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS), la terminación de los beneficios otorgados y la imposibilidad de participar en futuros programas de sustitución promovidos por el Gobierno Nacional.
                             </td>
                         </tr>
+                        {dataReport?.observacion && (
+                            <tr>
+                                <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>OBSERVACIONES</td>
+                                <td style={{ textAlign: 'left', padding: '10px', border: '1px solid black' }}>
+                                    {dataReport?.observacion}
+                                    ({dataReport?.fecha_observacion.split('T')[0]})
+                                </td>
+                            </tr>
+                        )}
+
                     </thead>
                 </table>
 
