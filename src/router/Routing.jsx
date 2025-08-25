@@ -45,7 +45,7 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments/fidu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
-import {Dashboard} from "../components/layout/private/ dashboard/Dashboard";
+import {Dashboard} from "../components/layout/private/dashboard/Dashboard";
 
 export const Routing = () => {
     return (
