@@ -13,7 +13,7 @@ import {
     FaDollyFlatbed,
     FaUser,
     FaHandshake,
-    FaHardHat,
+    FaHardHat, FaHouseUser,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -26,8 +26,9 @@ import { RolesEnum } from "../../../../helpers/GlobalEnum";
 
 const menuConfig = {
     [RolesEnum.ADMIN]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/users", icon: MdPeople, label: "Usuarios" },
         { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
@@ -35,31 +36,35 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPERVISION]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.PAYMENTS]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de Catálogo de productos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TECHNICAL]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
-        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-        { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         // {
         //     label: "Renegociación",
@@ -74,8 +79,9 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
-        { path: "/", icon: FaShoppingCart, label: "Carrito de compras" },
+        { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
         { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
         { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
         { path: "/admin/payments-suppliers", icon: BsCashStack, label: "Solicitud de pago" },

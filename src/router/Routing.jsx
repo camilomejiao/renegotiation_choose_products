@@ -13,7 +13,7 @@ import { RouterEnum } from "./RouterEnum";
 
 //Private
 import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
-import { Dashboard } from "../components/layout/private/dashboard/Dashboard.jsx";
+import { SearchUser } from "../components/layout/private/search_user/SearchUser.jsx";
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
@@ -45,6 +45,7 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments/fidu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
+import {Dashboard} from "../components/layout/private/ dashboard/Dashboard";
 
 export const Routing = () => {
     return (
@@ -61,7 +62,11 @@ export const Routing = () => {
                     </Route>
 
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
+                        {/* Dashboard */}
                         <Route index element={ <Dashboard /> } />
+
+                        {/* Buscar usuario */}
+                        <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
 
                         {/* Renegociacion */}
                         <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
