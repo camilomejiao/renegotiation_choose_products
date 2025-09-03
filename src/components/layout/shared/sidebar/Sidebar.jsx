@@ -35,6 +35,7 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPERVISION]: [
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
@@ -57,7 +58,6 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
