@@ -13,6 +13,7 @@ export const RouterEnum = {
     Renegociation: 'Renegociation/:cub_id',
 
     //Ordenes de compra
+    SearchUser: 'search-user',
     CreateOrder: 'create-order/:id',
     EditOrder: 'edit-order/:order_id/:cub_id',
 
