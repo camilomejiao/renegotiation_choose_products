@@ -45,6 +45,7 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments/fidu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
+import { SearchUser } from "../components/layout/private/search_user/SearchUser";
 
 export const Routing = () => {
     return (
@@ -61,7 +62,7 @@ export const Routing = () => {
                     </Route>
 
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
-                        <Route index element={ <Dashboard /> } />
+                        <Route index element={ <SearchUser /> } />
 
                         {/* Renegociacion */}
                         <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
