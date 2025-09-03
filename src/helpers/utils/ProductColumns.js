@@ -265,15 +265,15 @@ export const getObservationsColumns = (userRole) => {
 
     return [
         {
-            field: "observations_territorial",
-            headerName: "Observación Territorial",
+            field: "observations_supervision",
+            headerName: "Observación supervision",
             width: 200,
             editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación territorial..."),
+            renderCell: (params) => renderObservationCell(params, "Observación Supervision..."),
         },
         {
-            field: "status_territorial",
-            headerName: "Estado Territorial",
+            field: "status_supervision",
+            headerName: "Estado Supervision",
             width: 120,
             editable: false,
             renderCell: renderStatusCell,

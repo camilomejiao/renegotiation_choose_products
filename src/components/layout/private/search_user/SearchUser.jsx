@@ -15,7 +15,7 @@ import { ComponentEnum, ResponseStatusEnum, RolesEnum } from "../../../../helper
 //Services
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
-export const Dashboard = () => {
+export const SearchUser = () => {
 
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();

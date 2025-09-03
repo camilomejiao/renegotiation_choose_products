@@ -73,7 +73,6 @@ export const ProductList = () => {
     const allowedRoles = [
         RolesEnum.ADMIN,
         RolesEnum.SUPERVISION,
-        RolesEnum.TERRITORIAL_LINKS,
         RolesEnum.TECHNICAL,
         RolesEnum.ENVIRONMENTAL
     ];
@@ -252,9 +251,9 @@ export const ProductList = () => {
                 observationKey: "observations_environmental",
                 statusKey: "status_environmental"
             },
-            [RolesEnum.TERRITORIAL_LINKS]: {
-                observationKey: "observations_territorial",
-                statusKey: "status_territorial"
+            [RolesEnum.SUPERVISION]: {
+                observationKey: "observations_supervision",
+                statusKey: "status_supervision"
             }
         };
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {

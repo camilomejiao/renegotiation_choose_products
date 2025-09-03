@@ -157,7 +157,7 @@ export const UserManagement = () => {
         }
     }
 
-    //pdf de compras del usuario
+    //pdf de compras consolidadas del usuario
     const printHeadlineReport = () => {
         const printContent = `
         <html>
