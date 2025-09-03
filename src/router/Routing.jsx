@@ -62,7 +62,9 @@ export const Routing = () => {
                     </Route>
 
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
-                        <Route index element={ "/admin" } />
+                        <Route index element={ <Dashboard /> } />
+
+                        <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
 
                         {/* Renegociacion */}
                         <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
