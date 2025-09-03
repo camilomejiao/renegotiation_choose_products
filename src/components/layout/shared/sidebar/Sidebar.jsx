@@ -13,7 +13,7 @@ import {
     FaDollyFlatbed,
     FaUser,
     FaHandshake,
-    FaHardHat, FaHouseUser,
+    FaHardHat, FaHouseUser, FaBoxOpen,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -37,6 +37,7 @@ const menuConfig = {
     ],
     [RolesEnum.SUPERVISION]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
+        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
@@ -55,32 +56,39 @@ const menuConfig = {
     ],
     [RolesEnum.TECHNICAL]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
+        { path: "/admin/list-products-by-convocation", icon: FaBoxOpen, label: "Administración de Catálogo" },
+        // {
+        //     label: "Catalogo de productos",
+        //     icon: FaDollyFlatbed,
+        //     children: [
+        //         { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de catalogos" },
+        //         { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Subida de Catálogo" },
+        //     ]
+        // },
+        //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
+        //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
-        // {
-        //     label: "Renegociación",
-        //     icon: FaHandshake,
-        //     children: [
-        //         { path: "/admin/renegotiation/create", icon: MdCampaign, label: "Creación" },
-        //         { path: "/admin/renegotiation/edit", icon: MdCampaign, label: "Edición" },
-        //     ]
-        // },
-        //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
-        //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
+        { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotización de catalogos" },
+        // {
+        //     label: "Catálogo de productos",
+        //     icon: FaBoxOpen,
+        //     children: [
+        //         { path: "/admin/products", icon: FaDollyFlatbed, label: "Subida de Catálogo" },
+        //         { path: "/admin/product-price-quotes", icon: FaDollyFlatbed, label: "Cotización de catalogos" },
+        //     ]
+        // },
         { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
         { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
         { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },

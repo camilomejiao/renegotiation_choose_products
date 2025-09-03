@@ -25,9 +25,9 @@ import { OrderReport } from "../components/layout/private/purchase_orders/order_
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
-import { ProductList } from "../components/layout/private/products/product_list/ProductList";
-import { EditProduct } from "../components/layout/private/products/edit_products/EditProduct";
-import { AddProducts } from "../components/layout/private/products/create_products/AddProducts";
+import { ProductList } from "../components/layout/private/products/old_process/product_list/ProductList";
+import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
+import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
 import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
@@ -45,7 +45,12 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments/fidu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
-import {Dashboard} from "../components/layout/private/dashboard/Dashboard";
+import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
+import { ProductUpload } from "../components/layout/private/products/new_process/product_upload/ProductUpload";
+import { ProductPriceQuotes } from "../components/layout/private/products/new_process/product_price_quotes/ProductPriceQuotes";
+import {
+    ListProductsByConvocation
+} from "../components/layout/private/products/new_process/list_products_by_convocation/ListProductsByConvocation";
 
 export const Routing = () => {
     return (
@@ -85,6 +90,9 @@ export const Routing = () => {
                         <Route path={ RouterEnum.Products }  element={ <ProductList /> }  />
                         <Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />
                         <Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />
+                        <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
+                        <Route path={ RouterEnum.ProductUpload }  element={ <ProductUpload /> }  />
+                        <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotes /> }  />
 
                         {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />

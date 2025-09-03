@@ -7,17 +7,17 @@ import Select from "react-select";
 import debounce from "lodash/debounce";
 
 // Img
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
-import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { ConfirmationModal } from "../../../../shared/Modals/ConfirmationModal";
+import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
-import { productServices } from "../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../helpers/services/SupplierServices";
-import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { productServices } from "../../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
+import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
 import {
@@ -25,10 +25,10 @@ import {
     ResponseStatusEnum,
     RolesEnum,
     StatusTeamProductEnum
-} from "../../../../../helpers/GlobalEnum";
+} from "../../../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../../helpers/utils/utils";
+import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
@@ -38,7 +38,7 @@ import {
     getEnvironmentalCategoriesColumns,
     getObservationsColumns,
     getActionsColumns, getEnvironmentalCategories,
-} from "../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ProductColumns";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
@@ -72,8 +72,7 @@ export const ProductList = () => {
     //Usuarios permitidos
     const allowedRoles = [
         RolesEnum.ADMIN,
-        RolesEnum.SUPERVISION,
-        RolesEnum.TERRITORIAL_LINKS,
+        RolesEnum.SUPERVISION,        
         RolesEnum.TECHNICAL,
         RolesEnum.ENVIRONMENTAL
     ];
@@ -252,7 +251,7 @@ export const ProductList = () => {
                 observationKey: "observations_environmental",
                 statusKey: "status_environmental"
             },
-            [RolesEnum.TERRITORIAL_LINKS]: {
+            [RolesEnum.SUPERVISION]: {
                 observationKey: "observations_territorial",
                 statusKey: "status_territorial"
             }

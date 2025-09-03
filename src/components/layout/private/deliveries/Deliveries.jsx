@@ -322,9 +322,9 @@ export const Deliveries = () => {
                         variant="success"
                         size="sm"
                         onClick={() => handleViewFile(fePdfUrl)}
-                        title="Ver factura electrónica"
+                        title="Ver Docuemnto cargado"
                     >
-                        Ver FE
+                        Ver Documento
                     </Button>
                 )}
 
@@ -334,9 +334,9 @@ export const Deliveries = () => {
                         size="sm"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row)}
-                        title="Editar FE"
+                        title="Editar Documento"
                     >
-                        Subir FE
+                        Editar Documento
                     </Button>
                 )}
             </div>
@@ -414,6 +414,35 @@ export const Deliveries = () => {
         );
     };
 
+    const renderPhotoCell = (params) => {
+        const row = params.row;
+        return (
+            <>
+                {hasPdfConsolidado(row) && (
+                    <div className="d-flex align-items-center gap-2">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleUploadFile(row.id, UploadFileEnum.PDF)}
+                            title="Subir imagen 1"
+                        >
+                            Subir Imagen 1
+                        </Button>
+
+                        <Button
+                            variant="success"
+                            size="sm"
+                            onClick={() => handleViewFile(row?.evidencePdf?.consolidatedFileUrl)}
+                            title="Ver consolidado"
+                        >
+                            Ver PDF
+                        </Button>
+                    </div>
+                )}
+            </>
+        );
+    }
+
     //===== Columnas =====
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
@@ -430,18 +459,26 @@ export const Deliveries = () => {
         {
             field: "evidencePdf",
             headerName: "CONSOLIDADO DE ENTREGA",
-            width: 220,
+            width: 250,
             renderCell: renderEvidenceCell,
             sortable: false,
             filterable: false,
         },
         {
             field: "fe_number",
-            headerName: "NÚMERO FE",
-            width: 250,
+            headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
+            width: 300,
             renderCell: renderFeCell,
-            sortable: true,
-            filterable: true,
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "evidence_photo",
+            headerName: "EVIDENCIA FOTOGRAFICA",
+            width: 300,
+            renderCell: renderPhotoCell,
+            sortable: false,
+            filterable: false,
         },
         { field: "statusDelivery", headerName: "ESTADO", width: 150 },
         {

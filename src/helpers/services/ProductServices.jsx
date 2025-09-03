@@ -119,6 +119,7 @@ class ProductServices {
             body: JSON.stringify(products),
         });
     }
+
 }
 
 export const productServices = new ProductServices();
