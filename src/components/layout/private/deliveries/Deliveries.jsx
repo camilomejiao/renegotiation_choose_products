@@ -66,6 +66,14 @@ const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl
  */
 const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
 
+/**
+ * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrónica) de la fila.
+ * @param {Object} row - Fila del DataGrid.
+ */
+const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
+const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
+
+
 
 export const Deliveries = () => {
 
@@ -151,6 +159,8 @@ export const Deliveries = () => {
                 return {
                     consolidatedFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
                     feFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[1]?.ruta,
+                    evidence1Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[2]?.ruta,
+                    evidence2Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[3]?.ruta,
                     approvedTechnical: data?.aprobado_tecnica,
                     approvedTerritorial: data?.aprobado_territorial,
                     fe_number: data?.numero_fe,
@@ -180,6 +190,10 @@ export const Deliveries = () => {
                     evidencePdf: {
                         consolidatedFileUrl: deliveryIdInfo?.consolidatedFileUrl ?? "",
                         feFileUrl: deliveryIdInfo?.feFileUrl ?? ""
+                    },
+                    evidenceImg: {
+                        imgEvidence1Url: deliveryIdInfo?.evidence1Url ?? "",
+                        imgEvidence2Url: deliveryIdInfo?.evidence2Url ?? ""
                     },
                     actions: {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
@@ -213,10 +227,10 @@ export const Deliveries = () => {
      */
     const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
         if((row.actions.approvedTerritorial === true ||
-            row.actions.approvedTerritorial === false) &&
+                row.actions.approvedTerritorial === false) &&
             (rolId === RolesEnum.TERRITORIAL_LINKS ||
-             rolId === RolesEnum.TECHNICAL ||
-             rolId === RolesEnum.SUPPLIER)) {
+                rolId === RolesEnum.TECHNICAL ||
+                rolId === RolesEnum.SUPPLIER)) {
             return true;
         }
     };
@@ -322,9 +336,9 @@ export const Deliveries = () => {
                         variant="success"
                         size="sm"
                         onClick={() => handleViewFile(fePdfUrl)}
-                        title="Ver factura electrónica"
+                        title="Ver Docuemnto cargado"
                     >
-                        Ver FE
+                        Ver Documento
                     </Button>
                 )}
 
@@ -334,9 +348,9 @@ export const Deliveries = () => {
                         size="sm"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row)}
-                        title="Editar FE"
+                        title="Editar Documento"
                     >
-                        Subir FE
+                        Editar Documento
                     </Button>
                 )}
             </div>
@@ -414,6 +428,60 @@ export const Deliveries = () => {
         );
     };
 
+    const renderPhotoCell = (params) => {
+        const row = params.row;
+        const imagen1Url = getImagen1Url(row);
+        const imagen2Url = getImagen2Url(row);
+
+        return (
+            <>
+                {hasPdfConsolidado(row) && (
+                    <div className="d-flex align-items-center gap-2">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE1)}
+                            title="Subir imagen 1"
+                        >
+                            Subir Imagen 1
+                        </Button>
+
+                        {imagen1Url && (
+                            <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleViewFile(imagen1Url)}
+                                title="Ver Docuemnto cargado"
+                            >
+                                Ver Imagen 1
+                            </Button>
+                        )}
+
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE2)}
+                            title="Subir imagen 1"
+                        >
+                            Subir Imagen 2
+                        </Button>
+
+                        {imagen2Url && (
+                            <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleViewFile(imagen2Url)}
+                                title="Ver Docuemnto cargado"
+                            >
+                                Ver Imagen 2
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </>
+        );
+    }
+
     //===== Columnas =====
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
@@ -430,18 +498,26 @@ export const Deliveries = () => {
         {
             field: "evidencePdf",
             headerName: "CONSOLIDADO DE ENTREGA",
-            width: 220,
+            width: 250,
             renderCell: renderEvidenceCell,
             sortable: false,
             filterable: false,
         },
         {
             field: "fe_number",
-            headerName: "NÚMERO FE",
-            width: 250,
+            headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
+            width: 300,
             renderCell: renderFeCell,
-            sortable: true,
-            filterable: true,
+            sortable: false,
+            filterable: false,
+        },
+        {
+            field: "evidence_photo",
+            headerName: "EVIDENCIA FOTOGRAFICA",
+            width: 300,
+            renderCell: renderPhotoCell,
+            sortable: false,
+            filterable: false,
         },
         { field: "statusDelivery", headerName: "ESTADO", width: 150 },
         {
@@ -461,7 +537,6 @@ export const Deliveries = () => {
     const handleUploadFile = (rowId, fileName) => {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "application/pdf";
         input.style.display = "none";
 
         // Captura el archivo seleccionado
@@ -733,9 +808,13 @@ export const Deliveries = () => {
     const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
             //Validar el tipo de archivo
-            const allowedTypes = ['application/pdf'];
+            const allowedTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ];
             if (!allowedTypes.includes(file.type)) {
-                showError('Archivo no válido', 'Solo se permiten archivos PDF.');
+                showError('Archivo no válido', 'Solo se permiten archivos PDF o imagenes en formato jpeg, png.');
                 return;
             }
 
@@ -918,8 +997,8 @@ export const Deliveries = () => {
 
     useEffect(() => {
         if(isReadyToPrintDeliveryInformation) {
-         handlePDFPrint();
-         setIsReadyToPrintDeliveryInformation(false);
+            handlePDFPrint();
+            setIsReadyToPrintDeliveryInformation(false);
         }
     }, [isReadyToPrintDeliveryInformation]);
 
@@ -1131,7 +1210,7 @@ export const Deliveries = () => {
                                     </Button>
                                 </div>
                             </>
-                    )}
+                        )}
                     </Container>
                 </div>
 
