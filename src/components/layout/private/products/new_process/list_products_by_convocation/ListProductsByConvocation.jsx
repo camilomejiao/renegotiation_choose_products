@@ -2,18 +2,17 @@ import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import {Button, Modal} from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import {getActionsColumns, getConvocationColumns} from "../../../../../../helpers/utils/NewProductColumns";
+import { getActionsColumns, getConvocationColumns } from "../../../../../../helpers/utils/NewProductColumns";
 
 //Services
-import { newProductServices } from "../../../../../../helpers/services/NewProductServices";
-import {renegotiationServices} from "../../../../../../helpers/services/RenegociationServices";
-import {ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
 
 const mockData = [
     {
@@ -70,10 +69,12 @@ export const ListProductsByConvocation = () => {
     const getProductsByConvocation = async () => {
         try {
             setLoading(true);
-            //const {data, status} = await newProductServices.getgetProductsByConvocation();
-            const products = await normalizeRows(mockData);
-            setRows(products);
-            setFilteredRows(products);
+            const {data, status} = await worksDayServices.getWorksDayAll();
+            if(status === ResponseStatusEnum.OK){
+                const products = await normalizeRows(data);
+                setRows(products);
+                setFilteredRows(products);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         } finally {
@@ -81,22 +82,27 @@ export const ListProductsByConvocation = () => {
         }
     }
 
-    const normalizeRows = (data) => {
-        try {
-            return data.map((row) => ({
-                id: row?.id,
-                date: row?.created_at,
-                name: row?.nombre,
-                plan: row?.plan,
-                n_suppliers: row?.cant_proveedores,
-                report: row?.id,
-                suppliersList: row?.proveedores,
+    const normalizeRows = async (payload) => {
+        const rows = payload?.data ?? [];
+
+        return rows.map((row) => {
+            const plans = (row?.planes ?? []).map((p) => ({
+                id: p?.id ?? null,
+                name: (p?.plan?.nombre ?? "").trim(),
             }));
-        } catch (error) {
-            console.error('Error al normalizar filas:', error);
-            return [];
-        }
-    }
+
+            return {
+                id: row?.id,
+                date: row?.fcrea.split('T')[0],
+                name: (row?.nombre ?? "").replace(/\r?\n/g, " ").trim(),
+                status: row?.abierto ? "Abierto" : "Cerrado",
+                n_suppliers: row?.cant_proveedores ?? (row?.proveedores?.length ?? 0),
+                report: row?.id,
+                suppliersList: row?.proveedores ?? [],
+                plans,
+            };
+        });
+    };
 
     //
     const handleModalSuppliers = (row) => {
@@ -203,6 +209,11 @@ export const ListProductsByConvocation = () => {
                                 },
                             },
                         }}
+                        getRowClassName={(params) =>
+                            (params.row.status === 'Abierto')
+                                ? 'row-open'
+                                : 'row-closed'
+                        }
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#40A581",
@@ -228,6 +239,9 @@ export const ListProductsByConvocation = () => {
                             "& .MuiDataGrid-row:hover": {
                                 backgroundColor: "#E8F5E9",
                             },
+                            // fondo base
+                            "& .row-open":   { backgroundColor: "rgba(64,165,129,0.10)" }, // verde suave
+                            "& .row-closed": { backgroundColor: "rgba(244,67,54,0.08)"  }, // rojo suave
                         }}
                     />
                 </div>

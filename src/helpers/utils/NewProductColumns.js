@@ -7,7 +7,15 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
     { field: "id", headerName: "ID", width: 70 },
     { field: "date", headerName: "FECHA", width: 150 },
     { field: "name", headerName: "NOMBRE CONVOCATORIA", width: 250 },
-    { field: "plan", headerName: "PLAN", width: 180 },
+    {
+        field: "plans",
+        headerName: "PLANES PRODUCTIVOS",
+        width:310,
+        sortable: false,
+        renderCell: ({ row }) =>
+            row.plans?.length ? row.plans.map(p => p.name).join(", ") : "—",
+    },
+    { field: "status", headerName: "ESTADO", width: 180 },
     { field: "n_suppliers", headerName: "N° PROVEEDORES", width: 150 },
     {
         field: 'suppliersList',
@@ -174,15 +182,15 @@ export const getActionsColumns = (handleDeleteClick) => ([
 export const getProductsPriceQuotesColumns = () => ([
     { field: "id", headerName: "ID", width: 70 },
     { field: "plan", headerName: "PLAN", width: 150 },
-    { field: "category", headerName: "CATEGORIA", width: 150 },
-    { field: "name", headerName: "NOMBRE PRODUCTO", width: 250 },
+    { field: "category", headerName: "CATEGORIA", width: 300 },
+    { field: "name", headerName: "NOMBRE PRODUCTO", width: 300 },
     { field: "unit", headerName: "UNIDAD", width: 150 },
-    { field: "description", headerName: "DESCRIPCION", width: 200, editable: true, },
+    { field: "description", headerName: "DESCRIPCION", width: 300, editable: true, },
     { field: "brand", headerName: "MARCA", width: 200, editable: true, },
     {
         field: "price",
         headerName: "VALOR",
-        width: 170,
+        width: 200,
         editable: true,
         renderCell: (params) => {
             const min = Number(params.row.precio_min ?? 0);

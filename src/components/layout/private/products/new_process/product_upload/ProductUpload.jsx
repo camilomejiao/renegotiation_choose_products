@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Button, Col, Row} from "react-bootstrap";
+import {Button, Col, Row, Spinner} from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
-import {getNewCatalogBaseColumns, getActionsColumns, getPlans} from "../../../../../../helpers/utils/NewProductColumns";
+import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/NewProductColumns";
 import { getCategoryOptions, getUnitOptions } from "../../../../../../helpers/utils/ProductColumns";
 import { chunkArray, handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
@@ -17,13 +17,13 @@ import { chunkArray, handleError, showAlert } from "../../../../../../helpers/ut
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
-import { newProductServices } from "../../../../../../helpers/services/NewProductServices";
-import {renegotiationServices} from "../../../../../../helpers/services/RenegociationServices";
+import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
 
 export const ProductUpload = () => {
 
     const navigate = useNavigate();
 
+    const [workDay, setWorkDay] = useState([]);
     const [planOptions, setPlanOptions] = useState([]);
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
@@ -36,17 +36,51 @@ export const ProductUpload = () => {
         typePlan: '',
     });
 
-    //Cargar planes
-    const getPlans = async () => {
+    //
+
+    const getWorksDay = async () => {
         try {
-            const { data, status} = await renegotiationServices.getPlan();
-            if(status === ResponseStatusEnum.OK) {
-                setPlanOptions(data)
+            setLoading(true);
+            const {data, status} = await worksDayServices.getWorksDay();
+            if (status === ResponseStatusEnum.OK) {
+                setWorkDay(data?.data?.jornadas)
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
+
+    //Cargar planes
+    const getPlans = async (workDayId) => {
+        try {
+            setLoading(true);
+            const { data, status} = await worksDayServices.getPlansByWorkDay(workDayId);
+            if(status === ResponseStatusEnum.OK) {
+                setPlanOptions(data?.data?.planes)
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormFields({ ...formFields, [name]: value });
+    };
+
+    //
+    const handleSelectWorkDay = async (e) => {
+        const { name, value } = e.target;
+        setFormFields((prev) => ({ ...prev, [name]: value, typePlan: "" }));
+        setPlanOptions([]);
+        if (!value) return;
+        await getPlans(value);
+    };
 
     //
     const handleRowUpdate = (newRow) => {
@@ -145,11 +179,6 @@ export const ProductUpload = () => {
         window.location.reload();
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormFields({ ...formFields, [name]: value });
-    };
-
     //Manejo principal para guardar productos
     const handleSaveProducts = async () => {
         if (!rows || rows.length === 0) {
@@ -159,20 +188,19 @@ export const ProductUpload = () => {
 
         try {
             setLoading(true);
-            const transformedData = await transformData(rows);
 
-            const batches = chunkArray(transformedData, 250);
+            const jornadaPlanId = Number(formFields.typePlan);
+            const productos = await transformData(rows);
 
             let sendData = {
-                typeCall: formFields.typeCall,
-                typePlan: formFields.typePlan,
-                products: batches
+                jornada_plan: jornadaPlanId,
+                productos
             }
-
+            //console.log(sendData);
             await sendBatchesInParallel(sendData);
 
             showAlert('', 'Todos los productos se han creado exitosamente');
-            navigate('/admin/products');
+            handleBack();
 
             // Limpiamos la tabla
             setRows([]);
@@ -218,7 +246,7 @@ export const ProductUpload = () => {
     };
 
     const sendBatchToService = async (batch) => {
-        const { data, status } = await newProductServices.saveProductUpload(batch);
+        const { data, status } = await worksDayServices.saveWorkDayProducts(batch);
         if (status === ResponseStatusEnum.BAD_REQUEST) {
             throw new Error(`${data}`);
         }
@@ -233,8 +261,9 @@ export const ProductUpload = () => {
 
     // Cargar datos iniciales
     useEffect(() => {
-        getPlans();
         loadData();
+        getWorksDay();
+
     }, []);
 
     useEffect(() => {
@@ -255,6 +284,13 @@ export const ProductUpload = () => {
                 backgroundInformationColor={''}
             />
 
+            {loading && (
+                <div className="spinner-container">
+                    <Spinner animation="border" variant="success" />
+                    <span>Cargando...</span>
+                </div>
+            )}
+
             <div className="container mt-lg-3">
                 {/* Select */}
                 <Row className="gy-3">
@@ -262,14 +298,17 @@ export const ProductUpload = () => {
                         <label className="form-label fw-semibold">Convocatoria <span className="text-danger">*</span></label>
                         <select
                             className="form-select"
-                            name="tipoCuenta"
+                            name="typeCall"
                             value={formFields.typeCall}
-                            onChange={handleInputChange}
+                            onChange={handleSelectWorkDay}
                             required
                         >
                             <option value="">Seleccione Jornada...</option>
-                            <option value="AHO">Ahorros</option>
-                            <option value="COR">Corriente</option>
+                            {workDay?.map((wd) => (
+                                <option key={wd?.id} value={wd?.id}>
+                                    {wd?.nombre}
+                                </option>
+                            ))}
                         </select>
                     </Col>
                     <Col xs={12} sm={6} md={4}>
@@ -284,7 +323,7 @@ export const ProductUpload = () => {
                             <option value="">Seleccione plan...</option>
                             {planOptions?.map((plan) => (
                                 <option key={plan?.id} value={plan?.id}>
-                                    {plan?.nombre}
+                                    {plan?.plan_nombre}
                                 </option>
                             ))}
                         </select>

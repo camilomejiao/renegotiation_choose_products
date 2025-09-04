@@ -1,60 +1,27 @@
-import {useEffect, useState} from "react";
-import {useNavigate, useOutletContext} from "react-router-dom";
-import {Button} from "react-bootstrap";
-import {DataGrid} from "@mui/x-data-grid";
-import {FaSave} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { DataGrid } from "@mui/x-data-grid";
+import { FaSave } from "react-icons/fa";
 
 //
 import {HeaderImage} from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import {getProductsPriceQuotesColumns} from "../../../../../../helpers/utils/NewProductColumns";
+import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/NewProductColumns";
 
 //Services
+import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
 
 //Enum
-import {handleError, showAlert} from "../../../../../../helpers/utils/utils";
-import {formatPrice} from "../../../../../../helpers/utils/ProductColumns";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+
+//Utils
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 
 const PAGE_SIZE = 100;
-
-const mockData = [
-    {
-        id: 1,
-        plan: 'plan',
-        categoria: 'categoria1',
-        nombre: 'nombre1',
-        unidad: 'unidad1',
-        precio_min: 10000,
-        precio_max: 20000,
-        descripcion: '',
-        marca: '',
-    },
-    {
-        id: 2,
-        plan: 'plan',
-        categoria: 'categoria2',
-        nombre: 'nombre2',
-        unidad: 'unidad2',
-        precio_min: 50000,
-        precio_max: 100000,
-        descripcion: '',
-        marca: '',
-    },
-    {
-        id: 3,
-        plan: 'plan',
-        categoria: 'categoria3',
-        nombre: 'nombre3',
-        unidad: 'unidad3',
-        precio_min: 750000,
-        precio_max: 1000000,
-        descripcion: '',
-        marca: '',
-    }
-]
 
 export const ProductPriceQuotes = () => {
 
@@ -66,27 +33,33 @@ export const ProductPriceQuotes = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
 
+    //
     const getProductList = async () => {
         try {
-            // const { data } = await newProductServices.getProductPriceQuoteList(1);
-            const products = await normalizeRows(mockData);
-            setRows(products);
-            setFilteredRows(products);
+            const { data, status } = await worksDayServices.getProductsBySupplier(userAuth.id);
+            if(status === ResponseStatusEnum.OK) {
+                console.log(data);
+                const products = await normalizeRows(data);
+                setRows(products);
+                setFilteredRows(products);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         }
     };
 
-    const normalizeRows = async (data) => {
+    const normalizeRows = async (payload) => {
+        const rows = payload?.data?.productos ?? [];
+        console.log(rows);
         try {
-            return data.map((row) => ({
-                id: row.id,
-                plan: row.plan,
-                category: row.categoria,
-                name: row.nombre,
-                unit: row.unidad,
-                description: row.descripcion ?? "",
-                brand: row.marca ?? "",
+            return rows.map((row) => ({
+                id: row?.id,
+                plan: row?.plan,
+                category: row?.categoria_producto?.nombre,
+                name: row?.nombre,
+                unit: row?.unidad_medida?.nombre,
+                description: "",
+                brand: "",
                 price: 0,
                 precio_min: Number(row?.precio_min),
                 precio_max: Number(row?.precio_max),
@@ -102,16 +75,17 @@ export const ProductPriceQuotes = () => {
     const columns = [...baseColumns];
 
     const handleRowUpdate = (newRow) => {
-        const pMin = Number(newRow.precio_min ?? 0);
-        const pMax = Number(newRow.precio_max ?? Infinity);
-        const price = Number(newRow.price ?? 0);
+        // const pMin = Number(newRow.precio_min ?? 0);
+        // const pMax = Number(newRow.precio_max ?? Infinity);
+        // const price = Number(newRow.price ?? 0);
+        //
+        // if (price && (price < pMin || price > pMax)) {
+        //     handleError(
+        //         "Valor fuera de rango",
+        //         //`El precio debe estar entre ${formatPrice(pMin)} y ${formatPrice(pMax)}.`
+        //     );
+        // }
 
-        if (price && (price < pMin || price > pMax)) {
-            handleError(
-                "Valor fuera de rango",
-                //`El precio debe estar entre ${formatPrice(pMin)} y ${formatPrice(pMax)}.`
-            );
-        }
         //Actualiza estado principal y filtrado
         setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
@@ -134,21 +108,21 @@ export const ProductPriceQuotes = () => {
         try {
             setLoading(true);
 
-            const invalids = rows.filter(r => {
-                const price = Number(r?.price);
-                const pMin = Number(r?.precio_min);
-                const pMax = Number(r?.precio_max);
-                return price && (price < pMin || price > pMax);
-            });
-
-            if (invalids.length) {
-                handleError(
-                    "Revisa precios",
-                    `Tienes ${invalids.length} producto(s) con precio fuera de rango.`
-                );
-                setLoading(false);
-                return;
-            }
+            // const invalids = rows.filter(r => {
+            //     const price = Number(r?.price);
+            //     const pMin = Number(r?.precio_min);
+            //     const pMax = Number(r?.precio_max);
+            //     return price && (price < pMin || price > pMax);
+            // });
+            //
+            // if (invalids.length) {
+            //     handleError(
+            //         "Revisa precios",
+            //         `Tienes ${invalids.length} producto(s) con precio fuera de rango.`
+            //     );
+            //     setLoading(false);
+            //     return;
+            // }
 
             const emptyFields = rows.some(r => {
                 return !r.description || !r.brand || !r.price
@@ -157,25 +131,48 @@ export const ProductPriceQuotes = () => {
             if (emptyFields) {
                 handleError(
                     "Revisa campos",
-                    `Tienes Algun campo vacio.`
+                    `Tienes Algún campo vacio.`
                 );
                 setLoading(false);
                 return;
             }
 
-            console.log("rows completos a guardar:", rows);
+            const transformedData = await transformData(rows);
 
             let sendData = {
-                proveedor_id : 1,
-                productos: rows
+                proveedor_id: userAuth.id,
+                productos: transformedData
             }
 
-            showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+            const { data, status } = await worksDayServices.saveProductBySupplier(sendData);
+            console.log(data);
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                handleError('Error', 'Error en el formato de productos');
+            }
+
+            if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                handleError('Error', 'Error en el sistema, contacte a soporte y tecnico');
+            }
+
+            if(status === ResponseStatusEnum.CREATED) {
+                showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+            }
+
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
         } finally {
             setLoading(false);
         }
+    };
+
+    //Transformar datos para ajustarlos al formato esperado por la API
+    const transformData = async (inputData) => {
+        return inputData.map(product => ({
+            jornada_producto_id: product.id,
+            descripcion: product.description,
+            marca: product.brand,
+            price: product.price,
+        }));
     };
 
     //Cargar datos iniciales
