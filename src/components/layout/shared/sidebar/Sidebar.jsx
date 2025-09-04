@@ -37,7 +37,7 @@ const menuConfig = {
     ],
     [RolesEnum.SUPERVISION]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Catálogo de productos" },
+        { path: "/admin/products-supervision", icon: FaDollyFlatbed, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
@@ -49,9 +49,9 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [
+        { path: "/admin/products-enviromental", icon: FaDollyFlatbed, label: "Validación de Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Usuarios" },
-        { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de Catálogo de productos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TECHNICAL]: [

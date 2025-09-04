@@ -31,7 +31,7 @@ import {
     getDynamicColumnsBySupplier,
     getEnvironmentalCategories,
     getUnitOptions
-} from "../../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 100;
 

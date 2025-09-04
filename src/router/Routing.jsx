@@ -25,9 +25,9 @@ import { OrderReport } from "../components/layout/private/purchase_orders/order_
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
-import { ProductList } from "../components/layout/private/products/old_process/product_list/ProductList";
-import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
-import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
+import { ValidationSupervision } from "../components/layout/private/products/new_process/validation_supervision/ValidationSupervision";
+//import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
+//import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
 import { UserList } from "../components/layout/private/Users/UserList";
 import { CreateUser } from "../components/layout/private/Users/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
@@ -51,6 +51,9 @@ import { ProductPriceQuotes } from "../components/layout/private/products/new_pr
 import {
     ListProductsByConvocation
 } from "../components/layout/private/products/new_process/list_products_by_convocation/ListProductsByConvocation";
+import {
+    ValidationEnvironmental
+} from "../components/layout/private/products/new_process/validation_environmental/ValidationEnvironmental";
 
 export const Routing = () => {
     return (
@@ -87,9 +90,10 @@ export const Routing = () => {
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
 
                         {/* Productos */}
-                        <Route path={ RouterEnum.Products }  element={ <ProductList /> }  />
-                        <Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />
-                        <Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />
+                        <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
+                        <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
+                        {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
+                        {/*<Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />*/}
                         <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
                         <Route path={ RouterEnum.ProductUpload }  element={ <ProductUpload /> }  />
                         <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotes /> }  />

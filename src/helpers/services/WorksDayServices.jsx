@@ -1,4 +1,4 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -12,7 +12,7 @@ class WorksDayServices {
      *  @type {string}
      */
     constructor() {
-        this.baseUrl = Global.url + "jornadas/";
+        this.baseUrl = GlobalConnex.url + "jornadas/";
     }
 
     /**
@@ -33,7 +33,7 @@ class WorksDayServices {
      *
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` (payload de la API) y `status`.
      */
-    getWorksDay() {
+    getConvocations() {
         const url = this.buildUrl(`abiertas/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
@@ -47,7 +47,7 @@ class WorksDayServices {
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      *
      */
-    getPlansByWorkDay(workDayId) {
+    getPlansByConvocation(workDayId) {
         const url = this.buildUrl(`planes/?jornada_id=${workDayId}&activo=true`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
@@ -59,7 +59,7 @@ class WorksDayServices {
      *
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
-    getWorksDayAll() {
+    getConvocationInformation() {
         const url = this.buildUrl(`completas/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
@@ -74,7 +74,7 @@ class WorksDayServices {
      * @param {Array<object>} products.productos - Arreglo de productos a registrar (puede enviar en lotes).
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
-    saveWorkDayProducts(products) {
+    saveProductsByConvocation(products) {
         const url = this.buildUrl(`productos/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",

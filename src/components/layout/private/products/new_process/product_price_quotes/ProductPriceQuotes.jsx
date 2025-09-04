@@ -9,7 +9,7 @@ import {HeaderImage} from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/NewProductColumns";
+import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
 import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";

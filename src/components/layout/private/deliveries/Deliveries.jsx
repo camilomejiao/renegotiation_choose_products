@@ -66,6 +66,14 @@ const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl
  */
 const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
 
+/**
+ * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrónica) de la fila.
+ * @param {Object} row - Fila del DataGrid.
+ */
+const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
+const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
+
+
 
 export const Deliveries = () => {
 
@@ -129,6 +137,7 @@ export const Deliveries = () => {
             setLoading(true);
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
+                console.log('getListDeliveriesToUser: ', data);
                 const rows = await normalizeDeliveryRows(data);
                 setListDeliveriesToUser(rows);
             }
@@ -147,10 +156,13 @@ export const Deliveries = () => {
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
+            console.log('searchDeliveriesPDF: ', data);
             if(status === ResponseStatusEnum.OK) {
                 return {
                     consolidatedFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
                     feFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[1]?.ruta,
+                    evidence1Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[2]?.ruta,
+                    evidence2Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[3]?.ruta,
                     approvedTechnical: data?.aprobado_tecnica,
                     approvedTerritorial: data?.aprobado_territorial,
                     fe_number: data?.numero_fe,
@@ -180,6 +192,10 @@ export const Deliveries = () => {
                     evidencePdf: {
                         consolidatedFileUrl: deliveryIdInfo?.consolidatedFileUrl ?? "",
                         feFileUrl: deliveryIdInfo?.feFileUrl ?? ""
+                    },
+                    evidenceImg: {
+                        imgEvidence1Url: deliveryIdInfo?.evidence1Url ?? "",
+                        imgEvidence2Url: deliveryIdInfo?.evidence2Url ?? ""
                     },
                     actions: {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
@@ -416,6 +432,9 @@ export const Deliveries = () => {
 
     const renderPhotoCell = (params) => {
         const row = params.row;
+        const imagen1Url = getImagen1Url(row);
+        const imagen2Url = getImagen2Url(row);
+
         return (
             <>
                 {hasPdfConsolidado(row) && (
@@ -423,20 +442,42 @@ export const Deliveries = () => {
                         <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => handleUploadFile(row.id, UploadFileEnum.PDF)}
+                            onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE1)}
                             title="Subir imagen 1"
                         >
                             Subir Imagen 1
                         </Button>
 
+                        {imagen1Url && (
+                            <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleViewFile(imagen1Url)}
+                                title="Ver Docuemnto cargado"
+                            >
+                                Ver Imagen 1
+                            </Button>
+                        )}
+
                         <Button
-                            variant="success"
+                            variant="secondary"
                             size="sm"
-                            onClick={() => handleViewFile(row?.evidencePdf?.consolidatedFileUrl)}
-                            title="Ver consolidado"
+                            onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE2)}
+                            title="Subir imagen 1"
                         >
-                            Ver PDF
+                            Subir Imagen 2
                         </Button>
+
+                        {imagen2Url && (
+                            <Button
+                                variant="success"
+                                size="sm"
+                                onClick={() => handleViewFile(imagen2Url)}
+                                title="Ver Docuemnto cargado"
+                            >
+                                Ver Imagen 2
+                            </Button>
+                        )}
                     </div>
                 )}
             </>
@@ -498,7 +539,6 @@ export const Deliveries = () => {
     const handleUploadFile = (rowId, fileName) => {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "application/pdf";
         input.style.display = "none";
 
         // Captura el archivo seleccionado
@@ -770,9 +810,13 @@ export const Deliveries = () => {
     const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
             //Validar el tipo de archivo
-            const allowedTypes = ['application/pdf'];
+            const allowedTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+            ];
             if (!allowedTypes.includes(file.type)) {
-                showError('Archivo no válido', 'Solo se permiten archivos PDF.');
+                showError('Archivo no válido', 'Solo se permiten archivos PDF o imagenes en formato jpeg, png.');
                 return;
             }
 
@@ -814,6 +858,7 @@ export const Deliveries = () => {
         setLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
+            console.log('Entregas: ', data);
             setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {

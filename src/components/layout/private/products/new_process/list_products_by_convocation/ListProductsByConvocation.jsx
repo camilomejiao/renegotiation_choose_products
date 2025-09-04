@@ -8,52 +8,12 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import { getActionsColumns, getConvocationColumns } from "../../../../../../helpers/utils/NewProductColumns";
+import { getActionsColumns, getConvocationColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
 
-const mockData = [
-    {
-        id: 1,
-        created_at: '20-10-2025',
-        nombre: 'Nombre convocatoria1',
-        plan: 'plan',
-        cant_proveedores: 2,
-        proveedores: [
-            { id: 1, nombre: "La mas chula", nit: "96587453-9" },
-            { id: 2, nombre: "La mas chula2", nit: "96587453-9" },
-        ]
-    },
-    {
-        id: 2,
-        created_at: '20-10-2025',
-        nombre: 'Nombre convocatoria2',
-        plan: 'plan',
-        cant_proveedores: 5,
-        proveedores: [
-            { id: 1, nombre: "La mas chula", nit: "96587453-9" },
-            { id: 2, nombre: "La mas chula2", nit: "96587453-9" },
-            { id: 3, nombre: "La mas chula3", nit: "96587453-9" },
-            { id: 4, nombre: "La mas chula4", nit: "96587453-9" },
-            { id: 5, nombre: "La mas chula5", nit: "96587453-9" },
-        ]
-    },
-    {
-        id: 3,
-        created_at: '20-10-2025',
-        nombre: 'Nombre convocatoria3',
-        plan: 'plan',
-        cant_proveedores: 4,
-        proveedores: [
-            { id: 1, nombre: "La mas chula", nit: "96587453-9" },
-            { id: 2, nombre: "La mas chula2", nit: "96587453-9" },
-            { id: 3, nombre: "La mas chula3", nit: "96587453-9" },
-            { id: 4, nombre: "La mas chula4", nit: "96587453-9" },
-        ]
-    },
-]
 export const ListProductsByConvocation = () => {
 
     const navigate = useNavigate();
@@ -69,7 +29,7 @@ export const ListProductsByConvocation = () => {
     const getProductsByConvocation = async () => {
         try {
             setLoading(true);
-            const {data, status} = await worksDayServices.getWorksDayAll();
+            const {data, status} = await worksDayServices.getConvocationInformation();
             if(status === ResponseStatusEnum.OK){
                 const products = await normalizeRows(data);
                 setRows(products);

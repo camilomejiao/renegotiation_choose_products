@@ -1,6 +1,6 @@
 import { MenuItem, Select, TextField } from "@mui/material";
 import {FaFile, FaFileExcel, FaTrash} from "react-icons/fa";
-import { formatPrice } from "./ProductColumns";
+import { formatPrice } from "./ValidateProductColumns";
 import { Button } from "react-bootstrap";
 
 export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([

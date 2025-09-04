@@ -1,11 +1,11 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 
 class FilesServices {
 
     constructor() {
-        this.baseUrl = Global.url;
+        this.baseUrl = GlobalConnex.url;
     }
 
     /**
@@ -28,7 +28,7 @@ class FilesServices {
      * @returns {Promise<Response>} - Promesa con la respuesta del servidor.
      */
     uploadFileReport(cubId, formData) {
-        const url = `${Global.url}cub/consolidado/${cubId}/`;
+        const url = `${GlobalConnex.url}cub/consolidado/${cubId}/`;
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: formData,
@@ -46,7 +46,7 @@ class FilesServices {
      * @returns {Promise<Response>} Respuesta del servidor.
      */
     downloadFile(route) {
-        const url = `${Global.url}archivo/descargar_archivo?ruta=${route}`;
+        const url = `${GlobalConnex.url}archivo/descargar_archivo?ruta=${route}`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 }

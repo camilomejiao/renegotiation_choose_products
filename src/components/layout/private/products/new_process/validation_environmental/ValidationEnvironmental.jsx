@@ -38,12 +38,19 @@ import {
     getEnvironmentalCategoriesColumns,
     getObservationsColumns,
     getActionsColumns, getEnvironmentalCategories,
-} from "../../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
 
-export const ProductList = () => {
+const mockData = [
+    {
+
+    }
+
+];
+
+export const ValidationEnvironmental = () => {
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();
 
@@ -72,19 +79,32 @@ export const ProductList = () => {
     //Usuarios permitidos
     const allowedRoles = [
         RolesEnum.ADMIN,
-        RolesEnum.SUPERVISION,        
-        RolesEnum.TECHNICAL,
         RolesEnum.ENVIRONMENTAL
     ];
 
-    //Obtener la lista de proveedores
-    const getSuppliers = async () => {
+    //
+    const loadData = async () => {
+        try {
+            const [unitData, categoryData ] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
+        }
+    };
+
+    //Obtener la lista de jornadas
+    const getConvocations = async () => {
         setLoading(true);
         try {
-            const { data, status } = await supplierServices.getSuppliersAll();
-            if (status === ResponseStatusEnum.OK) {
-                setSuppliers(data);
-            }
+            //const { data, status } = await supplierServices.getSuppliersAll();
+            //if (status === ResponseStatusEnum.OK) {
+                setSuppliers(mockData);
+            //}
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
         } finally {
@@ -92,34 +112,43 @@ export const ProductList = () => {
         }
     }
 
-    //
-    const getSupplierId = () => {
-        let supplierId = null;
-        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
-            supplierId = selectedSupplier.value;
-        }
-
-        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-            supplierId = supplierServices.getSupplierId();
-        }
-
-        return supplierId;
-    }
-
     //Obtener la lista de productos
     const getProductList = async () => {
         setLoadingTable(true);
         try {
-            const { data, status } = await productServices.getProductList(getSupplierId());
-            if (status === ResponseStatusEnum.OK) {
-                const products =  await normalizeRows(getSupplierId(), data);
-                setProductList(products);
-                setFilteredData(products);
-            }
+            // const { data, status } = await productServices.getProductList(getSupplierId());
+            // if (status === ResponseStatusEnum.OK) {
+            //     const products =  await normalizeRows(getSupplierId(), data);
+            //     setProductList(products);
+            //     setFilteredData(products);
+            // }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         } finally {
             setLoadingTable(false)
+        }
+    };
+
+    //
+    const normalizeRows = async (data) => {
+        try {
+            const environmentalCategories = await getEnvironmentalCategories();
+
+            return data.map((row) => ({
+                id: row?.id,
+                name: row?.nombre,
+                description: row?.especificacion_tecnicas,
+                brand: row?.marca_comercial,
+                unit: row?.unidad_medida,
+                category: row?.categoria_producto,
+                state: getProductState(row?.fecha_aprobado, row?.aprobados),
+                ...buildEnvironmentalData(row, environmentalCategories),
+                ...extractObservations(row?.aprobados),
+                ...extractCountEnvironmental(row)
+            }));
+        } catch (error) {
+            console.error('Error al normalizar filas:', error);
+            return [];
         }
     };
 
@@ -156,47 +185,9 @@ export const ProductList = () => {
         setEnvironmentalCategoriesColumns(columns);
     }
 
-    //
-    const loadData = async () => {
-        try {
-            const [unitData, categoryData, { newDynamicColumns } ] = await Promise.all([
-                getUnitOptions(),
-                getCategoryOptions(),
-                getDynamicColumnsBySupplier(getSupplierId(), true),
-            ]);
 
-            setUnitOptions(unitData);
-            setCategoryOptions(categoryData);
-            setDynamicMunicipalityColumns(newDynamicColumns);
-        } catch (error) {
-            handleError(error, "Error cargando los datos iniciales.");
-        }
-    };
 
-    //
-    const normalizeRows = async (supplierId, data) => {
-        try {
-            const { municipalities } = await getDynamicColumnsBySupplier(supplierId, true);
-            const environmentalCategories = await getEnvironmentalCategories();
 
-            return data.map((row) => ({
-                id: row?.id,
-                name: row?.nombre,
-                description: row?.especificacion_tecnicas,
-                brand: row?.marca_comercial,
-                unit: row?.unidad_medida,
-                category: row?.categoria_producto,
-                state: getProductState(row?.fecha_aprobado, row?.aprobados),
-                ...extractMunicipalityPrices(row, municipalities),
-                ...buildEnvironmentalData(row, environmentalCategories),
-                ...extractObservations(row?.aprobados),
-                ...extractCountEnvironmental(row)
-            }));
-        } catch (error) {
-            console.error('Error al normalizar filas:', error);
-            return [];
-        }
-    };
 
     //
     const getProductState = (approvalDate, approvalList) => {
@@ -437,14 +428,11 @@ export const ProductList = () => {
 
     //
     const productsBeforeSend = async (inputData) => {
-        //Obtener el id del proveedor
-        const supplierId = parseInt(getSupplierId());
         //Obtener claves ambientales
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
         return inputData.map((product) => ({
             id: product.id,
-            proveedor_id: supplierId,
             nombre: product.name,
             especificacion_tecnicas: product.description,
             marca_comercial: product.brand,
@@ -452,9 +440,8 @@ export const ProductList = () => {
             categoria_producto: product.category,
             valor_municipio: extractMunicipios(product),
             ambiental: buildData(product, environmentalKeys),
-            observations_technical: product.observations_technical,
             observations_environmental: product.observations_environmental,
-            observations_territorial: product.observations_territorial,
+            observations_supervision: product.observations_supervision,
             cantidad_ambiental: {cant: parseInt(product.customValue), ambiental_key: product.selectedCategory},
         }));
     };
@@ -526,7 +513,7 @@ export const ProductList = () => {
 
     useEffect(() => {
         if (allowedRoles.includes(userAuth.rol_id)) {
-            getSuppliers();
+            getConvocations();
         }
 
         if (userAuth.rol_id === RolesEnum.SUPPLIER) {

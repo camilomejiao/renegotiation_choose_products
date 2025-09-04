@@ -9,8 +9,8 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
-import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/NewProductColumns";
-import { getCategoryOptions, getUnitOptions } from "../../../../../../helpers/utils/ProductColumns";
+import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+import { getCategoryOptions, getUnitOptions } from "../../../../../../helpers/utils/ValidateProductColumns";
 import { chunkArray, handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 //Enum
@@ -23,7 +23,7 @@ export const ProductUpload = () => {
 
     const navigate = useNavigate();
 
-    const [workDay, setWorkDay] = useState([]);
+    const [convocation, setConvocation] = useState([]);
     const [planOptions, setPlanOptions] = useState([]);
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
@@ -41,9 +41,9 @@ export const ProductUpload = () => {
     const getWorksDay = async () => {
         try {
             setLoading(true);
-            const {data, status} = await worksDayServices.getWorksDay();
+            const {data, status} = await worksDayServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
-                setWorkDay(data?.data?.jornadas)
+                setConvocation(data?.data?.jornadas)
             }
         } catch (error) {
             console.log(error);
@@ -56,7 +56,7 @@ export const ProductUpload = () => {
     const getPlans = async (workDayId) => {
         try {
             setLoading(true);
-            const { data, status} = await worksDayServices.getPlansByWorkDay(workDayId);
+            const { data, status} = await worksDayServices.getPlansByConvocation(workDayId);
             if(status === ResponseStatusEnum.OK) {
                 setPlanOptions(data?.data?.planes)
             }
@@ -246,7 +246,7 @@ export const ProductUpload = () => {
     };
 
     const sendBatchToService = async (batch) => {
-        const { data, status } = await worksDayServices.saveWorkDayProducts(batch);
+        const { data, status } = await worksDayServices.saveProductsByConvocation(batch);
         if (status === ResponseStatusEnum.BAD_REQUEST) {
             throw new Error(`${data}`);
         }
@@ -304,7 +304,7 @@ export const ProductUpload = () => {
                             required
                         >
                             <option value="">Seleccione Jornada...</option>
-                            {workDay?.map((wd) => (
+                            {convocation?.map((wd) => (
                                 <option key={wd?.id} value={wd?.id}>
                                     {wd?.nombre}
                                 </option>

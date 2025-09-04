@@ -1,4 +1,4 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -15,7 +15,7 @@ class SupplierServices {
      * @returns {Promise<Response>} - Promesa con la lista de proveedores.
      */
     getSuppliersAll() {
-        const url = `${Global.url}usuario/`;
+        const url = `${GlobalConnex.url}usuario/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -25,7 +25,7 @@ class SupplierServices {
      * @returns {Promise<Response>} - Promesa con los datos del proveedor.
      */
     getInfoSupplier(supplierId) {
-        const url = `${Global.url}usuario/${supplierId}/`;
+        const url = `${GlobalConnex.url}usuario/${supplierId}/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

@@ -1,9 +1,9 @@
-import { Global } from "../Global.jsx";
+import { GlobalConnex } from "../GlobalConnex.jsx";
 import { jwtDecode } from "jwt-decode";
 
 class AuthService {
     constructor() {
-        this.baseUrl = Global.url;
+        this.baseUrl = GlobalConnex.url;
     }
 
     /**

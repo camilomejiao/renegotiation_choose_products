@@ -30,7 +30,7 @@ import {
     getUnitOptions,
     getCategoryOptions,
     getEnvironmentalCategories
-} from "../../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 export const AddProducts = () => {
 

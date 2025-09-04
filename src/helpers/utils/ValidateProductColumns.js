@@ -7,7 +7,7 @@ import { supplierServices } from "../services/SupplierServices";
 import { productServices } from "../services/ProductServices";
 
 //Enum
-import {ResponseStatusEnum, RolesEnum, StatusTeamProductEnum} from "../GlobalEnum";
+import { ResponseStatusEnum, RolesEnum, StatusTeamProductEnum } from "../GlobalEnum";
 
 //
 export const getBaseColumns = (unitOptions, categoryOptions, handleRowUpdate, editable = true) => ([
@@ -139,6 +139,11 @@ export const getCategoryOptions = async () => {
     }
 };
 
+//
+export const getStatusProduct = () => [
+    { field: "state", headerName: "ESTADO", width: 150, },
+];
+
 //Obtener restricciones ambientales
 export const getEnvironmentalCategories = async () => {
     try {
@@ -152,11 +157,6 @@ export const getEnvironmentalCategories = async () => {
         return [];
     }
 };
-
-//
-export const getStatusProduct = () => [
-    { field: "state", headerName: "ESTADO", width: 150, },
-];
 
 //Categorías de restricciones ambientales
 export const getEnvironmentalCategoriesColumns = async (handleSelectChange, handleCustomChange) => {
@@ -274,20 +274,6 @@ export const getObservationsColumns = (userRole) => {
         {
             field: "status_supervision",
             headerName: "Estado supervision",
-            width: 120,
-            editable: false,
-            renderCell: renderStatusCell,
-        },
-        {
-            field: "observations_technical",
-            headerName: "Observación Técnica",
-            width: 200,
-            editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación técnica..."),
-        },
-        {
-            field: "status_technical",
-            headerName: "Estado Técnico",
             width: 120,
             editable: false,
             renderCell: renderStatusCell,
