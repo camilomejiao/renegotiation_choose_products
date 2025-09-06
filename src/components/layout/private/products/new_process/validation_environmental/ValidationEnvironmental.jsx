@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, Col } from "react-bootstrap";
-import { FaEdit, FaPlus, FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
+import {Button, Col, Row} from "react-bootstrap";
+import { FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
 import debounce from "lodash/debounce";
@@ -11,12 +11,10 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { ConfirmationModal } from "../../../../shared/Modals/ConfirmationModal";
 import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
 import { productServices } from "../../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
@@ -28,45 +26,216 @@ import {
 } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../../../helpers/utils/utils";
+import { extractMunicipios, handleError, showAlert } from "../../../../../../helpers/utils/utils";
 import {
-    getBaseColumns,
-    getCategoryOptions,
-    getDynamicColumnsBySupplier,
-    getUnitOptions,
-    getStatusProduct,
+    getBaseColumns, getEnvironmentalCategories,
     getEnvironmentalCategoriesColumns,
-    getObservationsColumns,
-    getActionsColumns, getEnvironmentalCategories,
+    getObservationsColumns, getStatusProduct,
 } from "../../../../../../helpers/utils/ValidateProductColumns";
+import {convocationServices} from "../../../../../../helpers/services/ConvocationServices";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
 
+//Usuarios permitidos
+const allowedRoles = [
+    RolesEnum.ADMIN,
+    RolesEnum.ENVIRONMENTAL
+];
+
 const mockData = [
     {
-
-    }
+        id: 1,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        ambiental: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 1,
+            5: 1,
+            6: 1,
+            7: 1,
+            8: 1,
+            9: 1,
+            10: 1,
+            11: 1,
+            12: 1,
+            13: 1,
+            14: 1,
+            15: 1,
+            16: 1,
+            17: 1,
+            18: 1,
+            19: 1,
+            20: 1,
+            21: 1,
+            22: 1,
+            23: 1
+        },
+        cantidad_ambiental: {
+            cant: 0,
+            ambiental_key: ""
+        },
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
+    {
+        id: 2,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        ambiental: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 1,
+            5: 1,
+            6: 1,
+            7: 1,
+            8: 1,
+            9: 1,
+            10: 1,
+            11: 1,
+            12: 1,
+            13: 1,
+            14: 1,
+            15: 1,
+            16: 1,
+            17: 1,
+            18: 1,
+            19: 1,
+            20: 1,
+            21: 1,
+            22: 1,
+            23: 1
+        },
+        cantidad_ambiental: {
+            cant: 0,
+            ambiental_key: ""
+        },
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
+    {
+        id: 3,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        ambiental: {
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 1,
+            5: 1,
+            6: 1,
+            7: 1,
+            8: 1,
+            9: 1,
+            10: 1,
+            11: 1,
+            12: 1,
+            13: 1,
+            14: 1,
+            15: 1,
+            16: 1,
+            17: 1,
+            18: 1,
+            19: 1,
+            20: 1,
+            21: 1,
+            22: 1,
+            23: 1
+        },
+        cantidad_ambiental: {
+            cant: 0,
+            ambiental_key: ""
+        },
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
 
 ];
 
 export const ValidationEnvironmental = () => {
-    const { userAuth } = useOutletContext();
+    const {userAuth} = useOutletContext();
     const navigate = useNavigate();
 
-    const [suppliers, setSuppliers] = useState([]);
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [convocations, setConvocations] = useState([]);
+    const [selectedConvocation, setSelectedConvocation] = useState(null);
+
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
+    const [formFields, setFormFields] = useState({typeCall: "", typePlan: ""});
+
     const [productList, setProductList] = useState([]);
     const [editedProducts, setEditedProducts] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedRowId, setSelectedRowId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [unitOptions, setUnitOptions] = useState([]);
-    const [categoryOptions, setCategoryOptions] = useState([]);
-    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
     const [environmentalCategoriesColumns, setEnvironmentalCategoriesColumns] = useState([]);
@@ -76,35 +245,28 @@ export const ValidationEnvironmental = () => {
     const [comment, setComment] = useState('');
     const [action, setAction] = useState('approve');
 
-    //Usuarios permitidos
-    const allowedRoles = [
-        RolesEnum.ADMIN,
-        RolesEnum.ENVIRONMENTAL
-    ];
-
     //
-    const loadData = async () => {
-        try {
-            const [unitData, categoryData ] = await Promise.all([
-                getUnitOptions(),
-                getCategoryOptions(),
-            ]);
+    const baseColumns = getBaseColumns();
 
-            setUnitOptions(unitData);
-            setCategoryOptions(categoryData);
-        } catch (error) {
-            handleError(error, "Error cargando los datos iniciales.");
-        }
-    };
+    const statusProduct = getStatusProduct();
+
+    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+
+    const columns = [
+        ...baseColumns,
+        ...statusProduct,
+        ...observationsColumns,
+        ...environmentalCategoriesColumns,
+    ];
 
     //Obtener la lista de jornadas
     const getConvocations = async () => {
         setLoading(true);
         try {
-            //const { data, status } = await supplierServices.getSuppliersAll();
-            //if (status === ResponseStatusEnum.OK) {
-                setSuppliers(mockData);
-            //}
+            const {data, status} = await convocationServices.getConvocations();
+            if (status === ResponseStatusEnum.OK) {
+                setConvocations(data.data.jornadas);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
         } finally {
@@ -112,16 +274,60 @@ export const ValidationEnvironmental = () => {
         }
     }
 
+    // Cargar planes
+    const getPlans = async (convocationId) => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes);
+            } else {
+                setPlanRaw([]);
+            }
+            getProductList();
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSelectedConvocation = async (option) => {
+        setSelectedConvocation(option);
+        setSelectedPlan(null);
+        setFormFields(prev => ({
+            ...prev,
+            typeCall: option?.value ?? "",
+            typePlan: ""
+        }));
+        setPlanRaw([]);
+        if (option?.value) {
+            await getPlans(option.value);
+        }
+    };
+
+    const handleSelectedPlan = async (option) => {
+        setSelectedPlan(option ?? null);
+        setFormFields(prev => ({
+            ...prev,
+            typePlan: option?.value ?? ""
+        }));
+        if (option?.value) {
+            await getProductList(option.value);
+        }
+    };
+
     //Obtener la lista de productos
-    const getProductList = async () => {
+    const getProductList = async (planId) => {
         setLoadingTable(true);
         try {
-            // const { data, status } = await productServices.getProductList(getSupplierId());
-            // if (status === ResponseStatusEnum.OK) {
-            //     const products =  await normalizeRows(getSupplierId(), data);
-            //     setProductList(products);
-            //     setFilteredData(products);
-            // }
+            //const { data, status } = await productServices.getProductList();
+            //if (status === ResponseStatusEnum.OK) {
+            const products = await normalizeRows(mockData);
+            setProductList(products);
+            setFilteredData(products);
+            //}
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         } finally {
@@ -131,6 +337,7 @@ export const ValidationEnvironmental = () => {
 
     //
     const normalizeRows = async (data) => {
+        console.log('data: ', data);
         try {
             const environmentalCategories = await getEnvironmentalCategories();
 
@@ -141,6 +348,7 @@ export const ValidationEnvironmental = () => {
                 brand: row?.marca_comercial,
                 unit: row?.unidad_medida,
                 category: row?.categoria_producto,
+                price: row?.precio,
                 state: getProductState(row?.fecha_aprobado, row?.aprobados),
                 ...buildEnvironmentalData(row, environmentalCategories),
                 ...extractObservations(row?.aprobados),
@@ -155,7 +363,7 @@ export const ValidationEnvironmental = () => {
     // Debounce para evitar actualizaciones continuas
     const debouncedHandleChange = debounce((field, params, newValue) => {
         // Actualiza la celda en el DataGrid
-        params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
+        params.api.updateRows([{id: params.row.id, [field]: newValue}]);
 
         // Actualiza el estado de productos editados
         setEditedProducts((prevState) => {
@@ -164,7 +372,7 @@ export const ValidationEnvironmental = () => {
             if (index > -1) {
                 prevState[index][field] = newValue;
             } else {
-                prevState.push({ ...params.row, [field]: newValue });
+                prevState.push({...params.row, [field]: newValue});
             }
 
             return [...prevState];
@@ -185,10 +393,6 @@ export const ValidationEnvironmental = () => {
         setEnvironmentalCategoriesColumns(columns);
     }
 
-
-
-
-
     //
     const getProductState = (approvalDate, approvalList) => {
         //Si todos están aprobados
@@ -203,25 +407,9 @@ export const ValidationEnvironmental = () => {
             return GeneralStatusProductEnum.REFUSED;
         }
 
-        if(!approvalDate) {
+        if (!approvalDate) {
             return GeneralStatusProductEnum.PENDING_APPROVAL;
         }
-    };
-
-    //Extraer precios por municipio
-    const extractMunicipalityPrices = (row, municipalities) => {
-        return Object.fromEntries(
-            municipalities.map((municipality) => {
-                const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
-                return [`price_${municipality.id}`, priceData?.valor_unitario ?? '0.00'];
-            })
-        );
-    }
-
-    //Obtener las claves ambientales
-    const getEnvironmentalCategoryKeys = async () => {
-        const categories = await getEnvironmentalCategories();
-        return categories.map((category) => category.codigo);
     };
 
     //Construir objeto ambiental dinámico
@@ -234,10 +422,6 @@ export const ValidationEnvironmental = () => {
     //Extraer observaciones
     const extractObservations = (rows) => {
         const roleMap = {
-            [RolesEnum.TECHNICAL]: {
-                observationKey: "observations_technical",
-                statusKey: "status_technical"
-            },
             [RolesEnum.ENVIRONMENTAL]: {
                 observationKey: "observations_environmental",
                 statusKey: "status_environmental"
@@ -247,16 +431,16 @@ export const ValidationEnvironmental = () => {
                 statusKey: "status_territorial"
             }
         };
-        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
+        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, {id, label}) => {
             acc[id] = label;
             return acc;
         }, {});
-        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
+        return rows.reduce((acc, {rol, estado, comentario, funcionario, fecha}) => {
             const role = roleMap[rol];
             if (!role) return acc;
 
             acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
-            acc[role.observationKey] = { comentario, funcionario, fecha };
+            acc[role.observationKey] = {comentario, funcionario, fecha};
 
             return acc;
         }, {});
@@ -267,8 +451,8 @@ export const ValidationEnvironmental = () => {
         if (!row || !row.cantidad_ambiental) {
             return {customValue: "", selectedCategory: ""};
         }
-        const { cant, ambiental_key } = row.cantidad_ambiental;
-        return { customValue: cant ?? "", selectedCategory: ambiental_key ?? "" };
+        const {cant, ambiental_key} = row.cantidad_ambiental;
+        return {customValue: cant ?? "", selectedCategory: ambiental_key ?? ""};
     };
 
     //
@@ -287,16 +471,6 @@ export const ValidationEnvironmental = () => {
         return newRow;
     };
 
-    //
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, false);
-
-    const statusProduct = getStatusProduct();
-
-    const handleDeleteClick = (id) => {
-        setSelectedRowId(id);
-        setShowModal(true);
-    };
-
     //Manejar selección de filas
     const handleSelectionChange = (newSelection) => {
         setSelectedIds(newSelection);
@@ -310,34 +484,11 @@ export const ValidationEnvironmental = () => {
         setOpenModal(true);
     };
 
-    // Cerrar modal confirmación
-    const handleCloseModalConfirm = () => {
-        setShowModal(false);
-        selectedRowId(null);
-    };
-
     // Cerrar modal aprobacion
     const handleCloseModalApproved = () => {
         setOpenModal(false);
         setComment('');
         setAction('approve');
-    };
-
-    const handleConfirmDelete = async () => {
-        try {
-            const { status } = await productServices.productRemove(selectedRowId);
-            if (status === ResponseStatusEnum.NO_CONTENT) {
-                showAlert("Bien hecho!", "Producto eliminado exitosamente!");
-                await getProductList();
-                handleCloseModalConfirm();
-            }
-            if (status === ResponseStatusEnum.FORBIDDEN) {
-                showInfo("Atención!", "No puedes borrar este producto ya aprobado!");
-                handleCloseModalConfirm();
-            }
-        } catch (error) {
-            console.error("Error al eliminar el producto:", error);
-        }
     };
 
     //
@@ -350,7 +501,7 @@ export const ValidationEnvironmental = () => {
     //
     const sendBatchApproval = async (payload) => {
         try {
-            const { status } = await productServices.productApprove(payload);
+            const {status} = await productServices.productApprove(payload);
             return status === ResponseStatusEnum.OK;
         } catch (error) {
             console.error("Error sending batch approval:", error);
@@ -367,7 +518,6 @@ export const ValidationEnvironmental = () => {
 
             if (!success) {
                 console.warn(`Failed to approve batch starting at index ${i}`);
-                // Optional: break or continue based on your retry policy
             }
         }
     };
@@ -390,19 +540,6 @@ export const ValidationEnvironmental = () => {
         }
     };
 
-    const actionsColumns = getActionsColumns(userAuth.rol_id, handleDeleteClick, handleApproveByAudit);
-
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
-
-    const columns = [
-        ...baseColumns,
-        ...dynamicMunicipalityColumns,
-        ...statusProduct,
-        ...( [RolesEnum.SUPPLIER].includes(userAuth.rol_id) ? actionsColumns : []),
-        ...( allowedRoles.includes(userAuth.rol_id) ? observationsColumns : [] ),
-        ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? environmentalCategoriesColumns : [] ),
-    ];
-
     //
     const handleSaveProducts = async () => {
         try {
@@ -413,9 +550,6 @@ export const ValidationEnvironmental = () => {
             }
 
             const products = await productsBeforeSend(editedProducts);
-            const batches = chunkArray(products, 500);
-
-            await sendBatchesInParallel(batches);
 
             showAlert('Bien hecho!', 'Productos actualizados con éxito.');
             setEditedProducts([]);
@@ -424,6 +558,19 @@ export const ValidationEnvironmental = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    //
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, parseInt(product[key])])
+        );
     };
 
     //
@@ -444,46 +591,6 @@ export const ValidationEnvironmental = () => {
             observations_supervision: product.observations_supervision,
             cantidad_ambiental: {cant: parseInt(product.customValue), ambiental_key: product.selectedCategory},
         }));
-    };
-
-    //
-    const buildData = (product, keys) => {
-        return Object.fromEntries(
-            keys.map((key) => [key, parseInt(product[key])])
-        );
-    };
-
-    //Enviar lotes en paralelo con control de concurrencia
-    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
-        const errors = []; // Para almacenar los errores
-        for (let i = 0; i < batches.length; i += maxConcurrent) {
-            const batchChunk = batches.slice(i, i + maxConcurrent);
-
-            const results = await Promise.allSettled(
-                batchChunk.map(batch => sendBatchToService(batch))
-            );
-
-            // Filtrar los errores
-            results.forEach((result, index) => {
-                if (result.status === 'rejected') {
-                    errors.push(result.reason); // Guardar el error
-                    //console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
-                    handleError('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`)
-                }
-            });
-        }
-
-        if (errors.length > 0) {
-            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
-        }
-    };
-
-    const sendBatchToService = async (batch) => {
-        const {data, status} = await productServices.edit(batch, selectedSupplier.value);
-        if (status !== ResponseStatusEnum.OK) {
-            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
-        }
-        return data;
     };
 
     const showInfo = (title, message) => AlertComponent.info(title, message);
@@ -512,194 +619,177 @@ export const ValidationEnvironmental = () => {
     };
 
     useEffect(() => {
-        if (allowedRoles.includes(userAuth.rol_id)) {
-            getConvocations();
-        }
-
-        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-            getProductList();
-            loadData();
-        }
-    }, [userAuth.rol_id]);
-
-    useEffect(() => {
-        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
-            getProductList();
-            loadData();
-            getEnvironmentalColumns();
-        }
-    }, [selectedSupplier, userAuth.rol_id]);
+        getConvocations();
+        getEnvironmentalColumns();
+    }, []);
 
     return (
-            <>
-                <div className="main-container">
-                    <HeaderImage
-                        imageHeader={imgPeople}
-                        titleHeader="¡Listado de productos!"
-                    />
+        <>
+            <div className="main-container">
+                <HeaderImage
+                    imageHeader={imgPeople}
+                    titleHeader="¡Listado de productos!"
+                />
 
-                    <div className="container mt-lg-3">
-                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-                                <input
-                                    type="text"
-                                    placeholder="Buscar..."
-                                    value={searchQuery}
-                                    onChange={handleSearchQueryChange}
-                                    className="input-responsive"
-                                />
+                <div className="container mt-lg-3">
+                    <Row className="gy-2 align-items-center mt-3 mb-3">
+                        <Col xs={12} md={4}>
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={handleSearchQueryChange}
+                                className="form-control"
+                            />
+                        </Col>
 
-                                {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
-                                    <>
-                                        <Button onClick={() => navigate(`/admin/create-products`)}
-                                                className="button-order-responsive">
-                                            <FaPlus/> Agregar productos
-                                        </Button>
+                        {/* Select Jornada */}
+                        <Col xs={12} md={4}>
+                            <Select
+                                value={selectedConvocation ?? null}
+                                options={convocations?.map(opt => ({ value: opt.id, label: opt.nombre }))}
+                                placeholder="Selecciona una Jornada"
+                                onChange={handleSelectedConvocation}
+                                isClearable
+                                classNamePrefix="custom-select"
+                                className="custom-select w-100"
+                                styles={{
+                                    placeholder: (base) => ({ ...base, color: '#6c757d' }),
+                                    singleValue: (base) => ({ ...base, color: '#212529' }),
+                                }}
+                                noOptionsMessage={() => "Sin opciones"}
+                            />
+                        </Col>
 
-                                        <Button variant="secondary"
-                                                onClick={() => navigate(`/admin/edit-product`)}
-                                                className="button-order-responsive">
-                                            <FaEdit/> Editar productos
-                                        </Button>
-                                    </>
-                                )}
+                        {/* Select Plan */}
+                        <Col xs={12} md={4}>
+                            <Select
+                                value={selectedPlan ?? null}
+                                options={planRaw.map(opt => ({ value: opt.id, label: opt.plan_nombre }))}
+                                placeholder="Selecciona un Plan"
+                                onChange={handleSelectedPlan}
+                                isClearable
+                                isDisabled={!selectedConvocation || loading}
+                                isLoading={loading}
+                                classNamePrefix="custom-select"
+                                className="custom-select w-100"
+                                noOptionsMessage={() => selectedConvocation ? "Sin planes" : "Selecciona una jornada"}
+                            />
+                        </Col>
 
-                                {allowedRoles.includes(userAuth.rol_id) && (
-                                    <Col xs={12} md={6} className="d-flex align-items-center">
-                                        <Select
-                                            value={selectedSupplier}
-                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                            options={suppliers?.map((opt) => ({value: opt.id, label: opt.nombre}))}
-                                            placeholder="Selecciona una compañía"
-                                            classNamePrefix="custom-select"
-                                            className="custom-select w-100"
-                                        />
-                                    </Col>
-                                )}
-                            </div>
+                    </Row>
+
+
+                    {loading && (
+                        <div className="overlay">
+                            <div className="loader">Cargando...</div>
                         </div>
+                    )}
 
-                        {loading && (
-                            <div className="overlay">
-                                <div className="loader">Cargando...</div>
-                            </div>
-                        )}
-
-                        <div style={{height: 600, width: "100%"}}>
-                            <DataGrid
-                                loading={loadingTable}
-                                columns={columns}
-                                rows={filteredData}
-                                checkboxSelection
-                                onRowSelectionModelChange={handleSelectionChange}
-                                processRowUpdate={handleRowUpdate}
-                                editMode="row"
-                                pagination
-                                page={page}
-                                pageSize={pageSize}
-                                onPageChange={(newPage) => setPage(newPage)}
-                                onPageSizeChange={(newPageSize) => {
-                                    setPageSize(newPageSize);
-                                    setPage(0);
-                                }}
-                                rowsPerPageOptions={[10, 50, 100]}
-                                componentsProps={{
-                                    columnHeader: {
-                                        style: {
-                                            textAlign: "left",
-                                            fontWeight: "bold",
-                                            fontSize: "10px",
-                                            wordWrap: "break-word",
-                                        },
-                                    },
-                                }}
-                                sx={{
-                                    "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#40A581",
-                                        color: "white",
-                                        fontSize: "12px",
-                                    },
-                                    "& .MuiDataGrid-columnHeader": {
-                                        textAlign: "center",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    },
-                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#40A581 !important",
-                                        color: "white !important",
-                                    },
-                                    "& .MuiDataGrid-cell": {
-                                        fontSize: "12px",
+                    <div style={{height: 600, width: "100%"}}>
+                        <DataGrid
+                            loading={loadingTable}
+                            columns={columns}
+                            rows={filteredData}
+                            checkboxSelection
+                            onRowSelectionModelChange={handleSelectionChange}
+                            processRowUpdate={handleRowUpdate}
+                            editMode="row"
+                            pagination
+                            page={page}
+                            pageSize={pageSize}
+                            onPageChange={(newPage) => setPage(newPage)}
+                            onPageSizeChange={(newPageSize) => {
+                                setPageSize(newPageSize);
+                                setPage(0);
+                            }}
+                            rowsPerPageOptions={[10, 50, 100]}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
                                         textAlign: "left",
-                                        justifyContent: "left",
-                                        alignItems: "flex-start",
-                                        display: "flex",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
                                     },
-                                    "& .MuiSelect-root": {
-                                        fontSize: "12px",
-                                        fontFamily: "Arial, sans-serif",
-                                        width: "100%",
-                                    },
-                                    "& .MuiDataGrid-row:hover": {
-                                        backgroundColor: "#E8F5E9",
-                                    },
-                                }}
-                            />
+                                },
+                            }}
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "12px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
+                                    display: "flex",
+                                },
+                                "& .MuiSelect-root": {
+                                    fontSize: "12px",
+                                    fontFamily: "Arial, sans-serif",
+                                    width: "100%",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
 
-                            {/* Modal de confirmación */}
-                            <ConfirmationModal
-                                show={showModal}
-                                title="Confirmación de Eliminación"
-                                message="¿Estás seguro de que deseas eliminar este elemento?"
-                                onConfirm={handleConfirmDelete}
-                                onClose={handleCloseModalConfirm}
-                            />
-
-                            {/* Modal de aprobación/denegación */}
-                            <ApprovedDeniedModal
-                                open={openModal}
-                                onClose={handleCloseModalApproved}
-                                action={action}
-                                setAction={setAction}
-                                comment={comment}
-                                setComment={setComment}
-                                onSubmit={handleApproveDenySubmit}
-                            />
-                        </div>
-
-                        {/* Botón Guardar */}
-                        <div className="d-flex justify-content-end gap-2 mt-3">
-                            {allowedRoles.includes(userAuth.rol_id) && (
-                                <>
-                                    <Button
-                                        variant="warning"
-                                        size="md"
-                                        color="primary"
-                                        onClick={handleOpenModal}
-                                        disabled={loading}
-                                    >
-                                        <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
-                                    </Button>
-                                    </>
-                            )}
-                            {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
-                                <>
-                                    <Button
-                                        variant="success"
-                                        size="md"
-                                        onClick={handleSaveProducts}
-                                        disabled={loading}
-                                    >
-                                        <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
-                                    </Button>
-                                </>
-                            )}
-                        </div>
-
+                        {/* Modal de aprobación/denegación */}
+                        <ApprovedDeniedModal
+                            open={openModal}
+                            onClose={handleCloseModalApproved}
+                            action={action}
+                            setAction={setAction}
+                            comment={comment}
+                            setComment={setComment}
+                            onSubmit={handleApproveDenySubmit}
+                        />
                     </div>
 
+                    {/* Botón Guardar */}
+                    <div className="d-flex justify-content-end gap-2 mt-3">
+                        {allowedRoles.includes(userAuth.rol_id) && (
+                            <>
+                                <Button
+                                    variant="warning"
+                                    size="md"
+                                    color="primary"
+                                    onClick={handleOpenModal}
+                                    disabled={loading}
+                                >
+                                    <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
+                                </Button>
+                            </>
+                        )}
+                        {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
+                            <>
+                                <Button
+                                    variant="success"
+                                    size="md"
+                                    onClick={handleSaveProducts}
+                                    disabled={loading}
+                                >
+                                    <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
+                                </Button>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </>
-        );
-    };
+            </div>
+        </>
+    );
+};

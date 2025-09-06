@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  *
  *
  */
-class WorksDayServices {
+class ConvocationServices {
     /**
      * Crea una nueva instancia del servicio de Jornadas.
      *  @type {string}
@@ -43,12 +43,12 @@ class WorksDayServices {
      *
      * GET `/jornadas/planes/?jornada_id={id}&activo=true`
      *
-     * @param {number|string} workDayId - ID de la jornada.
+     * @param {number|string} convocationId - ID de la jornada.
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      *
      */
-    getPlansByConvocation(workDayId) {
-        const url = this.buildUrl(`planes/?jornada_id=${workDayId}&activo=true`);
+    getPlansByConvocation(convocationId) {
+        const url = this.buildUrl(`planes/?jornada_id=${convocationId}&activo=true`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -112,6 +112,11 @@ class WorksDayServices {
             body: JSON.stringify(products),
         });
     }
+
+    getSupplierByConvocation(convocationId) {
+        const url = this.buildUrl(`proveedores-por-jornada/?jornada_id=${convocationId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 }
 
-export const worksDayServices = new WorksDayServices();
+export const convocationServices = new ConvocationServices();

@@ -73,8 +73,6 @@ const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
 const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
 const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
 
-
-
 export const Deliveries = () => {
 
     const { userAuth } = useOutletContext();
@@ -137,7 +135,6 @@ export const Deliveries = () => {
             setLoading(true);
             const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
             if(status === ResponseStatusEnum.OK) {
-                console.log('getListDeliveriesToUser: ', data);
                 const rows = await normalizeDeliveryRows(data);
                 setListDeliveriesToUser(rows);
             }
@@ -147,6 +144,9 @@ export const Deliveries = () => {
             setLoading(false);
         }
     }
+
+    //
+    const pick = (arr, key) => arr.find(x => String(x?.indice || '').toLowerCase() === key)?.ruta || null;
 
     /**
      * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
@@ -158,16 +158,18 @@ export const Deliveries = () => {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
             console.log('searchDeliveriesPDF: ', data);
             if(status === ResponseStatusEnum.OK) {
+                const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
+
                 return {
-                    consolidatedFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[0]?.ruta,
-                    feFileUrl: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[1]?.ruta,
-                    evidence1Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[2]?.ruta,
-                    evidence2Url: Array.isArray(data?.archivos) && data.archivos.length === 0 ? parseInt(0) : data?.archivos[3]?.ruta,
-                    approvedTechnical: data?.aprobado_tecnica,
-                    approvedTerritorial: data?.aprobado_territorial,
-                    fe_number: data?.numero_fe,
-                    statusDelivery: data?.estado
-                }
+                    consolidatedFileUrl: pick(archivos, 'pdf'),
+                    feFileUrl:           pick(archivos, 'fe'),
+                    evidence1Url:        pick(archivos, 'evidence_1'),
+                    evidence2Url:        pick(archivos, 'evidence_2'),
+                    approvedTechnical:   data?.aprobado_tecnica ?? null,
+                    approvedTerritorial: data?.aprobado_territorial ?? null,
+                    fe_number:           data?.numero_fe ?? null,
+                    statusDelivery:      data?.estado ?? null,
+                };
             }
         } catch (error) {
             console.error("Error fetching deliveries:", error);
@@ -488,7 +490,7 @@ export const Deliveries = () => {
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
-        { field: "supplier", headerName: "PROVEEDOR", width: 250 },
+        { field: "supplier", headerName: "PROVEEDOR", width: 300 },
         {
             field: "generatePdf",
             headerName: "GENERAR ACTA DE ENTREGA",
@@ -508,7 +510,7 @@ export const Deliveries = () => {
         {
             field: "fe_number",
             headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
-            width: 300,
+            width: 350,
             renderCell: renderFeCell,
             sortable: false,
             filterable: false,
@@ -516,7 +518,7 @@ export const Deliveries = () => {
         {
             field: "evidence_photo",
             headerName: "EVIDENCIA FOTOGRAFICA",
-            width: 300,
+            width: 480,
             renderCell: renderPhotoCell,
             sortable: false,
             filterable: false,
@@ -575,13 +577,21 @@ export const Deliveries = () => {
 
         try {
             setLoading(true);
-            const {blob, status} = await filesServices.downloadFile(pdfUrl);
+            const res = await filesServices.downloadFile(pdfUrl);
 
-            if (status === ResponseStatusEnum.OK && blob) {
-                const file = new Blob([blob], {type: "application/pdf"});
-                const fileURL = URL.createObjectURL(file);
-                window.open(fileURL, '_blank');
+            const { blob, status, type } = res || {};
+
+            if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
+                const mime = (type || blob.type || '').toLowerCase();
+
+                // Solo PDF o imágenes
+                if (mime.includes('pdf') || mime.startsWith('image/')) {
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+                }
             }
+
             if (status === ResponseStatusEnum.NOT_FOUND) {
                 AlertComponent.error('Error', 'No se puede descargar el archivo.');
             }

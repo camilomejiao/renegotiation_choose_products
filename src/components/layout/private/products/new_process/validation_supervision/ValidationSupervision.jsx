@@ -1,10 +1,9 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, Col } from "react-bootstrap";
-import { FaEdit, FaPlus, FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
+import {Button, Col, Row} from "react-bootstrap";
+import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
-import debounce from "lodash/debounce";
 
 // Img
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
@@ -16,7 +15,6 @@ import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedMod
 
 // Services
 import { productServices } from "../../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
@@ -28,61 +26,159 @@ import {
 } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
-import {chunkArray, extractMunicipios, handleError, showAlert} from "../../../../../../helpers/utils/utils";
+import { showAlert } from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
-    getCategoryOptions,
-    getDynamicColumnsBySupplier,
-    getUnitOptions,
     getStatusProduct,
-    getEnvironmentalCategoriesColumns,
-    getObservationsColumns,
-    getActionsColumns, getEnvironmentalCategories,
+    getObservationsColumns
 } from "../../../../../../helpers/utils/ValidateProductColumns";
+import {convocationServices} from "../../../../../../helpers/services/ConvocationServices";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
+
+//Usuarios permitidos
+const allowedRoles = [
+    RolesEnum.ADMIN,
+    RolesEnum.SUPERVISION,
+];
+
+const mockData = [
+    {
+        id: 1,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
+    {
+        id: 2,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
+    {
+        id: 3,
+        nombre: "ABONO ORGANICO",
+        especificacion_tecnicas: "NUTRECAN",
+        marca_comercial: "ABONO ORGANICO",
+        unidad_medida: "Unidad",
+        categoria_producto: "Semovientes",
+        precio_min: 20000,
+        precio_max: 30000,
+        precio: 20000,
+        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
+        aprobados: [
+            {
+                rol: 4,
+                estado: 1,
+                comentario: "",
+                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
+                fecha: "2025-09-03"
+            },
+            {
+                rol: 6,
+                estado: 1,
+                comentario: "",
+                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
+                fecha: "2025-06-20"
+            }
+        ]
+    },
+
+];
 
 export const ValidationSupervision = () => {
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();
 
+    const [convocations, setConvocations] = useState([]);
+    const [selectedConvocation, setSelectedConvocation] = useState(null);
+
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
+
+    const [formFields, setFormFields] = useState({typeCall: "", typeSupplier: ""});
+
     const [productList, setProductList] = useState([]);
-    const [editedProducts, setEditedProducts] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
     const [showModal, setShowModal] = useState(false);
     const [selectedRowId, setSelectedRowId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [unitOptions, setUnitOptions] = useState([]);
-    const [categoryOptions, setCategoryOptions] = useState([]);
-    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
-    const [environmentalCategoriesColumns, setEnvironmentalCategoriesColumns] = useState([]);
 
     const [selectedIds, setSelectedIds] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [comment, setComment] = useState('');
     const [action, setAction] = useState('approve');
 
-    //Usuarios permitidos
-    const allowedRoles = [
-        RolesEnum.ADMIN,
-        RolesEnum.SUPERVISION,
-        RolesEnum.ENVIRONMENTAL
+
+    //
+    const baseColumns = getBaseColumns();
+
+    const statusProduct = getStatusProduct();
+
+    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+
+    const columns = [
+        ...baseColumns,
+        ...statusProduct,
+        ...observationsColumns,
     ];
 
-    //Obtener la lista de proveedores
-    const getSuppliers = async () => {
+    //Obtener la lista de jornadas
+    const getConvocations = async () => {
         setLoading(true);
         try {
-            const { data, status } = await supplierServices.getSuppliersAll();
+            const {data, status} = await convocationServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
-                setSuppliers(data);
+                setConvocations(data.data.jornadas);
             }
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
@@ -91,27 +187,54 @@ export const ValidationSupervision = () => {
         }
     }
 
-    //
-    const getSupplierId = () => {
-        let supplierId = null;
-        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
-            supplierId = selectedSupplier.value;
+    //Obtener la lista de proveedores
+    const getSuppliers = async (convocationId) => {
+        setLoading(true);
+        try {
+            const { data, status } = await convocationServices.getSupplierByConvocation(2);
+            if (status === ResponseStatusEnum.OK) {
+                setSuppliers(data.data.proveedores);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de proveedores:", error);
+        } finally {
+            setLoading(false);
         }
-
-        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-            supplierId = supplierServices.getSupplierId();
-        }
-
-        return supplierId;
     }
+
+    const handleSelectedConvocation = async (option) => {
+        setSelectedConvocation(option);
+        setSelectedSupplier(null);
+        setFormFields(prev => ({
+            ...prev,
+            typeCall: option?.value ?? "",
+            typeSupplier: ""
+        }));
+        setSuppliers([]);
+        if (option?.value) {
+            await getSuppliers(option.value);
+        }
+    };
+
+    const handleSelectedSupplier = async (option) => {
+        setSelectedSupplier(option);
+        setFormFields(prev => ({
+            ...prev,
+            typeSupplier: option?.value ?? ""
+        }));
+        if (option?.value) {
+            await getProductList(option.value);
+        }
+    };
 
     //Obtener la lista de productos
     const getProductList = async () => {
         setLoadingTable(true);
         try {
-            const { data, status } = await productServices.getProductList(getSupplierId());
+            console.log(formFields);
+            const { data, status } = await productServices.getProductList();
             if (status === ResponseStatusEnum.OK) {
-                const products =  await normalizeRows(getSupplierId(), data);
+                const products =  await normalizeRows(data);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -122,62 +245,9 @@ export const ValidationSupervision = () => {
         }
     };
 
-    // Debounce para evitar actualizaciones continuas
-    const debouncedHandleChange = debounce((field, params, newValue) => {
-        // Actualiza la celda en el DataGrid
-        params.api.updateRows([{ id: params.row.id, [field]: newValue }]);
-
-        // Actualiza el estado de productos editados
-        setEditedProducts((prevState) => {
-            const index = prevState.findIndex((product) => product.id === params.row.id);
-
-            if (index > -1) {
-                prevState[index][field] = newValue;
-            } else {
-                prevState.push({ ...params.row, [field]: newValue });
-            }
-
-            return [...prevState];
-        });
-    }, 300);
-
-    // Método principal para el cambio de selección
-    const handleSelectChange = (field) => (params, newValue) => {
-        debouncedHandleChange(field, params, newValue);
-    };
-
-    const handleCustomChange = (params, fieldKey, newValue) => {
-        debouncedHandleChange(fieldKey, params, newValue);
-    };
-
-    const getEnvironmentalColumns = async () => {
-        const columns = await getEnvironmentalCategoriesColumns(handleSelectChange, handleCustomChange);
-        setEnvironmentalCategoriesColumns(columns);
-    }
-
     //
-    const loadData = async () => {
+    const normalizeRows = async (data) => {
         try {
-            const [unitData, categoryData, { newDynamicColumns } ] = await Promise.all([
-                getUnitOptions(),
-                getCategoryOptions(),
-                getDynamicColumnsBySupplier(getSupplierId(), true),
-            ]);
-
-            setUnitOptions(unitData);
-            setCategoryOptions(categoryData);
-            setDynamicMunicipalityColumns(newDynamicColumns);
-        } catch (error) {
-            handleError(error, "Error cargando los datos iniciales.");
-        }
-    };
-
-    //
-    const normalizeRows = async (supplierId, data) => {
-        try {
-            const { municipalities } = await getDynamicColumnsBySupplier(supplierId, true);
-            const environmentalCategories = await getEnvironmentalCategories();
-
             return data.map((row) => ({
                 id: row?.id,
                 name: row?.nombre,
@@ -186,10 +256,7 @@ export const ValidationSupervision = () => {
                 unit: row?.unidad_medida,
                 category: row?.categoria_producto,
                 state: getProductState(row?.fecha_aprobado, row?.aprobados),
-                ...extractMunicipalityPrices(row, municipalities),
-                ...buildEnvironmentalData(row, environmentalCategories),
                 ...extractObservations(row?.aprobados),
-                ...extractCountEnvironmental(row)
             }));
         } catch (error) {
             console.error('Error al normalizar filas:', error);
@@ -216,36 +283,9 @@ export const ValidationSupervision = () => {
         }
     };
 
-    //Extraer precios por municipio
-    const extractMunicipalityPrices = (row, municipalities) => {
-        return Object.fromEntries(
-            municipalities.map((municipality) => {
-                const priceData = row.valor_municipio.find(v => v.ubicacion_proveedor === municipality.id);
-                return [`price_${municipality.id}`, priceData?.valor_unitario ?? '0.00'];
-            })
-        );
-    }
-
-    //Obtener las claves ambientales
-    const getEnvironmentalCategoryKeys = async () => {
-        const categories = await getEnvironmentalCategories();
-        return categories.map((category) => category.codigo);
-    };
-
-    //Construir objeto ambiental dinámico
-    const buildEnvironmentalData = (row, categories) => {
-        return Object.fromEntries(
-            categories.map(({codigo}) => [codigo, String(row?.ambiental?.[codigo] ?? 0)])
-        );
-    }
-
     //Extraer observaciones
     const extractObservations = (rows) => {
         const roleMap = {
-            [RolesEnum.TECHNICAL]: {
-                observationKey: "observations_technical",
-                statusKey: "status_technical"
-            },
             [RolesEnum.ENVIRONMENTAL]: {
                 observationKey: "observations_environmental",
                 statusKey: "status_environmental"
@@ -270,40 +310,6 @@ export const ValidationSupervision = () => {
         }, {});
     };
 
-    //Limit enviromental
-    const extractCountEnvironmental = (row) => {
-        if (!row || !row.cantidad_ambiental) {
-            return {customValue: "", selectedCategory: ""};
-        }
-        const { cant, ambiental_key } = row.cantidad_ambiental;
-        return { customValue: cant ?? "", selectedCategory: ambiental_key ?? "" };
-    };
-
-    //
-    const handleRowUpdate = (newRow, oldRow) => {
-        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-            setEditedProducts(prevState => {
-                const index = prevState.findIndex(product => product.id === newRow.id);
-                if (index > -1) {
-                    prevState[index] = newRow;
-                } else {
-                    prevState.push(newRow);
-                }
-                return [...prevState];
-            });
-        }
-        return newRow;
-    };
-
-    //
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, false);
-
-    const statusProduct = getStatusProduct();
-
-    const handleDeleteClick = (id) => {
-        setSelectedRowId(id);
-        setShowModal(true);
-    };
 
     //Manejar selección de filas
     const handleSelectionChange = (newSelection) => {
@@ -318,34 +324,11 @@ export const ValidationSupervision = () => {
         setOpenModal(true);
     };
 
-    // Cerrar modal confirmación
-    const handleCloseModalConfirm = () => {
-        setShowModal(false);
-        selectedRowId(null);
-    };
-
     // Cerrar modal aprobacion
     const handleCloseModalApproved = () => {
         setOpenModal(false);
         setComment('');
         setAction('approve');
-    };
-
-    const handleConfirmDelete = async () => {
-        try {
-            const { status } = await productServices.productRemove(selectedRowId);
-            if (status === ResponseStatusEnum.NO_CONTENT) {
-                showAlert("Bien hecho!", "Producto eliminado exitosamente!");
-                await getProductList();
-                handleCloseModalConfirm();
-            }
-            if (status === ResponseStatusEnum.FORBIDDEN) {
-                showInfo("Atención!", "No puedes borrar este producto ya aprobado!");
-                handleCloseModalConfirm();
-            }
-        } catch (error) {
-            console.error("Error al eliminar el producto:", error);
-        }
     };
 
     //
@@ -375,7 +358,6 @@ export const ValidationSupervision = () => {
 
             if (!success) {
                 console.warn(`Failed to approve batch starting at index ${i}`);
-                // Optional: break or continue based on your retry policy
             }
         }
     };
@@ -398,105 +380,7 @@ export const ValidationSupervision = () => {
         }
     };
 
-    const actionsColumns = getActionsColumns(userAuth.rol_id, handleDeleteClick, handleApproveByAudit);
 
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
-
-    const columns = [
-        ...baseColumns,
-        ...dynamicMunicipalityColumns,
-        ...statusProduct,
-        ...( [RolesEnum.SUPPLIER].includes(userAuth.rol_id) ? actionsColumns : []),
-        ...( allowedRoles.includes(userAuth.rol_id) ? observationsColumns : [] ),
-        ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? environmentalCategoriesColumns : [] ),
-    ];
-
-    //
-    const handleSaveProducts = async () => {
-        try {
-            setLoading(true);
-            if (editedProducts.length === 0) {
-                AlertComponent.warning('', 'No hay productos modificados para guardar.');
-                return;
-            }
-
-            const products = await productsBeforeSend(editedProducts);
-            const batches = chunkArray(products, 500);
-
-            await sendBatchesInParallel(batches);
-
-            showAlert('Bien hecho!', 'Productos actualizados con éxito.');
-            setEditedProducts([]);
-        } catch (error) {
-            handleError('Error', 'Error al guardar los productos.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    //
-    const productsBeforeSend = async (inputData) => {
-        //Obtener el id del proveedor
-        const supplierId = parseInt(getSupplierId());
-        //Obtener claves ambientales
-        const environmentalKeys = await getEnvironmentalCategoryKeys();
-
-        return inputData.map((product) => ({
-            id: product.id,
-            proveedor_id: supplierId,
-            nombre: product.name,
-            especificacion_tecnicas: product.description,
-            marca_comercial: product.brand,
-            unidad_medida: product.unit,
-            categoria_producto: product.category,
-            valor_municipio: extractMunicipios(product),
-            ambiental: buildData(product, environmentalKeys),
-            observations_technical: product.observations_technical,
-            observations_environmental: product.observations_environmental,
-            observations_territorial: product.observations_territorial,
-            cantidad_ambiental: {cant: parseInt(product.customValue), ambiental_key: product.selectedCategory},
-        }));
-    };
-
-    //
-    const buildData = (product, keys) => {
-        return Object.fromEntries(
-            keys.map((key) => [key, parseInt(product[key])])
-        );
-    };
-
-    //Enviar lotes en paralelo con control de concurrencia
-    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
-        const errors = []; // Para almacenar los errores
-        for (let i = 0; i < batches.length; i += maxConcurrent) {
-            const batchChunk = batches.slice(i, i + maxConcurrent);
-
-            const results = await Promise.allSettled(
-                batchChunk.map(batch => sendBatchToService(batch))
-            );
-
-            // Filtrar los errores
-            results.forEach((result, index) => {
-                if (result.status === 'rejected') {
-                    errors.push(result.reason); // Guardar el error
-                    //console.error(`Error al enviar el lote ${i + index + 1}:`, result.reason.message);
-                    handleError('Error', `Error al enviar el lote ${i + index + 1}: ${result.reason.message}`)
-                }
-            });
-        }
-
-        if (errors.length > 0) {
-            throw new Error('Uno o más lotes no se pudieron enviar correctamente.');
-        }
-    };
-
-    const sendBatchToService = async (batch) => {
-        const {data, status} = await productServices.edit(batch, selectedSupplier.value);
-        if (status !== ResponseStatusEnum.OK) {
-            throw new Error(`Error en el estado de la respuesta. Status: ${status}`);
-        }
-        return data;
-    };
 
     const showInfo = (title, message) => AlertComponent.info(title, message);
 
@@ -524,23 +408,8 @@ export const ValidationSupervision = () => {
     };
 
     useEffect(() => {
-        if (allowedRoles.includes(userAuth.rol_id)) {
-            getSuppliers();
-        }
-
-        if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-            getProductList();
-            loadData();
-        }
-    }, [userAuth.rol_id]);
-
-    useEffect(() => {
-        if (selectedSupplier && (allowedRoles.includes(userAuth.rol_id))) {
-            getProductList();
-            loadData();
-            getEnvironmentalColumns();
-        }
-    }, [selectedSupplier, userAuth.rol_id]);
+        getConvocations();
+    }, []);
 
     return (
             <>
@@ -551,45 +420,51 @@ export const ValidationSupervision = () => {
                     />
 
                     <div className="container mt-lg-3">
-                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                        <Row className="gy-2 align-items-center mt-3 mb-3">
+                            <Col xs={12} md={4}>
                                 <input
                                     type="text"
                                     placeholder="Buscar..."
                                     value={searchQuery}
                                     onChange={handleSearchQueryChange}
-                                    className="input-responsive"
+                                    className="form-control"
                                 />
+                            </Col>
 
-                                {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
-                                    <>
-                                        <Button onClick={() => navigate(`/admin/create-products`)}
-                                                className="button-order-responsive">
-                                            <FaPlus/> Agregar productos
-                                        </Button>
+                            {/* Select Jornada */}
+                            <Col xs={12} md={4}>
+                                <Select
+                                    value={selectedConvocation ?? null}                          // 👈 null cuando no hay selección
+                                    options={convocations?.map(opt => ({ value: opt.id, label: opt.nombre }))}
+                                    placeholder="Selecciona una Jornada"
+                                    onChange={handleSelectedConvocation}                         // recibe option o null
+                                    isClearable
+                                    classNamePrefix="custom-select"
+                                    className="custom-select w-100"
+                                    styles={{
+                                        placeholder: (base) => ({ ...base, color: '#6c757d' }),   // 👈 visible siempre
+                                        singleValue: (base) => ({ ...base, color: '#212529' }),
+                                    }}
+                                    noOptionsMessage={() => "Sin opciones"}
+                                />
+                            </Col>
 
-                                        <Button variant="secondary"
-                                                onClick={() => navigate(`/admin/edit-product`)}
-                                                className="button-order-responsive">
-                                            <FaEdit/> Editar productos
-                                        </Button>
-                                    </>
-                                )}
-
-                                {allowedRoles.includes(userAuth.rol_id) && (
-                                    <Col xs={12} md={6} className="d-flex align-items-center">
-                                        <Select
-                                            value={selectedSupplier}
-                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                            options={suppliers?.map((opt) => ({value: opt.id, label: opt.nombre}))}
-                                            placeholder="Selecciona una compañía"
-                                            classNamePrefix="custom-select"
-                                            className="custom-select w-100"
-                                        />
-                                    </Col>
-                                )}
-                            </div>
-                        </div>
+                            {/* Select Plan */}
+                            <Col xs={12} md={4}>
+                                <Select
+                                    value={selectedSupplier}
+                                    options={suppliers.map(opt => ({ value: opt.id, label: opt.nombre }))}
+                                    placeholder="Selecciona un Proveedor"
+                                    onChange={handleSelectedSupplier}
+                                    isClearable
+                                    isDisabled={!selectedConvocation || loading}
+                                    isLoading={loading}
+                                    classNamePrefix="custom-select"
+                                    className="custom-select w-100"
+                                    noOptionsMessage={() => selectedConvocation ? "Sin proveedores" : "Selecciona una jornada"}
+                                />
+                            </Col>
+                        </Row>
 
                         {loading && (
                             <div className="overlay">
@@ -604,7 +479,6 @@ export const ValidationSupervision = () => {
                                 rows={filteredData}
                                 checkboxSelection
                                 onRowSelectionModelChange={handleSelectionChange}
-                                processRowUpdate={handleRowUpdate}
                                 editMode="row"
                                 pagination
                                 page={page}
@@ -659,15 +533,6 @@ export const ValidationSupervision = () => {
                                 }}
                             />
 
-                            {/* Modal de confirmación */}
-                            <ConfirmationModal
-                                show={showModal}
-                                title="Confirmación de Eliminación"
-                                message="¿Estás seguro de que deseas eliminar este elemento?"
-                                onConfirm={handleConfirmDelete}
-                                onClose={handleCloseModalConfirm}
-                            />
-
                             {/* Modal de aprobación/denegación */}
                             <ApprovedDeniedModal
                                 open={openModal}
@@ -692,18 +557,6 @@ export const ValidationSupervision = () => {
                                         disabled={loading}
                                     >
                                         <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
-                                    </Button>
-                                    </>
-                            )}
-                            {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
-                                <>
-                                    <Button
-                                        variant="success"
-                                        size="md"
-                                        onClick={handleSaveProducts}
-                                        disabled={loading}
-                                    >
-                                        <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
                                     </Button>
                                 </>
                             )}

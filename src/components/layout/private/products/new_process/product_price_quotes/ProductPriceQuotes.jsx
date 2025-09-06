@@ -12,7 +12,7 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
-import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
+import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
@@ -36,7 +36,7 @@ export const ProductPriceQuotes = () => {
     //
     const getProductList = async () => {
         try {
-            const { data, status } = await worksDayServices.getProductsBySupplier(userAuth.id);
+            const { data, status } = await convocationServices.getProductsBySupplier(userAuth.id);
             if(status === ResponseStatusEnum.OK) {
                 console.log(data);
                 const products = await normalizeRows(data);
@@ -144,7 +144,7 @@ export const ProductPriceQuotes = () => {
                 productos: transformedData
             }
 
-            const { data, status } = await worksDayServices.saveProductBySupplier(sendData);
+            const { data, status } = await convocationServices.saveProductBySupplier(sendData);
             console.log(data);
             if (status === ResponseStatusEnum.BAD_REQUEST) {
                 handleError('Error', 'Error en el formato de productos');

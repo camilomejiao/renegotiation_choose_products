@@ -29,15 +29,25 @@ class AuthTokenService {
         }
 
         const contentType = response.headers.get('content-type');
+        const isPdf    = contentType.includes('application/pdf');
+        const isImage  = contentType.startsWith('image/');
 
-        // Si la respuesta es PDF, devuelve un Blob
-        if (contentType && contentType.includes('application/pdf')) {
-            return { blob: await response.blob(), status: response.status };
+        if (isPdf || isImage) {
+            const blob = await response.blob();
+            const type = contentType || blob.type;
+            return {
+                blob,
+                status: response.status,
+                type
+            };
         }
 
         // Si no es PDF, intenta parsear como JSON
         try {
-            return { data: await response.json(), status: response.status,  statusText: response.statusText };
+            return {
+                data: await response.json(),
+                status: response.status,
+                statusText: response.statusText };
         } catch (error) {
             console.error("Error parsing JSON:", error);
             return { status: response.status, message: "Invalid JSON response" };

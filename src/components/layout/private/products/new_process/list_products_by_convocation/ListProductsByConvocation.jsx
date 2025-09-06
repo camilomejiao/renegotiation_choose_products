@@ -12,7 +12,7 @@ import { getActionsColumns, getConvocationColumns } from "../../../../../../help
 
 //Services
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
-import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
+import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
 
 export const ListProductsByConvocation = () => {
 
@@ -29,7 +29,7 @@ export const ListProductsByConvocation = () => {
     const getProductsByConvocation = async () => {
         try {
             setLoading(true);
-            const {data, status} = await worksDayServices.getConvocationInformation();
+            const {data, status} = await convocationServices.getConvocationInformation();
             if(status === ResponseStatusEnum.OK){
                 const products = await normalizeRows(data);
                 setRows(products);

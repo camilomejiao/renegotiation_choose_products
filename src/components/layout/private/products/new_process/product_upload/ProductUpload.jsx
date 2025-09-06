@@ -11,75 +11,101 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 //Utils
 import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 import { getCategoryOptions, getUnitOptions } from "../../../../../../helpers/utils/ValidateProductColumns";
-import { chunkArray, handleError, showAlert } from "../../../../../../helpers/utils/utils";
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
-import { worksDayServices } from "../../../../../../helpers/services/WorksDayServices";
+import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import Select from "react-select";
 
 export const ProductUpload = () => {
 
     const navigate = useNavigate();
 
-    const [convocation, setConvocation] = useState([]);
-    const [planOptions, setPlanOptions] = useState([]);
+    const [convocations, setConvocations] = useState([]);
+    const [selectedConvocation, setSelectedConvocation] = useState(null);
+
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
+    // Si mantienes formFields en otro lado:
+    const [formFields, setFormFields] = useState({typeCall: "", typePlan: ""});
+
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
     const [unitOptions, setUnitOptions] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
-    const [formFields, setFormFields] = useState({
-        typeCall: '',
-        typePlan: '',
-    });
 
-    //
 
-    const getWorksDay = async () => {
+    const loadData = async () => {
         try {
-            setLoading(true);
-            const {data, status} = await worksDayServices.getConvocations();
-            if (status === ResponseStatusEnum.OK) {
-                setConvocation(data?.data?.jornadas)
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
+            const [unitData, categoryData] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+            ]);
 
-    //Cargar planes
-    const getPlans = async (workDayId) => {
-        try {
-            setLoading(true);
-            const { data, status} = await worksDayServices.getPlansByConvocation(workDayId);
-            if(status === ResponseStatusEnum.OK) {
-                setPlanOptions(data?.data?.planes)
-            }
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
         } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+            handleError(error, "Error cargando los datos iniciales.");
         }
-    }
-
-    //
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormFields({ ...formFields, [name]: value });
     };
 
-    //
-    const handleSelectWorkDay = async (e) => {
-        const { name, value } = e.target;
-        setFormFields((prev) => ({ ...prev, [name]: value, typePlan: "" }));
-        setPlanOptions([]);
-        if (!value) return;
-        await getPlans(value);
+    //Obtener la lista de jornadas
+    const getConvocations = async () => {
+        setLoading(true);
+        try {
+            const {data, status} = await convocationServices.getConvocations();
+            if (status === ResponseStatusEnum.OK) {
+                setConvocations(data.data.jornadas);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de proveedores:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Cargar planes
+    const getPlans = async (convocationId) => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes ?? []);
+            } else {
+                setPlanRaw([]);
+            }
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSelectedConvocation = async (option) => {
+        setSelectedConvocation(option ?? null);
+        setSelectedPlan(null);
+        setFormFields(prev => ({
+            ...prev,
+            typeCall: option?.value ?? "", // API
+            typePlan: ""
+        }));
+        setPlanRaw([]);
+        if (option?.value) await getPlans(option.value);
+    };
+
+    const handleSelectedPlan = (option) => {
+        setSelectedPlan(option ?? null);
+        setFormFields(prev => ({
+            ...prev,
+            typePlan: option?.value ?? ""
+        }));
     };
 
     //
@@ -105,20 +131,6 @@ export const ProductUpload = () => {
     const actionsColumns = getActionsColumns(handleDeleteClick)
 
     const columns = [...baseColumns, ...actionsColumns];
-
-    const loadData = async () => {
-        try {
-            const [unitData, categoryData] = await Promise.all([
-                getUnitOptions(),
-                getCategoryOptions(),
-            ]);
-
-            setUnitOptions(unitData);
-            setCategoryOptions(categoryData);
-        } catch (error) {
-            handleError(error, "Error cargando los datos iniciales.");
-        }
-    };
 
     //
     const handleClipboard = async (event) => {
@@ -189,18 +201,25 @@ export const ProductUpload = () => {
         try {
             setLoading(true);
 
-            const jornadaPlanId = Number(formFields.typePlan);
             const productos = await transformData(rows);
-
             let sendData = {
-                jornada_plan: jornadaPlanId,
+                jornada_plan: Number(formFields.typePlan),
                 productos
             }
             //console.log(sendData);
-            await sendBatchesInParallel(sendData);
+            const { data, status } = await convocationServices.saveProductsByConvocation(sendData);
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                throw new Error(`${data}`);
+            }
 
-            showAlert('', 'Todos los productos se han creado exitosamente');
-            handleBack();
+            if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                throw new Error(`${data}`);
+            }
+
+            if(status === ResponseStatusEnum.CREATED) {
+                showAlert('', 'Todos los productos se han creado exitosamente');
+                handleBack();
+            }
 
             // Limpiamos la tabla
             setRows([]);
@@ -223,46 +242,12 @@ export const ProductUpload = () => {
         }));
     };
 
-    //Enviar lotes en paralelo con control de concurrencia
-    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
-        const errors = []; // Para almacenar los errores
-        for (let i = 0; i < batches.length; i += maxConcurrent) {
-            const batchChunk = batches.slice(i, i + maxConcurrent);
-
-            const results = await Promise.allSettled(
-                batchChunk.map(batch => sendBatchToService(batch))
-            );
-
-            results.forEach((result, index) => {
-                if (result.status === 'rejected') {
-                    errors.push(result.reason);
-                }
-            });
-        }
-
-        if (errors.length > 0) {
-            throw new Error(`${errors}`);
-        }
-    };
-
-    const sendBatchToService = async (batch) => {
-        const { data, status } = await worksDayServices.saveProductsByConvocation(batch);
-        if (status === ResponseStatusEnum.BAD_REQUEST) {
-            throw new Error(`${data}`);
-        }
-
-        if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
-            throw new Error(`${data}`);
-        }
-        return data;
-    };
-
     const handleBack = () => navigate('/admin/list-products-by-convocation');
 
     // Cargar datos iniciales
     useEffect(() => {
         loadData();
-        getWorksDay();
+        getConvocations();
 
     }, []);
 
@@ -294,39 +279,38 @@ export const ProductUpload = () => {
             <div className="container mt-lg-3">
                 {/* Select */}
                 <Row className="gy-3">
-                    <Col xs={12} sm={6} md={4}>
-                        <label className="form-label fw-semibold">Convocatoria <span className="text-danger">*</span></label>
-                        <select
-                            className="form-select"
-                            name="typeCall"
-                            value={formFields.typeCall}
-                            onChange={handleSelectWorkDay}
-                            required
-                        >
-                            <option value="">Seleccione Jornada...</option>
-                            {convocation?.map((wd) => (
-                                <option key={wd?.id} value={wd?.id}>
-                                    {wd?.nombre}
-                                </option>
-                            ))}
-                        </select>
+                    {/* Select Jornada */}
+                    <Col xs={12} md={4}>
+                        <Select
+                            value={selectedConvocation ?? null}
+                            options={convocations?.map(opt => ({ value: opt.id, label: opt.nombre }))}
+                            placeholder="Selecciona una Jornada"
+                            onChange={handleSelectedConvocation}
+                            isClearable
+                            classNamePrefix="custom-select"
+                            className="custom-select w-100"
+                            styles={{
+                                placeholder: (base) => ({ ...base, color: '#6c757d' }),
+                                singleValue: (base) => ({ ...base, color: '#212529' }),
+                            }}
+                            noOptionsMessage={() => "Sin opciones"}
+                        />
                     </Col>
-                    <Col xs={12} sm={6} md={4}>
-                        <label className="form-label fw-semibold">Plan <span className="text-danger">*</span></label>
-                        <select
-                            className="form-select"
-                            name="typePlan"
-                            value={formFields.typePlan}
-                            onChange={handleInputChange}
-                            required
-                        >
-                            <option value="">Seleccione plan...</option>
-                            {planOptions?.map((plan) => (
-                                <option key={plan?.id} value={plan?.id}>
-                                    {plan?.plan_nombre}
-                                </option>
-                            ))}
-                        </select>
+
+                    {/* Select Plan */}
+                    <Col xs={12} md={4}>
+                        <Select
+                            value={selectedPlan ?? null}
+                            options={planRaw.map(opt => ({ value: opt.id, label: opt.plan_nombre }))}
+                            placeholder="Selecciona un Plan"
+                            onChange={handleSelectedPlan}
+                            isClearable
+                            isDisabled={!selectedConvocation || loading}
+                            isLoading={loading}
+                            classNamePrefix="custom-select"
+                            className="custom-select w-100"
+                            noOptionsMessage={() => selectedConvocation ? "Sin planes" : "Selecciona una jornada"}
+                        />
                     </Col>
                 </Row>
 
