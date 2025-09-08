@@ -200,21 +200,27 @@ export const ProductList = () => {
 
     //
     const getProductState = (approvalDate, approvalList) => {
-        //Si todos están aprobados
-        const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
-        if (allApproved && approvalDate) {
-            return GeneralStatusProductEnum.APPROVED;
-        }
+        const requiredRoles = [RolesEnum.SUPERVISION, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL];
 
-        //Si alguno está rechazado
-        const hasRejected = approvalList.some(item => item.estado === StatusTeamProductEnum.DENIED.id);
-        if (hasRejected && !approvalDate) {
+        // Solo consideramos aprobaciones de los roles 4, 5 y 6
+        const approvals = approvalList.filter(approv => requiredRoles.includes(Number(approv?.rol)));
+
+        if (approvals.some(a => Number(a?.estado) === StatusTeamProductEnum.DENIED.id)) {
             return GeneralStatusProductEnum.REFUSED;
         }
 
-        if(!approvalDate) {
-            return GeneralStatusProductEnum.PENDING_APPROVAL;
+        const allRequiredApproved = requiredRoles.every(role =>
+            approvals.some(a =>
+                Number(a?.rol) === role &&
+                Number(a?.estado) === StatusTeamProductEnum.APPROVED.id
+            )
+        );
+
+        if (allRequiredApproved && approvalDate) {
+            return GeneralStatusProductEnum.APPROVED;
         }
+
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
     };
 
     //Extraer precios por municipio
@@ -408,7 +414,7 @@ export const ProductList = () => {
         ...dynamicMunicipalityColumns,
         ...statusProduct,
         ...( [RolesEnum.SUPPLIER].includes(userAuth.rol_id) ? actionsColumns : []),
-        ...( allowedRoles.includes(userAuth.rol_id) ? observationsColumns : [] ),
+        ...( [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.TECHNICAL, RolesEnum.ENVIRONMENTAL, RolesEnum.SUPPLIER].includes(userAuth.rol_id) ? observationsColumns : [] ),
         ...( [RolesEnum.ADMIN, RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) ? environmentalCategoriesColumns : [] ),
     ];
 
