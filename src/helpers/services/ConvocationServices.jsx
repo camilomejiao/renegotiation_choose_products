@@ -113,6 +113,17 @@ class ConvocationServices {
         });
     }
 
+    /**
+     *
+     */
+    getProductByConvocationAndPlan(ConvocationPlanId) {
+        const url = this.buildUrl(`/productos-por-plan/?jornada_plan_id=${ConvocationPlanId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
     getSupplierByConvocation(convocationId) {
         const url = this.buildUrl(`proveedores-por-jornada/?jornada_id=${convocationId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });

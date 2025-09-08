@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import {Button, Col, Row, Spinner} from "react-bootstrap";
+import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 //
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -10,7 +11,11 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
 import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
-import { getCategoryOptions, getUnitOptions } from "../../../../../../helpers/utils/ValidateProductColumns";
+import {
+    getCategoryOptions,
+    getEnvironmentalCategories,
+    getUnitOptions
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 //Enum
@@ -18,7 +23,6 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
 import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
-import Select from "react-select";
 
 export const ProductUpload = () => {
 
@@ -231,14 +235,30 @@ export const ProductUpload = () => {
         }
     };
 
+    //Obtener las claves ambientales
+    const getEnvironmentalCategoryKeys = async () => {
+        const categories = await getEnvironmentalCategories();
+        return categories.map((category) => category.codigo);
+    };
+
+    const buildData = (product, keys) => {
+        return Object.fromEntries(
+            keys.map((key) => [key, 1])
+        );
+    };
+
     //Transformar datos para ajustarlos al formato esperado por la API
     const transformData = async (inputData) => {
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
+
         return inputData.map(product => ({
             categoria_producto: product.category,
             nombre: product.name,
             unidad_medida: product.unit,
             precio_min: product.price_min,
             precio_max: product.price_max,
+            ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {cant: 0, ambiental_key: ''},
         }));
     };
 

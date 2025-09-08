@@ -37,187 +37,6 @@ import {convocationServices} from "../../../../../../helpers/services/Convocatio
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
 
-//Usuarios permitidos
-const allowedRoles = [
-    RolesEnum.ADMIN,
-    RolesEnum.ENVIRONMENTAL
-];
-
-const mockData = [
-    {
-        id: 1,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        ambiental: {
-            1: 1,
-            2: 1,
-            3: 1,
-            4: 1,
-            5: 1,
-            6: 1,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-            12: 1,
-            13: 1,
-            14: 1,
-            15: 1,
-            16: 1,
-            17: 1,
-            18: 1,
-            19: 1,
-            20: 1,
-            21: 1,
-            22: 1,
-            23: 1
-        },
-        cantidad_ambiental: {
-            cant: 0,
-            ambiental_key: ""
-        },
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-    {
-        id: 2,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        ambiental: {
-            1: 1,
-            2: 1,
-            3: 1,
-            4: 1,
-            5: 1,
-            6: 1,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-            12: 1,
-            13: 1,
-            14: 1,
-            15: 1,
-            16: 1,
-            17: 1,
-            18: 1,
-            19: 1,
-            20: 1,
-            21: 1,
-            22: 1,
-            23: 1
-        },
-        cantidad_ambiental: {
-            cant: 0,
-            ambiental_key: ""
-        },
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-    {
-        id: 3,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        ambiental: {
-            1: 1,
-            2: 1,
-            3: 1,
-            4: 1,
-            5: 1,
-            6: 1,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 1,
-            11: 1,
-            12: 1,
-            13: 1,
-            14: 1,
-            15: 1,
-            16: 1,
-            17: 1,
-            18: 1,
-            19: 1,
-            20: 1,
-            21: 1,
-            22: 1,
-            23: 1
-        },
-        cantidad_ambiental: {
-            cant: 0,
-            ambiental_key: ""
-        },
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-
-];
-
 export const ValidationEnvironmental = () => {
     const {userAuth} = useOutletContext();
     const navigate = useNavigate();
@@ -247,10 +66,8 @@ export const ValidationEnvironmental = () => {
 
     //
     const baseColumns = getBaseColumns();
-
     const statusProduct = getStatusProduct();
-
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+    const observationsColumns = getObservationsColumns();
 
     const columns = [
         ...baseColumns,
@@ -284,7 +101,6 @@ export const ValidationEnvironmental = () => {
             } else {
                 setPlanRaw([]);
             }
-            getProductList();
         } catch (error) {
             console.log(error);
             setPlanRaw([]);
@@ -322,12 +138,13 @@ export const ValidationEnvironmental = () => {
     const getProductList = async (planId) => {
         setLoadingTable(true);
         try {
-            //const { data, status } = await productServices.getProductList();
-            //if (status === ResponseStatusEnum.OK) {
-            const products = await normalizeRows(mockData);
-            setProductList(products);
-            setFilteredData(products);
-            //}
+            const { data, status } = await convocationServices.getProductByConvocationAndPlan(planId);
+            if (status === ResponseStatusEnum.OK) {
+                const products = await normalizeRows(data?.data?.productos);
+                console.log('products: ', products);
+                setProductList(products);
+                setFilteredData(products);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         } finally {
@@ -344,15 +161,17 @@ export const ValidationEnvironmental = () => {
             return data.map((row) => ({
                 id: row?.id,
                 name: row?.nombre,
-                description: row?.especificacion_tecnicas,
-                brand: row?.marca_comercial,
-                unit: row?.unidad_medida,
-                category: row?.categoria_producto,
-                price: row?.precio,
-                state: getProductState(row?.fecha_aprobado, row?.aprobados),
+                description: row?.especificacion_tecnicas ?? "",
+                brand: row?.marca_comercial ?? "",
+                unit: row?.unidad_medida?.nombre,
+                category: row?.categoria_producto?.nombre,
+                price_min: row?.precio_min,
+                price_max: row?.precio_max,
+                price: row?.precio ?? 0,
+                //state: getProductState(row?.faprobado, row?.aprobados),
                 ...buildEnvironmentalData(row, environmentalCategories),
-                ...extractObservations(row?.aprobados),
-                ...extractCountEnvironmental(row)
+                //...extractObservations(row?.aprobados),
+                //...extractCountEnvironmental(row)
             }));
         } catch (error) {
             console.error('Error al normalizar filas:', error);
@@ -412,12 +231,26 @@ export const ValidationEnvironmental = () => {
         }
     };
 
-    //Construir objeto ambiental dinámico
+    // 1) Parsear ambiental (acepta objeto o string con basura alrededor)
+    const getAmbientalObj = (raw) => {
+        if (!raw) return {};
+        if (typeof raw === "object") return raw;
+
+        const slice = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
+        try { return JSON.parse(slice); } catch { return {}; }
+    };
+
+    // 2) Construir el objeto final usando la lista de categorías
     const buildEnvironmentalData = (row, categories) => {
-        return Object.fromEntries(
-            categories.map(({codigo}) => [codigo, String(row?.ambiental?.[codigo] ?? 0)])
-        );
-    }
+        const amb = getAmbientalObj(row?.ambiental);
+
+        return categories.reduce((acc, { codigo }) => {
+            const k = String(codigo);
+            acc[k] = String(amb[k] ?? 0);
+            return acc;
+        }, {});
+    };
+
 
     //Extraer observaciones
     const extractObservations = (rows) => {
@@ -448,10 +281,10 @@ export const ValidationEnvironmental = () => {
 
     //Limit enviromental
     const extractCountEnvironmental = (row) => {
-        if (!row || !row.cantidad_ambiental) {
+        if (!row || !row?.cantidad_ambiental) {
             return {customValue: "", selectedCategory: ""};
         }
-        const {cant, ambiental_key} = row.cantidad_ambiental;
+        const {cant, ambiental_key} = row?.cantidad_ambiental;
         return {customValue: cant ?? "", selectedCategory: ambiental_key ?? ""};
     };
 
@@ -676,7 +509,6 @@ export const ValidationEnvironmental = () => {
                                 noOptionsMessage={() => selectedConvocation ? "Sin planes" : "Selecciona una jornada"}
                             />
                         </Col>
-
                     </Row>
 
 
@@ -762,31 +594,26 @@ export const ValidationEnvironmental = () => {
 
                     {/* Botón Guardar */}
                     <div className="d-flex justify-content-end gap-2 mt-3">
-                        {allowedRoles.includes(userAuth.rol_id) && (
-                            <>
-                                <Button
-                                    variant="warning"
-                                    size="md"
-                                    color="primary"
-                                    onClick={handleOpenModal}
-                                    disabled={loading}
-                                >
-                                    <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
-                                </Button>
-                            </>
-                        )}
-                        {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
-                            <>
-                                <Button
-                                    variant="success"
-                                    size="md"
-                                    onClick={handleSaveProducts}
-                                    disabled={loading}
-                                >
-                                    <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
-                                </Button>
-                            </>
-                        )}
+                        <>
+                            <Button
+                                variant="warning"
+                                size="md"
+                                color="primary"
+                                onClick={handleOpenModal}
+                                disabled={loading}
+                            >
+                                <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
+                            </Button>
+
+                            <Button
+                                variant="success"
+                                size="md"
+                                onClick={handleSaveProducts}
+                                disabled={loading}
+                            >
+                                <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
+                            </Button>
+                        </>
                     </div>
                 </div>
             </div>

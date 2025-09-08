@@ -135,7 +135,7 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange, hand
 };
 
 //
-export const getObservationsColumns = (userRole) => {
+export const getObservationsColumns = () => {
     const statusColors = {
         [StatusTeamProductEnum.DENIED.label]: "red",
         [StatusTeamProductEnum.APPROVED.label]: "green",
