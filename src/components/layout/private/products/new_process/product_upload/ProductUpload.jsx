@@ -205,10 +205,10 @@ export const ProductUpload = () => {
         try {
             setLoading(true);
 
-            const productos = await transformData(rows);
+            const products = await transformData(rows);
             let sendData = {
                 jornada_plan: Number(formFields.typePlan),
-                productos
+                products
             }
             //console.log(sendData);
             const { data, status } = await convocationServices.saveProductsByConvocation(sendData);
@@ -252,13 +252,16 @@ export const ProductUpload = () => {
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
         return inputData.map(product => ({
-            categoria_producto: product.category,
-            nombre: product.name,
-            unidad_medida: product.unit,
-            precio_min: product.price_min,
-            precio_max: product.price_max,
+            categoria_producto: product?.category,
+            nombre: product?.name,
+            unidad_medida: product?.unit,
+            precio_min: product?.price_min,
+            precio_max: product?.price_max,
             ambiental: buildData(product, environmentalKeys),
-            cantidad_ambiental: {cant: 0, ambiental_key: ''},
+            cantidad_ambiental: {
+                cant: parseInt(product?.customValue) || 0,
+                ambiental_key: product?.selectedCategory || ""
+            },
         }));
     };
 

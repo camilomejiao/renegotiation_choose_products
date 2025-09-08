@@ -138,6 +138,9 @@ export const ValidationSupervision = () => {
     const [convocations, setConvocations] = useState([]);
     const [selectedConvocation, setSelectedConvocation] = useState(null);
 
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
 
@@ -187,11 +190,29 @@ export const ValidationSupervision = () => {
         }
     }
 
+    // Cargar planes
+    const getPlans = async (convocationId) => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes);
+            } else {
+                setPlanRaw([]);
+            }
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     //Obtener la lista de proveedores
     const getSuppliers = async (convocationId) => {
         setLoading(true);
         try {
-            const { data, status } = await convocationServices.getSupplierByConvocation(2);
+            const { data, status } = await convocationServices.getSupplierByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setSuppliers(data.data.proveedores);
             }

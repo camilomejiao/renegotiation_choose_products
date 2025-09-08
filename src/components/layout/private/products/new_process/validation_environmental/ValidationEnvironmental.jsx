@@ -26,7 +26,7 @@ import {
 } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
-import { extractMunicipios, handleError, showAlert } from "../../../../../../helpers/utils/utils";
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns, getEnvironmentalCategories,
     getEnvironmentalCategoriesColumns,
@@ -141,7 +141,6 @@ export const ValidationEnvironmental = () => {
             const { data, status } = await convocationServices.getProductByConvocationAndPlan(planId);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos);
-                console.log('products: ', products);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -154,8 +153,8 @@ export const ValidationEnvironmental = () => {
 
     //
     const normalizeRows = async (data) => {
-        console.log('data: ', data);
         try {
+            console.log('data: ',data);
             const environmentalCategories = await getEnvironmentalCategories();
 
             return data.map((row) => ({
@@ -163,8 +162,10 @@ export const ValidationEnvironmental = () => {
                 name: row?.nombre,
                 description: row?.especificacion_tecnicas ?? "",
                 brand: row?.marca_comercial ?? "",
-                unit: row?.unidad_medida?.nombre,
-                category: row?.categoria_producto?.nombre,
+                unit_id: row?.unidad_medida?.id,
+                category_id: row?.categoria_producto?.id,
+                unitLabel: row?.unidad_medida?.nombre,
+                categoryLabel: row?.categoria_producto?.nombre,
                 price_min: row?.precio_min,
                 price_max: row?.precio_max,
                 price: row?.precio ?? 0,
@@ -231,7 +232,7 @@ export const ValidationEnvironmental = () => {
         }
     };
 
-    // 1) Parsear ambiental (acepta objeto o string con basura alrededor)
+    //
     const getAmbientalObj = (raw) => {
         if (!raw) return {};
         if (typeof raw === "object") return raw;
@@ -240,7 +241,7 @@ export const ValidationEnvironmental = () => {
         try { return JSON.parse(slice); } catch { return {}; }
     };
 
-    // 2) Construir el objeto final usando la lista de categorías
+    //
     const buildEnvironmentalData = (row, categories) => {
         const amb = getAmbientalObj(row?.ambiental);
 
@@ -250,7 +251,6 @@ export const ValidationEnvironmental = () => {
             return acc;
         }, {});
     };
-
 
     //Extraer observaciones
     const extractObservations = (rows) => {
@@ -288,20 +288,40 @@ export const ValidationEnvironmental = () => {
         return {customValue: cant ?? "", selectedCategory: ambiental_key ?? ""};
     };
 
-    //
     const handleRowUpdate = (newRow, oldRow) => {
         if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-            setEditedProducts(prevState => {
-                const index = prevState.findIndex(product => product.id === newRow.id);
-                if (index > -1) {
-                    prevState[index] = newRow;
-                } else {
-                    prevState.push(newRow);
-                }
-                return [...prevState];
+            //Saber cual se esta editando
+            setEditedProducts(prev => {
+                const idx = prev.findIndex(p => p.id === newRow.id);
+                const next = [...prev];
+                if (idx > -1) next[idx] = { ...next[idx], ...newRow };
+                else next.push(newRow);
+                return next;
             });
+
+            //Mostramos el cambio en la DataGrid
+            setProductList(prev =>
+                prev.map(r => (r.id === newRow.id ? { ...r, ...newRow } : r))
+            );
+
+            //Activamos el filtro
+            setFilteredData(prev =>
+                prev.map(r => (r.id === newRow.id ? { ...r, ...newRow } : r))
+            );
         }
         return newRow;
+    };
+
+    //
+    const editedIds = new Set(editedProducts.map(p => p.id));
+
+    //Fusionamos los editados y los no editados
+    const mergeEditedIntoList = (base = [], edits = []) => {
+        if (!Array.isArray(base) || !Array.isArray(edits) || edits.length === 0){
+            return base;
+        }
+        const map = new Map(edits.map(e => [e.id, e]));
+        return base.map(row => map.has(row.id) ? { ...row, ...map.get(row.id) } : row);
     };
 
     //Manejar selección de filas
@@ -377,15 +397,23 @@ export const ValidationEnvironmental = () => {
     const handleSaveProducts = async () => {
         try {
             setLoading(true);
-            if (editedProducts.length === 0) {
-                AlertComponent.warning('', 'No hay productos modificados para guardar.');
-                return;
+
+            const merged = mergeEditedIntoList(productList, editedProducts);
+
+            const products = await productsBeforeSend(merged);
+
+            let sendData = {
+                jornada_plan: Number(formFields.typePlan),
+                products
             }
 
-            const products = await productsBeforeSend(editedProducts);
+            const { data, status } = await convocationServices.saveProductsByConvocation(sendData);
 
-            showAlert('Bien hecho!', 'Productos actualizados con éxito.');
-            setEditedProducts([]);
+            if(status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
+                showAlert('', 'Todos los productos se han actualizado exitosamente');
+                window.location.reload();
+            }
+
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
         } finally {
@@ -406,23 +434,24 @@ export const ValidationEnvironmental = () => {
         );
     };
 
-    //
-    const productsBeforeSend = async (inputData) => {
-        //Obtener claves ambientales
+    const productsBeforeSend = async (rows) => {
         const environmentalKeys = await getEnvironmentalCategoryKeys();
 
-        return inputData.map((product) => ({
-            id: product.id,
-            nombre: product.name,
-            especificacion_tecnicas: product.description,
-            marca_comercial: product.brand,
-            unidad_medida: product.unit,
-            categoria_producto: product.category,
-            valor_municipio: extractMunicipios(product),
-            ambiental: buildData(product, environmentalKeys),
-            observations_environmental: product.observations_environmental,
-            observations_supervision: product.observations_supervision,
-            cantidad_ambiental: {cant: parseInt(product.customValue), ambiental_key: product.selectedCategory},
+        return rows.map((row) => ({
+            id: row.id,
+            nombre: row.name ?? "",
+            especificacion_tecnicas: row.description ?? "",
+            marca_comercial: row.brand ?? "",
+            unidad_medida: row?.unit_id,
+            categoria_producto: row?.category_id,
+            precio_min: row.price_min,
+            precio_max: row.price_max,
+            precio: row.price ?? 0,
+            ambiental: buildData(row, environmentalKeys),
+            cantidad_ambiental: {
+                cant: parseInt(row.customValue) || 0,
+                ambiental_key: row.selectedCategory || ""
+            },
         }));
     };
 
@@ -546,6 +575,7 @@ export const ValidationEnvironmental = () => {
                                     },
                                 },
                             }}
+                            getRowClassName={(params) => (editedIds.has(params.id) ? 'row-edited' : '')}
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#40A581",
@@ -577,6 +607,7 @@ export const ValidationEnvironmental = () => {
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",
                                 },
+                                "& .row-edited": { backgroundColor: '#FFF3CD' },
                             }}
                         />
 
