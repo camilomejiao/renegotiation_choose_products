@@ -41,5 +41,7 @@ export const ComponentEnum = {
 
 export const UploadFileEnum = {
     FE: 'fe',
-    PDF: 'pdf'
+    PDF: 'pdf',
+    EVIDENCE1: 'evidence_1',
+    EVIDENCE2: 'evidence_2',
 }
