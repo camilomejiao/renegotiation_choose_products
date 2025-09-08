@@ -308,6 +308,7 @@ export const ProductList = () => {
     const statusProduct = getStatusProduct();
 
     const handleDeleteClick = (id) => {
+        console.log('id: ', id);
         setSelectedRowId(id);
         setShowModal(true);
     };
@@ -328,7 +329,7 @@ export const ProductList = () => {
     // Cerrar modal confirmación
     const handleCloseModalConfirm = () => {
         setShowModal(false);
-        selectedRowId(null);
+        setSelectedRowId(null);
     };
 
     // Cerrar modal aprobacion
@@ -341,11 +342,12 @@ export const ProductList = () => {
     const handleConfirmDelete = async () => {
         try {
             const { status } = await productServices.productRemove(selectedRowId);
-            if (status === ResponseStatusEnum.NO_CONTENT) {
+            if (status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente!");
                 await getProductList();
                 handleCloseModalConfirm();
             }
+
             if (status === ResponseStatusEnum.FORBIDDEN) {
                 showInfo("Atención!", "No puedes borrar este producto ya aprobado!");
                 handleCloseModalConfirm();

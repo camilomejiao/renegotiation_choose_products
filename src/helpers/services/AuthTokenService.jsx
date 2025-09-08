@@ -29,6 +29,14 @@ class AuthTokenService {
         }
 
         const contentType = response.headers.get('content-type');
+        const contentLength = response.headers.get('content-length');
+        const hasBody =
+            !(response.status === 204 || response.status === 205 || response.status === 304) && contentLength !== '0';
+
+        if (!hasBody) {
+            return { status: response.status };
+        }
+
         const isPdf    = contentType.includes('application/pdf');
         const isImage  = contentType.startsWith('image/');
 
