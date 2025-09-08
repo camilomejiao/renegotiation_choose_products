@@ -156,7 +156,6 @@ export const Deliveries = () => {
     const getDeliveryUrl = async (deliveryId) => {
         try {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
-            console.log('searchDeliveriesPDF: ', data);
             if(status === ResponseStatusEnum.OK) {
                 const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
 
