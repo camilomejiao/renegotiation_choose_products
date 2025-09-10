@@ -21,7 +21,7 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 
-export const ProductPriceQuotes = () => {
+export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();

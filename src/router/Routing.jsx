@@ -47,7 +47,7 @@ import {
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
 import { ProductUpload } from "../components/layout/private/products/new_process/product_upload/ProductUpload";
-import { ProductPriceQuotes } from "../components/layout/private/products/new_process/product_price_quotes_by_supplier/ProductPriceQuotes";
+import { ProductPriceQuotesBySupplier } from "../components/layout/private/products/new_process/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {
     ListProductsByConvocation
 } from "../components/layout/private/products/new_process/list_products_by_convocation/ListProductsByConvocation";
@@ -98,7 +98,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
                         <Route path={ RouterEnum.ProductUpload }  element={ <ProductUpload /> }  />
                         <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
-                        <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotes /> }  />
+                        <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
                         <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
                         <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
 
