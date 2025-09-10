@@ -1,5 +1,5 @@
 import { MenuItem, Select, TextField } from "@mui/material";
-import {FaFile, FaFileExcel, FaTrash} from "react-icons/fa";
+import { FaFile, FaFileExcel, FaRegEdit, FaTrash } from "react-icons/fa";
 import { formatPrice } from "./ValidateProductColumns";
 import { Button } from "react-bootstrap";
 
@@ -25,7 +25,6 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Button
                     variant="outline-warning"
-                    size="sm"
                     onClick={() => handleModalSuppliers(params.row)}
                     title="Mostrar usuarios que ya han llenado información"
                 >
@@ -44,7 +43,6 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Button
                     variant="outline-success"
-                    size="sm"
                     onClick={() => handleReport(params.row)}
                     title="Generar reporte (Excel)"
                 >
@@ -121,7 +119,7 @@ export const getNewCatalogBaseColumns = (unitOptions, categoryOptions, handleRow
     {
         field: "price_min",
         headerName: "Precio Min",
-        width: 150,
+        width: 200,
         editable: editable,
         renderCell: (params) => (
             <TextField
@@ -140,7 +138,7 @@ export const getNewCatalogBaseColumns = (unitOptions, categoryOptions, handleRow
     {
         field: "price_max",
         headerName: "Precio Max",
-        width: 150,
+        width: 200,
         editable: editable,
         renderCell: (params) => (
             <TextField
@@ -159,11 +157,33 @@ export const getNewCatalogBaseColumns = (unitOptions, categoryOptions, handleRow
 ]);
 
 //
-export const getActionsColumns = (handleDeleteClick) => ([
+export const getEditActionsColumns = (handleEditClick) => ([
     {
         field: 'actions',
         headerName: 'Acciones',
-        flex: 0.7,
+        width: 150,
+        renderCell: (params) => (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Button
+                    variant="outline-info"
+                    onClick={() => handleEditClick(params.row.id)}
+                    title="Generar reporte (Excel)"
+                >
+                    <FaRegEdit />
+                </Button>
+            </div>
+        ),
+        sortable: false,
+        filterable: false,
+    },
+]);
+
+//
+export const getDeleteActionsColumns = (handleDeleteClick) => ([
+    {
+        field: 'actions',
+        headerName: 'Acciones',
+        width: 150,
         renderCell: (params) => (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <FaTrash
@@ -202,12 +222,12 @@ export const getProductsPriceQuotesColumns = () => ([
                 <TextField
                     type="text"
                     value={current ? formatPrice(current) : ""}
-                    error={outOfRange}
-                    helperText={
-                        outOfRange
-                            ? `Fuera de rango (${formatPrice(min)} - ${formatPrice(max)})`
-                            : " "
-                    }
+                    //error={outOfRange}
+                    // helperText={
+                    //     outOfRange
+                    //         ? `Fuera de rango (${formatPrice(min)} - ${formatPrice(max)})`
+                    //         : " "
+                    // }
                     onChange={(e) => {
                         // solo dígitos
                         const raw = e.target.value.replace(/[^\d]/g, "");
@@ -219,11 +239,11 @@ export const getProductsPriceQuotesColumns = () => ([
                     }}
                     fullWidth
                     // verde sutil si dentro de rango y hay valor
-                    sx={
-                        !outOfRange && current
-                            ? { "& .MuiInputBase-input": { color: "green", fontWeight: 600 } }
-                            : undefined
-                    }
+                    // sx={
+                    //     !outOfRange && current
+                    //         ? { "& .MuiInputBase-input": { color: "green", fontWeight: 600 } }
+                    //         : undefined
+                    // }
                 />
             );
         },

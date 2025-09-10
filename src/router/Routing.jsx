@@ -47,13 +47,16 @@ import {
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
 import { ProductUpload } from "../components/layout/private/products/new_process/product_upload/ProductUpload";
-import { ProductPriceQuotes } from "../components/layout/private/products/new_process/product_price_quotes/ProductPriceQuotes";
+import { ProductPriceQuotes } from "../components/layout/private/products/new_process/product_price_quotes_by_supplier/ProductPriceQuotes";
 import {
     ListProductsByConvocation
 } from "../components/layout/private/products/new_process/list_products_by_convocation/ListProductsByConvocation";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products/new_process/validation_environmental/ValidationEnvironmental";
+import {
+    EditProductsByConvocation
+} from "../components/layout/private/products/new_process/edit_products_by_convocation/EditProductsByConvocation";
 
 export const Routing = () => {
     return (
@@ -90,13 +93,14 @@ export const Routing = () => {
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
 
                         {/* Productos */}
-                        <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
-                        <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
                         {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
                         {/*<Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />*/}
                         <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
                         <Route path={ RouterEnum.ProductUpload }  element={ <ProductUpload /> }  />
+                        <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
                         <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotes /> }  />
+                        <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
+                        <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
 
                         {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />

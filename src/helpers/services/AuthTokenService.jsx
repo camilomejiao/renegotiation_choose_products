@@ -29,6 +29,14 @@ class AuthTokenService {
         }
 
         const contentType = response.headers.get('content-type');
+        const contentLength = response.headers.get('content-length');
+        const hasBody =
+            !(response.status === 204 || response.status === 205 || response.status === 304) && contentLength !== '0';
+
+        if (!hasBody) {
+            return { status: response.status };
+        }
+
         const isPdf    = contentType.includes('application/pdf');
         const isImage  = contentType.startsWith('image/');
 
@@ -47,7 +55,8 @@ class AuthTokenService {
             return {
                 data: await response.json(),
                 status: response.status,
-                statusText: response.statusText };
+                statusText: response.statusText
+            };
         } catch (error) {
             console.error("Error parsing JSON:", error);
             return { status: response.status, message: "Invalid JSON response" };

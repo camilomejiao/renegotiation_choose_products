@@ -29,6 +29,7 @@ export const RouterEnum = {
     //CreateProducts: 'create-products',
     //EditProduct: 'edit-product',
     ListProductsByConvocation: 'list-products-by-convocation', //Nuevo proceso de listado de productos
+    EditProductsByConvocation: 'edit-products-by-convocation/:id',
     ProductUpload: 'product-upload', //Nuevo proceso de cargue de productos
     ProductPriceQuotes: 'product-price-quotes', //
 

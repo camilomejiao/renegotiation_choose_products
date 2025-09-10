@@ -328,7 +328,7 @@ export const ProductList = () => {
     // Cerrar modal confirmación
     const handleCloseModalConfirm = () => {
         setShowModal(false);
-        selectedRowId(null);
+        setSelectedRowId(null);
     };
 
     // Cerrar modal aprobacion

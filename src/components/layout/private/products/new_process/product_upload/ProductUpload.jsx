@@ -10,7 +10,7 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
-import { getNewCatalogBaseColumns, getActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+import { getNewCatalogBaseColumns, getDeleteActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 import {
     getCategoryOptions,
     getEnvironmentalCategories,
@@ -81,8 +81,6 @@ export const ProductUpload = () => {
             const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes ?? []);
-            } else {
-                setPlanRaw([]);
             }
         } catch (error) {
             console.log(error);
@@ -132,7 +130,7 @@ export const ProductUpload = () => {
     };
 
     const baseColumns = getNewCatalogBaseColumns(unitOptions, categoryOptions, handleRowUpdate, true);
-    const actionsColumns = getActionsColumns(handleDeleteClick)
+    const actionsColumns = getDeleteActionsColumns(handleDeleteClick)
 
     const columns = [...baseColumns, ...actionsColumns];
 
@@ -205,10 +203,11 @@ export const ProductUpload = () => {
         try {
             setLoading(true);
 
-            const products = await transformData(rows);
+            const productos = await transformData(rows);
+
             let sendData = {
                 jornada_plan: Number(formFields.typePlan),
-                products
+                productos
             }
             //console.log(sendData);
             const { data, status } = await convocationServices.saveProductsByConvocation(sendData);
@@ -222,7 +221,6 @@ export const ProductUpload = () => {
 
             if(status === ResponseStatusEnum.CREATED) {
                 showAlert('', 'Todos los productos se han creado exitosamente');
-                handleBack();
             }
 
             // Limpiamos la tabla
@@ -255,8 +253,8 @@ export const ProductUpload = () => {
             categoria_producto: product?.category,
             nombre: product?.name,
             unidad_medida: product?.unit,
-            precio_min: product?.price_min,
-            precio_max: product?.price_max,
+            precio_min: Number(product?.price_min),
+            precio_max: Number(product?.price_max),
             ambiental: buildData(product, environmentalKeys),
             cantidad_ambiental: {
                 cant: parseInt(product?.customValue) || 0,

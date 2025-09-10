@@ -8,7 +8,10 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import { getActionsColumns, getConvocationColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+import {
+    getConvocationColumns,
+    getEditActionsColumns
+} from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
@@ -73,13 +76,13 @@ export const ListProductsByConvocation = () => {
     //
     const handleReport = (row) => {
         console.log(row.id);
-
     }
 
     // Función para eliminar un elemento de la tabla
-    const handleDeleteClick = (id) => {
+    const handleEditClick = (id) => {
         try {
             setLoading(true);
+            navigate(`/admin/edit-products-by-convocation/${id}`);
         } catch (error) {
             console.error("Error al eliminar:", error);
         } finally {
@@ -88,7 +91,7 @@ export const ListProductsByConvocation = () => {
     };
 
     const baseColumns = getConvocationColumns(handleModalSuppliers, handleReport);
-    const accion = getActionsColumns(handleDeleteClick);
+    const accion = getEditActionsColumns(handleEditClick);
     const columns = [...baseColumns, ...accion];
 
     const handleSearchChange = (event) => {

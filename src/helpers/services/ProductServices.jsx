@@ -93,7 +93,7 @@ class ProductServices {
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     productRemove(productId) {
-        const url = this.buildUrl(`${productId}`);
+        const url = this.buildUrl(`${productId}/`);
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 

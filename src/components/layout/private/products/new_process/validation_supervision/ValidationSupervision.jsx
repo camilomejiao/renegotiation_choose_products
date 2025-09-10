@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {Button, Col, Row} from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
@@ -10,11 +10,11 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { ConfirmationModal } from "../../../../shared/Modals/ConfirmationModal";
 import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
 import { productServices } from "../../../../../../helpers/services/ProductServices";
+import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
@@ -32,104 +32,9 @@ import {
     getStatusProduct,
     getObservationsColumns
 } from "../../../../../../helpers/utils/ValidateProductColumns";
-import {convocationServices} from "../../../../../../helpers/services/ConvocationServices";
 
 const PAGE_SIZE = 1000;
 const BATCH_SIZE = 250;
-
-//Usuarios permitidos
-const allowedRoles = [
-    RolesEnum.ADMIN,
-    RolesEnum.SUPERVISION,
-];
-
-const mockData = [
-    {
-        id: 1,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-    {
-        id: 2,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-    {
-        id: 3,
-        nombre: "ABONO ORGANICO",
-        especificacion_tecnicas: "NUTRECAN",
-        marca_comercial: "ABONO ORGANICO",
-        unidad_medida: "Unidad",
-        categoria_producto: "Semovientes",
-        precio_min: 20000,
-        precio_max: 30000,
-        precio: 20000,
-        fecha_aprobado: "2025-09-03T14:18:08.777000-05:00",
-        aprobados: [
-            {
-                rol: 4,
-                estado: 1,
-                comentario: "",
-                funcionario: "gustavo.garzon@renovacionterritorio.gov.co",
-                fecha: "2025-09-03"
-            },
-            {
-                rol: 6,
-                estado: 1,
-                comentario: "",
-                funcionario: "nicolas.iregui@renovacionterritorio.gov.co",
-                fecha: "2025-06-20"
-            }
-        ]
-    },
-
-];
 
 export const ValidationSupervision = () => {
     const { userAuth } = useOutletContext();
@@ -144,7 +49,7 @@ export const ValidationSupervision = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
 
-    const [formFields, setFormFields] = useState({typeCall: "", typeSupplier: ""});
+    const [formFields, setFormFields] = useState({typeCall: "", typePlan: "", typeSupplier: ""});
 
     const [productList, setProductList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -161,12 +66,9 @@ export const ValidationSupervision = () => {
     const [comment, setComment] = useState('');
     const [action, setAction] = useState('approve');
 
-
     //
     const baseColumns = getBaseColumns();
-
     const statusProduct = getStatusProduct();
-
     const observationsColumns = getObservationsColumns(userAuth.rol_id);
 
     const columns = [
@@ -229,11 +131,31 @@ export const ValidationSupervision = () => {
         setFormFields(prev => ({
             ...prev,
             typeCall: option?.value ?? "",
+            typePlan: "",
             typeSupplier: ""
         }));
         setSuppliers([]);
         if (option?.value) {
+            await getPlans(option.value);
             await getSuppliers(option.value);
+        }
+    };
+
+    /**
+     * Maneja el cambio de Plan: actualiza form y, si hay valor, carga los productos.
+     * @param {{value:number,label:string}|null} option
+     */
+    const handleSelectedPlan = async (option) => {
+        setSelectedPlan(option ?? null);
+        setFormFields((prev) => ({
+            ...prev,
+            typePlan: option?.value ?? "",
+        }));
+        if (option?.value) {
+            await getProductList(option.value);
+        } else {
+            setProductList([]);
+            setFilteredData([]);
         }
     };
 
@@ -249,13 +171,12 @@ export const ValidationSupervision = () => {
     };
 
     //Obtener la lista de productos
-    const getProductList = async () => {
+    const getProductList = async (supplierId) => {
         setLoadingTable(true);
         try {
-            console.log(formFields);
-            const { data, status } = await productServices.getProductList();
+            const { data, status } = await convocationServices.convocationServices(formFields.typePlan, supplierId);
             if (status === ResponseStatusEnum.OK) {
-                const products =  await normalizeRows(data);
+                const products =  await normalizeRows(data.data);
                 setProductList(products);
                 setFilteredData(products);
             }
@@ -276,6 +197,9 @@ export const ValidationSupervision = () => {
                 brand: row?.marca_comercial,
                 unit: row?.unidad_medida,
                 category: row?.categoria_producto,
+                price_min: `$ ${row?.precio_min.toLocaleString()}`,
+                price_max: `$ ${row?.precio_max.toLocaleString()}`,
+                price: `$ ${row?.precio.toLocaleString()}`,
                 state: getProductState(row?.fecha_aprobado, row?.aprobados),
                 ...extractObservations(row?.aprobados),
             }));
@@ -312,14 +236,16 @@ export const ValidationSupervision = () => {
                 statusKey: "status_environmental"
             },
             [RolesEnum.SUPERVISION]: {
-                observationKey: "observations_territorial",
-                statusKey: "status_territorial"
+                observationKey: "observations_supervision",
+                statusKey: "status_supervision"
             }
         };
+
         const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
             acc[id] = label;
             return acc;
         }, {});
+
         return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
             const role = roleMap[rol];
             if (!role) return acc;
@@ -392,7 +318,7 @@ export const ValidationSupervision = () => {
         try {
             await processBatches(ids, estado, comment);
             showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
-            await getProductList();
+            await getProductList(formFields.typeSupplier);
             handleCloseModalApproved();
         } catch (error) {
             console.error("Unexpected error during approval:", error);
@@ -400,8 +326,6 @@ export const ValidationSupervision = () => {
             setLoading(false);
         }
     };
-
-
 
     const showInfo = (title, message) => AlertComponent.info(title, message);
 
@@ -442,16 +366,6 @@ export const ValidationSupervision = () => {
 
                     <div className="container mt-lg-3">
                         <Row className="gy-2 align-items-center mt-3 mb-3">
-                            <Col xs={12} md={4}>
-                                <input
-                                    type="text"
-                                    placeholder="Buscar..."
-                                    value={searchQuery}
-                                    onChange={handleSearchQueryChange}
-                                    className="form-control"
-                                />
-                            </Col>
-
                             {/* Select Jornada */}
                             <Col xs={12} md={4}>
                                 <Select
@@ -473,6 +387,22 @@ export const ValidationSupervision = () => {
                             {/* Select Plan */}
                             <Col xs={12} md={4}>
                                 <Select
+                                    value={selectedPlan ?? null}
+                                    options={planRaw.map((opt) => ({ value: opt.id, label: opt.plan_nombre }))}
+                                    placeholder="Selecciona un Plan"
+                                    onChange={handleSelectedPlan}
+                                    isClearable
+                                    isDisabled={!selectedConvocation || loading}
+                                    isLoading={loading}
+                                    classNamePrefix="custom-select"
+                                    className="custom-select w-100"
+                                    noOptionsMessage={() => (selectedConvocation ? "Sin planes" : "Selecciona una jornada")}
+                                />
+                            </Col>
+
+                            {/* Select Supplier */}
+                            <Col xs={12} md={4}>
+                                <Select
                                     value={selectedSupplier}
                                     options={suppliers.map(opt => ({ value: opt.id, label: opt.nombre }))}
                                     placeholder="Selecciona un Proveedor"
@@ -483,6 +413,18 @@ export const ValidationSupervision = () => {
                                     classNamePrefix="custom-select"
                                     className="custom-select w-100"
                                     noOptionsMessage={() => selectedConvocation ? "Sin proveedores" : "Selecciona una jornada"}
+                                />
+                            </Col>
+                        </Row>
+
+                        <Row className="gy-2 align-items-center mt-3 mb-3">
+                            <Col xs={12} md={4}>
+                                <input
+                                    type="text"
+                                    placeholder="Buscar..."
+                                    value={searchQuery}
+                                    onChange={handleSearchQueryChange}
+                                    className="form-control"
                                 />
                             </Col>
                         </Row>
@@ -568,19 +510,17 @@ export const ValidationSupervision = () => {
 
                         {/* Botón Guardar */}
                         <div className="d-flex justify-content-end gap-2 mt-3">
-                            {allowedRoles.includes(userAuth.rol_id) && (
-                                <>
-                                    <Button
-                                        variant="warning"
-                                        size="md"
-                                        color="primary"
-                                        onClick={handleOpenModal}
-                                        disabled={loading}
-                                    >
-                                        <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
-                                    </Button>
-                                </>
-                            )}
+                            <>
+                                <Button
+                                    variant="warning"
+                                    size="md"
+                                    color="primary"
+                                    onClick={handleOpenModal}
+                                    disabled={loading}
+                                >
+                                    <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
+                                </Button>
+                            </>
                         </div>
 
                     </div>

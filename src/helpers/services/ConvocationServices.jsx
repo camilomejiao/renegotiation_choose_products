@@ -128,6 +128,45 @@ class ConvocationServices {
         const url = this.buildUrl(`proveedores-por-jornada/?jornada_id=${convocationId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
+
+    /**
+     *
+     */
+    updateValidationEnvironmental(products) {
+        const url = this.buildUrl(`productos/ambiental/bulk/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(products),
+        });
+    }
+
+    /**
+     *
+     */
+    approveOrDennyEnvironmental(products) {
+        const url = this.buildUrl(`productos/aprobacion/bulk/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(products),
+        });
+    }
+
+    /**
+     *
+     */
+    convocationServices(convocationPlanId, supplierId) {
+        const url = this.buildUrl(`productos-con-aprobaciones/?jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    deleteProduct(productId) {
+        const url = this.buildUrl(`productos/${productId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
 }
 
 export const convocationServices = new ConvocationServices();

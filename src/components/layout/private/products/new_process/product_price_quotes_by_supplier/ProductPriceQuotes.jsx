@@ -21,8 +21,6 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
 
-const PAGE_SIZE = 100;
-
 export const ProductPriceQuotes = () => {
 
     const { userAuth } = useOutletContext();
@@ -31,20 +29,23 @@ export const ProductPriceQuotes = () => {
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loadingTable, setLoadingTable] = useState(false);
     const [loading, setLoading] = useState(false);
 
     //
     const getProductList = async () => {
         try {
+            setLoadingTable(true);
             const { data, status } = await convocationServices.getProductsBySupplier(userAuth.id);
             if(status === ResponseStatusEnum.OK) {
-                console.log(data);
                 const products = await normalizeRows(data);
                 setRows(products);
                 setFilteredRows(products);
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
+        } finally {
+            setLoadingTable(false);
         }
     };
 
@@ -58,9 +59,9 @@ export const ProductPriceQuotes = () => {
                 category: row?.categoria_producto?.nombre,
                 name: row?.nombre,
                 unit: row?.unidad_medida?.nombre,
-                description: "",
-                brand: "",
-                price: 0,
+                description: row?.producto_especificaciones ?? "",
+                brand: row?.producto_marca_comercial ?? "",
+                price: row?.producto_valor_unitario ?? 0,
                 precio_min: Number(row?.precio_min),
                 precio_max: Number(row?.precio_max),
             }));
@@ -86,10 +87,9 @@ export const ProductPriceQuotes = () => {
         //     );
         // }
 
-        //Actualiza estado principal y filtrado
         setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
-        return newRow; // requerido por MUI
+        return newRow;
     };
 
     const handleSearchChange = (event) => {
@@ -102,7 +102,6 @@ export const ProductPriceQuotes = () => {
         );
         setFilteredRows(filteredData);
     };
-
 
     const handleSaveProducts = async () => {
         try {
@@ -137,27 +136,22 @@ export const ProductPriceQuotes = () => {
                 return;
             }
 
-            const transformedData = await transformData(rows);
+            const productos = await transformData(rows);
 
             let sendData = {
                 proveedor_id: userAuth.id,
-                productos: transformedData
+                productos
             }
 
             const { data, status } = await convocationServices.saveProductBySupplier(sendData);
-            console.log(data);
-            if (status === ResponseStatusEnum.BAD_REQUEST) {
-                handleError('Error', 'Error en el formato de productos');
-            }
 
-            if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
-                handleError('Error', 'Error en el sistema, contacte a soporte y tecnico');
+            if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                handleError('Error', 'Error en el formato de productos');
             }
 
             if(status === ResponseStatusEnum.CREATED) {
                 showAlert('Bien hecho!', 'Productos actualizados con éxito.');
             }
-
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
         } finally {
@@ -171,7 +165,7 @@ export const ProductPriceQuotes = () => {
             jornada_producto_id: product.id,
             descripcion: product.description,
             marca: product.brand,
-            price: product.price,
+            price: Number(product.price),
         }));
     };
 
@@ -218,6 +212,7 @@ export const ProductPriceQuotes = () => {
                             processRowUpdate={handleRowUpdate}
                             editMode="row"
                             pagination
+                            loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
                             componentsProps={{
