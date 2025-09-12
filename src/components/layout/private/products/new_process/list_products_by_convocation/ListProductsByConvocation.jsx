@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import {FaFileExcel, FaPlus} from "react-icons/fa";
 import { Button, Modal } from "react-bootstrap";
 
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -74,8 +74,8 @@ export const ListProductsByConvocation = () => {
     };
 
     //
-    const handleReport = (row) => {
-        console.log(row.id);
+    const handleReport = () => {
+        navigate('/admin/report-by-convocation');
     }
 
     // Función para eliminar un elemento de la tabla
@@ -137,6 +137,14 @@ export const ListProductsByConvocation = () => {
                         className="button-order-responsive"
                     >
                         <FaPlus/> Crear
+                    </Button>
+
+                    <Button
+                        variant="outline-success"
+                        onClick={handleReport}
+                        title="Generar reporte (Excel)"
+                    >
+                        <FaFileExcel /> Reporte
                     </Button>
                 </div>
 

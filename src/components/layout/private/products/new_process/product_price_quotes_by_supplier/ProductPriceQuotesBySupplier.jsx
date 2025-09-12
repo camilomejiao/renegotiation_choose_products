@@ -5,7 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
 
 //
-import {HeaderImage} from "../../../../shared/header_image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
@@ -19,7 +19,7 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
 import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
-
+import {getObservationsColumns, getStatusProduct} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 export const ProductPriceQuotesBySupplier = () => {
 
@@ -72,8 +72,10 @@ export const ProductPriceQuotesBySupplier = () => {
     };
 
     const baseColumns = getProductsPriceQuotesColumns();
+    const statusProduct = getStatusProduct();
+    const observationsColumns = getObservationsColumns(userAuth.rol_id);
 
-    const columns = [...baseColumns];
+    const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
 
     const handleRowUpdate = (newRow) => {
         // const pMin = Number(newRow.precio_min ?? 0);

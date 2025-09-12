@@ -1,7 +1,14 @@
-import {Tab, Tabs} from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
+
+//Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 
-export const UserList = () => {
+//Components
+import { UserList } from "./user/UserList";
+import { SupplierList } from "./suppliers/SupplierList";
+import { BeneficiaryList } from "./beneficiaries/BeneficiaryList";
+
+export const MenuTab = () => {
 
     return (
         <>
@@ -9,11 +16,11 @@ export const UserList = () => {
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
                     <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>¡Usuarios!</h1>
+                        <h1>¡Gestión de Usuarios!</h1>
                     </div>
                 </div>
 
-                <div className="content container">
+                <div className="container mt-5">
                     <Tabs
                         defaultActiveKey="profile"
                         id="justify-tab-example"
@@ -21,13 +28,13 @@ export const UserList = () => {
                         justify
                     >
                         <Tab eventKey="users" title="USUARIOS DEL SISTEMA">
-                            Tab content for Users
+                            <UserList />
                         </Tab>
                         <Tab eventKey="suppliers" title="PROVEEDORES">
-                            Tab content for Suppliers
+                            <SupplierList />
                         </Tab>
                         <Tab eventKey="beneficiaries" title="BENEFICIARIOS">
-                            Tab content for Beneficiaries
+                            <BeneficiaryList />
                         </Tab>
                     </Tabs>
                 </div>

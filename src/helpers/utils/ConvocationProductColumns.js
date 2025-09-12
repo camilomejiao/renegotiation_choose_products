@@ -1,5 +1,5 @@
 import { MenuItem, Select, TextField } from "@mui/material";
-import { FaFile, FaFileExcel, FaRegEdit, FaTrash } from "react-icons/fa";
+import { FaFile, FaRegEdit, FaTrash } from "react-icons/fa";
 import { formatPrice } from "./ValidateProductColumns";
 import { Button } from "react-bootstrap";
 
@@ -29,24 +29,6 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
                     title="Mostrar usuarios que ya han llenado información"
                 >
                     <FaFile />
-                </Button>
-            </div>
-        ),
-        sortable: false,
-        filterable: false,
-    },
-    {
-        field: 'report',
-        headerName: 'REPORTE',
-        width: 150,
-        renderCell: (params) => (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Button
-                    variant="outline-success"
-                    onClick={() => handleReport(params.row)}
-                    title="Generar reporte (Excel)"
-                >
-                    <FaFileExcel />
                 </Button>
             </div>
         ),

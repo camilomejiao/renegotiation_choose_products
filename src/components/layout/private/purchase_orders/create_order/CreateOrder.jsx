@@ -90,20 +90,12 @@ export const CreateOrder = () => {
                 //Obtenemos los datos completos del producto desde el servicio
                 const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
 
-                //Obtenemos la ubicacion del proveedor
-               const { locationKey, location_id, locationName} = getSupplierLocation();
-
-                //Buscamos el objeto que coincide con la ubicación del proveedor
-                const matchingMunicipio = data.valor_municipio.find((location) => {
-                    return location.ubicacion_proveedor === parseInt(locationKey);
-                });
-
-                if(!matchingMunicipio) {
+                if(!data) {
                     AlertComponent.error('Error', 'El producto no tiene valor total configurado!');
                     return;
                 }
 
-                const valorUnitario = parseInt(matchingMunicipio.valor_unitario);
+                const valorUnitario = parseInt(data?.valor_unitario);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
@@ -188,10 +180,8 @@ export const CreateOrder = () => {
 
     //Construye la estructura de datos a enviar
     const buildDataToSend = (itemsWithTotal) => {
-        const { locationKey} = getSupplierLocation();
         return {
             persona_cub_id: params.id,
-            ubicacion_id: parseInt(locationKey),
             valor_total: Math.ceil(total),
             items: itemsWithTotal
         };
@@ -268,10 +258,6 @@ export const CreateOrder = () => {
             documentTitle: 'Reporte Beneficiario',
         });
     };
-
-    const getSupplierLocation = () => {
-        return supplierServices.getLocation();
-    }
 
     //
     const validateProducts = () => {

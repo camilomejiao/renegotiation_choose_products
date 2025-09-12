@@ -55,8 +55,7 @@ export const ValidationSupervision = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedRowId, setSelectedRowId] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
@@ -90,7 +89,7 @@ export const ValidationSupervision = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     // Cargar planes
     const getPlans = async (convocationId) => {
@@ -123,7 +122,7 @@ export const ValidationSupervision = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const handleSelectedConvocation = async (option) => {
         setSelectedConvocation(option);
@@ -137,7 +136,6 @@ export const ValidationSupervision = () => {
         setSuppliers([]);
         if (option?.value) {
             await getPlans(option.value);
-            await getSuppliers(option.value);
         }
     };
 
@@ -152,7 +150,7 @@ export const ValidationSupervision = () => {
             typePlan: option?.value ?? "",
         }));
         if (option?.value) {
-            await getProductList(option.value);
+            await getSuppliers(formFields.typeCall);
         } else {
             setProductList([]);
             setFilteredData([]);
@@ -369,15 +367,15 @@ export const ValidationSupervision = () => {
                             {/* Select Jornada */}
                             <Col xs={12} md={4}>
                                 <Select
-                                    value={selectedConvocation ?? null}                          // 👈 null cuando no hay selección
+                                    value={selectedConvocation ?? null}
                                     options={convocations?.map(opt => ({ value: opt.id, label: opt.nombre }))}
                                     placeholder="Selecciona una Jornada"
-                                    onChange={handleSelectedConvocation}                         // recibe option o null
+                                    onChange={handleSelectedConvocation}
                                     isClearable
                                     classNamePrefix="custom-select"
                                     className="custom-select w-100"
                                     styles={{
-                                        placeholder: (base) => ({ ...base, color: '#6c757d' }),   // 👈 visible siempre
+                                        placeholder: (base) => ({ ...base, color: '#6c757d' }),
                                         singleValue: (base) => ({ ...base, color: '#212529' }),
                                     }}
                                     noOptionsMessage={() => "Sin opciones"}

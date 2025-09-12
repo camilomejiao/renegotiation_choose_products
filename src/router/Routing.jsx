@@ -19,7 +19,7 @@ import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
 import { CreateOrder } from "../components/layout/private/purchase_orders/create_order/CreateOrder";
 import { EditOrder } from "../components/layout/private/purchase_orders/edit_order_products/EditOrder";
-import { UserManagement } from "../components/layout/private/user_management/UserManagement";
+import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports/report_company/CompanyReport";
 import { OrderReport } from "../components/layout/private/purchase_orders/order_report/OrderReport";
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
@@ -28,8 +28,8 @@ import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditD
 import { ValidationSupervision } from "../components/layout/private/products/new_process/validation_supervision/ValidationSupervision";
 //import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
 //import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
-import { UserList } from "../components/layout/private/Users/UserList";
-import { CreateUser } from "../components/layout/private/Users/CreateUser";
+import { MenuTab } from "../components/layout/private/management/MenuTab";
+import { CreateUser } from "../components/layout/private/management/user/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
@@ -37,7 +37,7 @@ import { PaySuppliers } from "../components/layout/private/payments/suppliers/pa
 import { BeneficiaryDeliveryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
 import { CreateCallSuppliers } from "../components/layout/private/suppliers/calls_suppliers/CreateCallSuppliers";
 import { SupplierValidation } from "../components/layout/private/suppliers/supplier_validation/SupplierValidation";
-import {ReviewDocuments} from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
+import { ReviewDocuments } from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
 import {
     CreateCollectionAccount
 } from "../components/layout/private/payments/suppliers/create-collection-account/CreateCollectionAccount";
@@ -57,6 +57,10 @@ import {
 import {
     EditProductsByConvocation
 } from "../components/layout/private/products/new_process/edit_products_by_convocation/EditProductsByConvocation";
+import { ReportByConvocation } from "../components/layout/private/products/new_process/report/ReportByConvocation";
+import { CreateSuppliers } from "../components/layout/private/management/suppliers/CreateSuppliers";
+import { ConvocationList } from "../components/layout/private/management/convocation/ConvocationList";
+import { CreateConvocation } from "../components/layout/private/management/convocation/CreateConvocation";
 
 export const Routing = () => {
     return (
@@ -101,6 +105,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
                         <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
                         <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
+                        <Route path={ RouterEnum.ReportByConvocation }  element={ <ReportByConvocation /> }  />
 
                         {/* Payments */}
                         <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
@@ -113,16 +118,19 @@ export const Routing = () => {
                         <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
                         <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
 
-                        {/* Users */}
-                        <Route path={ RouterEnum.Users }  element={ <UserList /> }  />
+                        {/* Management */}
+                        <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
                         <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
+                        <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
+                        <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
+                        <Route path={ RouterEnum.CreateConvocation }  element={ <CreateConvocation /> }  />
 
-                        {/* Suppliers */}
+                        {/* Convocation Suppliers */}
                         <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />
                         <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
 
                         {/* Reportes */}
-                        <Route path={ RouterEnum.Reports }  element={ <UserManagement /> }  />
+                        <Route path={ RouterEnum.Reports }  element={ <BeneficiariesManagement /> }  />
                         <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
                         <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
 

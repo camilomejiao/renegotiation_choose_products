@@ -13,7 +13,7 @@ import glass from "../../../../assets/image/icons/magnifying_glass.png";
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
-import { ConsolidatedPurchaseReport } from "./user_report/ConsolidatedPurchaseReport";
+import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { handleError, showAlert } from "../../../../helpers/utils/utils";
 
@@ -23,14 +23,14 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
 //Css
-import './UserManagement.css';
+import './BeneficiariesManagement.css';
 
 //Enum
 import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 
-export const UserManagement = () => {
+export const BeneficiariesManagement = () => {
     const params = useParams();
     const navigate = useNavigate();
 

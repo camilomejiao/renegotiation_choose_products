@@ -31,11 +31,15 @@ export const RouterEnum = {
     ListProductsByConvocation: 'list-products-by-convocation', //Nuevo proceso de listado de productos
     EditProductsByConvocation: 'edit-products-by-convocation/:id',
     ProductUpload: 'product-upload', //Nuevo proceso de cargue de productos
-    ProductPriceQuotes: 'product-price-quotes', //
+    ProductPriceQuotes: 'product-price-quotes',
+    ReportByConvocation: 'report-by-convocation',
 
-    //Users
-    Users: 'users',
+    //Managment
+    Management: 'management',
     CreateUsers: 'create-users',
+    CreateSuppliers: 'create-suppliers',
+    ConvocationList: 'list-convocation',
+    CreateConvocation: 'create-convocation',
 
     //payments
     Payments: 'payments',
@@ -48,7 +52,7 @@ export const RouterEnum = {
     ListAccountOfSuppliers: 'fiduciary/list-account-suppliers',
     CollectionAccountDetails: 'fiduciary/collection-account-details/:id',
 
-    //Suppliers
+    //Managment Convocation Suppliers
     CreateCallsSuppliers: 'create-calls-suppliers',
     SupplierValidation: 'supplier-validation',
 
