@@ -102,7 +102,7 @@ export const CreateOrder = () => {
                     id: data.id,
                     nombre: data.nombre,
                     unidad: data.unidad,
-                    valor_unitario: valorUnitario,
+                    valor_unitario: valorUnitario ?? 0,
                     quantity : 1,
                     discount: '0'
                 }]);
@@ -261,7 +261,10 @@ export const CreateOrder = () => {
 
     //
     const validateProducts = () => {
-        return total === 0 || saldoRestante <= 0 ;
+        if(isNaN(total) || isNaN(saldoRestante)) {
+            return true;
+        }
+        return total === 0 || saldoRestante < 0 ;
     };
 
     useEffect(() => {

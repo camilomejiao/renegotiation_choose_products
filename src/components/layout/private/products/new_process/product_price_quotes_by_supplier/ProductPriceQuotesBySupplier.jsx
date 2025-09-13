@@ -94,14 +94,23 @@ export const ProductPriceQuotesBySupplier = () => {
         return newRow;
     };
 
-    const handleSearchChange = (event) => {
-        const query = event.target.value.toLowerCase();
+    /**
+     * Filtra la tabla por texto en varios campos visibles.
+     */
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
         setSearchQuery(query);
-        const filteredData = rows.filter((row) =>
-            Object.values(row).some((value) =>
-                value.toString().toLowerCase().includes(query)
-            )
+
+        const filteredData = rows.filter(
+            (product) =>
+                (product.name || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.description || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.brand || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.unit || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.price || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.state || "").toLowerCase().includes(query.toLowerCase())
         );
+
         setFilteredRows(filteredData);
     };
 
