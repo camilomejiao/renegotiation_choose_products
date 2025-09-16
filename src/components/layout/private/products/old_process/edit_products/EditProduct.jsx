@@ -278,13 +278,13 @@ export const EditProduct = () => {
                                 className="input-responsive"
                             />
 
-                            <Button onClick={handleCreateProducts} className="button-order-responsive">
+                            <Button onClick={handleCreateProducts}
+                                    className="button-order-responsive">
                                 <FaPlus /> Agregar productos
                             </Button>
 
                             <Button
-                                variant="secondary"
-                                size="md"
+                                variant="outline-info"
                                 onClick={handleBack}
                                 className="button-order-responsive">
                                 <FaBackspace /> Atras
@@ -355,8 +355,7 @@ export const EditProduct = () => {
                     {/* Botón Guardar */}
                     <div className="d-flex align-items-end mt-3">
                         <Button
-                            variant="success"
-                            size="md"
+                            variant="outline-success"
                             onClick={handleSaveProducts}
                             className="ms-auto"
                             disabled={loading}

@@ -17,7 +17,7 @@ import {
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
 //Services
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 //Enum
 import {
@@ -71,7 +71,7 @@ export const ReportByConvocation = () => {
     const getConvocations = async () => {
         setLoading(true);
         try {
-            const {data, status} = await convocationServices.getConvocationInformation();
+            const {data, status} = await convocationProductsServices.getConvocationInformation();
             if (status === ResponseStatusEnum.OK) {
                 setConvocations(data.data);
             }
@@ -86,7 +86,7 @@ export const ReportByConvocation = () => {
     const getPlans = async (convocationId) => {
         try {
             setLoading(true);
-            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes);
             } else {
@@ -104,7 +104,7 @@ export const ReportByConvocation = () => {
     const getSuppliers = async (convocationId) => {
         setLoading(true);
         try {
-            const { data, status } = await convocationServices.getSupplierByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getSupplierByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setSuppliers(data.data.proveedores);
             }
@@ -161,7 +161,7 @@ export const ReportByConvocation = () => {
     const getDataReport = async (supplierId) => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationServices.convocationServices(formFields.typePlan, supplierId);
+            const { data, status } = await convocationProductsServices.convocationServices(formFields.typePlan, supplierId);
             if (status === ResponseStatusEnum.OK) {
                 const products =  await normalizeRows(data.data);
                 setProductList(products);
@@ -328,7 +328,7 @@ export const ReportByConvocation = () => {
 
                         {/* Button Search */}
                         <Col xs={12} md={2} className="d-flex align-items-center">
-                            <Button variant="success" className="w-100" onClick={handleSearchInformation} disabled={loading} style={{marginTop: '10px'}}>
+                            <Button variant="outline-success" className="w-100" onClick={handleSearchInformation} disabled={loading} style={{marginTop: '10px'}}>
                                 <FaSearch /> Buscar
                             </Button>
                         </Col>

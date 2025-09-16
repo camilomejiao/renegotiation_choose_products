@@ -60,7 +60,7 @@ import {
 import { ReportByConvocation } from "../components/layout/private/products/new_process/report/ReportByConvocation";
 import { CreateSuppliers } from "../components/layout/private/management/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management/convocation/ConvocationList";
-import { CreateConvocation } from "../components/layout/private/management/convocation/CreateConvocation";
+import { ConvocationMenuTab } from "../components/layout/private/management/convocation/ConvocationMenuTab";
 
 export const Routing = () => {
     return (
@@ -123,7 +123,8 @@ export const Routing = () => {
                         <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
                         <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
                         <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
-                        <Route path={ RouterEnum.CreateConvocation }  element={ <CreateConvocation /> }  />
+                        <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
+                        <Route path={ RouterEnum.CreateConvocationEdit }  element={ <ConvocationMenuTab /> }  />
 
                         {/* Convocation Suppliers */}
                         <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />

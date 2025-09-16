@@ -14,7 +14,7 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
@@ -86,7 +86,7 @@ export const ValidationEnvironmental = () => {
     const getConvocations = async () => {
         setLoading(true);
         try {
-            const { data, status } = await convocationServices.getConvocations();
+            const { data, status } = await convocationProductsServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
                 setConvocations(data.data.jornadas);
             }
@@ -104,7 +104,7 @@ export const ValidationEnvironmental = () => {
     const getPlans = async (convocationId) => {
         try {
             setLoading(true);
-            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes || []);
             } else {
@@ -162,7 +162,7 @@ export const ValidationEnvironmental = () => {
     const getProductList = async (planId) => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationServices.getProductByConvocationAndPlan(planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(planId);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
@@ -419,7 +419,7 @@ export const ValidationEnvironmental = () => {
      */
     const sendBatchApproval = async (payload) => {
         try {
-            const { status } = await convocationServices.approveOrDennyEnvironmental(payload);
+            const { status } = await convocationProductsServices.approveOrDennyEnvironmental(payload);
             return status === ResponseStatusEnum.OK;
         } catch (error) {
             console.error("Error sending batch approval:", error);
@@ -524,7 +524,7 @@ export const ValidationEnvironmental = () => {
                 productos
             }
 
-            const { status } = await convocationServices.updateValidationEnvironmental(sendData);
+            const { status } = await convocationProductsServices.updateValidationEnvironmental(sendData);
 
             if(status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Productos actualizados con éxito.");
@@ -712,8 +712,7 @@ export const ValidationEnvironmental = () => {
                     {/* Botón Guardar */}
                     <div className="d-flex justify-content-end gap-2 mt-3">
                         <Button
-                            variant="warning"
-                            size="md"
+                            variant="outline-warning"
                             color="primary"
                             onClick={handleOpenModal}
                             disabled={loading}
@@ -721,7 +720,7 @@ export const ValidationEnvironmental = () => {
                             <FaThumbsUp /> Aprobar / <FaThumbsDown /> Denegar
                         </Button>
 
-                        <Button variant="success" size="md" onClick={handleSaveProducts} disabled={loading}>
+                        <Button variant="outline-success" onClick={handleSaveProducts} disabled={loading}>
                             <FaSave /> {loading ? "Guardando..." : "Guardar Productos"}
                         </Button>
                     </div>

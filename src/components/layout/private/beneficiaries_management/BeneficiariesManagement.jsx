@@ -215,7 +215,7 @@ export const BeneficiariesManagement = () => {
 
                 {loading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
+                        <Spinner animation="border" variant="outline-success" />
                         <span>Cargando...</span>
                     </div>
                 )}

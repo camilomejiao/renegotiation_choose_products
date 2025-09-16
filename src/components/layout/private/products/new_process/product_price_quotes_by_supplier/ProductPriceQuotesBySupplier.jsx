@@ -12,7 +12,7 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
@@ -36,7 +36,7 @@ export const ProductPriceQuotesBySupplier = () => {
     const getProductList = async () => {
         try {
             setLoadingTable(true);
-            const { data, status } = await convocationServices.getProductsBySupplier(userAuth.id);
+            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id);
             if(status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data);
                 setRows(products);
@@ -154,7 +154,7 @@ export const ProductPriceQuotesBySupplier = () => {
                 productos
             }
 
-            const { data, status } = await convocationServices.saveProductBySupplier(sendData);
+            const { data, status } = await convocationProductsServices.saveProductBySupplier(sendData);
 
             if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
                 handleError('Error', 'Error en el formato de productos');
@@ -268,8 +268,7 @@ export const ProductPriceQuotesBySupplier = () => {
                     {/* Botón Guardar */}
                     <div className="d-flex align-items-end mt-3">
                         <Button
-                            variant="success"
-                            size="md"
+                            variant="outline-success"
                             onClick={handleSaveProducts}
                             className="ms-auto"
                             disabled={loading}

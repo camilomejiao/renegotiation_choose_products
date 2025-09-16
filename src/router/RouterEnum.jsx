@@ -40,6 +40,7 @@ export const RouterEnum = {
     CreateSuppliers: 'create-suppliers',
     ConvocationList: 'list-convocation',
     CreateConvocation: 'create-convocation',
+    CreateConvocationEdit: "create-convocation/:id",
 
     //payments
     Payments: 'payments',

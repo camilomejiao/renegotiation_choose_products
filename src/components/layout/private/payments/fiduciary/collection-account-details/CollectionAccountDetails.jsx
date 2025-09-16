@@ -158,7 +158,7 @@ export const CollectionAccountDetails = () => {
                             </button>
                         </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="danger" onClick={handleGenerateDocument}>
+                            <Button className="generate" variant="outline-danger" onClick={handleGenerateDocument}>
                                 📝 Generar documento
                             </Button>
                         </Col>

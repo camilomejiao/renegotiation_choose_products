@@ -15,7 +15,7 @@ import {
 
 //Services
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 export const ListProductsByConvocation = () => {
 
@@ -32,7 +32,7 @@ export const ListProductsByConvocation = () => {
     const getProductsByConvocation = async () => {
         try {
             setLoading(true);
-            const {data, status} = await convocationServices.getConvocationInformation();
+            const {data, status} = await convocationProductsServices.getConvocationInformation();
             if(status === ResponseStatusEnum.OK){
                 const products = await normalizeRows(data);
                 setRows(products);
@@ -253,7 +253,7 @@ export const ListProductsByConvocation = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={closeSuppliersModal}>
+                    <Button variant="outline-danger" onClick={closeSuppliersModal}>
                         Cerrar
                     </Button>
                 </Modal.Footer>

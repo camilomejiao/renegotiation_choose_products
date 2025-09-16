@@ -2,7 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
-import {FaCheck, FaClipboardCheck, FaFilePdf, FaPencilAlt, FaTimes, FaTrash } from "react-icons/fa";
+import {
+    FaCheck,
+    FaClipboardCheck,
+    FaFilePdf,
+    FaPencilAlt,
+    FaSave,
+    FaStepBackward,
+    FaTimes,
+    FaTrash
+} from "react-icons/fa";
 import printJS from "print-js";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -67,11 +76,17 @@ const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl
 const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
 
 /**
- * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrónica) de la fila.
+ * Devuelve la URL del archivo Imagen1 y Imagen2 de la fila.
  * @param {Object} row - Fila del DataGrid.
  */
 const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
 const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
+
+/**
+ * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrónica) de la fila.
+ * @param {Object} row - Fila del DataGrid.
+ */
+const hasPdfOK = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl && row?.evidencePdf?.feFileUrl && row?.evidenceImg?.imgEvidence1Url && row?.evidenceImg?.imgEvidence2Url);
 
 export const Deliveries = () => {
 
@@ -263,8 +278,7 @@ export const Deliveries = () => {
     const renderGeneratePdfCell = (params) => (
         <div>
             <Button
-                variant="primary"
-                size="sm"
+                variant="outline-primary"
                 onClick={() => handleDeliveryInformationReport(params.row.id)}
                 title="Generar acta de entrega (PDF)"
             >
@@ -279,8 +293,7 @@ export const Deliveries = () => {
         return (
             <div>
                 <Button
-                    variant="secondary"
-                    size="sm"
+                    variant="outline-secondary"
                     onClick={() => handleUploadFile(row.id, UploadFileEnum.PDF)}
                     disabled={isButtonDisabled(row)}
                     title="Subir consolidado de entrega (PDF)"
@@ -290,8 +303,7 @@ export const Deliveries = () => {
 
                 {hasPdfConsolidado(row) && (
                     <Button
-                        variant="success"
-                        size="sm"
+                        variant="outline-success"
                         onClick={() => handleViewFile(row.evidencePdf.consolidatedFileUrl)}
                         style={{ marginLeft: 10 }}
                         title="Ver consolidado"
@@ -318,8 +330,7 @@ export const Deliveries = () => {
             return (
                 <div>
                     <Button
-                        variant="info"
-                        size="sm"
+                        variant="outline-info"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row) || !canEdit}
                         title="Adjuntar factura electrónica (PDF) y número de FE"
@@ -336,8 +347,7 @@ export const Deliveries = () => {
                 <span>{row.fe_number}</span>
                 {fePdfUrl && (
                     <Button
-                        variant="success"
-                        size="sm"
+                        variant="outline-success"
                         onClick={() => handleViewFile(fePdfUrl)}
                         title="Ver Docuemnto cargado"
                     >
@@ -347,8 +357,7 @@ export const Deliveries = () => {
 
                 {canEdit && (
                     <Button
-                        variant="warning"
-                        size="sm"
+                        variant="outline-warning"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row)}
                         title="Editar Documento"
@@ -372,8 +381,7 @@ export const Deliveries = () => {
             <div>
                 {canEdit && (
                     <Button
-                        variant="warning"
-                        size="sm"
+                        variant="outline-warning"
                         onClick={() => handleEditDelivery(row.id)}
                         style={{ marginRight: 10 }}
                         disabled={isButtonDisabled(row)}
@@ -385,8 +393,7 @@ export const Deliveries = () => {
 
                 {canDelete && (
                     <Button
-                        variant="danger"
-                        size="sm"
+                        variant="outline-danger"
                         onClick={() => handleDeleteDelivery(row.id)}
                         style={{ marginRight: 10 }}
                         disabled={isButtonDisabled(row)}
@@ -397,10 +404,9 @@ export const Deliveries = () => {
                 )}
 
                 {/* Aprobación Territorial (solo si hay consolidado) */}
-                {hasPdfConsolidado(row) && isTL && (
+                {hasPdfOK(row) && isTL && (
                     <Button
                         style={{ backgroundColor: "#FFF", marginRight: 10 }}
-                        size="sm"
                         onClick={() => {
                             setSelectedDeliveryId(row.id);
                             setOpenModal(true);
@@ -413,10 +419,9 @@ export const Deliveries = () => {
                 )}
 
                 {/* Aprobación Técnica/Admin (solo si hay consolidado) */}
-                {hasPdfConsolidado(row) && isTechOrAdmin && (
+                {hasPdfOK(row) && isTechOrAdmin && (
                     <Button
                         style={{ backgroundColor: "#FFF" }}
-                        size="sm"
                         onClick={() => {
                             setSelectedDeliveryId(row.id);
                             setOpenModal(true);
@@ -441,8 +446,7 @@ export const Deliveries = () => {
                 {hasPdfConsolidado(row) && (
                     <div className="d-flex align-items-center gap-2">
                         <Button
-                            variant="secondary"
-                            size="sm"
+                            variant="outline-secondary"
                             onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE1)}
                             title="Subir imagen 1"
                         >
@@ -451,8 +455,7 @@ export const Deliveries = () => {
 
                         {imagen1Url && (
                             <Button
-                                variant="success"
-                                size="sm"
+                                variant="outline-success"
                                 onClick={() => handleViewFile(imagen1Url)}
                                 title="Ver Docuemnto cargado"
                             >
@@ -461,8 +464,7 @@ export const Deliveries = () => {
                         )}
 
                         <Button
-                            variant="secondary"
-                            size="sm"
+                            variant="outline-secondary"
                             onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE2)}
                             title="Subir imagen 1"
                         >
@@ -471,8 +473,7 @@ export const Deliveries = () => {
 
                         {imagen2Url && (
                             <Button
-                                variant="success"
-                                size="sm"
+                                variant="outline-success"
                                 onClick={() => handleViewFile(imagen2Url)}
                                 title="Ver Docuemnto cargado"
                             >
@@ -489,11 +490,11 @@ export const Deliveries = () => {
     const deliveryColumns = [
         { field: "id", headerName: "N° ENTREGA", width: 150 },
         { field: "date", headerName: "FECHA", width: 150 },
-        { field: "supplier", headerName: "PROVEEDOR", width: 300 },
+        { field: "supplier", headerName: "PROVEEDOR", width: 350 },
         {
             field: "generatePdf",
             headerName: "GENERAR ACTA DE ENTREGA",
-            width: 150,
+            width: 200,
             renderCell: renderGeneratePdfCell,
             sortable: false,
             filterable: false,
@@ -509,7 +510,7 @@ export const Deliveries = () => {
         {
             field: "fe_number",
             headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
-            width: 350,
+            width: 400,
             renderCell: renderFeCell,
             sortable: false,
             filterable: false,
@@ -517,7 +518,7 @@ export const Deliveries = () => {
         {
             field: "evidence_photo",
             headerName: "EVIDENCIA FOTOGRAFICA",
-            width: 480,
+            width: 550,
             renderCell: renderPhotoCell,
             sortable: false,
             filterable: false,
@@ -526,7 +527,7 @@ export const Deliveries = () => {
         {
             field: "actions",
             headerName: "ACCIONES",
-            width: 260,
+            width: 250,
             renderCell: renderActionsCell,
             sortable: false,
             filterable: false,
@@ -826,12 +827,14 @@ export const Deliveries = () => {
             ];
             if (!allowedTypes.includes(file.type)) {
                 showError('Archivo no válido', 'Solo se permiten archivos PDF o imagenes en formato jpeg, png.');
+                refreshPage();
                 return;
             }
 
             //Validar el tamaño del archivo
             if (file.size > MAX_SIZE) {
                 showError('Archivo muy grande', 'El PDF no debe superar 10 MB.');
+                refreshPage();
                 return;
             }
 
@@ -1075,7 +1078,7 @@ export const Deliveries = () => {
 
                 {loading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
+                        <Spinner animation="border" variant="outline-success" />
                         <span>Cargando...</span>
                     </div>
                 )}
@@ -1122,17 +1125,11 @@ export const Deliveries = () => {
                                 />
                                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
-                                        variant="success"
-                                        size="lg"
+                                        variant="outline-secondary"
                                         onClick={() => navigate(-1)}
                                         className="responsive-button mb-2 mb-md-0"
-                                        style={{
-                                            backgroundColor: "#2148C0",
-                                            borderColor: "#007BFF",
-                                            fontWeight: "bold",
-                                        }}
                                     >
-                                        <i className="fas fa-save me-2"></i>ATRÁS
+                                        <FaStepBackward /> ATRÁS
                                     </Button>
                                 </div>
                             </>
@@ -1194,31 +1191,19 @@ export const Deliveries = () => {
 
                                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
-                                        variant="success"
-                                        size="lg"
+                                        variant="outline-secondary"
                                         onClick={() => navigate(refreshPage())}
                                         className="responsive-button mb-2 mb-md-0"
-                                        style={{
-                                            backgroundColor: "#2148C0",
-                                            borderColor: "#007BFF",
-                                            fontWeight: "bold",
-                                        }}
                                     >
-                                        <i className="fas fa-save me-2"></i>ATRÁS
+                                        <FaStepBackward /> ATRÁS
                                     </Button>
 
                                     <Button
-                                        variant="success"
-                                        size="lg"
+                                        variant="outline-success"
                                         onClick={handleSaveProduct}
                                         className="responsive-button"
-                                        style={{
-                                            backgroundColor: "#BFD732",
-                                            borderColor: "#BFD732",
-                                            fontWeight: "bold",
-                                        }}
                                     >
-                                        <i className="fas fa-save me-2"></i>GUARDAR ENTREGA
+                                        <FaSave /> GUARDAR ENTREGA
                                     </Button>
                                 </div>
                             </>

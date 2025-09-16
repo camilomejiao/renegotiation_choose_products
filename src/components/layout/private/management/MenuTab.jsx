@@ -22,7 +22,7 @@ export const MenuTab = () => {
 
                 <div className="container mt-5">
                     <Tabs
-                        defaultActiveKey="profile"
+                        defaultActiveKey="users"
                         id="justify-tab-example"
                         className="mb-3"
                         justify

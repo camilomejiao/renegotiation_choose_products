@@ -62,12 +62,16 @@ export const ReviewDocuments = () => {
         try {
             setInformationLoadingText("Obteniendo archivo");
 
-            const { blob, status } = await filesServices.downloadFile(pdfUrl?.url_descarga);
+            const { blob, status, type } = await filesServices.downloadFile(pdfUrl?.url_descarga);
 
-            if (status === ResponseStatusEnum.OK && blob) {
-                const file = new Blob([blob], { type: "application/pdf" });
-                const fileURL = URL.createObjectURL(file);
-                window.open(fileURL, '_blank');
+            if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
+                const mime = (type || blob.type || '').toLowerCase();
+
+                // Solo PDF o imágenes
+                if (mime.includes('pdf') || mime.startsWith('image/')) {
+                    const fileURL = URL.createObjectURL(blob);
+                    window.open(fileURL, '_blank');
+                }
             }
 
             if (status === ResponseStatusEnum.NOT_FOUND) {
@@ -171,6 +175,21 @@ export const ReviewDocuments = () => {
                         {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
                             <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
                                 <img src={downloadImg} alt="" /> Acta de entrega
+                            </button>
+                        )}
+                        {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
+                                <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                            </button>
+                        )}
+                        {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
+                                <img src={downloadImg} alt="" /> Evidencia 1
+                            </button>
+                        )}
+                        {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
+                                <img src={downloadImg} alt="" /> Evidencia 2
                             </button>
                         )}
 

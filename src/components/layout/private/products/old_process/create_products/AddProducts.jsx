@@ -322,7 +322,7 @@ export const AddProducts = () => {
                             <FaBroom/> Reiniciar tabla
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant="outline-info"
                             size="md"
                             onClick={handleBack}
                             className="button-order-responsive">
@@ -389,8 +389,7 @@ export const AddProducts = () => {
                 {/* Botón Guardar */}
                 <div className="d-flex align-items-end mt-3">
                     <Button
-                        variant="success"
-                        size="md"
+                        variant="outline-success"
                         onClick={handleSaveProducts}
                         className="ms-auto"
                         disabled={loading}

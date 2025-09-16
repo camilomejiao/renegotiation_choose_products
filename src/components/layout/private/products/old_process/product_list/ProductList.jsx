@@ -575,7 +575,7 @@ export const ProductList = () => {
                                         <FaPlus/> Agregar productos
                                     </Button>
 
-                                    <Button variant="secondary"
+                                    <Button variant="outline-secondary"
                                             onClick={() => navigate(`/admin/edit-product`)}
                                             className="button-order-responsive">
                                         <FaEdit/> Editar productos
@@ -692,8 +692,7 @@ export const ProductList = () => {
                         {allowedRoles.includes(userAuth.rol_id) && (
                             <>
                                 <Button
-                                    variant="warning"
-                                    size="md"
+                                    variant="outline-warning"
                                     color="primary"
                                     onClick={handleOpenModal}
                                     disabled={loading}
@@ -705,8 +704,7 @@ export const ProductList = () => {
                         {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
                             <>
                                 <Button
-                                    variant="success"
-                                    size="md"
+                                    variant="outline-success"
                                     onClick={handleSaveProducts}
                                     disabled={loading}
                                 >

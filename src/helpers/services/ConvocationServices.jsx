@@ -1,12 +1,9 @@
 import { GlobalConnex } from "../GlobalConnex";
-import { authTokenService } from "./AuthTokenService";
+import {authTokenService} from "./AuthTokenService";
 
-/**
- * Servicio para interactuar con el módulo de Jornadas (WorksDay) en la API.
- *
- *
- */
+
 class ConvocationServices {
+
     /**
      * Crea una nueva instancia del servicio de Jornadas.
      *  @type {string}
@@ -27,143 +24,49 @@ class ConvocationServices {
     }
 
     /**
-     * Obtiene las **jornadas abiertas**.
+     * Registra convocatorias.
+     * POST `/jornadas/crear/`
      *
-     * GET `/jornadas/abiertas/`
-     *
-     * @returns {Promise<{ data: any, status: number }>} Promesa con `data` (payload de la API) y `status`.
-     */
-    getConvocations() {
-        const url = this.buildUrl(`abiertas/`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Obtiene los **planes activos** asociados a una jornada.
-     *
-     * GET `/jornadas/planes/?jornada_id={id}&activo=true`
-     *
-     * @param {number|string} convocationId - ID de la jornada.
-     * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
-     *
-     */
-    getPlansByConvocation(convocationId) {
-        const url = this.buildUrl(`planes/?jornada_id=${convocationId}&activo=true`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Obtiene **todas las jornadas** (completas).
-     *
-     * GET `/jornadas/completas/`
-     *
+     * @param {object} payload - Payload a enviar.
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
-    getConvocationInformation() {
-        const url = this.buildUrl(`completas/`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Registra productos para una **jornada/plan**.
-     *
-     * POST `/jornadas/productos/`
-     *
-     * @param {object} products - Payload a enviar.
-     * @param {number|string} products.jornada_plan - Identificador de la relación jornada–plan (o el que defina tu API).
-     * @param {Array<object>} products.productos - Arreglo de productos a registrar (puede enviar en lotes).
-     * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
-     */
-    saveProductsByConvocation(products) {
-        const url = this.buildUrl(`productos/`);
+    create(payload) {
+        const url = this.buildUrl(`crear/`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: JSON.stringify(products),
-        });
-    }
-
-    /**
-     * Obtiene los **productos asociados a un proveedor**.
-     *
-     * GET `/jornadas/productos/proveedor/?proveedor_id={id}`
-     *
-     * @param {number|string} supplierId - ID del proveedor.
-     * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
-     */
-    getProductsBySupplier(supplierId) {
-        const url = this.buildUrl(`productos/proveedor/?proveedor_id=${supplierId}`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Registra productos para un **proveedor** en modo bulk.
-     *
-     * POST `/jornadas/productos/proveedor/bulk/`
-     *
-     * @param {object} products - Payload a enviar.
-     * @param {number|string} products.proveedor_id - Identificador del proveedor (según contrato).
-     * @param {Array<object>} products.productos - Arreglo de productos a registrar.
-     * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
-     */
-    saveProductBySupplier(products) {
-        const url = this.buildUrl(`productos/proveedor/bulk/`);
-        return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: JSON.stringify(products),
+            body: JSON.stringify(payload),
         });
     }
 
     /**
      *
      */
-    getProductByConvocationAndPlan(ConvocationPlanId) {
-        const url = this.buildUrl(`productos-por-plan/?jornada_plan_id=${ConvocationPlanId}`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     *
-     */
-    getSupplierByConvocation(convocationId) {
-        const url = this.buildUrl(`proveedores-por-jornada/?jornada_id=${convocationId}`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     *
-     */
-    updateValidationEnvironmental(products) {
-        const url = this.buildUrl(`productos/ambiental/bulk/`);
+    update(id, payload) {
+        const url = this.buildUrl(`/${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: JSON.stringify(products),
+            method: "PUT",
+            body: JSON.stringify(payload),
         });
     }
 
     /**
      *
      */
-    approveOrDennyEnvironmental(products) {
-        const url = this.buildUrl(`productos/aprobacion/bulk/`);
-        return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: JSON.stringify(products),
-        });
+    get() {
+        const url = this.buildUrl('/');
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-    /**
-     *
-     */
-    convocationServices(convocationPlanId, supplierId) {
-        const url = this.buildUrl(`productos-con-aprobaciones/?jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}`);
+    getById(convocationId) {
+        const url = this.buildUrl(`${convocationId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
     /**
      *
      */
-    deleteProduct(productId) {
-        const url = this.buildUrl(`productos/${productId}/`);
+    delete(convoctaionId) {
+        const url = this.buildUrl(`${convoctaionId}/eliminar`);
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 

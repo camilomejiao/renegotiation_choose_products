@@ -269,10 +269,10 @@ export const CreateCollectionAccount = () => {
                     </div>
 
                     <div className="d-flex justify-content-end gap-2 mt-3">
-                        <Button variant="secondary" size="md" onClick={onBack}>
+                        <Button variant="outline-info" size="md" onClick={onBack}>
                             <FaStepBackward /> Atras
                         </Button>
-                        <Button variant="success" size="md" onClick={handleSaveUsers}>
+                        <Button variant="outline-success" size="md" onClick={handleSaveUsers}>
                             <FaSave /> Crear cuenta de cobro
                         </Button>
                     </div>

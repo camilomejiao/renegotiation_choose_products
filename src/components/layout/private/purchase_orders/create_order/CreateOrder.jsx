@@ -27,7 +27,6 @@ import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-import {supplierServices} from "../../../../../helpers/services/SupplierServices";
 
 export const CreateOrder = () => {
 
@@ -331,7 +330,7 @@ export const CreateOrder = () => {
                                         }}
                                         placeholder="Buscar productos..."
                                     />
-                                    <Button variant="success"
+                                    <Button variant="outline-success"
                                             disabled={parseFloat(saldoRestante) === 0}
                                             onClick={addItemToTable}
                                             className="addProductButton ms-2"
@@ -414,8 +413,7 @@ export const CreateOrder = () => {
                                         </td>
                                         <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
                                         <td>
-                                            <Button variant="danger"
-                                                    size="sm"
+                                            <Button variant="outline-danger"
                                                     onClick={() => handleDeleteItem(index)}>
                                                 <FaTrashAlt />
                                             </Button>
@@ -438,8 +436,7 @@ export const CreateOrder = () => {
                     <Row className="mt-3 justify-content-md-end justify-content-center">
                         <Col xs="auto" className="text-center text-md-end">
                             <Button
-                                variant="info"
-                                size="lg"
+                                variant="outline-info"
                                 onClick={() => getHeadlineReport(params.id)}
                                 disabled={isReportLoading}
                                 className="button-responsive me-md-2 mb-2 mb-md-0"
@@ -461,8 +458,7 @@ export const CreateOrder = () => {
                                 )}
                             </Button>
                             <Button
-                                variant="success"
-                                size="lg"
+                                variant="outline-success"
                                 onClick={handleSaveProduct}
                                 disabled={validateProducts()}
                                 className="button-responsive"

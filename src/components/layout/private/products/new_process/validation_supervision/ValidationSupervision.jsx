@@ -14,7 +14,7 @@ import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedMod
 
 // Services
 import { productServices } from "../../../../../../helpers/services/ProductServices";
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Enum
@@ -80,7 +80,7 @@ export const ValidationSupervision = () => {
     const getConvocations = async () => {
         setLoading(true);
         try {
-            const {data, status} = await convocationServices.getConvocations();
+            const {data, status} = await convocationProductsServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
                 setConvocations(data.data.jornadas);
             }
@@ -95,7 +95,7 @@ export const ValidationSupervision = () => {
     const getPlans = async (convocationId) => {
         try {
             setLoading(true);
-            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes);
             } else {
@@ -113,7 +113,7 @@ export const ValidationSupervision = () => {
     const getSuppliers = async (convocationId) => {
         setLoading(true);
         try {
-            const { data, status } = await convocationServices.getSupplierByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getSupplierByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setSuppliers(data.data.proveedores);
             }
@@ -172,7 +172,7 @@ export const ValidationSupervision = () => {
     const getProductList = async (supplierId) => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationServices.convocationServices(formFields.typePlan, supplierId);
+            const { data, status } = await convocationProductsServices.convocationServices(formFields.typePlan, supplierId);
             if (status === ResponseStatusEnum.OK) {
                 const products =  await normalizeRows(data.data);
                 setProductList(products);
@@ -510,8 +510,7 @@ export const ValidationSupervision = () => {
                         <div className="d-flex justify-content-end gap-2 mt-3">
                             <>
                                 <Button
-                                    variant="warning"
-                                    size="md"
+                                    variant="outline-warning"
                                     color="primary"
                                     onClick={handleOpenModal}
                                     disabled={loading}

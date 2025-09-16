@@ -254,7 +254,7 @@ export const EditDeliveryOrder = () => {
 
                 {isLoading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
+                        <Spinner animation="border" variant="outline-success" />
                         <span>Editando productos...</span>
                     </div>
                 )}
@@ -310,7 +310,7 @@ export const EditDeliveryOrder = () => {
 
                         <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                             <Button
-                                variant="success"
+                                variant="outline-success"
                                 size="lg"
                                 onClick={handleBack}
                                 className="responsive-button mb-2 mb-md-0"
@@ -324,7 +324,7 @@ export const EditDeliveryOrder = () => {
                             </Button>
 
                             <Button
-                                variant="success"
+                                variant="outline-success"
                                 size="lg"
                                 onClick={handleSaveProduct}
                                 className="responsive-button"

@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import {FaCheck, FaRegEdit} from "react-icons/fa";
+import { FaCheck, FaRegEdit, FaTrash } from "react-icons/fa";
 
 
 export const getSystemUsersColumns = (handleActiveAndInactiveUser, handleEditClick) => ([
@@ -73,6 +73,38 @@ export const getBeneficiaryColumn = () => ([
     { field: "resolution", headerName: "RESOLUCIÓN", width: 200 },
 ]);
 
-export const getConvocationColumn = () => ([
+export const getConvocationColumn = (handleEditClick, handleDeleteClick) => ([
     { field: "id", headerName: "ID", width: 70 },
+    { field: "name", headerName: "NOMBRE", width: 200 },
+    { field: "start_date", headerName: "FECHA INICIAL", width: 200 },
+    { field: "end_date", headerName: "FECHA FINAL", width: 200 },
+    { field: "remaining_days", headerName: "DIAS RESTANTES", width: 200 },
+    { field: "status", headerName: "ESTADO", width: 200 },
+    { field: "description", headerName: "DESCRIPCIÓN", width: 200 },
+    {
+        field: 'actions',
+        headerName: 'Acciones',
+        width: 150,
+        renderCell: (params) => (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: '10px' }}>
+                <Button
+                    variant="outline-warning"
+                    onClick={() => handleEditClick(params.row.id)}
+                    title="Editar jornada"
+                >
+                    <FaRegEdit />
+                </Button>
+
+                <Button
+                    variant="outline-danger"
+                    onClick={() => handleDeleteClick(params.row.id)}
+                    title="Eliminar joranda"
+                >
+                    <FaTrash />
+                </Button>
+            </div>
+        ),
+        sortable: false,
+        filterable: false,
+    },
 ]);

@@ -25,7 +25,7 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 import {ConfirmationModal} from "../../../../shared/Modals/ConfirmationModal";
 
 export const EditProductsByConvocation = () => {
@@ -71,7 +71,7 @@ export const EditProductsByConvocation = () => {
     const getPlans = async (convocationId) => {
         try {
             setLoading(true);
-            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes ?? []);
             }
@@ -97,7 +97,7 @@ export const EditProductsByConvocation = () => {
     const getProductList = async (planId) => {
         setLoading(true);
         try {
-            const { data, status } = await convocationServices.getProductByConvocationAndPlan(planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(planId);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
@@ -153,7 +153,7 @@ export const EditProductsByConvocation = () => {
     const handleConfirmDelete = async () => {
         try {
             setLoading(true);
-            const {status} = await convocationServices.deleteProduct(selectedRowId);
+            const {status} = await convocationProductsServices.deleteProduct(selectedRowId);
 
             if (status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente.");
@@ -217,7 +217,7 @@ export const EditProductsByConvocation = () => {
                 productos
             }
 
-            const { status } = await convocationServices.updateValidationEnvironmental(sendData);
+            const { status } = await convocationProductsServices.updateValidationEnvironmental(sendData);
 
             if(status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Productos actualizados con éxito.");
@@ -398,7 +398,6 @@ export const EditProductsByConvocation = () => {
                     <div className="d-flex align-items-end mt-3">
                         <Button
                             variant="success"
-                            size="md"
                             onClick={handleSaveProducts}
                             className="ms-auto"
                             disabled={loading}

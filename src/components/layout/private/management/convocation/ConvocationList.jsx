@@ -10,10 +10,15 @@ import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople
 //Utils
 import { getConvocationColumn } from "../../../../../helpers/utils/ManagementColumns";
 
+//Services
+import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
 
-const mockData = [
+//Enum
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
-];
+//Helper
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+
 
 export const ConvocationList = () => {
 
@@ -29,8 +34,8 @@ export const ConvocationList = () => {
         try {
             setLoading(true);
             setLoadingTable(true);
-            const convocationResponse = await normalizeRows(mockData);
-            console.log('users: ', convocationResponse);
+            const {data, status} = await convocationServices.get();
+            const convocationResponse = await normalizeRows(data);
             setConvocations(convocationResponse);
             setFilteredConvocations(convocationResponse);
         } catch (error) {
@@ -42,19 +47,48 @@ export const ConvocationList = () => {
     }
 
     //
-    const normalizeRows = async (payload) => {
+    const normalizeRows = async (data) => {
+        const payload =  data.data.jornadas;
+
         return payload.map((row) => ({
             id: row?.id,
             name: row?.nombre,
-            last_name: row?.apellido,
-            email: row?.email,
-            rol: row?.rol,
-            status: row?.status,
+            start_date: row?.fecha_inicio,
+            end_date: row?.fecha_fin,
+            remaining_days: row?.dias_restantes,
+            status: row?.status ? 'ACTIVO' : 'INACTIVO',
+            description: row?.estado_descripcion,
         }));
     };
 
+    const handleEditClick = (rowId) => {
+        navigate(`/admin/create-convocation/${rowId}`);
+    }
+
+    const handleDeleteClick = async (rowId) => {
+        try {
+            setLoading(true)
+            const { status} = await convocationServices.delete(rowId);
+            if (status === ResponseStatusEnum.OK) {
+                AlertComponent.success('', 'Jornada eliminada exitosamente!');
+                //reloadPage();
+            }
+
+            if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                AlertComponent.error('Error', 'No se ha podido eliminar la jornada');
+                //reloadPage();
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de productos:", error);
+            AlertComponent.error('', 'Error al eliminar la jornada');
+            reloadPage();
+        } finally {
+            setLoading(false);
+        }
+    }
+
     //
-    const baseColumns = getConvocationColumn();
+    const baseColumns = getConvocationColumn(handleEditClick, handleDeleteClick);
     const columns = [...baseColumns];
 
     //
@@ -68,6 +102,12 @@ export const ConvocationList = () => {
         );
         setFilteredConvocations(filteredData);
     };
+
+    const reloadPage = () => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }
 
     useEffect(() => {
         getConvocationList();
@@ -96,7 +136,6 @@ export const ConvocationList = () => {
                         <div className="text-end">
                             <Button
                                 variant="outline-success"
-                                size="md"
                                 onClick={() => navigate('/admin/create-convocation')}
                                 className="button-order-responsive"
                             >

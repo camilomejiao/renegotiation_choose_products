@@ -22,7 +22,7 @@ import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
-import { convocationServices } from "../../../../../../helpers/services/ConvocationServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 export const ProductUpload = () => {
 
@@ -63,7 +63,7 @@ export const ProductUpload = () => {
     const getConvocations = async () => {
         setLoading(true);
         try {
-            const {data, status} = await convocationServices.getConvocations();
+            const {data, status} = await convocationProductsServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
                 setConvocations(data.data.jornadas);
             }
@@ -78,7 +78,7 @@ export const ProductUpload = () => {
     const getPlans = async (convocationId) => {
         try {
             setLoading(true);
-            const { data, status } = await convocationServices.getPlansByConvocation(convocationId);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes ?? []);
             }
@@ -210,7 +210,7 @@ export const ProductUpload = () => {
                 productos
             }
             //console.log(sendData);
-            const { data, status } = await convocationServices.saveProductsByConvocation(sendData);
+            const { data, status } = await convocationProductsServices.saveProductsByConvocation(sendData);
             if (status === ResponseStatusEnum.BAD_REQUEST) {
                 throw new Error(`${data}`);
             }
@@ -348,15 +348,13 @@ export const ProductUpload = () => {
                     <div className="text-end">
                         <Button
                             variant="outline-success"
-                            size="md"
                             onClick={handleUploadTable}
                             className="button-order-responsive"
                         >
                             <FaBroom/> Reiniciar tabla
                         </Button>
                         <Button
-                            variant="secondary"
-                            size="md"
+                            variant="outline-secondary"
                             onClick={handleBack}
                             className="button-order-responsive">
                             <FaBackspace /> Atras
@@ -423,8 +421,7 @@ export const ProductUpload = () => {
                 {/* Botón Guardar */}
                 <div className="d-flex align-items-end mt-3">
                     <Button
-                        variant="success"
-                        size="md"
+                        variant="outline-success"
                         onClick={handleSaveProducts}
                         className="ms-auto"
                         disabled={loading}
