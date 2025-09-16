@@ -46,7 +46,20 @@ const deliveryStatus = [
     { id: 3, label: "ENTREGA PARCIAL" }
 ];
 
-const MAX_SIZE = 10 * 1024 * 1024;
+//
+const IMAGE_SLOTS = new Set([UploadFileEnum.EVIDENCE1, UploadFileEnum.EVIDENCE2]);
+
+const isValidImage = (file) => {
+    const okMime = file.type?.startsWith('image/');
+    const okExt  = /\.(jpe?g|png)$/i.test(file.name || '');
+    return okMime || okExt;
+};
+
+const isValidPdf = (file) => {
+    const okMime = file.type === 'application/pdf';
+    const okExt  = /\.pdf$/i.test(file.name || '');
+    return okMime || okExt;
+};
 
 // ============================
 //   HELPERS / CONSTANTS
@@ -810,6 +823,9 @@ export const Deliveries = () => {
         setAction('approve');
     };
 
+
+
+
     /**
      * Maneja el envío de archivos al backend (consolidado o FE).
      * @param {File}   file
@@ -819,21 +835,28 @@ export const Deliveries = () => {
      */
     const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
-            //Validar el tipo de archivo
-            const allowedTypes = [
-                'application/pdf',
-                'image/jpeg',
-                'image/png',
-            ];
-            if (!allowedTypes.includes(file.type)) {
-                showError('Archivo no válido', 'Solo se permiten archivos PDF o imagenes en formato jpeg, png.');
+            const expectImage = IMAGE_SLOTS.has(fileName);
+
+            const valid = expectImage ? isValidImage(file) : isValidPdf(file);
+            if (!valid) {
+                showError(
+                    'Archivo no válido',
+                    expectImage
+                        ? 'Solo se permiten imágenes (JPG, PNG).'
+                        : 'Solo se permite PDF.'
+                );
                 refreshPage();
                 return;
             }
 
-            //Validar el tamaño del archivo
+            const MAX_SIZE = expectImage ? 5 * 1024 * 1024 : 10 * 1024 * 1024; // 5MB img, 10MB pdf
             if (file.size > MAX_SIZE) {
-                showError('Archivo muy grande', 'El PDF no debe superar 10 MB.');
+                showError(
+                    'Archivo muy grande',
+                    expectImage
+                        ? 'La imagen no debe superar 5 MB.'
+                        : 'El PDF no debe superar 10 MB.'
+                );
                 refreshPage();
                 return;
             }
@@ -969,8 +992,8 @@ export const Deliveries = () => {
         setFeDeliveryId(null);
     };
 
-    /** */
-        // Único método que maneja ambos datos
+
+    //
     const handleSaveFe = async ({ feNumber, feFile }) => {
             try {
                 setFeLoading(true);
@@ -1007,7 +1030,9 @@ export const Deliveries = () => {
     };
 
     const refreshPage = () => {
-        window.location.reload()
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
     }
 
     useEffect(() => {
@@ -1078,7 +1103,7 @@ export const Deliveries = () => {
 
                 {loading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="outline-success" />
+                        <Spinner animation="border" variant="success" />
                         <span>Cargando...</span>
                     </div>
                 )}
