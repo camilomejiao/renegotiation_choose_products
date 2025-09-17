@@ -75,7 +75,7 @@ export const ReviewDocuments = () => {
             }
 
             if (status === ResponseStatusEnum.NOT_FOUND) {
-                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+                AlertComponent.error('Error', 'No se puede descargar el archivo, archivo no encontrado.');
             }
         } catch (error) {
             console.error("Error al descargar archivo:", error);
@@ -182,13 +182,13 @@ export const ReviewDocuments = () => {
                                 <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
                             </button>
                         )}
-                        {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
+                        {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}>
                                 <img src={downloadImg} alt="" /> Evidencia 1
                             </button>
                         )}
-                        {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
+                        {beneficiaryInformation?.archivos?.evidencia2?.url_descarga && (
+                            <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia2)}>
                                 <img src={downloadImg} alt="" /> Evidencia 2
                             </button>
                         )}
