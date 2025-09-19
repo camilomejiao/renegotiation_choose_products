@@ -68,7 +68,6 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         onSubmit: async (values) => {
             try {
                 setSaving(true);
-
                 // Solo enviamos los NUEVOS (persisted: false)
                 const nuevos = values.suppliers.filter((s) => !s.persisted);
                 if (nuevos.length === 0) {
@@ -80,11 +79,10 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
                     jornada_id: Number(id),
                     proveedores: nuevos.map((s) => ({
                         proveedor_id: s.id,
-                        activo: "true", // string, como vimos por la validación de backend
+                        activo: "true",
                     })),
                 };
 
-                console.log("payload:", payload);
                 const { status } = await convocationServices.AssociateSupplierToAConvocation(payload);
 
                 if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(status)) {
@@ -111,10 +109,11 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
 
     //
     const normalizeCatalogSuppliers = (data) => {
-        //const payload =  data.data.jornada_proveedores;
-        return data.map((row) => ({
+        const rows =  data?.data?.proveedores;
+        return rows.map((row) => ({
             id: Number(row?.id),
             name: row?.nombre,
+            nit: row?.nit,
             persisted: false,
         }));
     }
@@ -134,7 +133,7 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         if (loadedRef.current) return;
         setLoadingOptions(true);
         try {
-            const { data, status } = await supplierServices.getSuppliersAll();
+            const { data, status } = await supplierServices.getSuppliers();
             if (status === ResponseStatusEnum.OK) {
                 setOptions(normalizeCatalogSuppliers(data));
                 loadedRef.current = true;

@@ -44,7 +44,6 @@ export const getConvocationColumn = () => ([
     { field: "start_date", headerName: "FECHA INICIAL", width: 200 },
     { field: "end_date", headerName: "FECHA FINAL", width: 200 },
     { field: "remaining_days", headerName: "DIAS RESTANTES", width: 200 },
-    { field: "status", headerName: "ESTADO", width: 200 },
     { field: "description", headerName: "DESCRIPCIÓN", width: 200 },
 ]);
 
