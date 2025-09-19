@@ -27,7 +27,7 @@ export const SupplierList = () => {
     const searchTimerRef = useRef(null);
 
     //
-    const getSuppliers = async (pageToFetch = 1, sizeToFetch, search = "") => {
+    const getSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         try {
             setLoading(true);
             setLoadingTable(true);

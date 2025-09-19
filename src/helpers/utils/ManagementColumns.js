@@ -2,10 +2,11 @@ import { Button } from "react-bootstrap";
 import { FaCheck, FaRegEdit, FaTimes, FaTrash } from "react-icons/fa";
 
 
-export const getSystemUsersColumns = () => ([
+export const getSystemUsersColumns = (handleActiveAndInactive) => ([
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "NOMBRE", width: 200 },
     { field: "last_name", headerName: "APELLIDO", width: 200 },
+    { field: "identification_number", headerName: "CC Ó NIT", width: 200 },
     { field: "email", headerName: "EMAIL", width: 200 },
     { field: "rol", headerName: "ROL", width: 200 },
 ]);
@@ -58,7 +59,7 @@ export const getAccionColumns = (handleActiveAndInactive, handleEditClick, handl
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
                     <Button
                         variant={isActive ? "outline-success" : "outline-danger"}
-                        onClick={() => handleActiveAndInactive(params.row.id)}
+                        onClick={() => handleActiveAndInactive(params.row)}
                         title={isActive ? "Inactivar" : "Activar"}
                     >
                         {isActive ? <FaCheck /> : <FaTimes />}

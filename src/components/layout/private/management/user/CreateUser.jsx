@@ -180,7 +180,7 @@ export const CreateUser = () => {
         },
     });
 
-    // Cargar proveedores (activos)
+    //Cargar proveedores
     const loadSuppliers = async () => {
         try {
             setLoadingSuppliers(true);

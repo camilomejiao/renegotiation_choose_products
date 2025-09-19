@@ -6,34 +6,36 @@ import { FaPlus} from "react-icons/fa";
 
 //Utils
 import { getAccionColumns, getSystemUsersColumns } from "../../../../../helpers/utils/ManagementColumns";
+import {userServices} from "../../../../../helpers/services/UserServices";
+import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
-//Mock
-const mockDataUsers = [
-    { id: 1, nombre: 'Camilo 1', apellido: 'Mejia 1', email: 'cmejia1@gmail.com', rol: 'ADMIN', status: 'ACTIVO' },
-    { id: 2, nombre: 'Camilo 2', apellido: 'Mejia 2', email: 'cmejia2@gmail.com', rol: 'ADMIN', status: 'ACTIVO' },
-    { id: 3, nombre: 'Camilo 3', apellido: 'Mejia 3', email: 'cmejia3@gmail.com', rol: 'ADMIN', status: 'ACTIVO' }
-]
 
 export const UserList = () => {
 
     const navigate = useNavigate();
 
     const [users, setUsers] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(100);
+    const [rowCount, setRowCount] = useState(0);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
 
-
     //
-    const getUsersList = async () => {
+    const getUsersList = async (pageToFetch = 1, sizeToFetch = 100) => {
         try {
             setLoading(true);
             setLoadingTable(true);
-            const users = await normalizeRows(mockDataUsers);
-            console.log('users: ', users);
-            setUsers(users);
-            setFilteredUsers(users);
+            const {data, status} = await userServices.getUsers(pageToFetch, sizeToFetch);
+            if(status=== ResponseStatusEnum.OK) {
+                const users = await normalizeRows(data);
+                setUsers(users);
+                setFilteredUsers(users);
+                setRowCount(data?.data?.paginacion?.total);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de usuarios:", error);
         } finally {
@@ -44,22 +46,40 @@ export const UserList = () => {
 
     //
     const normalizeRows = async (payload) => {
-        return payload.map((row) => ({
+        const rows = payload?.data?.usuarios;
+        return rows.map((row) => ({
             id: row?.id,
             name: row?.nombre,
             last_name: row?.apellido,
+            identification_number: row?.numero_identificacion,
             email: row?.email,
-            rol: row?.rol,
-            status: row?.status,
+            rol: row?.rol_nombre,
+            status: row?.activo,
+            update_status: row?.activo,
         }));
     };
 
-    const handleActiveAndInactive = (userId) => {
-        console.log(userId);
+    const handleActiveAndInactive = async (user) => {
+        console.log(user);
+        try {
+            setLoading(true);
+            const payload = {
+                activo: !user.status
+            }
+            const { status} = await userServices.updateStatus(user.id, payload);
+            if(status === ResponseStatusEnum.OK) {
+                AlertComponent.success("Usuario actualizado correctamente");
+                getUsersList(page + 1, pageSize);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de usuarios:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleEditClick = (userId) => {
-        console.log(userId);
+        navigate(`/admin/edit-users/${userId}`);
     }
 
     //
@@ -80,8 +100,8 @@ export const UserList = () => {
     };
 
     useEffect(() => {
-        getUsersList();
-    }, [])
+        getUsersList(page + 1, pageSize);
+    }, [page, pageSize])
 
     return (
         <>
@@ -117,11 +137,15 @@ export const UserList = () => {
                     <DataGrid
                         rows={filteredUsers}
                         columns={columns}
-                        editMode="row"
-                        pagination
                         loading={loadingTable}
-                        pageSize={100}
-                        rowsPerPageOptions={[100, 500, 1000]}
+                        paginationMode="server"
+                        rowCount={rowCount}
+                        pageSizeOptions={[25, 50, 100]}
+                        paginationModel={{ page, pageSize }}
+                        onPaginationModelChange={({ page, pageSize }) => {
+                            setPage(page);
+                            setPageSize(pageSize);
+                        }}
                         componentsProps={{
                             columnHeader: {
                                 style: {

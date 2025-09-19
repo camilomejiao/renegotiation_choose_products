@@ -95,7 +95,17 @@ class UserServices {
     /**
      *
      */
+    updateStatus(id, payload) {
+        const url = this.buildUrl(`usuarios/${id}/actualizar-parcial/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+        });
+    }
 
+    /**
+     *
+     */
     updatePassword(id, payload) {
         const url = this.buildUrl(`usuarios/${id}/cambiar-password/`);
         return authTokenService.fetchWithAuth(url, {
