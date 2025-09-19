@@ -12,7 +12,7 @@ import {
     FaRegBuilding,
     FaUser,
     FaHandshake,
-    FaHardHat, FaHouseUser, FaBoxOpen,
+    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -26,12 +26,20 @@ import { RolesEnum } from "../../../../helpers/GlobalEnum";
 const menuConfig = {
     [RolesEnum.ADMIN]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
+        {
+            label: "Administración Catalogo de productos",
+            icon: FaBoxOpen,
+            children: [
+                { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Administración de Catálogo" },
+                { path: "/admin/products-supervision", icon: FaBroadcastTower, label: "Catálogo de productos" },
+            ]
+        },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
-        { path: "/admin/products-supervision", icon: FaBoxOpen, label: "Catálogo de productos" },
         { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
         { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
         { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPERVISION]: [
@@ -56,16 +64,6 @@ const menuConfig = {
     [RolesEnum.TECHNICAL]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/list-products-by-convocation", icon: FaBoxOpen, label: "Administración de Catálogo" },
-        // {
-        //     label: "Catalogo de productos",
-        //     icon: FaDollyFlatbed,
-        //     children: [
-        //         { path: "/admin/products", icon: FaDollyFlatbed, label: "Validación de catalogos" },
-        //         { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Subida de Catálogo" },
-        //     ]
-        // },
-        //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
-        //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
@@ -93,6 +91,16 @@ const menuConfig = {
         { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
         { path: "/admin/payments-suppliers", icon: BsCashStack, label: "Solicitud de pago" },
         { path: "/admin/company-reports", icon: FaChartPie, label: "Reportes general" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
+    ],
+    [RolesEnum.SYSTEM_USER]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
+        { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
+        { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
+        { path: "/admin/products-supervision", icon: FaBoxOpen, label: "Catálogo de productos" },
+        { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
+        { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
+        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ]
 };

@@ -1,16 +1,17 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { FormControlLabel, Switch, TextField } from "@mui/material";
 import { Button } from "react-bootstrap";
 
-//
+//Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
-//
-import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
-import {convocationServices} from "../../../../../helpers/services/ConvocationServices";
+//Enum
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+
+//Services
+import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
 
 const initialValues = {
     name: "",
@@ -33,11 +34,7 @@ const validationSchema = yup.object().shape({
     active: yup.boolean().required("Activo o Inactivo"),
 });
 
-
-
 export const General = ({id, onBack}) => {
-
-    const navigate = useNavigate();
 
     //
     const formik = useFormik({
@@ -97,6 +94,8 @@ export const General = ({id, onBack}) => {
         <>
             <form onSubmit={formik.handleSubmit} className="container">
                 <div className="row g-3 mt-5">
+
+                    {/* Nombre de la jornada */}
                     <div className="col-md-6">
                         <TextField
                             fullWidth
@@ -107,6 +106,7 @@ export const General = ({id, onBack}) => {
                         />
                     </div>
 
+                    {/* Activo */}
                     <div className="col-md-6">
                         <FormControlLabel
                             label="Activo"
@@ -121,6 +121,7 @@ export const General = ({id, onBack}) => {
                         />
                     </div>
 
+                    {/* Fecha Inicial */}
                     <div className="col-md-6">
                         <TextField
                             fullWidth
@@ -133,6 +134,7 @@ export const General = ({id, onBack}) => {
                         />
                     </div>
 
+                    {/* Fecha final */}
                     <div className="col-md-6">
                         <TextField
                             fullWidth

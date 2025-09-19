@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import { Tab, Tabs } from "react-bootstrap";
+import {Spinner, Tab, Tabs} from "react-bootstrap";
 
 //Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -8,13 +8,23 @@ import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople
 import { Suppliers } from "./Suppliers";
 import { Location } from "./Location";
 import { General } from "./General";
+import {useState} from "react";
 
 export const ConvocationMenuTab = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [loading, setLoading] = useState(false);
 
     const onBack = () => {
         navigate('/admin/list-convocation');
+    }
+
+    const refreshPage = () => {
+        setLoading(true);
+        setTimeout(() => {
+            window.location.reload();
+            setLoading(false);
+        }, 2000);
     }
 
     return (
@@ -25,6 +35,13 @@ export const ConvocationMenuTab = () => {
                     <h1>¡Creación de Jornadas!</h1>
                 </div>
             </div>
+
+            {loading && (
+                <div className="spinner-container">
+                    <Spinner animation="border" variant="success" />
+                    <span>Cargando...</span>
+                </div>
+            )}
 
             <div className="container mt-5">
                 <Tabs
@@ -47,7 +64,7 @@ export const ConvocationMenuTab = () => {
                          disabled={!id}
                          tabClassName={!id ? 'text-danger' : 'text-success'}
                     >
-                        <Location id={id} onBack={onBack} />
+                        <Location id={id} onBack={onBack} refreshPage={refreshPage} />
                     </Tab>
 
                     <Tab eventKey="suppliers"
@@ -55,7 +72,7 @@ export const ConvocationMenuTab = () => {
                          disabled={!id}
                          tabClassName={!id ? 'text-danger' : 'text-success'}
                     >
-                        <Suppliers id={id} onBack={onBack} />
+                        <Suppliers id={id} onBack={onBack} refreshPage={refreshPage} />
                     </Tab>
                 </Tabs>
             </div>

@@ -70,6 +70,41 @@ class ConvocationServices {
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
+    AssociateSupplierToAConvocation(payload) {
+        const url = this.buildUrl(`proveedores/bulk/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
+    getAssociateSupplierToAConvocation(convocationId) {
+        const url = this.buildUrl(`proveedores/?jornada_id=${convocationId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    removeAssociateSupplierToAConvocation(supplierId) {
+        const url = this.buildUrl(`proveedores/${supplierId}/eliminar/`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
+    AssociateLocationToAConvocation(payload) {
+        const url = this.buildUrl(`ubicaciones/bulk/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+    getAssociateLocationToAConvocation(convocationId) {
+        const url = this.buildUrl(`ubicaciones/?jornada_id=${convocationId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    removeAssociateLocationToAConvocation(supplierId) {
+        const url = this.buildUrl(`ubicaciones/${supplierId}/eliminar/`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
 }
 
 export const convocationServices = new ConvocationServices();

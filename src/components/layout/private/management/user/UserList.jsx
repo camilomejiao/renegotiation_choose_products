@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 import { FaPlus} from "react-icons/fa";
 
 //Utils
-import { getSystemUsersColumns } from "../../../../../helpers/utils/ManagementColumns";
+import { getAccionColumns, getSystemUsersColumns } from "../../../../../helpers/utils/ManagementColumns";
 
 //Mock
 const mockDataUsers = [
@@ -54,7 +54,7 @@ export const UserList = () => {
         }));
     };
 
-    const handleActiveAndInactiveUser = (userId) => {
+    const handleActiveAndInactive = (userId) => {
         console.log(userId);
     }
 
@@ -63,8 +63,9 @@ export const UserList = () => {
     }
 
     //
-    const baseColumns = getSystemUsersColumns(handleActiveAndInactiveUser, handleEditClick);
-    const columns = [...baseColumns];
+    const baseColumns = getSystemUsersColumns();
+    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, "");
+    const columns = [...baseColumns, ...accions];
 
     //
     const handleSearchChange = (event) => {

@@ -37,7 +37,9 @@ export const RouterEnum = {
     //Managment
     Management: 'management',
     CreateUsers: 'create-users',
+    EditUsers: 'edit-users/:id',
     CreateSuppliers: 'create-suppliers',
+    EditSuppliers: 'edit-suppliers/:id',
     ConvocationList: 'list-convocation',
     CreateConvocation: 'create-convocation',
     CreateConvocationEdit: "create-convocation/:id",

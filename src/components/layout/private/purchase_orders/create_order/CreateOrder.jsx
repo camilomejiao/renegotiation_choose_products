@@ -21,7 +21,7 @@ import { CompanyReportPrinting } from "../../reports/report_company/report/Compa
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
-import { userService } from "../../../../../helpers/services/UserServices";
+import { userServices } from "../../../../../helpers/services/UserServices";
 import { productForPurchaseOrderServices } from "../../../../../helpers/services/ProductForPurchaseOrderServices";
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
@@ -47,7 +47,7 @@ export const CreateOrder = () => {
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
 
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);

@@ -107,7 +107,9 @@ export const Renegociation = () => {
 
         if (planId) {
             const { data, status } = await renegotiationServices.getLine(planId, engagementId);
-            setLineaOptions(data);
+            if(status === ResponseStatusEnum.OK) {
+                setLineaOptions(data);
+            }
         }
     };
 

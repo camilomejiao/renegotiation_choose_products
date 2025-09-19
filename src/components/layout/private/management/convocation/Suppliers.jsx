@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
     Autocomplete,
-    Button,
     CircularProgress,
     IconButton,
     Paper,
@@ -15,16 +14,26 @@ import {
     TableRow,
     TextField,
 } from "@mui/material";
-import {FaTrash} from "react-icons/fa";
+import { Button } from "react-bootstrap";
+import { FaTrash } from "react-icons/fa";
 
-//Suppliers
+// Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
-//Enum
+import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
+// Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-//Helpers
+// Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
+/**
+ * @typedef {Object} SupplierRow
+ * @property {number} id
+ * @property {string} name
+ * @property {boolean} persisted   // true si viene de BD (ya asociado)
+ */
+
 const initialValues = {
+    /** @type {SupplierRow[]} */
     suppliers: [],
 };
 
@@ -34,45 +43,65 @@ const validationSchema = yup.object().shape({
         .of(
             yup.object({
                 id: yup.number().required(),
-                nombre: yup.string().required(),
+                name: yup.string().required(),
+                persisted: yup.boolean().required(),
             })
         )
-        .min(1, "Selecciona al menos un proveedor")
-        .required("Selecciona al menos un proveedor"),
+        .min(0),
 });
 
-export const Suppliers = ({ id, onBack }) => {
+export const Suppliers = ({ id, onBack, refreshPage }) => {
+    /** Catálogo de proveedores activos (para el Autocomplete) */
     const [options, setOptions] = useState([]);
+    /** Opción seleccionada en Autocomplete */
     const [selected, setSelected] = useState(null);
     const [loadingOptions, setLoadingOptions] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    // Para no recargar proveedores múltiples veces
+    //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
 
-    // === Formik ===
     const formik = useFormik({
         initialValues,
         validationSchema,
+        enableReinitialize: false,
         onSubmit: async (values) => {
             try {
                 setSaving(true);
 
-                // Mapea al payload que necesite tu API (aquí ejemplo: solo IDs)
-                const payload = {
-                    jornada_id: id, // si aplica
-                    proveedores: values.suppliers.map((s) => s.id),
-                };
-                // const resp = id ? await servicio.update(id, payload) : await servicio.create(payload);
-                const resp = { status: ResponseStatusEnum.OK }; // mock
+                // Solo enviamos los NUEVOS (persisted: false)
+                const nuevos = values.suppliers.filter((s) => !s.persisted);
+                if (nuevos.length === 0) {
+                    AlertComponent.info("", "No hay proveedores nuevos para guardar.");
+                    return;
+                }
 
-                if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(resp.status)) {
+                const payload = {
+                    jornada_id: Number(id),
+                    proveedores: nuevos.map((s) => ({
+                        proveedor_id: s.id,
+                        activo: "true", // string, como vimos por la validación de backend
+                    })),
+                };
+
+                console.log("payload:", payload);
+                const { status } = await convocationServices.AssociateSupplierToAConvocation(payload);
+
+                if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(status)) {
+
+                    // Actualizamos los recién guardados a persisted:true
+                    const actualizados = values.suppliers.map((s) =>
+                        s.persisted ? s : { ...s, persisted: true }
+                    );
+                    formik.setFieldValue("suppliers", actualizados, false);
+
                     AlertComponent.success("Proveedores guardados correctamente");
+                    refreshPage();
                 } else {
                     AlertComponent.warning("Error", "No se pudo guardar la información");
                 }
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                console.error(error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
             } finally {
                 setSaving(false);
@@ -80,77 +109,134 @@ export const Suppliers = ({ id, onBack }) => {
         },
     });
 
-    // === Cargar proveedores una sola vez ===
+    //
+    const normalizeCatalogSuppliers = (data) => {
+        //const payload =  data.data.jornada_proveedores;
+        return data.map((row) => ({
+            id: Number(row?.id),
+            name: row?.nombre,
+            persisted: false,
+        }));
+    }
+
+    //Ajusta estos campos según tu respuesta real del backend de asociados
+    const normalizeAssociatedSuppliers = (data) => {
+        const payload = data?.data?.jornada_proveedores;
+        return payload.map((row) => ({
+            id: Number(row?.id),
+            name: String(row?.proveedor?.nombre),
+            persisted: true,
+        }));
+    }
+
+    // === Carga catálogo (activos) una sola vez ===
     const loadSuppliersOnce = async () => {
-        if (loadedRef.current) {
-            return;
-        }
+        if (loadedRef.current) return;
         setLoadingOptions(true);
         try {
             const { data, status } = await supplierServices.getSuppliersAll();
             if (status === ResponseStatusEnum.OK) {
-                const rows = normalizeSuppliers(data);
-                setOptions(rows);
+                setOptions(normalizeCatalogSuppliers(data));
                 loadedRef.current = true;
             } else {
                 setOptions([]);
             }
         } catch (e) {
-            console.error("Error cargando proveedores:", e);
+            console.error("Error cargando proveedores (catálogo):", e);
             setOptions([]);
         } finally {
             setLoadingOptions(false);
         }
     };
 
-    const normalizeSuppliers = (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            name: row?.nombre,
-        }));
-    }
+    // === Carga los asociados a la jornada (ya guardados en BD) ===
+    const fetchAssociatedSuppliers = async () => {
+        try {
+            const { data, status } = await convocationServices.getAssociateSupplierToAConvocation(id);
+            if (status === ResponseStatusEnum.OK) {
+                const asociados = normalizeAssociatedSuppliers(data);
+                formik.setFieldValue("suppliers", asociados, false);
+            }
+        } catch (error) {
+            console.error("Error cargando proveedores asociados:", error);
+        }
+    };
 
-    useEffect(() => {
-        loadSuppliersOnce();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
-
-    // === Agregar proveedor seleccionado a la tabla ===
+    // === Agregar proveedor (evita duplicados) ===
     const handleAddSupplier = () => {
         if (!selected) return;
 
-        const alreadyExists = formik.values.suppliers.some((s) => s.id === selected.id);
-        if (alreadyExists) {
-            AlertComponent.info("", "Este proveedor ya está agregado.");
+        const current = formik.values.suppliers;
+        const exists = current.some((s) => s.id === selected.id);
+        if (exists) {
+            AlertComponent.info("", "Este proveedor ya está en la lista.");
+            setSelected(null);
             return;
         }
 
-        formik.setFieldValue("suppliers", [...formik.values.suppliers, selected]);
-        setSelected(null); // limpiar el input
+        const nuevo = {
+            id: selected.id,
+            name: selected.name,
+            persisted: false,
+        };
+        formik.setFieldValue("suppliers", [...current, nuevo]);
+        setSelected(null);
     };
 
-    // === Quitar proveedor de la tabla ===
-    const handleRemoveSupplier = (supplierId) => {
+    // === Quitar proveedor (temporal) del array ===
+    const handleRemoveSupplierTransient = (supplierId) => {
         const filtered = formik.values.suppliers.filter((s) => s.id !== supplierId);
         formik.setFieldValue("suppliers", filtered);
     };
 
+    // === Quitar proveedor (guardado en BD) ===
+    const handleDeleteSupplierPersisted = async (supplierId) => {
+        try {
+            const { status} = await convocationServices.removeAssociateSupplierToAConvocation(supplierId);
+
+            if (status === ResponseStatusEnum.OK) {
+                //Eliminamos de la tabla
+                const filtered = formik.values.suppliers.filter((supp) => supp.id !== supplierId);
+                formik.setFieldValue("suppliers", filtered);
+
+                AlertComponent.success("Proveedor eliminado de la convocatoria.");
+            } else {
+                AlertComponent.warning("No se pudo eliminar el proveedor.");
+            }
+        } catch (error) {
+            console.error("Error eliminando proveedor en BD:", error);
+            AlertComponent.error("Error eliminando el proveedor en BD.");
+        }
+    };
+
+    // Opciones del Autocomplete excluyendo las ya listadas
+    const filteredOptions = useMemo(() => {
+        const inList = new Set(formik.values.suppliers.map((s) => s.id));
+        return options.filter((o) => !inList.has(o.id));
+    }, [options, formik.values.suppliers]);
+
+    useEffect(() => {
+        loadSuppliersOnce();
+        fetchAssociatedSuppliers();
+    }, [id]);
+
     return (
         <form onSubmit={formik.handleSubmit} className="container">
             <div className="row g-3 mt-5">
+
                 {/* Buscador (Autocomplete + botón Agregar) */}
                 <div className="col-md-9">
                     <Autocomplete
-                        options={options}
+                        options={filteredOptions}
                         value={selected}
                         onChange={(_, value) => setSelected(value)}
                         onOpen={loadSuppliersOnce}
-                        getOptionLabel={(o) => (o?.nombre ?? "").trim()}
-                        isOptionEqualToValue={(o, v) => o.id === v.id}
+                        getOptionLabel={(opt) => (opt?.name ?? "").trim()}
+                        isOptionEqualToValue={(opt, variable) => opt.id === variable.id}
                         loading={loadingOptions}
                         renderOption={(props, option) => (
                             <li {...props} key={option.id}>
-                                {option.nombre}
+                                {option.name}
                             </li>
                         )}
                         renderInput={(params) => (
@@ -171,18 +257,32 @@ export const Suppliers = ({ id, onBack }) => {
                         )}
                     />
                 </div>
+                {/* */}
                 <div className="col-md-3 d-grid">
-                    <Button
-                        variant="contained"
-                        color="success"
-                        onClick={handleAddSupplier}
-                        disabled={!selected}
-                    >
+                    <Button variant="outline-primary" onClick={handleAddSupplier} disabled={!selected}>
                         Agregar
                     </Button>
                 </div>
 
-                {/* Tabla de proveedores agregados */}
+                {/* Botones Guardar / Cancelar */}
+                <div className="text-end mt-4 d-flex gap-2 justify-content-end">
+                    <Button
+                        variant="outline-success"
+                        type="submit"
+                        disabled={saving}
+                    >
+                        {saving ? "Guardando..." : "Guardar"}
+                    </Button>
+                    <Button
+                        variant="outline-danger"
+                        onClick={onBack}
+                        type="button"
+                    >
+                        Cancelar
+                    </Button>
+                </div>
+
+                {/* Tabla de proveedores (mezcla guardados + temporales) */}
                 <div className="col-12">
                     <TableContainer component={Paper}>
                         <Table size="small">
@@ -190,29 +290,47 @@ export const Suppliers = ({ id, onBack }) => {
                                 <TableRow>
                                     <TableCell style={{ fontWeight: 600 }}>ID</TableCell>
                                     <TableCell style={{ fontWeight: 600 }}>Proveedor</TableCell>
-                                    <TableCell align="right" style={{ fontWeight: 600 }}>Acciones</TableCell>
+                                    <TableCell style={{ fontWeight: 600 }}>Estado</TableCell>
+                                    <TableCell style={{ fontWeight: 600 }}>Acciones</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {formik.values.suppliers.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={3} align="center">
-                                            No has agregado proveedores aún.
+                                        <TableCell colSpan={4} align="center">
+                                            No tienes proveedores en la lista aún.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    formik.values.suppliers.map((s) => (
-                                        <TableRow key={s.id}>
-                                            <TableCell>{s.id}</TableCell>
-                                            <TableCell>{s.nombre}</TableCell>
-                                            <TableCell align="right">
-                                                <IconButton
-                                                    aria-label="Eliminar"
-                                                    color="error"
-                                                    onClick={() => handleRemoveSupplier(s.id)}
-                                                >
-                                                    <FaTrash />
-                                                </IconButton>
+                                    formik.values.suppliers.map((supplier) => (
+                                        <TableRow key={supplier.id}>
+                                            <TableCell>{supplier.id}</TableCell>
+                                            <TableCell>{supplier.name}</TableCell>
+                                            <TableCell>
+                                                {supplier.persisted ? (
+                                                    <span className="badge text-bg-info">Guardado</span>
+                                                ) : (
+                                                    <span className="badge text-bg-success">Nuevo</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell align="right" className="d-flex gap-2 justify-content-end">
+                                                {supplier.persisted ? (
+                                                    <Button
+                                                        variant="outline-danger"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteSupplierPersisted(supplier.id)}
+                                                    >
+                                                        Desasociar
+                                                    </Button>
+                                                ) : (
+                                                    <IconButton
+                                                        aria-label="Eliminar"
+                                                        color="error"
+                                                        onClick={() => handleRemoveSupplierTransient(supplier.id)}
+                                                    >
+                                                        <FaTrash />
+                                                    </IconButton>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -230,16 +348,6 @@ export const Suppliers = ({ id, onBack }) => {
                         </div>
                     )}
                 </div>
-            </div>
-
-            {/* Botones Guardar / Cancelar */}
-            <div className="text-end mt-4 d-flex gap-2 justify-content-end">
-                <Button variant="outline-success" color="success" type="submit" disabled={saving}>
-                    {saving ? "Guardando..." : "Guardar"}
-                </Button>
-                <Button variant="outline-danger" onClick={onBack} type="button">
-                    Cancelar
-                </Button>
             </div>
         </form>
     );

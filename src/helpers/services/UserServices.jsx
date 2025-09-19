@@ -2,11 +2,11 @@ import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para la gestión de usuarios asociados a CUB.
+ * Servicio para la gestión de usuarios
  */
-class UserService {
+class UserServices {
     constructor() {
-        this.baseUrl = GlobalConnex.url + "cub/";
+        this.baseUrl = GlobalConnex.url;
     }
 
     /**
@@ -30,7 +30,7 @@ class UserService {
      * @returns {Promise<object>} - Promesa con la respuesta del servidor.
      */
     searchUser(data) {
-        const url = this.buildUrl(`buscar/${data}/`);
+        const url = this.buildUrl(`cub/buscar/${data}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -41,10 +41,69 @@ class UserService {
      * @returns {Promise<object>} - Promesa con los datos del usuario.
      */
     userInformation(cubId) {
-        const url = this.buildUrl(`${cubId}/`);
+        const url = this.buildUrl(`cub/${cubId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
+
+
+    /**
+     *
+     */
+    getRoles() {
+        const url = this.buildUrl(`usuarios/roles/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    getUsers(page, pageSize) {
+        const url = this.buildUrl(`usuarios/?page=${page}&page_size=${pageSize}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    getUserById(id) {
+        const url = this.buildUrl(`usuarios/${id}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    createUser(payload) {
+        const url = this.buildUrl(`usuarios/crear/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
+    /**
+     *
+     */
+    updateUser(id, payload) {
+        const url = this.buildUrl(`usuarios/${id}/actualizar/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+        });
+    }
+
+    /**
+     *
+     */
+
+    updatePassword(id, payload) {
+        const url = this.buildUrl(`usuarios/${id}/cambiar-password/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
 }
 
-// Exportamos una instancia única del servicio
-export const userService = new UserService();
+export const userServices = new UserServices();

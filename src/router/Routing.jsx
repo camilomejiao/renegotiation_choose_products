@@ -121,7 +121,9 @@ export const Routing = () => {
                         {/* Management */}
                         <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
                         <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
+                        <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
                         <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
+                        <Route path={ RouterEnum.EditSuppliers }  element={ <CreateSuppliers /> }  />
                         <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
                         <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
                         <Route path={ RouterEnum.CreateConvocationEdit }  element={ <ConvocationMenuTab /> }  />

@@ -18,7 +18,7 @@ import { AuthorizationSection } from "../../shared/authorization_section/Authori
 import { handleError, showAlert } from "../../../../helpers/utils/utils";
 
 //Services
-import { userService } from "../../../../helpers/services/UserServices";
+import { userServices } from "../../../../helpers/services/UserServices";
 import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
@@ -47,7 +47,7 @@ export const BeneficiariesManagement = () => {
     //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
                 setConsolidated(data?.consolidado);

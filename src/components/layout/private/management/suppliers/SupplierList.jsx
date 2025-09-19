@@ -1,38 +1,42 @@
-import { useNavigate} from "react-router-dom";
-import { useEffect, useState} from "react";
-import { Button} from "react-bootstrap";
-import { FaPlus} from "react-icons/fa";
-import { DataGrid} from "@mui/x-data-grid";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa";
+import { DataGrid } from "@mui/x-data-grid";
 
 //Utils
-import { getSuppliersColumns} from "../../../../../helpers/utils/ManagementColumns";
-
-//Mocks
-const mockDataSupplier = [
-    { id: 1, nombre: 'Camilo 1', nombre_empresa: 'Mejia 1', nit: 2345, email: 'cmejia1@gmail.com', celular: '3218776613', status: 'ACTIVO', resolucion: 'resolucion', departamento: 'PUTUMAYO', municipio: 'PUERTO ASIS' },
-    { id: 2, nombre: 'Camilo 2', nombre_empresa: 'Mejia 2', nit: 2345, email: 'cmejia2@gmail.com', celular: '3218776613', status: 'ACTIVO', resolucion: 'resolucion', departamento: 'PUTUMAYO', municipio: 'PUERTO ASIS' },
-    { id: 3, nombre: 'Camilo 3', nombre_empresa: 'Mejia 3', nit: 2345, email: 'cmejia3@gmail.com', celular: '3218776613', status: 'ACTIVO', resolucion: 'resolucion', departamento: 'PUTUMAYO', municipio: 'PUERTO ASIS' }
-]
+import {getAccionColumns, getSuppliersColumns} from "../../../../../helpers/utils/ManagementColumns";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+//Services
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+//Enum
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 export const SupplierList = () => {
 
     const navigate = useNavigate();
 
-    const [suppliersRow, setSuppliersRow] = useState([]);
     const [filteredSuppliers, setFilteredSuppliers] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(100);
+    const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
 
+    const searchTimerRef = useRef(null);
+
     //
-    const getSuppliers = async () => {
+    const getSuppliers = async (pageToFetch = 1, sizeToFetch, search = "") => {
         try {
             setLoading(true);
             setLoadingTable(true);
-            const suppliers = await normalizeRows(mockDataSupplier);
-            console.log('suppliers: ', suppliers);
-            setSuppliersRow(suppliers);
-            setFilteredSuppliers(suppliers);
+            const {data, status} =  await supplierServices.getSuppliersByPage(sizeToFetch, pageToFetch, search);
+            if(status === ResponseStatusEnum.OK) {
+                const suppliers = await normalizeRows(data);
+                setFilteredSuppliers(suppliers);
+                setRowCount(data.count);
+            }
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
         } finally {
@@ -42,38 +46,72 @@ export const SupplierList = () => {
     }
 
     const normalizeRows = async (payload) => {
-        return payload.map((row) => ({
+        const rows = payload?.results?.data?.proveedores;
+        return rows.map((row) => ({
             id: row?.id,
             name: row?.nombre,
-            company_name: row?.nombre_empresa,
+            company_name: row?.nombre_empresa ?? "",
             nit: row?.nit,
-            email: row?.email,
-            dept: row?.departamento,
-            muni: row?.municipio,
-            status: row?.status,
-            resolution: row?.resolucion,
+            email: row?.correo,
+            dept: row?.departamento ?? "",
+            muni: row?.municipio ?? "",
+            status: row?.aprobado,
+            description: row?.estado_aprobacion,
+            resolution: row?.resolucion_aprobacion,
         }));
     };
 
+    const handleActiveAndInactive = (SupplierId) => {
+        console.log(SupplierId);
+    }
+
+    const handleEditClick = (SupplierId) => {
+        navigate(`/admin/edit-suppliers/${SupplierId}`);
+    }
+
+    const handleDeleteClick = async (SupplierId) => {
+        console.log(SupplierId);
+        try {
+            setLoading(true);
+            const { status} = await supplierServices.deleteSupplier(SupplierId);
+            if(status === ResponseStatusEnum.OK) {
+                AlertComponent.success("Operación realizada correctamente!");
+                getSuppliers(page + 1, pageSize, "");
+            }
+
+            if(status !== ResponseStatusEnum.OK) {
+                AlertComponent.error("No se pudo eliminar el proveedor!");
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de proveedores:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     //
     const baseColumns = getSuppliersColumns();
-    const columns = [...baseColumns];
+    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, handleDeleteClick);
+    const columns = [...baseColumns, ...accions];
 
     //
     const handleSearchChange = (event) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
-        const filteredData = suppliersRow.filter((row) =>
-            Object.values(row).some((value) =>
-                value.toString().toLowerCase().includes(query)
-            )
-        );
-        setFilteredSuppliers(filteredData);
+
+        // debounce
+        if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+
+        if (query.length >= 5 || query.length === 0) {
+            searchTimerRef.current = setTimeout(() => {
+                getSuppliers(page + 1, pageSize, query);
+            }, 300);
+        }
     };
 
     useEffect(() => {
-        getSuppliers();
-    }, []);
+        getSuppliers(page + 1, pageSize, "");
+    }, [page, pageSize]);
 
 
     return (
@@ -110,11 +148,15 @@ export const SupplierList = () => {
                     <DataGrid
                         rows={filteredSuppliers}
                         columns={columns}
-                        editMode="row"
-                        pagination
                         loading={loadingTable}
-                        pageSize={100}
-                        rowsPerPageOptions={[100, 500, 1000]}
+                        paginationMode="server"
+                        rowCount={rowCount}
+                        pageSizeOptions={[25, 50, 100]}
+                        paginationModel={{ page, pageSize }}
+                        onPaginationModelChange={({ page, pageSize }) => {
+                            setPage(page);
+                            setPageSize(pageSize);
+                        }}
                         componentsProps={{
                             columnHeader: {
                                 style: {

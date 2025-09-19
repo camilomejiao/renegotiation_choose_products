@@ -8,7 +8,7 @@ import { FaPlus } from "react-icons/fa";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 //Utils
-import { getConvocationColumn } from "../../../../../helpers/utils/ManagementColumns";
+import {getAccionColumns, getConvocationColumn} from "../../../../../helpers/utils/ManagementColumns";
 
 //Services
 import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
@@ -35,9 +35,15 @@ export const ConvocationList = () => {
             setLoading(true);
             setLoadingTable(true);
             const {data, status} = await convocationServices.get();
-            const convocationResponse = await normalizeRows(data);
-            setConvocations(convocationResponse);
-            setFilteredConvocations(convocationResponse);
+            if(status === ResponseStatusEnum.OK) {
+                const convocationResponse = await normalizeRows(data);
+                setConvocations(convocationResponse);
+                setFilteredConvocations(convocationResponse);
+            }
+
+            if(status !== ResponseStatusEnum.OK) {
+                AlertComponent.warning("Error", 'Al cargar los datos');
+            }
         } catch (error) {
             console.error("Error al obtener la lista de jornadas:", error);
         } finally {
@@ -56,7 +62,7 @@ export const ConvocationList = () => {
             start_date: row?.fecha_inicio,
             end_date: row?.fecha_fin,
             remaining_days: row?.dias_restantes,
-            status: row?.status ? 'ACTIVO' : 'INACTIVO',
+            status: row?.abierto ? 'ACTIVO' : 'INACTIVO',
             description: row?.estado_descripcion,
         }));
     };
@@ -88,8 +94,9 @@ export const ConvocationList = () => {
     }
 
     //
-    const baseColumns = getConvocationColumn(handleEditClick, handleDeleteClick);
-    const columns = [...baseColumns];
+    const baseColumns = getConvocationColumn();
+    const accions = getAccionColumns("", handleEditClick, handleDeleteClick);
+    const columns = [...baseColumns, ...accions];
 
     //
     const handleSearchChange = (event) => {

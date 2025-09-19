@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import * as yup from "yup";
-import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
+import { FormControlLabel, Switch, TextField } from "@mui/material";
+import { Button } from "react-bootstrap";
 import { useFormik } from "formik";
 
 //Img
@@ -12,6 +13,7 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import {supplierServices} from "../../../../../helpers/services/SupplierServices";
 
 const initialValues = {
     company_name: "",
@@ -29,7 +31,7 @@ const validationSchema = yup.object().shape({
     legal_representative: yup.string().required("El nombre del representante es requerido"),
     cellphone: yup.number().required("El telefono es requerido"),
     email: yup.string().email().required("El email es requerido"),
-    active: yup.number().required("El nombre es requerido"),
+    active: yup.boolean().required("Activo o Inactivo"),
     resolution: yup.string().optional("El número de resolución es opcional"),
 });
 
@@ -44,15 +46,22 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                const formattedValues = { ...values };
+                const formattedValues = {
+                    nombre: values.company_name,
+                    nit: values.nit,
+                    correo: values.email,
+                    aprobado: values.active,
+                    resolucion_aprobacion: values.resolution,
+                    fecha_registro: new Date().toISOString().slice(0, 10),
+                };
                 console.log('formattedValues: ', formattedValues);
                 const response = id
-                //? await userServices.update(id, formattedValues)
-                //: await userServices.create(formattedValues);
+                ? await supplierServices.updateSupplier(id, formattedValues)
+                : await supplierServices.createSupplier(formattedValues);
 
                 if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
                     AlertComponent.success("Operación realizada correctamente");
-                    navigate("/admin/user-list");
+                    navigate("/admin/management");
                 } else {
                     AlertComponent.warning("Error", response?.data?.errors?.[0]?.title);
                 }
@@ -63,9 +72,31 @@ export const CreateSuppliers = () => {
         },
     });
 
+    const fetchSupplierData = async (id) => {
+        try {
+            const {data, status} = await supplierServices.getSupplierById(id);
+            console.log(data);
+            if(status === ResponseStatusEnum.OK) {
+                const resp = data?.data?.proveedor;
+                await formik.setValues({
+                    company_name: resp?.nombre,
+                    nit: resp?.nit,
+                    email: resp?.correo,
+                    cellphone: resp?.telefono ?? "",
+                    resolution: resp?.resolucion_aprobacion,
+                    active: resp?.aprobado,
+                    legal_representative: resp?.representante ?? "",
+                });
+            }
+        } catch (error) {
+            console.error("Error al enviar el formulario:", error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
+    }
+
     useEffect(() => {
         if (id) {
-
+            fetchSupplierData(id)
         }
     }, []);
 
@@ -84,6 +115,8 @@ export const CreateSuppliers = () => {
 
                 <form onSubmit={formik.handleSubmit} className="container">
                     <div className="row g-3 mt-5">
+
+                        {/* Nombre */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -93,6 +126,8 @@ export const CreateSuppliers = () => {
                                 helperText={formik.touched.company_name && formik.errors.company_name}
                             />
                         </div>
+
+                        {/* Nit */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -102,6 +137,8 @@ export const CreateSuppliers = () => {
                                 helperText={formik.touched.nit && formik.errors.nit}
                             />
                         </div>
+
+                        {/* Email */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -112,6 +149,7 @@ export const CreateSuppliers = () => {
                             />
                         </div>
 
+                        {/* fullWidth */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -122,6 +160,7 @@ export const CreateSuppliers = () => {
                             />
                         </div>
 
+                        {/* Representante */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -131,6 +170,8 @@ export const CreateSuppliers = () => {
                                 helperText={formik.touched.legal_representative && formik.errors.legal_representative}
                             />
                         </div>
+
+                        {/* Número de resolución */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
@@ -140,6 +181,8 @@ export const CreateSuppliers = () => {
                                 helperText={formik.touched.resolution && formik.errors.resolution}
                             />
                         </div>
+
+                        {/* Activo */}
                         <div className="col-md-6">
                             <FormControlLabel
                                 label="Activo"
@@ -156,12 +199,17 @@ export const CreateSuppliers = () => {
 
                     </div>
                     <div className="text-end mt-4 d-flex gap-2 justify-content-end">
-                        <Button variant="outline-success" color="success" type="submit">
+                        <Button variant="outline-success"
+                                color="success"
+                                type="submit"
+                        >
                             Guardar
                         </Button>
 
                         <Button variant="outline-danger"
-                                type="button">
+                                type="button"
+                                onClick={() => navigate("/admin/management")}
+                        >
                             Cancelar
                         </Button>
                     </div>

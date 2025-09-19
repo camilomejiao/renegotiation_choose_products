@@ -1,14 +1,27 @@
 import { useRef, useState, useEffect } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Autocomplete, TextField, CircularProgress, Button } from "@mui/material";
+import {
+    Autocomplete,
+    TextField,
+    CircularProgress,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow, TableCell, TableBody
+} from "@mui/material";
+import { Button } from "react-bootstrap";
+import {FaTrash} from "react-icons/fa";
 
-//
+//Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
-//
+//Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-
+//Services
+import { locationServices } from "../../../../../helpers/services/LocationServices";
+import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
 
 const initialValues = {
     depto: [],
@@ -24,27 +37,11 @@ const validationSchema = yup.object({
     ).min(1, "Selecciona al menos un municipio").required(),
 });
 
-// -------------------- Mock de servicios (reemplaza por los tuyos) --------------------
-async function getDepartments() {
-    return [
-        { id: 1, nombre: "Antioquia" },
-        { id: 2, nombre: "Cundinamarca" },
-        { id: 3, nombre: "Valle del Cauca" },
-    ];
-}
-async function getMunicipalitiesByDepartment(deptId) {
-    const db = {
-        1: [{ id: 101, nombre: "Medellín" }, { id: 102, nombre: "Envigado" }],
-        2: [{ id: 201, nombre: "Bogotá D.C." }, { id: 202, nombre: "Chía" }],
-        3: [{ id: 301, nombre: "Cali" }, { id: 302, nombre: "Palmira" }],
-    };
-    return db[deptId] || [];
-}
 
-// -------------------- Componente --------------------
-export const Location = ({ id, onBack }) => {
+export const Location = ({ id, onBack, refreshPage }) => {
     const [deptOptions, setDeptOptions] = useState([]);
     const [muniOptions, setMuniOptions] = useState([]);
+    const [locationRegister, setLocationRegister] = useState([]);
     const [loadingDepts, setLoadingDepts] = useState(false);
     const [loadingMunis, setLoadingMunis] = useState(false);
 
@@ -52,42 +49,54 @@ export const Location = ({ id, onBack }) => {
     const muniCacheRef = useRef(new Map());// deptId -> municipios[]
     const deptsLoadedRef = useRef(false);// para cargar depts solo una vez (onOpen)
 
-
+    //
     const formik = useFormik({
         initialValues,
         validationSchema,
         onSubmit: async (values) => {
             try {
                 const payload = {
-                    departamentos: values.depto.map(d => d.id),
-                    municipios:    values.muni.map(m => m.id),
+                    jornada_id: Number(id),
+                    ubicaciones: values.muni.map((s) => ({
+                        municipio_id: s.id,
+                        activo: "true",
+                    })),
                 };
-                // const resp = id ? await service.update(id, payload) : await service.create(payload);
-                const resp = { status: ResponseStatusEnum.OK }; // mock
-                if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(resp.status)) {
+                const { status } = await convocationServices.AssociateLocationToAConvocation(payload);
+
+                if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(status)) {
                     AlertComponent.success("Operación realizada correctamente");
+                    refreshPage();
                 } else {
                     AlertComponent.warning("Error", "No se pudo guardar la información");
                 }
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                console.error(error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
             }
         },
     });
 
-
+    //
     const loadDepartmentsOnce = async () => {
         if (deptsLoadedRef.current) {
             return;
         }
-        setLoadingDepts(true);
-        const deps = await getDepartments();
-        setDeptOptions(deps);
-        setLoadingDepts(false);
-        deptsLoadedRef.current = true;
+        try {
+            setLoadingDepts(true);
+            const {data, status} = await locationServices.getDeptos();
+            if(status === ResponseStatusEnum.OK) {
+                setDeptOptions(data);
+                setLoadingDepts(false);
+                deptsLoadedRef.current = true;
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
     };
 
+    //
     const refreshMunicipalities = async (selectedDepts) => {
         if (!selectedDepts?.length) {
             setMuniOptions([]);
@@ -96,24 +105,23 @@ export const Location = ({ id, onBack }) => {
         }
         setLoadingMunis(true);
 
-        //trae/usa cache por cada depto
         const lists = await Promise.all(
             selectedDepts.map(async ({ id }) => {
                 if (!muniCacheRef.current.has(id)) {
-                    const munis = await getMunicipalitiesByDepartment(id);
-                    muniCacheRef.current.set(id, munis);
+                    const {data, status} = await locationServices.getMunis(id);
+                    muniCacheRef.current.set(id, data);
                 }
                 return muniCacheRef.current.get(id);
             })
         );
 
-        //unir y deduplicar por id
+        //Unir
         const union = Array.from(
             new Map(lists.flat().map(m => [m.id, m])).values()
         );
         setMuniOptions(union);
 
-        // filtrar seleccionados que ya no existan
+        //filtrar seleccionados que ya no existan
         const validIds = new Set(union.map(m => m.id));
         const nextSelected = (formik.values.muni || []).filter(m => validIds.has(m.id));
         if (nextSelected.length !== formik.values.muni.length) {
@@ -123,17 +131,50 @@ export const Location = ({ id, onBack }) => {
         setLoadingMunis(false);
     };
 
+    //
     const handleDeptChange = async (_evt, value) => {
         formik.setFieldValue("depto", value);
         await refreshMunicipalities(value);
     };
 
+    //
     const handleMuniChange = (_evt, value) => {
         formik.setFieldValue("muni", value);
     };
 
+    const fetchLocationData = async () => {
+        try {
+            const {data, status} = await convocationServices.getAssociateLocationToAConvocation(id);
+            if (status === ResponseStatusEnum.OK) {
+                setLocationRegister(data.data?.jornada_ubicaciones);
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
+    }
+
+    const handleDeleteLocation = async (locationId) => {
+        try{
+            const {data, status} = await convocationServices.removeAssociateLocationToAConvocation(locationId);
+            if (status === ResponseStatusEnum.OK) {
+                AlertComponent.success("Eliminado correctamente");
+                refreshPage();
+            }
+
+            if(status !== ResponseStatusEnum.OK) {
+                AlertComponent.error("Hubo un error al procesar la solicitud");
+                console.log(data.data.message);
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
+    }
+
     useEffect(() => {
         loadDepartmentsOnce();
+        fetchLocationData();
     }, [id]);
 
     // -------------------- Render --------------------
@@ -212,12 +253,61 @@ export const Location = ({ id, onBack }) => {
             </div>
 
             <div className="text-end mt-4 d-flex gap-2 justify-content-end">
-                <Button variant="outline-success" color="success" type="submit">
+                <Button variant="outline-success" type="submit">
                     Guardar
                 </Button>
                 <Button variant="outline-danger" onClick={onBack} type="button">
                     Cancelar
                 </Button>
+            </div>
+
+            {/* Tabla de ubicaciones */}
+            <div className="col-12">
+                <TableContainer
+                    component={Paper}
+                    sx={{
+                        width: "100%",
+                        overflowX: "auto",
+                    }}
+                >
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={{ fontWeight: 600 }}>ID</TableCell>
+                                <TableCell style={{ fontWeight: 600 }}>Departamento</TableCell>
+                                <TableCell style={{ fontWeight: 600 }}>Municipio</TableCell>
+                                <TableCell style={{ fontWeight: 600 }}>
+                                    Acciones
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {locationRegister.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={4} align="center">
+                                        No tienes ubicaciones en la lista aún.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                locationRegister.map((s) => (
+                                    <TableRow key={s?.id}>
+                                        <TableCell>{s?.id}</TableCell>
+                                        <TableCell>{s?.ubicacion_padre_nombre}</TableCell>
+                                        <TableCell>{s?.ubicacion?.nombre}</TableCell>
+                                        <TableCell align="right" className="d-flex gap-2 justify-content-end">
+                                            <Button
+                                                variant="outline-danger"
+                                                onClick={() => handleDeleteLocation(s?.id)}
+                                            >
+                                                <FaTrash />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         </form>
     );

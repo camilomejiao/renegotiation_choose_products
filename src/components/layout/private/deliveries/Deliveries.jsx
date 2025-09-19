@@ -27,7 +27,7 @@ import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
 
 //Services
 import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
-import { userService } from "../../../../helpers/services/UserServices";
+import { userServices } from "../../../../helpers/services/UserServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 
 //Css
@@ -241,7 +241,7 @@ export const Deliveries = () => {
      */
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
             }
@@ -461,6 +461,7 @@ export const Deliveries = () => {
                         <Button
                             variant="outline-secondary"
                             onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE1)}
+                            disabled={isButtonDisabled(row)}
                             title="Subir imagen 1"
                         >
                             Subir Imagen 1
@@ -470,6 +471,7 @@ export const Deliveries = () => {
                             <Button
                                 variant="outline-success"
                                 onClick={() => handleViewFile(imagen1Url)}
+                                disabled={isButtonDisabled(row)}
                                 title="Ver Docuemnto cargado"
                             >
                                 Ver Imagen 1
