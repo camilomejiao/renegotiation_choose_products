@@ -148,21 +148,6 @@ export const CreateUser = () => {
                     proveedor_id,
                 };
 
-                console.log("formattedValues:", formattedValues);
-                // const payload = {
-                //     is_supplier: values.isSupplier,
-                //     supplier_id: values.isSupplier ? Number(values.supplier_id) : undefined,
-                //     name: values.name?.trim(),
-                //     last_name: values.last_name?.trim(),
-                //     identification_number: values.identification_number?.trim(),
-                //     cellphone: values.cellphone?.trim(),
-                //     email: values.email?.trim(),
-                //     username: values.username?.trim(),
-                //     password: values.password?.trim() || undefined, // opcional en edición
-                //     active: Boolean(values.active),
-                //     role_id: values.role,
-                // };
-
                  const response= isEdit
                    ? await userServices.updateUser(id, formattedValues)
                    : await userServices.createUser(formattedValues);
@@ -201,7 +186,6 @@ export const CreateUser = () => {
 
     const normalizeSuppliersRows = async (payload) => {
         const rows = payload?.data?.proveedores;
-        console.log(rows);
         return rows.map((row) => ({
             id: Number(row?.id),
             nombre: row?.nombre,

@@ -60,7 +60,6 @@ export const UserList = () => {
     };
 
     const handleActiveAndInactive = async (user) => {
-        console.log(user);
         try {
             setLoading(true);
             const payload = {
