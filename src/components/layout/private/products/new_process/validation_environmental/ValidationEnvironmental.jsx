@@ -30,8 +30,8 @@ import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getEnvironmentalCategories,
+    getObservationsEnvironmentalColumns,
     getEnvironmentalCategoriesColumns,
-    getObservationsColumns,
     getStatusProduct,
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
@@ -71,7 +71,7 @@ export const ValidationEnvironmental = () => {
     // Columnas base + columnas derivadas
     const baseColumns = getBaseColumns();
     const statusProduct = getStatusProduct();
-    const observationsColumns = getObservationsColumns();
+    const observationsColumns = getObservationsEnvironmentalColumns();
 
     const columns = [
         ...baseColumns,
@@ -195,9 +195,9 @@ export const ValidationEnvironmental = () => {
                 price_min: `$ ${row?.precio_min.toLocaleString()}`,
                 price_max: `$ ${row?.precio_max.toLocaleString()}`,
                 price: row?.precio ? `$ ${row?.precio.toLocaleString()}` : 0,
-                //state: getProductState(row?.fecha_aprobado, row?.aprobados),
+                state: getProductState(row?.uaprobado, row?.faprobado, row?.aprobado),
+                ...extractObservations(row),
                 ...buildEnvironmentalData(row, environmentalCategories),
-                // ...extractObservations(row?.aprobados || []),
                 ...extractCountEnvironmental(row),
             }));
         } catch (error) {
@@ -206,26 +206,32 @@ export const ValidationEnvironmental = () => {
         }
     };
 
-    /**
-     *
-     */
-    const getProductState = (approvalDate, approvalList) => {
-        //Si todos están aprobados
-        const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
-        if (allApproved && approvalDate) {
+    const toISODate = (val) => (typeof val === "string" ? val.split("T")[0] : "");
+    const n01 = (v) => {
+        const n = Number(v);
+        return Number.isNaN(n) ? null : n;
+    };
+
+    // Estado general
+    const getProductState = (approvUser, approvDate, status) => {
+        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id); // normalmente 1
+        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);   // normalmente 0
+
+        const st = n01(status);
+        const hasUser = Boolean(approvUser);
+        const hasDate = Boolean(approvDate);
+
+        if (st === APPROVED_ID && hasUser && hasDate) {
             return GeneralStatusProductEnum.APPROVED;
         }
 
-        //Si alguno está rechazado
-        const hasRejected = approvalList.some(item => item.estado === StatusTeamProductEnum.DENIED.id);
-        if (hasRejected && !approvalDate) {
+        if (st === DENIED_ID && hasUser && hasDate) {
             return GeneralStatusProductEnum.REFUSED;
         }
 
-        if(!approvalDate) {
-            return GeneralStatusProductEnum.PENDING_APPROVAL;
-        }
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
     };
+
 
     /**
      * Debounce para registrar cambios en celdas (evita spam de renders).
@@ -315,31 +321,29 @@ export const ValidationEnvironmental = () => {
      * (Opcional) Construye un map de observaciones por rol. Seguro si rows está vacío.
      * @param {Array} rows
      */
-    const extractObservations = (rows = []) => {
-        const roleMap = {
-            [RolesEnum.ENVIRONMENTAL]: {
-                observationKey: "observations_environmental",
-                statusKey: "status_environmental",
-            },
-            [RolesEnum.SUPERVISION]: {
-                observationKey: "observations_territorial",
-                statusKey: "status_territorial",
+    const extractObservations = (row = {}) => {
+        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id); // 1
+        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);   // 0
+
+        const st = n01(row?.aprobado);
+        const hasUser = Boolean(row?.uaprobado);
+        const hasDate = Boolean(row?.faprobado);
+
+        let statusLabel = "Pendiente"; // por defecto
+        if (st === APPROVED_ID && hasUser && hasDate) {
+            statusLabel = StatusTeamProductEnum.APPROVED.label;
+        } else if (st === DENIED_ID && hasUser && hasDate) {
+            statusLabel = StatusTeamProductEnum.DENIED.label;
+        }
+
+        return {
+            status_environmental: statusLabel,
+            observations_environmental: {
+                comentario : row?.motivo_aprobacion ?? "",
+                funcionario: row?.uaprobado ?? "",
+                fecha      : toISODate(row?.faprobado) // "" si viene null/undefined
             },
         };
-        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
-            acc[id] = label;
-            return acc;
-        }, {});
-
-        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
-            const role = roleMap[rol];
-            if (!role) return acc;
-
-            acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
-            acc[role.observationKey] = { comentario, funcionario, fecha };
-
-            return acc;
-        }, {});
     };
 
     /**
@@ -409,7 +413,7 @@ export const ValidationEnvironmental = () => {
     const createApprovalPayload = (idsBatch, estado, comentario) => ({
         ids: idsBatch,
         estado,
-        comentario,
+        comentario: comentario ? comentario : "Productos aprobados exitosamente por ambiental!",
     });
 
     /**
@@ -420,7 +424,11 @@ export const ValidationEnvironmental = () => {
     const sendBatchApproval = async (payload) => {
         try {
             const { status } = await convocationProductsServices.approveOrDennyEnvironmental(payload);
-            return status === ResponseStatusEnum.OK;
+            if(status === ResponseStatusEnum.OK) {
+                return ResponseStatusEnum.OK;
+            }
+
+            return ResponseStatusEnum.BAD_REQUEST;
         } catch (error) {
             console.error("Error sending batch approval:", error);
             return false;

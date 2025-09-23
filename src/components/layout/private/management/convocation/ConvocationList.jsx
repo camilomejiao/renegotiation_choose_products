@@ -93,9 +93,13 @@ export const ConvocationList = () => {
         }
     }
 
+    const handleActiveAndInactive = (rowId) => {
+        console.log(rowId);
+    }
+
     //
     const baseColumns = getConvocationColumn();
-    const accions = getAccionColumns("", handleEditClick, handleDeleteClick);
+    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, handleDeleteClick);
     const columns = [...baseColumns, ...accions];
 
     //

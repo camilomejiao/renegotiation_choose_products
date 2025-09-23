@@ -135,7 +135,7 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange, hand
 };
 
 //
-export const getObservationsColumns = () => {
+export const getObservationsEnvironmentalColumns = () => {
     const statusColors = {
         [StatusTeamProductEnum.DENIED.label]: "red",
         [StatusTeamProductEnum.APPROVED.label]: "green",
@@ -148,7 +148,64 @@ export const getObservationsColumns = () => {
             <span style={{ color: comentario ? "black" : "gray" }}>
                 {comentario || placeholder}
                 {funcionario && fecha && (
-                    <span> (Aprobado por: {funcionario} - {fecha})</span>
+                    <span> (Revisado por: {funcionario} - {fecha})</span>
+                )}
+            </span>
+        );
+    };
+
+    const renderStatusCell = (params) => {
+        return (
+            <span
+                style={{
+                    color: "white",
+                    backgroundColor: statusColors[params.value] || "gray",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    display: "inline-block",
+                    width: "100%",
+                    textTransform: "capitalize",
+                }}
+            >
+                {params.value || "No definido"}
+            </span>
+        );
+    };
+
+    return [
+        {
+            field: "observations_environmental",
+            headerName: "Observación Ambiental",
+            width: 200,
+            editable: false,
+            renderCell: (params) => renderObservationCell(params, "Observación ambiental..."),
+        },
+        {
+            field: "status_environmental",
+            headerName: "Estado Ambiental",
+            width: 120,
+            editable: false,
+            renderCell: renderStatusCell,
+        },
+    ];
+};
+
+export const getObservationsSupervisionColumns = () => {
+    const statusColors = {
+        [StatusTeamProductEnum.DENIED.label]: "red",
+        [StatusTeamProductEnum.APPROVED.label]: "green",
+        [StatusTeamProductEnum.UNREVIEWED.label]: "orange",
+    };
+
+    const renderObservationCell = (params, placeholder) => {
+        const { comentario, funcionario, fecha } = params.value || {};
+        return (
+            <span style={{ color: comentario ? "black" : "gray" }}>
+                {comentario || placeholder}
+                {funcionario && fecha && (
+                    <span> (Revisado por: {funcionario} - {fecha})</span>
                 )}
             </span>
         );
@@ -185,20 +242,6 @@ export const getObservationsColumns = () => {
         {
             field: "status_supervision",
             headerName: "Estado supervision",
-            width: 120,
-            editable: false,
-            renderCell: renderStatusCell,
-        },
-        {
-            field: "observations_environmental",
-            headerName: "Observación Ambiental",
-            width: 200,
-            editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación ambiental..."),
-        },
-        {
-            field: "status_environmental",
-            headerName: "Estado Ambiental",
             width: 120,
             editable: false,
             renderCell: renderStatusCell,

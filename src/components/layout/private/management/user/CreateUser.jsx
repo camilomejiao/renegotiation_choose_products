@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -15,9 +15,13 @@ import {Button, Spinner} from "react-bootstrap";
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-// Helpers / Enums / Services
+import { PasswordChangeDialog } from "../../../shared/Modals/PasswordChangeDialog";
+
+// Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-import {ResponseStatusEnum, RolesEnum} from "../../../../../helpers/GlobalEnum";
+
+//Enums
+import { ResponseStatusEnum, RolesEnum } from "../../../../../helpers/GlobalEnum";
 
 //Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
@@ -126,6 +130,8 @@ export const CreateUser = () => {
     const [roleOptions, setRoleOptions] = useState([]);
     const [loadingRoles, setLoadingRoles] = useState(false);
 
+    const [pwdOpen, setPwdOpen] = useState(false);
+
     const validationSchema = useMemo(() => buildValidationSchema({ isEdit }), [isEdit]);
 
     const formik = useFormik({
@@ -171,8 +177,8 @@ export const CreateUser = () => {
             setLoadingSuppliers(true);
             const { data, status } = await supplierServices.getSuppliers();
             if (status === ResponseStatusEnum.OK) {
-                const opts = await normalizeSuppliersRows(data);
-                setSuppliersOptions(opts);
+                const resp = await normalizeSuppliersRows(data);
+                setSuppliersOptions(resp);
             } else {
                 setSuppliersOptions([]);
             }
@@ -188,7 +194,7 @@ export const CreateUser = () => {
         const rows = payload?.data?.proveedores;
         return rows.map((row) => ({
             id: Number(row?.id),
-            nombre: row?.nombre,
+            nombre:  `${row?.nombre ?? ""} ${row?.nit ?? ""}`.trim(),
             identificacion: row?.nit,
             email: row?.correo,
         }));
@@ -292,7 +298,7 @@ export const CreateUser = () => {
         if (prov) {
             formik.setFieldValue("identification_number", prov.identificacion || "");
             formik.setFieldValue("name", prov.nombre || "");
-            formik.setFieldValue("last_name", prov.apellidos || "");
+            formik.setFieldValue("last_name", prov.nombre || "");
             formik.setFieldValue("email", prov.email || "");
             formik.setFieldValue("cellphone", prov.telefono || "");
             formik.setFieldValue("role", Number(RolesEnum.SUPPLIER));
@@ -321,6 +327,31 @@ export const CreateUser = () => {
             formik.setFieldValue("last_name", "");
             formik.setFieldValue("email", "");
             formik.setFieldValue("cellphone", "");
+        }
+    };
+
+    const handlePasswordSaved = async (newPwd) => {
+        formik.setFieldValue("password", newPwd);
+        setPwdOpen(false);
+        try {
+            setLoadingUser(true);
+            const payload =  {
+                password_nueva: newPwd,
+                password_confirmacion: newPwd
+            }
+            const { status} = await userServices.updatePassword(id, payload);
+            if (status === ResponseStatusEnum.OK) {
+                AlertComponent.success("Contraseña modificada exitosamente!");
+            }
+
+            if (status !== ResponseStatusEnum.OK) {
+                AlertComponent.error("Hubo un error al realizar el cambio de contraseña");
+            }
+        } catch (error) {
+            console.log(error);
+            AlertComponent.error("Hubo un error al realizar el cambio de contraseña");
+        } finally {
+            setLoadingUser(false);
         }
     };
 
@@ -384,12 +415,16 @@ export const CreateUser = () => {
                         {formik.values.isSupplier && (
                             <div className="col-12">
                                 <Autocomplete
+                                    multiple={false}
                                     options={suppliersOptions}
                                     value={formik.values.supplier}
                                     onChange={(_, value) => handleSelectSupplier(value)}
+                                    openOnFocus
                                     getOptionLabel={(o) => (o?.nombre ?? "").trim()}
                                     isOptionEqualToValue={(o, v) => o?.id === v?.id}
                                     loading={loadingSuppliers}
+                                    noOptionsText={loadingSuppliers ? "Cargando..." : "Sin resultados"}
+                                    loadingText="Cargando..."
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -398,7 +433,7 @@ export const CreateUser = () => {
                                             error={Boolean(formik.touched.supplier_id && formik.errors.supplier_id)}
                                             helperText={formik.touched.supplier_id && formik.errors.supplier_id}
                                             InputProps={{
-                                                readOnly: isEdit && Boolean(formik.values.supplier_id),
+                                                ...params.InputProps,
                                                 endAdornment: (
                                                     <>
                                                         {loadingSuppliers ? <CircularProgress size={18} /> : null}
@@ -409,6 +444,7 @@ export const CreateUser = () => {
                                         />
                                     )}
                                 />
+
                             </div>
                         )}
 
@@ -481,17 +517,34 @@ export const CreateUser = () => {
                             />
                         </div>
 
-                        {/* Password */}
-                        <div className="col-md-6">
-                            <TextField
-                                type="password"
-                                fullWidth
-                                label={isEdit ? "Contraseña (opcional)" : "Contraseña"}
-                                {...formik.getFieldProps("password")}
-                                error={formik.touched.password && Boolean(formik.errors.password)}
-                                helperText={formik.touched.password && formik.errors.password}
-                            />
-                        </div>
+                        {/* Password: botón en edición / input en creación */}
+                        {isEdit ? (
+                            <div className="col-md-6 d-flex align-items-end gap-2">
+                                <Button
+                                    variant="outline-primary"
+                                    type="button"
+                                    onClick={() => setPwdOpen(true)}
+                                >
+                                    Cambiar contraseña
+                                </Button>
+                                {formik.values.password ? (
+                                    <span className="badge bg-success">Nueva contraseña lista</span>
+                                ) : (
+                                    <span className="badge bg-secondary">Sin cambios</span>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="col-md-6">
+                                <TextField
+                                    type="password"
+                                    fullWidth
+                                    label="Contraseña"
+                                    {...formik.getFieldProps("password")}
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    helperText={formik.touched.password && formik.errors.password}
+                                />
+                            </div>
+                        )}
 
                         <div className="col-md-6">
                             <Autocomplete
@@ -537,6 +590,14 @@ export const CreateUser = () => {
                             />
                         </div>
                     </div>
+
+                    {/* Modal de contraseña */}
+                    <PasswordChangeDialog
+                        open={pwdOpen}
+                        onClose={() => setPwdOpen(false)}
+                        onSave={handlePasswordSaved}
+                        minLength={8}
+                    />
 
                     <div className="text-end mt-4 d-flex gap-2 justify-content-end">
                         <Button variant="outline-success"

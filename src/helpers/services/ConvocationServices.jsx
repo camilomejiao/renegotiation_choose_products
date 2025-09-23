@@ -24,6 +24,14 @@ class ConvocationServices {
     }
 
     /**
+     *
+     */
+    getCategoriesConvocation() {
+        const url = GlobalConnex.url+ `lista/parametros/?tipo_parametro_id=26`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
      * Registra convocatorias.
      * POST `/jornadas/crear/`
      *

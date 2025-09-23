@@ -105,6 +105,10 @@ class SupplierServices {
     getSupplierId() {
         return localStorage.getItem("id");
     }
+
+    getIdActiveConvocationOfSupplier() {
+        return localStorage.getItem("jornada_id");
+    }
 }
 
 export const supplierServices = new SupplierServices();

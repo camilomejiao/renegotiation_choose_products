@@ -103,6 +103,11 @@ export const CreateCollectionAccount = () => {
             return;
         }
 
+        if (selectedIds.length > 25) {
+            AlertComponent.info("Error", "Solo puedes seleccionar 25 entregas por cuenta de cobro.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("tipo_cuenta", formFields.tipoCuenta);
         formData.append("numero_cuenta", formFields.numeroCuenta);

@@ -38,8 +38,8 @@ const menuConfig = {
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
         { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
-        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
-        { path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
+        //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPERVISION]: [

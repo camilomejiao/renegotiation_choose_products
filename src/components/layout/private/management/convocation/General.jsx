@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import {useEffect, useRef, useState} from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { FormControlLabel, Switch, TextField } from "@mui/material";
+import {Autocomplete, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
 import { Button } from "react-bootstrap";
 
 //Helpers
@@ -13,10 +13,12 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Services
 import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
 
+
 const initialValues = {
     name: "",
     startDate: "",
     endDate: "",
+    plans: [],
     active: true,
 };
 
@@ -31,10 +33,28 @@ const validationSchema = yup.object().shape({
         .typeError("Fecha final inválida")
         .min(yup.ref("startDate"), "La fecha final no puede ser menor que la inicial")
         .required("La fecha final es requerida"),
+    plans: yup
+        .array()
+        .of(
+            yup
+                .number()
+                .transform((val, orig) => (orig === '' ? NaN : Number(orig)))
+                .typeError('El plan debe ser un ID numérico')
+                .integer()
+                .positive()
+        )
+        .min(1, 'Selecciona al menos un plan')
+        .required('Selecciona al menos un plan'),
     active: yup.boolean().required("Activo o Inactivo"),
 });
 
 export const General = ({id, onBack}) => {
+
+    const [plansOptions, setPlansOptions] = useState([]);
+    const [loadingPlans, setLoadingPlans] = useState(false);
+
+    //
+    const plansLoadedRef = useRef(false);
 
     //
     const formik = useFormik({
@@ -47,6 +67,7 @@ export const General = ({id, onBack}) => {
                     fecha_inicio: values.startDate,
                     fecha_fin: values.endDate,
                     abierto: values.active,
+                    planes: values.plans,
                 };
 
                 const response = id
@@ -66,6 +87,25 @@ export const General = ({id, onBack}) => {
         },
     });
 
+    const loadPlansOnce = async () => {
+        if (plansLoadedRef.current) {
+            return;
+        }
+
+        try {
+            setLoadingPlans(true);
+            const {data, status} = await convocationServices.getCategoriesConvocation();
+            if(status === ResponseStatusEnum.OK) {
+                setPlansOptions(data);
+                setLoadingPlans(false);
+                plansLoadedRef.current = true;
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
+    }
+
     const fetchConvocationData = async (id) => {
         try {
             const {data, status} = await convocationServices.getById(id);
@@ -75,7 +115,8 @@ export const General = ({id, onBack}) => {
                    name: resp.nombre,
                    startDate: resp.fecha_inicio,
                    endDate: resp.fecha_fin,
-                   active: resp.abierto
+                   active: resp.abierto,
+                   plans: resp.planes ?? [],
                 });
             }
         } catch (error) {
@@ -85,6 +126,7 @@ export const General = ({id, onBack}) => {
     }
 
     useEffect(() => {
+        loadPlansOnce();
         if (id) {
             fetchConvocationData(id);
         }
@@ -92,32 +134,27 @@ export const General = ({id, onBack}) => {
 
     return (
         <>
-            <form onSubmit={formik.handleSubmit} className="container">
+            <form onSubmit={async (e) => {
+                e.preventDefault();
+                const errs = await formik.validateForm();
+                if (Object.keys(errs).length) {
+                    formik.setTouched(Object.fromEntries(Object.keys(errs).map(k => [k, true])));
+                    console.log("Errores de validación:", errs);
+                    AlertComponent.warning("Revisa los campos obligatorios.");
+                    return;
+                }
+                formik.handleSubmit(e);
+            }} className="container">
                 <div className="row g-3 mt-5">
 
                     {/* Nombre de la jornada */}
-                    <div className="col-md-6">
+                    <div className="col-md-12">
                         <TextField
                             fullWidth
                             label="Nombre de la jornada"
                             {...formik.getFieldProps("name")}
                             error={formik.touched.name && Boolean(formik.errors.name)}
                             helperText={formik.touched.name && formik.errors.name}
-                        />
-                    </div>
-
-                    {/* Activo */}
-                    <div className="col-md-6">
-                        <FormControlLabel
-                            label="Activo"
-                            labelPlacement="start"
-                            control={
-                                <Switch
-                                    color="success"
-                                    checked={!!formik.values.active}
-                                    onChange={(e) => formik.setFieldValue("active", e.target.checked)}
-                                />
-                            }
                         />
                     </div>
 
@@ -146,6 +183,55 @@ export const General = ({id, onBack}) => {
                             helperText={formik.touched.endDate && formik.errors.endDate}
                         />
                     </div>
+
+                    <div className="col-md-6">
+                        <Autocomplete
+                            multiple
+                            options={plansOptions}
+                            value={plansOptions.filter(opt => (formik.values.plans || []).includes(opt.id))}
+                            onOpen={loadPlansOnce}
+                            onChange={(_, selected) => formik.setFieldValue("plans", selected.map(o => o.id))}
+                            onBlur={() => formik.setFieldTouched("plans", true)}
+                            getOptionLabel={(o) => o?.nombre ?? ""}
+                            isOptionEqualToValue={(o, v) => o.id === v.id}
+                            loading={loadingPlans}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Planes"
+                                    placeholder="Selecciona un plan"
+                                    error={formik.touched.plans && Boolean(formik.errors.plans)}
+                                    helperText={formik.touched.plans && formik.errors.plans}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <>
+                                                {loadingPlans ? <CircularProgress size={18} /> : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
+                    </div>
+
+                    {/* Activo */}
+                    <div className="col-md-6">
+                        <FormControlLabel
+                            label="Activo"
+                            labelPlacement="start"
+                            control={
+                                <Switch
+                                    color="success"
+                                    checked={!!formik.values.active}
+                                    onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+                                />
+                            }
+                        />
+                    </div>
+
+
                 </div>
 
                 <div className="text-end mt-4 d-flex gap-2 justify-content-end">

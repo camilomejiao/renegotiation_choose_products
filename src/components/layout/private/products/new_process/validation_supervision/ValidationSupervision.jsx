@@ -29,8 +29,9 @@ import {
 import { showAlert } from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
+    getObservationsSupervisionColumns,
     getStatusProduct,
-    getObservationsColumns
+
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 1000;
@@ -68,7 +69,7 @@ export const ValidationSupervision = () => {
     //
     const baseColumns = getBaseColumns();
     const statusProduct = getStatusProduct();
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+    const observationsColumns = getObservationsSupervisionColumns();
 
     const columns = [
         ...baseColumns,
@@ -209,30 +210,32 @@ export const ValidationSupervision = () => {
 
     //
     const getProductState = (approvalDate, approvalList) => {
-        //Si todos están aprobados
-        const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
+        const isEmpty = !Array.isArray(approvalList) || approvalList.length === 0;
+
+        // Si no hay evaluaciones, no puede estar aprobado ni rechazado
+        if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
+
+        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id);
+        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);
+
+        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID);
+        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID);
+
+        if (hasRejected) {
+            return GeneralStatusProductEnum.REFUSED;
+        }
+
         if (allApproved && approvalDate) {
             return GeneralStatusProductEnum.APPROVED;
         }
 
-        //Si alguno está rechazado
-        const hasRejected = approvalList.some(item => item.estado === StatusTeamProductEnum.DENIED.id);
-        if (hasRejected && !approvalDate) {
-            return GeneralStatusProductEnum.REFUSED;
-        }
-
-        if(!approvalDate) {
-            return GeneralStatusProductEnum.PENDING_APPROVAL;
-        }
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
     };
+
 
     //Extraer observaciones
     const extractObservations = (rows) => {
         const roleMap = {
-            [RolesEnum.ENVIRONMENTAL]: {
-                observationKey: "observations_environmental",
-                statusKey: "status_environmental"
-            },
             [RolesEnum.SUPERVISION]: {
                 observationKey: "observations_supervision",
                 statusKey: "status_supervision"

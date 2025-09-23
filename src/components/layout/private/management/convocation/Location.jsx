@@ -46,8 +46,8 @@ export const Location = ({ id, onBack, refreshPage }) => {
     const [loadingMunis, setLoadingMunis] = useState(false);
 
     //cache para no repetir requests por depto
-    const muniCacheRef = useRef(new Map());// deptId -> municipios[]
-    const deptsLoadedRef = useRef(false);// para cargar depts solo una vez (onOpen)
+    const deptsLoadedRef = useRef(false);
+    const muniCacheRef = useRef(new Map());
 
     //
     const formik = useFormik({

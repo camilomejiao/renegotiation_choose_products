@@ -1,9 +1,10 @@
-import { useOutletContext } from "react-router-dom";
+import {useNavigate, useOutletContext} from "react-router-dom";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
 } from "recharts";
+import {useEffect} from "react";
 
 // Colores corporativos
 const COLORS = {
@@ -106,9 +107,18 @@ const ChartsBlock = () => (
 );
 
 export const Dashboard = () => {
+
+    //
+    const navigate = useNavigate();
+
     // Si ya usas contexto con userAuth / userData, ajusta aquí:
     const { userAuth } = useOutletContext?.() || {};
     const nombre = userAuth?.nombres || userAuth?.name || "proveedor/a";
+
+    //Quitar cuando ya se pueda ver
+    useEffect(() => {
+        navigate("/admin/search-user", { replace: true });
+    }, []);
 
     return (
         <div className="pb-5">

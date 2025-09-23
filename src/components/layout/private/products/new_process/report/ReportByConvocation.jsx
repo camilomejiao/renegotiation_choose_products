@@ -12,7 +12,7 @@ import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 //Utils
 import {
     getBaseColumns,
-    getObservationsColumns,
+    getObservationsColumns, getObservationsEnvironmentalColumns, getObservationsSupervisionColumns,
     getStatusProduct
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
@@ -59,12 +59,14 @@ export const ReportByConvocation = () => {
     //
     const baseColumns = getBaseColumns();
     const statusProduct = getStatusProduct();
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+    const observationsEnvironmentalColumns = getObservationsEnvironmentalColumns();
+    const observationsSupervisionColumns = getObservationsSupervisionColumns();
 
     const columns = [
         ...baseColumns,
         ...statusProduct,
-        ...observationsColumns,
+        ...observationsEnvironmentalColumns,
+        ...observationsSupervisionColumns,
     ];
 
     //Obtener la lista de jornadas

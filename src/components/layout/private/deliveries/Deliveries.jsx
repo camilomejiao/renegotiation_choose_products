@@ -471,7 +471,6 @@ export const Deliveries = () => {
                             <Button
                                 variant="outline-success"
                                 onClick={() => handleViewFile(imagen1Url)}
-                                disabled={isButtonDisabled(row)}
                                 title="Ver Docuemnto cargado"
                             >
                                 Ver Imagen 1
@@ -481,7 +480,8 @@ export const Deliveries = () => {
                         <Button
                             variant="outline-secondary"
                             onClick={() => handleUploadFile(row.id, UploadFileEnum.EVIDENCE2)}
-                            title="Subir imagen 1"
+                            disabled={isButtonDisabled(row)}
+                            title="Subir imagen 2"
                         >
                             Subir Imagen 2
                         </Button>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import {Button, Col, Row} from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
 
@@ -13,33 +13,83 @@ import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/C
 
 //Services
 import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 //Enum
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import {
+    GeneralStatusProductEnum,
+    ResponseStatusEnum, RolesEnum,
+    StatusTeamProductEnum
+} from "../../../../../../helpers/GlobalEnum";
 
 //Utils
 import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
-import {getObservationsColumns, getStatusProduct} from "../../../../../../helpers/utils/ValidateProductColumns";
+import {
+    getObservationsSupervisionColumns,
+    getStatusProduct
+} from "../../../../../../helpers/utils/ValidateProductColumns";
+import Select from "react-select";
 
 export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();
     const navigate = useNavigate();
 
-    const [rows, setRows] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
+
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [loadingTable, setLoadingTable] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Carga los planes de una jornada específica (cuando se selecciona una Jornada).
+     */
+    const getPlans = async () => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(getIdActiveConvocationOfSupplier());
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes || []);
+            } else {
+                setPlanRaw([]);
+            }
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getIdActiveConvocationOfSupplier = () => {
+        return supplierServices.getIdActiveConvocationOfSupplier();
+    }
+
+    /**
+     * Maneja el cambio de Plan: actualiza form y, si hay valor, carga los productos.
+     * @param {{value:number,label:string}|null} option
+     */
+    const handleSelectedPlan = async (option) => {
+        setSelectedPlan(option.value ?? null);
+        if (option?.value) {
+            await getProductList(option.value);
+        } else {
+            setProductList([]);
+        }
+    };
+
+
     //
-    const getProductList = async () => {
+    const getProductList = async (jornadaPlanId) => {
         try {
             setLoadingTable(true);
-            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id);
+            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id, jornadaPlanId);
             if(status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data);
-                setRows(products);
+                setProductList(products);
                 setFilteredRows(products);
             }
         } catch (error) {
@@ -55,7 +105,6 @@ export const ProductPriceQuotesBySupplier = () => {
         try {
             return rows.map((row) => ({
                 id: row?.id,
-                plan: row?.plan,
                 category: row?.categoria_producto?.nombre,
                 name: row?.nombre,
                 unit: row?.unidad_medida?.nombre,
@@ -64,6 +113,8 @@ export const ProductPriceQuotesBySupplier = () => {
                 price: row?.producto_valor_unitario ?? 0,
                 precio_min: Number(row?.precio_min),
                 precio_max: Number(row?.precio_max),
+                state: getProductState(row?.fecha_aprobado, row?.producto_aprobaciones),
+                ...extractObservations(row?.producto_aprobaciones),
             }));
         } catch (error) {
             console.error('Error al normalizar filas:', error);
@@ -71,9 +122,59 @@ export const ProductPriceQuotesBySupplier = () => {
         }
     };
 
+    //
+    const getProductState = (approvalDate, approvalList) => {
+        const isEmpty = !Array.isArray(approvalList) || approvalList.length === 0;
+
+        // Si no hay evaluaciones, no puede estar aprobado ni rechazado
+        if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
+
+        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id);
+        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);
+
+        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID);
+        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID);
+
+        if (hasRejected) {
+            return GeneralStatusProductEnum.REFUSED;
+        }
+
+        if (allApproved && approvalDate) {
+            return GeneralStatusProductEnum.APPROVED;
+        }
+
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
+    };
+
+
+    //Extraer observaciones
+    const extractObservations = (rows) => {
+        const roleMap = {
+            [RolesEnum.SUPERVISION]: {
+                observationKey: "observations_supervision",
+                statusKey: "status_supervision"
+            }
+        };
+
+        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
+            acc[id] = label;
+            return acc;
+        }, {});
+
+        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
+            const role = roleMap[rol];
+            if (!role) return acc;
+
+            acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
+            acc[role.observationKey] = { comentario, funcionario, fecha };
+
+            return acc;
+        }, {});
+    };
+
     const baseColumns = getProductsPriceQuotesColumns();
     const statusProduct = getStatusProduct();
-    const observationsColumns = getObservationsColumns(userAuth.rol_id);
+    const observationsColumns = getObservationsSupervisionColumns();
 
     const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
 
@@ -89,7 +190,7 @@ export const ProductPriceQuotesBySupplier = () => {
         //     );
         // }
 
-        setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
+        setProductList((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         return newRow;
     };
@@ -101,7 +202,7 @@ export const ProductPriceQuotesBySupplier = () => {
         const query = e.target.value;
         setSearchQuery(query);
 
-        const filteredData = rows.filter(
+        const filteredData = productList.filter(
             (product) =>
                 (product.name || "").toLowerCase().includes(query.toLowerCase()) ||
                 (product.description || "").toLowerCase().includes(query.toLowerCase()) ||
@@ -134,7 +235,7 @@ export const ProductPriceQuotesBySupplier = () => {
             //     return;
             // }
 
-            const emptyFields = rows.some(r => {
+            const emptyFields = productList.some(r => {
                 return !r.description || !r.brand || !r.price
             });
 
@@ -147,7 +248,7 @@ export const ProductPriceQuotesBySupplier = () => {
                 return;
             }
 
-            const productos = await transformData(rows);
+            const productos = await transformData(productList);
 
             let sendData = {
                 proveedor_id: userAuth.id,
@@ -182,7 +283,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
     //Cargar datos iniciales
     useEffect(() => {
-        getProductList();
+        getPlans();
     }, []);
 
     return (
@@ -198,17 +299,31 @@ export const ProductPriceQuotesBySupplier = () => {
                 />
 
                 <div className="container mt-lg-3">
-                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                    <Row className="gy-2 align-items-center mt-3 mb-3">
+                        <Col xs={12} md={4}>
                             <input
                                 type="text"
                                 placeholder="Buscar..."
                                 value={searchQuery}
                                 onChange={handleSearchChange}
-                                className="input-responsive me-2"
+                                className="form-control"
                             />
-                        </div>
-                    </div>
+                        </Col>
+
+                        {/* Select Plan */}
+                        <Col xs={12} md={4}>
+                            <Select
+                                value={selectedPlan ?? null}
+                                options={planRaw.map((opt) => ({ value: opt.id, label: opt.plan_nombre }))}
+                                placeholder="Selecciona un Plan"
+                                onChange={handleSelectedPlan}
+                                isClearable
+                                isLoading={loading}
+                                classNamePrefix="custom-select"
+                                className="custom-select w-100"
+                            />
+                        </Col>
+                    </Row>
 
                     {loading && (
                         <div className="overlay">

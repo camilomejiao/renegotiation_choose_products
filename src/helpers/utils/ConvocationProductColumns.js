@@ -183,7 +183,6 @@ export const getDeleteActionsColumns = (handleDeleteClick) => ([
 
 export const getProductsPriceQuotesColumns = () => ([
     { field: "id", headerName: "ID", width: 70 },
-    { field: "plan", headerName: "PLAN", width: 150 },
     { field: "category", headerName: "CATEGORIA", width: 300 },
     { field: "name", headerName: "NOMBRE PRODUCTO", width: 300 },
     { field: "unit", headerName: "UNIDAD", width: 150 },
@@ -204,6 +203,7 @@ export const getProductsPriceQuotesColumns = () => ([
                 <TextField
                     type="text"
                     value={current ? formatPrice(current) : ""}
+                    fullWidth
                     //error={outOfRange}
                     // helperText={
                     //     outOfRange
@@ -219,7 +219,6 @@ export const getProductsPriceQuotesColumns = () => ([
                         // esto re-renderiza la celda; el commit real se hace al salir de la fila
                         params.api.updateRows([newRow]);
                     }}
-                    fullWidth
                     // verde sutil si dentro de rango y hay valor
                     // sx={
                     //     !outOfRange && current
