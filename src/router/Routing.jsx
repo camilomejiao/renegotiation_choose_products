@@ -46,7 +46,7 @@ import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
-import { ProductUpload } from "../components/layout/private/products/new_process/product_upload/ProductUpload";
+import { ProductUploadTechnical } from "../components/layout/private/products/new_process/product_upload_technical/ProductUploadTechnical";
 import { ProductPriceQuotesBySupplier } from "../components/layout/private/products/new_process/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {
     ListProductsByConvocation
@@ -100,7 +100,7 @@ export const Routing = () => {
                         {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
                         {/*<Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />*/}
                         <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
-                        <Route path={ RouterEnum.ProductUpload }  element={ <ProductUpload /> }  />
+                        <Route path={ RouterEnum.ProductUpload }  element={ <ProductUploadTechnical /> }  />
                         <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
                         <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
                         <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />

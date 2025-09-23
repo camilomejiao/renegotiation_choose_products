@@ -23,8 +23,9 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Services
 import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
+import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
-export const ProductUpload = () => {
+export const ProductUploadTechnical = () => {
 
     const navigate = useNavigate();
 
@@ -209,14 +210,37 @@ export const ProductUpload = () => {
                 jornada_plan: Number(formFields.typePlan),
                 productos
             }
-            //console.log(sendData);
+
             const { data, status } = await convocationProductsServices.saveProductsByConvocation(sendData);
+
             if (status === ResponseStatusEnum.BAD_REQUEST) {
-                throw new Error(`${data}`);
+                const perItemErrors = data?.data?.errores?.productos ?? [];
+
+                const messages = perItemErrors
+                    .map((obj, idx) => {
+                        if (!obj || Object.keys(obj).length === 0) return null; // sin errores en ese índice
+
+                        const lines = Object.entries(obj).flatMap(([field, val]) => {
+                            const arr = Array.isArray(val) ? val : [val];
+                            return arr.map(msg =>
+                                field === "non_field_errors" ? `${msg}` : `${field}: ${msg}`
+                            );
+                        });
+
+                        return `Producto #${idx + 1}: ${lines.join(" | ")}`;
+                    })
+                    .filter(Boolean);
+
+                if (messages.length) {
+                    AlertComponent.warning("Errores de validación", messages.join("\n"));
+                } else {
+                    AlertComponent.warning("Errores de validación", data?.message ?? "Revisa los datos enviados.");
+                }
+                return;
             }
 
             if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
-                throw new Error(`${data}`);
+                handleError(`${data?.data?.errores}`);
             }
 
             if(status === ResponseStatusEnum.CREATED) {

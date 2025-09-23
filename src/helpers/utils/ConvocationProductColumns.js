@@ -149,7 +149,7 @@ export const getEditActionsColumns = (handleEditClick) => ([
                 <Button
                     variant="outline-info"
                     onClick={() => handleEditClick(params.row.id)}
-                    title="Generar reporte (Excel)"
+                    title="Edita productos"
                 >
                     <FaRegEdit />
                 </Button>

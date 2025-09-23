@@ -179,6 +179,10 @@ export const ValidationSupervision = () => {
                 setProductList(products);
                 setFilteredData(products);
             }
+
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                showInfo('Proveedor no ha llenado la cotización de los productos.');
+            }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
         } finally {
