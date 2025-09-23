@@ -1,4 +1,4 @@
-import { Global } from "../Global.jsx";
+import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  */
 class ReportServices {
     constructor() {
-        this.baseUrl = Global.url + "orden/reporte/";
+        this.baseUrl = GlobalConnex.url + "orden/reporte/";
     }
 
     /**

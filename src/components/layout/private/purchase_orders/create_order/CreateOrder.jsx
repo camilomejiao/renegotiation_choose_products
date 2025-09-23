@@ -21,13 +21,12 @@ import { CompanyReportPrinting } from "../../reports/report_company/report/Compa
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
-import { userService } from "../../../../../helpers/services/UserServices";
+import { userServices } from "../../../../../helpers/services/UserServices";
 import { productForPurchaseOrderServices } from "../../../../../helpers/services/ProductForPurchaseOrderServices";
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-import {supplierServices} from "../../../../../helpers/services/SupplierServices";
 
 export const CreateOrder = () => {
 
@@ -48,7 +47,7 @@ export const CreateOrder = () => {
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
 
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
@@ -90,27 +89,19 @@ export const CreateOrder = () => {
                 //Obtenemos los datos completos del producto desde el servicio
                 const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
 
-                //Obtenemos la ubicacion del proveedor
-               const { locationKey, location_id, locationName} = getSupplierLocation();
-
-                //Buscamos el objeto que coincide con la ubicación del proveedor
-                const matchingMunicipio = data.valor_municipio.find((location) => {
-                    return location.ubicacion_proveedor === parseInt(locationKey);
-                });
-
-                if(!matchingMunicipio) {
+                if(!data) {
                     AlertComponent.error('Error', 'El producto no tiene valor total configurado!');
                     return;
                 }
 
-                const valorUnitario = parseInt(matchingMunicipio.valor_unitario);
+                const valorUnitario = parseInt(data?.valor_unitario);
 
                 // Agregar el producto con los datos
                 setItems([...items, {
                     id: data.id,
                     nombre: data.nombre,
                     unidad: data.unidad,
-                    valor_unitario: valorUnitario,
+                    valor_unitario: valorUnitario ?? 0,
                     quantity : 1,
                     discount: '0'
                 }]);
@@ -188,10 +179,8 @@ export const CreateOrder = () => {
 
     //Construye la estructura de datos a enviar
     const buildDataToSend = (itemsWithTotal) => {
-        const { locationKey} = getSupplierLocation();
         return {
             persona_cub_id: params.id,
-            ubicacion_id: parseInt(locationKey),
             valor_total: Math.ceil(total),
             items: itemsWithTotal
         };
@@ -269,13 +258,12 @@ export const CreateOrder = () => {
         });
     };
 
-    const getSupplierLocation = () => {
-        return supplierServices.getLocation();
-    }
-
     //
     const validateProducts = () => {
-        return total === 0 || saldoRestante <= 0 ;
+        if(isNaN(total) || isNaN(saldoRestante)) {
+            return true;
+        }
+        return total === 0 || saldoRestante < 0 ;
     };
 
     useEffect(() => {
@@ -342,7 +330,7 @@ export const CreateOrder = () => {
                                         }}
                                         placeholder="Buscar productos..."
                                     />
-                                    <Button variant="success"
+                                    <Button variant="outline-success"
                                             disabled={parseFloat(saldoRestante) === 0}
                                             onClick={addItemToTable}
                                             className="addProductButton ms-2"
@@ -425,8 +413,7 @@ export const CreateOrder = () => {
                                         </td>
                                         <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
                                         <td>
-                                            <Button variant="danger"
-                                                    size="sm"
+                                            <Button variant="outline-danger"
                                                     onClick={() => handleDeleteItem(index)}>
                                                 <FaTrashAlt />
                                             </Button>
@@ -449,8 +436,7 @@ export const CreateOrder = () => {
                     <Row className="mt-3 justify-content-md-end justify-content-center">
                         <Col xs="auto" className="text-center text-md-end">
                             <Button
-                                variant="info"
-                                size="lg"
+                                variant="outline-info"
                                 onClick={() => getHeadlineReport(params.id)}
                                 disabled={isReportLoading}
                                 className="button-responsive me-md-2 mb-2 mb-md-0"
@@ -472,8 +458,7 @@ export const CreateOrder = () => {
                                 )}
                             </Button>
                             <Button
-                                variant="success"
-                                size="lg"
+                                variant="outline-success"
                                 onClick={handleSaveProduct}
                                 disabled={validateProducts()}
                                 className="button-responsive"

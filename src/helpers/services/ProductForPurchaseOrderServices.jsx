@@ -1,4 +1,4 @@
-import { Global } from "../Global.jsx";
+import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  */
 class ProductForPurchaseOrderServices {
     constructor() {
-        this.baseUrl = Global.url + "producto/";
+        this.baseUrl = GlobalConnex.url + "producto/";
     }
 
     /**
@@ -52,7 +52,7 @@ class ProductForPurchaseOrderServices {
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     saveOrderProducts(products) {
-        const url = Global.url + "orden/";
+        const url = GlobalConnex.url + "orden/";
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(products),

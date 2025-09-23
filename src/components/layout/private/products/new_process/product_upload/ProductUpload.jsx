@@ -1,40 +1,41 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button } from "react-bootstrap";
-import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
-// Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-
-// Img
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
-
-//Services
-import { productServices } from "../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../helpers/services/SupplierServices";
-
-//Enum
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+//
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
+import { getNewCatalogBaseColumns, getDeleteActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
 import {
-    chunkArray,
-    extractMunicipios,
-    handleError,
-    showAlert
-} from "../../../../../helpers/utils/utils";
-import {
-    getBaseColumns,
-    getDynamicColumnsBySupplier,
-    getUnitOptions,
     getCategoryOptions,
-    getEnvironmentalCategories
-} from "../../../../../helpers/utils/ProductColumns";
+    getEnvironmentalCategories,
+    getUnitOptions
+} from "../../../../../../helpers/utils/ValidateProductColumns";
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 
-export const AddProducts = () => {
+//Enum
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+
+//Services
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
+
+export const ProductUpload = () => {
 
     const navigate = useNavigate();
+
+    const [convocations, setConvocations] = useState([]);
+    const [selectedConvocation, setSelectedConvocation] = useState(null);
+
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
+    // Si mantienes formFields en otro lado:
+    const [formFields, setFormFields] = useState({typeCall: "", typePlan: ""});
 
     const [rows, setRows] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
@@ -42,7 +43,72 @@ export const AddProducts = () => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
-    const [dynamicMunicipalityColumns, setDynamicMunicipalityColumns] = useState([]);
+
+
+    const loadData = async () => {
+        try {
+            const [unitData, categoryData] = await Promise.all([
+                getUnitOptions(),
+                getCategoryOptions(),
+            ]);
+
+            setUnitOptions(unitData);
+            setCategoryOptions(categoryData);
+        } catch (error) {
+            handleError(error, "Error cargando los datos iniciales.");
+        }
+    };
+
+    //Obtener la lista de jornadas
+    const getConvocations = async () => {
+        setLoading(true);
+        try {
+            const {data, status} = await convocationProductsServices.getConvocations();
+            if (status === ResponseStatusEnum.OK) {
+                setConvocations(data.data.jornadas);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de proveedores:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Cargar planes
+    const getPlans = async (convocationId) => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes ?? []);
+            }
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSelectedConvocation = async (option) => {
+        setSelectedConvocation(option ?? null);
+        setSelectedPlan(null);
+        setFormFields(prev => ({
+            ...prev,
+            typeCall: option?.value ?? "", // API
+            typePlan: ""
+        }));
+        setPlanRaw([]);
+        if (option?.value) await getPlans(option.value);
+    };
+
+    const handleSelectedPlan = (option) => {
+        setSelectedPlan(option ?? null);
+        setFormFields(prev => ({
+            ...prev,
+            typePlan: option?.value ?? ""
+        }));
+    };
 
     //
     const handleRowUpdate = (newRow) => {
@@ -54,43 +120,19 @@ export const AddProducts = () => {
         return newRow;
     };
 
-    const baseColumns = getBaseColumns(unitOptions, categoryOptions, handleRowUpdate, true);
-    const actionsColumns = [
-        {
-            field: 'actions',
-            headerName: 'Acciones',
-            flex: 0.7,
-            renderCell: (params) => (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <FaTrash
-                        style={{ color: 'red', cursor: 'pointer' }}
-                        onClick={() => handleDeleteClick(params.row.id)}
-                    />
-                </div>
-            ),
-            sortable: false,
-            filterable: false,
-        },
-    ]
-
-    const columns = [...baseColumns, ...dynamicMunicipalityColumns, ...actionsColumns];
-
-    const loadData = async () => {
-        try {
-            const supplierId = getSupplierId();
-            const [unitData, categoryData, { newDynamicColumns }] = await Promise.all([
-                getUnitOptions(),
-                getCategoryOptions(),
-                getDynamicColumnsBySupplier(supplierId, true)
-            ]);
-
-            setUnitOptions(unitData);
-            setCategoryOptions(categoryData);
-            setDynamicMunicipalityColumns(newDynamicColumns);
-        } catch (error) {
-            handleError(error, "Error cargando los datos iniciales.");
-        }
+    // Función para eliminar un elemento de la tabla
+    const handleDeleteClick = (id) => {
+        setRows(prevRows => {
+            const updated = prevRows.filter(row => row.id !== id);
+            setFilteredRows(updated);
+            return updated;
+        });
     };
+
+    const baseColumns = getNewCatalogBaseColumns(unitOptions, categoryOptions, handleRowUpdate, true);
+    const actionsColumns = getDeleteActionsColumns(handleDeleteClick)
+
+    const columns = [...baseColumns, ...actionsColumns];
 
     //
     const handleClipboard = async (event) => {
@@ -104,9 +146,6 @@ export const AddProducts = () => {
             return;
         }
 
-        // Esperar a que se carguen las columnas dinámicas
-        const supplierId = getSupplierId();
-        const { newDynamicColumns: dynamicColumns } = await getDynamicColumnsBySupplier(supplierId,true);
         const units = await getUnitOptions();
         const categories = await getCategoryOptions();
 
@@ -128,16 +167,8 @@ export const AddProducts = () => {
                     const matchedCategory = categories.find(option => option.nombre.trim().toLowerCase() === rowData[colIndex]?.trim().toLowerCase());
                     rowObject[col.field] = matchedCategory ? matchedCategory.id : categories[0]?.id || 401;
                 } else {
-                    rowObject[col.field] = rowData[colIndex] || getDefaultBaseValue(col.field);
+                    rowObject[col.field] = rowData[colIndex];
                 }
-            });
-
-            //Asignamos valores a las columnas dinámicas
-            dynamicColumns.forEach((col, colIndex) => {
-                const dynamicFieldIndex = baseColumns.length + colIndex; //Índice basado en el orden
-                rowObject[col.field] = rowData[dynamicFieldIndex]
-                    ? parseFloat(rowData[dynamicFieldIndex].replace(/[^\d.]/g, ""))
-                    : '0.00';
             });
 
             return rowObject;
@@ -145,17 +176,6 @@ export const AddProducts = () => {
 
         setRows(newRows); //Actualizamos los datos
         setFilteredRows(newRows); //Sincronizamos con los datos filtrados
-    };
-
-    const getDefaultBaseValue = (field) => {
-        const defaultValues = {
-            name: "Producto sin nombre", // Valor por defecto para el nombre
-            description: "Descripción no disponible", // Valor por defecto para la descripción
-            unit: "UNIDAD", // Valor por defecto para la unidad
-            category: "Piscicultura", // Valor por defecto para la categoría
-        };
-
-        return defaultValues[field] || ""; // Retorna el valor predeterminado o vacío si no está configurado
     };
 
     const handleSearchChange = (event) => {
@@ -173,8 +193,6 @@ export const AddProducts = () => {
         window.location.reload();
     };
 
-    const handleBack = () => navigate('/admin/products');
-
     //Manejo principal para guardar productos
     const handleSaveProducts = async () => {
         if (!rows || rows.length === 0) {
@@ -184,13 +202,26 @@ export const AddProducts = () => {
 
         try {
             setLoading(true);
-            const transformedData = await transformData(rows);
-            const batches = chunkArray(transformedData, 250);
 
-            await sendBatchesInParallel(batches);
+            const productos = await transformData(rows);
 
-            showAlert('', 'Todos los productos se han creado exitosamente');
-            navigate('/admin/products');
+            let sendData = {
+                jornada_plan: Number(formFields.typePlan),
+                productos
+            }
+            //console.log(sendData);
+            const { data, status } = await convocationProductsServices.saveProductsByConvocation(sendData);
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                throw new Error(`${data}`);
+            }
+
+            if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                throw new Error(`${data}`);
+            }
+
+            if(status === ResponseStatusEnum.CREATED) {
+                showAlert('', 'Todos los productos se han creado exitosamente');
+            }
 
             // Limpiamos la tabla
             setRows([]);
@@ -200,29 +231,6 @@ export const AddProducts = () => {
         } finally {
             setLoading(false); // Ocultar indicador de carga
         }
-    };
-
-    //Transformar datos para ajustarlos al formato esperado por la API
-    const transformData = async (inputData) => {
-        const supplierId = parseInt(getSupplierId());
-        const environmentalKeys = await getEnvironmentalCategoryKeys();
-
-        return inputData.map(product => ({
-            proveedor_id: supplierId,
-            nombre: product.name,
-            especificacion_tecnicas: product.description,
-            marca_comercial: product.brand,
-            unidad_medida: product.unit,
-            categoria_producto: product.category,
-            valor_municipio: extractMunicipios(product),
-            ambiental: buildData(product, environmentalKeys),
-            cantidad_ambiental: {cant: 0, ambiental_key: ''},
-        }));
-    };
-
-    //Obtener el ID del proveedor
-    const getSupplierId = () => {
-        return supplierServices.getSupplierId();
     };
 
     //Obtener las claves ambientales
@@ -237,52 +245,31 @@ export const AddProducts = () => {
         );
     };
 
-    //Enviar lotes en paralelo con control de concurrencia
-    const sendBatchesInParallel = async (batches, maxConcurrent = 5) => {
-        const errors = []; // Para almacenar los errores
-        for (let i = 0; i < batches.length; i += maxConcurrent) {
-            const batchChunk = batches.slice(i, i + maxConcurrent);
+    //Transformar datos para ajustarlos al formato esperado por la API
+    const transformData = async (inputData) => {
+        const environmentalKeys = await getEnvironmentalCategoryKeys();
 
-            const results = await Promise.allSettled(
-                batchChunk.map(batch => sendBatchToService(batch))
-            );
-
-            results.forEach((result, index) => {
-                if (result.status === 'rejected') {
-                    errors.push(result.reason);
-                }
-            });
-        }
-
-        if (errors.length > 0) {
-            throw new Error(`${errors}`);
-        }
+        return inputData.map(product => ({
+            categoria_producto: product?.category,
+            nombre: product?.name,
+            unidad_medida: product?.unit,
+            precio_min: Number(product?.price_min),
+            precio_max: Number(product?.price_max),
+            ambiental: buildData(product, environmentalKeys),
+            cantidad_ambiental: {
+                cant: parseInt(product?.customValue) || 0,
+                ambiental_key: product?.selectedCategory || ""
+            },
+        }));
     };
 
-    const sendBatchToService = async (batch) => {
-        const { data, status } = await productServices.save(batch);
-        if (status === ResponseStatusEnum.BAD_REQUEST) {
-            throw new Error(`${data}`);
-        }
-
-        if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
-            throw new Error(`${data}`);
-        }
-        return data;
-    };
-
-    // Función para eliminar un elemento de la tabla
-    const handleDeleteClick = (id) => {
-        setRows(prevRows => {
-            const updated = prevRows.filter(row => row.id !== id);
-            setFilteredRows(updated);
-            return updated;
-        });
-    };
+    const handleBack = () => navigate('/admin/list-products-by-convocation');
 
     // Cargar datos iniciales
     useEffect(() => {
         loadData();
+        getConvocations();
+
     }, []);
 
     useEffect(() => {
@@ -303,33 +290,78 @@ export const AddProducts = () => {
                 backgroundInformationColor={''}
             />
 
+            {loading && (
+                <div className="spinner-container">
+                    <Spinner animation="border" variant="success" />
+                    <span>Cargando...</span>
+                </div>
+            )}
+
             <div className="container mt-lg-3">
-                <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                    <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-                        <input
-                            type="text"
-                            placeholder="Buscar..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="input-responsive me-2"
+                {/* Select */}
+                <Row className="gy-3">
+                    {/* Select Jornada */}
+                    <Col xs={12} md={4}>
+                        <Select
+                            value={selectedConvocation ?? null}
+                            options={convocations?.map(opt => ({ value: opt.id, label: opt.nombre }))}
+                            placeholder="Selecciona una Jornada"
+                            onChange={handleSelectedConvocation}
+                            isClearable
+                            classNamePrefix="custom-select"
+                            className="custom-select w-100"
+                            styles={{
+                                placeholder: (base) => ({ ...base, color: '#6c757d' }),
+                                singleValue: (base) => ({ ...base, color: '#212529' }),
+                            }}
+                            noOptionsMessage={() => "Sin opciones"}
                         />
+                    </Col>
+
+                    {/* Select Plan */}
+                    <Col xs={12} md={4}>
+                        <Select
+                            value={selectedPlan ?? null}
+                            options={planRaw.map(opt => ({ value: opt.id, label: opt.plan_nombre }))}
+                            placeholder="Selecciona un Plan"
+                            onChange={handleSelectedPlan}
+                            isClearable
+                            isDisabled={!selectedConvocation || loading}
+                            isLoading={loading}
+                            classNamePrefix="custom-select"
+                            className="custom-select w-100"
+                            noOptionsMessage={() => selectedConvocation ? "Sin planes" : "Selecciona una jornada"}
+                        />
+                    </Col>
+                </Row>
+
+                <hr/>
+
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-2">
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="input-responsive me-2"
+                    />
+                    <div className="text-end">
                         <Button
                             variant="outline-success"
-                            size="md"
                             onClick={handleUploadTable}
                             className="button-order-responsive"
                         >
                             <FaBroom/> Reiniciar tabla
                         </Button>
                         <Button
-                            variant="secondary"
-                            size="md"
+                            variant="outline-secondary"
                             onClick={handleBack}
                             className="button-order-responsive">
                             <FaBackspace /> Atras
                         </Button>
                     </div>
                 </div>
+
 
                 {loading && (
                     <div className="overlay">
@@ -389,8 +421,7 @@ export const AddProducts = () => {
                 {/* Botón Guardar */}
                 <div className="d-flex align-items-end mt-3">
                     <Button
-                        variant="success"
-                        size="md"
+                        variant="outline-success"
                         onClick={handleSaveProducts}
                         className="ms-auto"
                         disabled={loading}
@@ -402,5 +433,5 @@ export const AddProducts = () => {
             </div>
 
         </div>
-    );
-};
+    )
+}

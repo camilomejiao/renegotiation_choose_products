@@ -5,18 +5,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 
 //Img
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 //Services
-import { productServices } from "../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 //Enums
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
 import {
@@ -24,16 +24,16 @@ import {
     extractMunicipios,
     handleError,
     showAlert
-} from "../../../../../helpers/utils/utils";
+} from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getCategoryOptions,
     getDynamicColumnsBySupplier,
     getEnvironmentalCategories,
     getUnitOptions
-} from "../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 100;
 
 export const EditProduct = () => {
 
@@ -278,13 +278,13 @@ export const EditProduct = () => {
                                 className="input-responsive"
                             />
 
-                            <Button onClick={handleCreateProducts} className="button-order-responsive">
+                            <Button onClick={handleCreateProducts}
+                                    className="button-order-responsive">
                                 <FaPlus /> Agregar productos
                             </Button>
 
                             <Button
-                                variant="secondary"
-                                size="md"
+                                variant="outline-info"
                                 onClick={handleBack}
                                 className="button-order-responsive">
                                 <FaBackspace /> Atras
@@ -355,8 +355,7 @@ export const EditProduct = () => {
                     {/* Botón Guardar */}
                     <div className="d-flex align-items-end mt-3">
                         <Button
-                            variant="success"
-                            size="md"
+                            variant="outline-success"
                             onClick={handleSaveProducts}
                             className="ms-auto"
                             disabled={loading}

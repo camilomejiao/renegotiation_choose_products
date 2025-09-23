@@ -50,7 +50,7 @@ export const Login = () => {
         });
 
         if(!respServicesLogin.access && !respServicesLogin.refresh) {
-            AlertComponent.error('Oops...', respServicesLogin.message);
+            AlertComponent.error('Oops...', respServicesLogin.error);
         } else {
             AlertComponent.success('Bien hecho!', respServicesLogin.message);
             setAuth(respServicesLogin);

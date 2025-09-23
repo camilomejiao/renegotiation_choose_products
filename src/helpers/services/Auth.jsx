@@ -1,9 +1,10 @@
-import { Global } from "../Global.jsx";
+import { GlobalConnex } from "../GlobalConnex.jsx";
 import { jwtDecode } from "jwt-decode";
+import {RolesEnum} from "../GlobalEnum";
 
 class AuthService {
     constructor() {
-        this.baseUrl = Global.url;
+        this.baseUrl = GlobalConnex.url;
     }
 
     /**
@@ -103,6 +104,9 @@ class AuthService {
         localStorage.setItem("refresh", tokens?.refresh || "");
         localStorage.setItem("user", JSON.stringify(decodeToken || {}));
         localStorage.setItem("rol_id", decodeToken?.rol || "");
+        if(decodeToken?.rol === RolesEnum.SUPPLIER) {
+            localStorage.setItem("jornada_id", decodeToken?.jornada_id || "");
+        }
     }
 }
 

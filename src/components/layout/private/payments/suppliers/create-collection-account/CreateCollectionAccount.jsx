@@ -103,6 +103,11 @@ export const CreateCollectionAccount = () => {
             return;
         }
 
+        if (selectedIds.length > 25) {
+            AlertComponent.info("Error", "Solo puedes seleccionar 25 entregas por cuenta de cobro.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("tipo_cuenta", formFields.tipoCuenta);
         formData.append("numero_cuenta", formFields.numeroCuenta);
@@ -269,10 +274,14 @@ export const CreateCollectionAccount = () => {
                     </div>
 
                     <div className="d-flex justify-content-end gap-2 mt-3">
-                        <Button variant="secondary" size="md" onClick={onBack}>
+                        <Button variant="outline-secondary"
+                                onClick={onBack}
+                        >
                             <FaStepBackward /> Atras
                         </Button>
-                        <Button variant="success" size="md" onClick={handleSaveUsers}>
+                        <Button variant="outline-success"
+                                onClick={handleSaveUsers}
+                        >
                             <FaSave /> Crear cuenta de cobro
                         </Button>
                     </div>

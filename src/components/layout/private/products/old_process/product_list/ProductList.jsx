@@ -552,175 +552,173 @@ export const ProductList = () => {
     }, [selectedSupplier, userAuth.rol_id]);
 
     return (
-            <>
-                <div className="main-container">
-                    <HeaderImage
-                        imageHeader={imgPeople}
-                        titleHeader="¡Listado de productos!"
-                    />
+        <>
+            <div className="main-container">
+                <HeaderImage
+                    imageHeader={imgPeople}
+                    titleHeader="¡Listado de productos!"
+                />
 
-                    <div className="container mt-lg-3">
-                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-                            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-                                <input
-                                    type="text"
-                                    placeholder="Buscar..."
-                                    value={searchQuery}
-                                    onChange={handleSearchQueryChange}
-                                    className="input-responsive"
-                                />
-
-                                {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
-                                    <>
-                                        <Button onClick={() => navigate(`/admin/create-products`)}
-                                                className="button-order-responsive">
-                                            <FaPlus/> Agregar productos
-                                        </Button>
-
-                                        <Button variant="secondary"
-                                                onClick={() => navigate(`/admin/edit-product`)}
-                                                className="button-order-responsive">
-                                            <FaEdit/> Editar productos
-                                        </Button>
-                                    </>
-                                )}
-
-                                {allowedRoles.includes(userAuth.rol_id) && (
-                                    <Col xs={12} md={6} className="d-flex align-items-center">
-                                        <Select
-                                            value={selectedSupplier}
-                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                            options={suppliers?.map((opt) => ({value: opt.id, label: opt.nombre}))}
-                                            placeholder="Selecciona una compañía"
-                                            classNamePrefix="custom-select"
-                                            className="custom-select w-100"
-                                        />
-                                    </Col>
-                                )}
-                            </div>
-                        </div>
-
-                        {loading && (
-                            <div className="overlay">
-                                <div className="loader">Cargando...</div>
-                            </div>
-                        )}
-
-                        <div style={{height: 600, width: "100%"}}>
-                            <DataGrid
-                                loading={loadingTable}
-                                columns={columns}
-                                rows={filteredData}
-                                checkboxSelection
-                                onRowSelectionModelChange={handleSelectionChange}
-                                processRowUpdate={handleRowUpdate}
-                                editMode="row"
-                                pagination
-                                page={page}
-                                pageSize={pageSize}
-                                onPageChange={(newPage) => setPage(newPage)}
-                                onPageSizeChange={(newPageSize) => {
-                                    setPageSize(newPageSize);
-                                    setPage(0);
-                                }}
-                                rowsPerPageOptions={[10, 50, 100]}
-                                componentsProps={{
-                                    columnHeader: {
-                                        style: {
-                                            textAlign: "left",
-                                            fontWeight: "bold",
-                                            fontSize: "10px",
-                                            wordWrap: "break-word",
-                                        },
-                                    },
-                                }}
-                                sx={{
-                                    "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#40A581",
-                                        color: "white",
-                                        fontSize: "12px",
-                                    },
-                                    "& .MuiDataGrid-columnHeader": {
-                                        textAlign: "center",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    },
-                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#40A581 !important",
-                                        color: "white !important",
-                                    },
-                                    "& .MuiDataGrid-cell": {
-                                        fontSize: "12px",
-                                        textAlign: "left",
-                                        justifyContent: "left",
-                                        alignItems: "flex-start",
-                                        display: "flex",
-                                    },
-                                    "& .MuiSelect-root": {
-                                        fontSize: "12px",
-                                        fontFamily: "Arial, sans-serif",
-                                        width: "100%",
-                                    },
-                                    "& .MuiDataGrid-row:hover": {
-                                        backgroundColor: "#E8F5E9",
-                                    },
-                                }}
+                <div className="container mt-lg-3">
+                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={handleSearchQueryChange}
+                                className="input-responsive"
                             />
 
-                            {/* Modal de confirmación */}
-                            <ConfirmationModal
-                                show={showModal}
-                                title="Confirmación de Eliminación"
-                                message="¿Estás seguro de que deseas eliminar este elemento?"
-                                onConfirm={handleConfirmDelete}
-                                onClose={handleCloseModalConfirm}
-                            />
-
-                            {/* Modal de aprobación/denegación */}
-                            <ApprovedDeniedModal
-                                open={openModal}
-                                onClose={handleCloseModalApproved}
-                                action={action}
-                                setAction={setAction}
-                                comment={comment}
-                                setComment={setComment}
-                                onSubmit={handleApproveDenySubmit}
-                            />
-                        </div>
-
-                        {/* Botón Guardar */}
-                        <div className="d-flex justify-content-end gap-2 mt-3">
-                            {allowedRoles.includes(userAuth.rol_id) && (
+                            {(userAuth.rol_id === RolesEnum.SUPPLIER) && (
                                 <>
-                                    <Button
-                                        variant="warning"
-                                        size="md"
-                                        color="primary"
-                                        onClick={handleOpenModal}
-                                        disabled={loading}
-                                    >
-                                        <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
+                                    <Button onClick={() => navigate(`/admin/create-products`)}
+                                            className="button-order-responsive">
+                                        <FaPlus/> Agregar productos
                                     </Button>
-                                    </>
-                            )}
-                            {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
-                                <>
-                                    <Button
-                                        variant="success"
-                                        size="md"
-                                        onClick={handleSaveProducts}
-                                        disabled={loading}
-                                    >
-                                        <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
+
+                                    <Button variant="outline-secondary"
+                                            onClick={() => navigate(`/admin/edit-product`)}
+                                            className="button-order-responsive">
+                                        <FaEdit/> Editar productos
                                     </Button>
                                 </>
                             )}
-                        </div>
 
+                            {allowedRoles.includes(userAuth.rol_id) && (
+                                <Col xs={12} md={6} className="d-flex align-items-center">
+                                    <Select
+                                        value={selectedSupplier}
+                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                        options={suppliers?.map((opt) => ({value: opt.id, label: opt.nombre}))}
+                                        placeholder="Selecciona una compañía"
+                                        classNamePrefix="custom-select"
+                                        className="custom-select w-100"
+                                    />
+                                </Col>
+                            )}
+                        </div>
+                    </div>
+
+                    {loading && (
+                        <div className="overlay">
+                            <div className="loader">Cargando...</div>
+                        </div>
+                    )}
+
+                    <div style={{height: 600, width: "100%"}}>
+                        <DataGrid
+                            loading={loadingTable}
+                            columns={columns}
+                            rows={filteredData}
+                            checkboxSelection
+                            onRowSelectionModelChange={handleSelectionChange}
+                            processRowUpdate={handleRowUpdate}
+                            editMode="row"
+                            pagination
+                            page={page}
+                            pageSize={pageSize}
+                            onPageChange={(newPage) => setPage(newPage)}
+                            onPageSizeChange={(newPageSize) => {
+                                setPageSize(newPageSize);
+                                setPage(0);
+                            }}
+                            rowsPerPageOptions={[10, 50, 100]}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
+                                        textAlign: "left",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
+                                    },
+                                },
+                            }}
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "12px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
+                                    display: "flex",
+                                },
+                                "& .MuiSelect-root": {
+                                    fontSize: "12px",
+                                    fontFamily: "Arial, sans-serif",
+                                    width: "100%",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
+
+                        {/* Modal de confirmación */}
+                        <ConfirmationModal
+                            show={showModal}
+                            title="Confirmación de Eliminación"
+                            message="¿Estás seguro de que deseas eliminar este elemento?"
+                            onConfirm={handleConfirmDelete}
+                            onClose={handleCloseModalConfirm}
+                        />
+
+                        {/* Modal de aprobación/denegación */}
+                        <ApprovedDeniedModal
+                            open={openModal}
+                            onClose={handleCloseModalApproved}
+                            action={action}
+                            setAction={setAction}
+                            comment={comment}
+                            setComment={setComment}
+                            onSubmit={handleApproveDenySubmit}
+                        />
+                    </div>
+
+                    {/* Botón Guardar */}
+                    <div className="d-flex justify-content-end gap-2 mt-3">
+                        {allowedRoles.includes(userAuth.rol_id) && (
+                            <>
+                                <Button
+                                    variant="outline-warning"
+                                    color="primary"
+                                    onClick={handleOpenModal}
+                                    disabled={loading}
+                                >
+                                    <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
+                                </Button>
+                            </>
+                        )}
+                        {[RolesEnum.ENVIRONMENTAL].includes(userAuth.rol_id) && (
+                            <>
+                                <Button
+                                    variant="outline-success"
+                                    onClick={handleSaveProducts}
+                                    disabled={loading}
+                                >
+                                    <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
+                                </Button>
+                            </>
+                        )}
                     </div>
 
                 </div>
-            </>
-        );
-    };
+
+            </div>
+        </>
+    );
+};
