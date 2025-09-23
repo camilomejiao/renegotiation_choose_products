@@ -74,6 +74,8 @@ export const EditProductsByConvocation = () => {
             const { data, status } = await convocationProductsServices.getPlansByConvocation(convocationId);
             if (status === ResponseStatusEnum.OK) {
                 setPlanRaw(data?.data?.planes ?? []);
+            } else {
+                setPlanRaw([]);
             }
         } catch (error) {
             console.log(error);
@@ -157,7 +159,8 @@ export const EditProductsByConvocation = () => {
 
             if (status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente.");
-                handleBack();
+                setShowModal(false);
+                getProductList(selectedPlan.value);
             }
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
