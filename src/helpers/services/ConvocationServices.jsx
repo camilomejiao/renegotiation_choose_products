@@ -50,7 +50,7 @@ class ConvocationServices {
      *
      */
     update(id, payload) {
-        const url = this.buildUrl(`/${id}/actualizar/`);
+        const url = this.buildUrl(`${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
             method: "PUT",
             body: JSON.stringify(payload),
