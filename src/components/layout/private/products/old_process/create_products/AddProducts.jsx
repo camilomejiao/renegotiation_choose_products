@@ -5,17 +5,17 @@ import { Button } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave, FaTrash } from "react-icons/fa";
 
 // Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 
 // Img
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //Services
-import { productServices } from "../../../../../helpers/services/ProductServices";
-import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import { productServices } from "../../../../../../helpers/services/ProductServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Utils
 import {
@@ -23,14 +23,14 @@ import {
     extractMunicipios,
     handleError,
     showAlert
-} from "../../../../../helpers/utils/utils";
+} from "../../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getDynamicColumnsBySupplier,
     getUnitOptions,
     getCategoryOptions,
     getEnvironmentalCategories
-} from "../../../../../helpers/utils/ProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 export const AddProducts = () => {
 
@@ -322,7 +322,7 @@ export const AddProducts = () => {
                             <FaBroom/> Reiniciar tabla
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant="outline-info"
                             size="md"
                             onClick={handleBack}
                             className="button-order-responsive">
@@ -389,8 +389,7 @@ export const AddProducts = () => {
                 {/* Botón Guardar */}
                 <div className="d-flex align-items-end mt-3">
                     <Button
-                        variant="success"
-                        size="md"
+                        variant="outline-success"
                         onClick={handleSaveProducts}
                         className="ms-auto"
                         disabled={loading}

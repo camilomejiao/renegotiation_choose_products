@@ -1,0 +1,400 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import {Button, Col, Row} from "react-bootstrap";
+import { DataGrid } from "@mui/x-data-grid";
+import { FaSave } from "react-icons/fa";
+
+//
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+
+//
+import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+
+//Services
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
+//Enum
+import {
+    GeneralStatusProductEnum,
+    ResponseStatusEnum, RolesEnum,
+    StatusTeamProductEnum
+} from "../../../../../../helpers/GlobalEnum";
+
+//Utils
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
+import {
+    getObservationsSupervisionColumns,
+    getStatusProduct
+} from "../../../../../../helpers/utils/ValidateProductColumns";
+import Select from "react-select";
+
+export const ProductPriceQuotesBySupplier = () => {
+
+    const { userAuth } = useOutletContext();
+    const navigate = useNavigate();
+
+    const [productList, setProductList] = useState([]);
+    const [filteredRows, setFilteredRows] = useState([]);
+
+    const [planRaw, setPlanRaw] = useState([]);
+    const [selectedPlan, setSelectedPlan] = useState(null);
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [loadingTable, setLoadingTable] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    /**
+     * Carga los planes de una jornada específica (cuando se selecciona una Jornada).
+     */
+    const getPlans = async () => {
+        try {
+            setLoading(true);
+            const { data, status } = await convocationProductsServices.getPlansByConvocation(getIdActiveConvocationOfSupplier());
+            if (status === ResponseStatusEnum.OK) {
+                setPlanRaw(data?.data?.planes || []);
+            } else {
+                setPlanRaw([]);
+            }
+        } catch (error) {
+            console.log(error);
+            setPlanRaw([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getIdActiveConvocationOfSupplier = () => {
+        return supplierServices.getIdActiveConvocationOfSupplier();
+    }
+
+    /**
+     * Maneja el cambio de Plan: actualiza form y, si hay valor, carga los productos.
+     * @param {{value:number,label:string}|null} option
+     */
+    const handleSelectedPlan = async (option) => {
+        setSelectedPlan(option.value ?? null);
+        if (option?.value) {
+            await getProductList(option.value);
+        } else {
+            setProductList([]);
+        }
+    };
+
+
+    //
+    const getProductList = async (jornadaPlanId) => {
+        try {
+            setLoadingTable(true);
+            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id, jornadaPlanId);
+            if(status === ResponseStatusEnum.OK) {
+                const products = await normalizeRows(data);
+                setProductList(products);
+                setFilteredRows(products);
+            }
+        } catch (error) {
+            console.error("Error al obtener la lista de productos:", error);
+        } finally {
+            setLoadingTable(false);
+        }
+    };
+
+    const normalizeRows = async (payload) => {
+        const rows = payload?.data?.productos ?? [];
+        console.log(rows);
+        try {
+            return rows.map((row) => ({
+                id: row?.id,
+                category: row?.categoria_producto?.nombre,
+                name: row?.nombre,
+                unit: row?.unidad_medida?.nombre,
+                description: row?.producto_especificaciones ?? "",
+                brand: row?.producto_marca_comercial ?? "",
+                price: row?.producto_valor_unitario ?? 0,
+                precio_min: Number(row?.precio_min),
+                precio_max: Number(row?.precio_max),
+                state: getProductState(row?.fecha_aprobado, row?.producto_aprobaciones),
+                ...extractObservations(row?.producto_aprobaciones),
+            }));
+        } catch (error) {
+            console.error('Error al normalizar filas:', error);
+            return [];
+        }
+    };
+
+    //
+    const getProductState = (approvalDate, approvalList) => {
+        const isEmpty = !Array.isArray(approvalList) || approvalList.length === 0;
+
+        // Si no hay evaluaciones, no puede estar aprobado ni rechazado
+        if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
+
+        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id);
+        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);
+
+        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID);
+        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID);
+
+        if (hasRejected) {
+            return GeneralStatusProductEnum.REFUSED;
+        }
+
+        if (allApproved && approvalDate) {
+            return GeneralStatusProductEnum.APPROVED;
+        }
+
+        return GeneralStatusProductEnum.PENDING_APPROVAL;
+    };
+
+
+    //Extraer observaciones
+    const extractObservations = (rows) => {
+        const roleMap = {
+            [RolesEnum.SUPERVISION]: {
+                observationKey: "observations_supervision",
+                statusKey: "status_supervision"
+            }
+        };
+
+        const statusMap = Object.values(StatusTeamProductEnum).reduce((acc, { id, label }) => {
+            acc[id] = label;
+            return acc;
+        }, {});
+
+        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
+            const role = roleMap[rol];
+            if (!role) return acc;
+
+            acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
+            acc[role.observationKey] = { comentario, funcionario, fecha };
+
+            return acc;
+        }, {});
+    };
+
+    const baseColumns = getProductsPriceQuotesColumns();
+    const statusProduct = getStatusProduct();
+    const observationsColumns = getObservationsSupervisionColumns();
+
+    const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
+
+    const handleRowUpdate = (newRow) => {
+        // const pMin = Number(newRow.precio_min ?? 0);
+        // const pMax = Number(newRow.precio_max ?? Infinity);
+        // const price = Number(newRow.price ?? 0);
+        //
+        // if (price && (price < pMin || price > pMax)) {
+        //     handleError(
+        //         "Valor fuera de rango",
+        //         //`El precio debe estar entre ${formatPrice(pMin)} y ${formatPrice(pMax)}.`
+        //     );
+        // }
+
+        setProductList((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
+        setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
+        return newRow;
+    };
+
+    /**
+     * Filtra la tabla por texto en varios campos visibles.
+     */
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        const filteredData = productList.filter(
+            (product) =>
+                (product.name || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.description || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.brand || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.unit || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.price || "").toLowerCase().includes(query.toLowerCase()) ||
+                (product.state || "").toLowerCase().includes(query.toLowerCase())
+        );
+
+        setFilteredRows(filteredData);
+    };
+
+    const handleSaveProducts = async () => {
+        try {
+            setLoading(true);
+
+            // const invalids = rows.filter(r => {
+            //     const price = Number(r?.price);
+            //     const pMin = Number(r?.precio_min);
+            //     const pMax = Number(r?.precio_max);
+            //     return price && (price < pMin || price > pMax);
+            // });
+            //
+            // if (invalids.length) {
+            //     handleError(
+            //         "Revisa precios",
+            //         `Tienes ${invalids.length} producto(s) con precio fuera de rango.`
+            //     );
+            //     setLoading(false);
+            //     return;
+            // }
+
+            const emptyFields = productList.some(r => {
+                return !r.description || !r.brand || !r.price
+            });
+
+            if (emptyFields) {
+                handleError(
+                    "Revisa campos",
+                    `Tienes Algún campo vacio.`
+                );
+                setLoading(false);
+                return;
+            }
+
+            const productos = await transformData(productList);
+
+            let sendData = {
+                proveedor_id: userAuth.id,
+                productos
+            }
+
+            const { data, status } = await convocationProductsServices.saveProductBySupplier(sendData);
+
+            if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
+                handleError('Error', 'Error en el formato de productos');
+            }
+
+            if(status === ResponseStatusEnum.CREATED) {
+                showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+            }
+        } catch (error) {
+            handleError('Error', 'Error al guardar los productos.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //Transformar datos para ajustarlos al formato esperado por la API
+    const transformData = async (inputData) => {
+        return inputData.map(product => ({
+            jornada_producto_id: product.id,
+            descripcion: product.description,
+            marca: product.brand,
+            price: Number(product.price),
+        }));
+    };
+
+    //Cargar datos iniciales
+    useEffect(() => {
+        getPlans();
+    }, []);
+
+    return (
+        <>
+            <div className="main-container">
+                <HeaderImage
+                    imageHeader={imgPeople}
+                    titleHeader={"¡Empieza a agregar tus productos!"}
+                    bannerIcon={''}
+                    backgroundIconColor={''}
+                    bannerInformation={''}
+                    backgroundInformationColor={''}
+                />
+
+                <div className="container mt-lg-3">
+                    <Row className="gy-2 align-items-center mt-3 mb-3">
+                        <Col xs={12} md={4}>
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="form-control"
+                            />
+                        </Col>
+
+                        {/* Select Plan */}
+                        <Col xs={12} md={4}>
+                            <Select
+                                value={selectedPlan ?? null}
+                                options={planRaw.map((opt) => ({ value: opt.id, label: opt.plan_nombre }))}
+                                placeholder="Selecciona un Plan"
+                                onChange={handleSelectedPlan}
+                                isClearable
+                                isLoading={loading}
+                                classNamePrefix="custom-select"
+                                className="custom-select w-100"
+                            />
+                        </Col>
+                    </Row>
+
+                    {loading && (
+                        <div className="overlay">
+                            <div className="loader">Guardando Productos...</div>
+                        </div>
+                    )}
+
+                    <div style={{height: 600, width: "100%"}}>
+                        <DataGrid
+                            rows={filteredRows}
+                            columns={columns}
+                            processRowUpdate={handleRowUpdate}
+                            editMode="row"
+                            pagination
+                            loading={loadingTable}
+                            pageSize={100}
+                            rowsPerPageOptions={[100, 500, 1000]}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
+                                        textAlign: "left",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
+                                    },
+                                },
+                            }}
+                            sx={{
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#40A581",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#40A581 !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
+                    </div>
+
+                    {/* Botón Guardar */}
+                    <div className="d-flex align-items-end mt-3">
+                        <Button
+                            variant="outline-success"
+                            onClick={handleSaveProducts}
+                            className="ms-auto"
+                            disabled={loading}
+                        >
+                            <FaSave/> {loading ? "Guardando..." : "Guardar Productos"}
+                        </Button>
+                    </div>
+
+                </div>
+
+            </div>
+        </>
+    )
+}

@@ -1,4 +1,4 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  */
 class ProductServices {
     constructor() {
-        this.baseUrl = Global.url + "producto/";
+        this.baseUrl = GlobalConnex.url + "producto/";
     }
 
     /**
@@ -19,6 +19,10 @@ class ProductServices {
     }
 
     // =============================
+    // Nuevo Flujo
+    // =============================
+
+    // =============================
     // LISTAS AUXILIARES
     // =============================
 
@@ -27,7 +31,7 @@ class ProductServices {
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getUnitList() {
-        const url = `${Global.url}lista/unidades/`;
+        const url = `${GlobalConnex.url}lista/unidades/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -36,7 +40,7 @@ class ProductServices {
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getCategoryList() {
-        const url = `${Global.url}lista/categorias/`;
+        const url = `${GlobalConnex.url}lista/categorias/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -119,6 +123,7 @@ class ProductServices {
             body: JSON.stringify(products),
         });
     }
+
 }
 
 export const productServices = new ProductServices();

@@ -13,24 +13,24 @@ import glass from "../../../../assets/image/icons/magnifying_glass.png";
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
-import { ConsolidatedPurchaseReport } from "./user_report/ConsolidatedPurchaseReport";
+import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { handleError, showAlert } from "../../../../helpers/utils/utils";
 
 //Services
-import { userService } from "../../../../helpers/services/UserServices";
+import { userServices } from "../../../../helpers/services/UserServices";
 import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
 //Css
-import './UserManagement.css';
+import './BeneficiariesManagement.css';
 
 //Enum
 import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 
-export const UserManagement = () => {
+export const BeneficiariesManagement = () => {
     const params = useParams();
     const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ export const UserManagement = () => {
     //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
                 setConsolidated(data?.consolidado);
@@ -215,7 +215,7 @@ export const UserManagement = () => {
 
                 {loading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
+                        <Spinner animation="border" variant="outline-success" />
                         <span>Cargando...</span>
                     </div>
                 )}

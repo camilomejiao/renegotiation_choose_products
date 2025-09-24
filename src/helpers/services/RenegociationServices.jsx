@@ -1,4 +1,4 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  */
 class RenegotiationServices {
     constructor() {
-        this.baseUrl = Global.url + "renegociacion/";
+        this.baseUrl = GlobalConnex.url + "renegociacion/";
     }
 
     /**
@@ -38,7 +38,7 @@ class RenegotiationServices {
      * @returns {Promise<Response>}
      */
     getPlan() {
-        const url = `${Global.url}lista/planes`;
+        const url = `${GlobalConnex.url}lista/planes`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

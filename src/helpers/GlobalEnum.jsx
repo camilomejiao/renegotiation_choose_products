@@ -19,7 +19,8 @@ export const RolesEnum = {
     SUPERVISION: 4,
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,
-    PAYMENTS: 7
+    PAYMENTS: 7,
+    SYSTEM_USER: 8
 }
 
 export const GeneralStatusProductEnum = {

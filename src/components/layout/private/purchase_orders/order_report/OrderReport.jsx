@@ -226,16 +226,14 @@ export const OrderReport = () => {
                         />
                         <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
                             <Button
-                                variant="primary"
-                                size="md"
+                                variant="outline-primary"
                                 onClick={handleSearch}
                                 className="button-order-responsive"
                             >
                                 <FaSearch /> Buscar
                             </Button>
                             <Button
-                                variant="secondary"
-                                size="md"
+                                variant="outline-secondary"
                                 onClick={handleClearSearch}
                                 className="button-order-responsive"
                             >

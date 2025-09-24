@@ -1,4 +1,4 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -6,7 +6,7 @@ import { authTokenService } from "./AuthTokenService";
  */
 class PaymentServices {
     constructor() {
-        this.baseUrl = Global.url + "pagos/";
+        this.baseUrl = GlobalConnex.url + "pagos/";
     }
 
     /**

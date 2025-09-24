@@ -3,112 +3,23 @@ import { FaThumbsDown, FaThumbsUp, FaTrash } from "react-icons/fa";
 import { Button } from "react-bootstrap";
 
 // Services
-import { supplierServices } from "../services/SupplierServices";
 import { productServices } from "../services/ProductServices";
 
 //Enum
-import {ResponseStatusEnum, RolesEnum, StatusTeamProductEnum} from "../GlobalEnum";
+import { ResponseStatusEnum, RolesEnum, StatusTeamProductEnum } from "../GlobalEnum";
 
 //
-export const getBaseColumns = (unitOptions, categoryOptions, handleRowUpdate, editable = true) => ([
+export const getBaseColumns = () => ([
     { field: "id", headerName: "ID", width: 70 },
-    {
-        field: "category",
-        headerName: "Categoría",
-        width: 200,
-        renderCell: (params) => {
-            const handleChange = (e) => {
-                const newValue = e.target.value;
-                const newRow = { ...params.row, category: newValue };
-                params.api.updateRows([newRow]);
-                handleRowUpdate(newRow, params.row);
-            };
-
-            return (
-                <Select
-                    value={params.row.category || ""}
-                    onChange={handleChange}
-                    fullWidth
-                    size="small"
-                >
-                    {categoryOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            );
-        },
-    },
-    { field: "name", headerName: "Nombre", width: 300, editable },
-    { field: "description", headerName: "Descripción", width: 300, editable: editable },
-    { field: "brand", headerName: "Marca", width: 150, editable: editable },
-    {
-        field: "unit",
-        headerName: "Unidad",
-        width: 200,
-        editable: editable,
-        renderCell: (params) => {
-            const handleChange = (e) => {
-                const newValue = e.target.value;
-                const newRow = { ...params.row, unit: newValue };
-                params.api.updateRows([newRow]);
-                handleRowUpdate(newRow, params.row);
-            };
-
-            return (
-                <Select
-                    value={params.row.unit || ""}
-                    onChange={handleChange}
-                    fullWidth
-                    size="small"
-                >
-                    {unitOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.nombre}
-                        </MenuItem>
-                    ))}
-                </Select>
-            );
-        },
-    },
+    { field: "category", headerName: "Categoría", width: 300 },
+    { field: "name", headerName: "Nombre", width: 300},
+    { field: "description", headerName: "Descripción", width: 300},
+    { field: "brand", headerName: "Marca", width: 150},
+    { field: "unit", headerName: "Unidad", width: 150 },
+    { field: "price_min", headerName: "Precio Min", width: 150},
+    { field: "price_max", headerName: "Precio Max", width: 150},
+    { field: "price", headerName: "VALOR", width: 150},
 ]);
-
-// Obtener columnas dinámicas de los municipios
-export const getDynamicColumnsBySupplier = async (supplierId, editable = true) => {
-    try {
-        const { data, status } = await supplierServices.getInfoSupplier(supplierId);
-        if (status === ResponseStatusEnum.OK && data?.municipios) {
-            const newDynamicColumns = data.municipios.map((municipio) => {
-                return {
-                    field: `price_${municipio.id}`,
-                    headerName: `Precio - ${municipio.ubicacion}`,
-                    width: 150,
-                    editable: editable,
-                    renderCell: (params) => (
-                        <TextField
-                            type="text"
-                            value={formatPrice(params.value)} // Formatea el valor antes de mostrarlo
-                            onChange={(e) => {
-                                const value = parseFloat(e.target.value.replace(/[^\d]/g, ""));
-                                if (!isNaN(value)) {
-                                    params.api.updateRows([{ id: params.row.id, [`price_${municipio.id}`]: value }]);
-                                }
-                            }}
-                            fullWidth
-                        />
-                    ),
-                };
-            });
-            return { municipalities: data.municipios, newDynamicColumns };
-        } else {
-            throw new Error("No se encontraron municipios.");
-        }
-    } catch (error) {
-        console.error("Error en getDynamicColumnsBySupplier:", error);
-        throw error;
-    }
-};
 
 export const formatPrice = (value) => {
     if (!value) return "";
@@ -139,6 +50,11 @@ export const getCategoryOptions = async () => {
     }
 };
 
+//
+export const getStatusProduct = () => [
+    { field: "state", headerName: "ESTADO", width: 150, },
+];
+
 //Obtener restricciones ambientales
 export const getEnvironmentalCategories = async () => {
     try {
@@ -152,11 +68,6 @@ export const getEnvironmentalCategories = async () => {
         return [];
     }
 };
-
-//
-export const getStatusProduct = () => [
-    { field: "state", headerName: "ESTADO", width: 150, },
-];
 
 //Categorías de restricciones ambientales
 export const getEnvironmentalCategoriesColumns = async (handleSelectChange, handleCustomChange) => {
@@ -224,7 +135,7 @@ export const getEnvironmentalCategoriesColumns = async (handleSelectChange, hand
 };
 
 //
-export const getObservationsColumns = (userRole) => {
+export const getObservationsEnvironmentalColumns = () => {
     const statusColors = {
         [StatusTeamProductEnum.DENIED.label]: "red",
         [StatusTeamProductEnum.APPROVED.label]: "green",
@@ -237,7 +148,64 @@ export const getObservationsColumns = (userRole) => {
             <span style={{ color: comentario ? "black" : "gray" }}>
                 {comentario || placeholder}
                 {funcionario && fecha && (
-                    <span> (Aprobado por: {funcionario} - {fecha})</span>
+                    <span> (Revisado por: {funcionario} - {fecha})</span>
+                )}
+            </span>
+        );
+    };
+
+    const renderStatusCell = (params) => {
+        return (
+            <span
+                style={{
+                    color: "white",
+                    backgroundColor: statusColors[params.value] || "gray",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    display: "inline-block",
+                    width: "100%",
+                    textTransform: "capitalize",
+                }}
+            >
+                {params.value || "No definido"}
+            </span>
+        );
+    };
+
+    return [
+        {
+            field: "observations_environmental",
+            headerName: "Observación Ambiental",
+            width: 200,
+            editable: false,
+            renderCell: (params) => renderObservationCell(params, "Observación ambiental..."),
+        },
+        {
+            field: "status_environmental",
+            headerName: "Estado Ambiental",
+            width: 120,
+            editable: false,
+            renderCell: renderStatusCell,
+        },
+    ];
+};
+
+export const getObservationsSupervisionColumns = () => {
+    const statusColors = {
+        [StatusTeamProductEnum.DENIED.label]: "red",
+        [StatusTeamProductEnum.APPROVED.label]: "green",
+        [StatusTeamProductEnum.UNREVIEWED.label]: "orange",
+    };
+
+    const renderObservationCell = (params, placeholder) => {
+        const { comentario, funcionario, fecha } = params.value || {};
+        return (
+            <span style={{ color: comentario ? "black" : "gray" }}>
+                {comentario || placeholder}
+                {funcionario && fecha && (
+                    <span> (Revisado por: {funcionario} - {fecha})</span>
                 )}
             </span>
         );
@@ -269,39 +237,11 @@ export const getObservationsColumns = (userRole) => {
             headerName: "Observación supervision",
             width: 200,
             editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación Supervision..."),
+            renderCell: (params) => renderObservationCell(params, "Observación supervision..."),
         },
         {
             field: "status_supervision",
-            headerName: "Estado Supervision",
-            width: 120,
-            editable: false,
-            renderCell: renderStatusCell,
-        },
-        {
-            field: "observations_technical",
-            headerName: "Observación Técnica",
-            width: 200,
-            editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación técnica..."),
-        },
-        {
-            field: "status_technical",
-            headerName: "Estado Técnico",
-            width: 120,
-            editable: false,
-            renderCell: renderStatusCell,
-        },
-        {
-            field: "observations_environmental",
-            headerName: "Observación Ambiental",
-            width: 200,
-            editable: false,
-            renderCell: (params) => renderObservationCell(params, "Observación ambiental..."),
-        },
-        {
-            field: "status_environmental",
-            headerName: "Estado Ambiental",
+            headerName: "Estado supervision",
             width: 120,
             editable: false,
             renderCell: renderStatusCell,

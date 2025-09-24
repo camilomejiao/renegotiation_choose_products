@@ -12,6 +12,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 //Enum
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import {FaSave, FaStepBackward} from "react-icons/fa";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -254,7 +255,7 @@ export const EditDeliveryOrder = () => {
 
                 {isLoading && (
                     <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
+                        <Spinner animation="border" variant="outline-success" />
                         <span>Editando productos...</span>
                     </div>
                 )}
@@ -310,31 +311,19 @@ export const EditDeliveryOrder = () => {
 
                         <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                             <Button
-                                variant="success"
-                                size="lg"
+                                variant="outline-secondary"
                                 onClick={handleBack}
                                 className="responsive-button mb-2 mb-md-0"
-                                style={{
-                                    backgroundColor: "#2148C0",
-                                    borderColor: "#007BFF",
-                                    fontWeight: "bold",
-                                }}
                             >
-                                <i className="fas fa-save me-2"></i>ATRÁS
+                                <FaStepBackward /> ATRÁS
                             </Button>
 
                             <Button
-                                variant="success"
-                                size="lg"
+                                variant="outline-success"
                                 onClick={handleSaveProduct}
                                 className="responsive-button"
-                                style={{
-                                    backgroundColor: "#BFD732",
-                                    borderColor: "#BFD732",
-                                    fontWeight: "bold",
-                                }}
                             >
-                                <i className="fas fa-save me-2"></i>EDITAR ENTREGA
+                                <FaSave /> EDITAR ENTREGA
                             </Button>
                         </div>
 

@@ -4,7 +4,7 @@ import magnifyingGlass from "../../../../assets/image/icons/magnifying_glass.png
 import PropTypes from "prop-types";
 
 // Services
-import { userService } from "../../../../helpers/services/UserServices";
+import { userServices } from "../../../../helpers/services/UserServices";
 
 //Enum
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
@@ -31,7 +31,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             //Realizar búsqueda
             const { data, status } =
                 component === ComponentEnum.USER
-                    ? await userService.searchUser(searchValue)
+                    ? await userServices.searchUser(searchValue)
                     : await renegotiationServices.getUserRenegotiation(searchType, searchValue);
 
             if (handleSearchErrors(data, status)) return;

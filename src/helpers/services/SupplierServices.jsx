@@ -1,10 +1,29 @@
-import { Global } from "../Global";
+import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
  * Servicio para la gestión de proveedores (usuarios tipo proveedor).
  */
 class SupplierServices {
+
+    /**
+     * Crea una nueva instancia del servicio de Jornadas.
+     *  @type {string}
+     */
+    constructor() {
+        this.baseUrl = GlobalConnex.url + "proveedores/";
+    }
+
+    /**
+     * Construye la URL completa para un endpoint relativo a jornadas.
+     *
+     * @param {string} endpoint - Ruta relativa del endpoint (por ejemplo: `"abiertas/"`).
+     * @returns {string} URL absoluta resultante.
+     *
+     */
+    buildUrl(endpoint) {
+        return this.baseUrl + endpoint;
+    }
 
     // =============================
     // CONSULTAS AL BACKEND
@@ -15,7 +34,7 @@ class SupplierServices {
      * @returns {Promise<Response>} - Promesa con la lista de proveedores.
      */
     getSuppliersAll() {
-        const url = `${Global.url}usuario/`;
+        const url = `${GlobalConnex.url}usuario/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -25,9 +44,55 @@ class SupplierServices {
      * @returns {Promise<Response>} - Promesa con los datos del proveedor.
      */
     getInfoSupplier(supplierId) {
-        const url = `${Global.url}usuario/${supplierId}/`;
+        const url = `${GlobalConnex.url}usuario/${supplierId}/`;
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
+
+    // =============================
+    // NUEVO PROVEEDORES
+    // =============================
+
+    getSuppliers() {
+        const url = this.buildUrl(`aprobados/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    getSuppliersByPage(pageSize = 100, page = 1, search) {
+        let url = `?page_size=${pageSize}&page=${page}`;
+        if(search) {
+            url = `?search=${search}&page_size=${pageSize}&page=${page}`;
+        }
+        const urlOpt = this.buildUrl(url);
+        return authTokenService.fetchWithAuth(urlOpt, { method: "GET" });
+    }
+
+    deleteSupplier(supplierId) {
+        const url = this.buildUrl(`${supplierId}/eliminar`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
+    createSupplier(payload) {
+        const url = this.buildUrl(`crear/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
+
+    updateSupplier(id, payload) {
+        const url = this.buildUrl(`${id}/actualizar/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+        });
+    }
+
+    getSupplierById(supplierId) {
+        const url = this.buildUrl(`${supplierId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
 
     // =============================
     // GESTIÓN DE LOCALSTORAGE
@@ -41,28 +106,8 @@ class SupplierServices {
         return localStorage.getItem("id");
     }
 
-    /**
-     * Guardar información de ubicación en localStorage.
-     * @param {string} locationKey - Clave de ubicación.
-     * @param {string|number} locationId - ID de la ubicación.
-     * @param {string} locationName - Nombre de la ubicación.
-     */
-    saveLocationToLocalStorage(locationKey, locationId, locationName) {
-        localStorage.setItem("location_key", locationKey);
-        localStorage.setItem("location_id", locationId);
-        localStorage.setItem("location_name", locationName);
-    }
-
-    /**
-     * Obtener la información de ubicación desde localStorage.
-     * @returns {{locationKey: string|null, location_id: string|null, locationName: string|null}} - Objeto con los datos de ubicación.
-     */
-    getLocation() {
-        return {
-            locationKey: localStorage.getItem("location_key"),
-            location_id: localStorage.getItem("location_id"),
-            locationName: localStorage.getItem("location_name"),
-        };
+    getIdActiveConvocationOfSupplier() {
+        return localStorage.getItem("jornada_id");
     }
 }
 

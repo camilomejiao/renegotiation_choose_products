@@ -312,24 +312,18 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{
-                                height: '40px',
-                                textAlign: 'center',
-                                border: '1px solid black',
-                                verticalAlign: 'top'
-                            }}>Firma:
-                            </td>
+                            <td style={{height: '40px', textAlign: 'center', border: '1px solid black', verticalAlign: 'top'}}>Firma:</td>
                             <td style={{textAlign: 'center', border: '1px solid black', verticalAlign: 'top'}}>Firma:</td>
                             <td style={{textAlign: 'center', border: '1px solid black', verticalAlign: 'top'}}>Firma:</td>
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Nombre:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Nombre:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>Nombre: {deliveryInformation?.proveedor?.nombre}</td>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Nombre:</td>
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Cédula:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Cédula:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>Nit o Cédula: {deliveryInformation?.proveedor?.nit}</td>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Cédula:</td>
                         </tr>
                         <tr>

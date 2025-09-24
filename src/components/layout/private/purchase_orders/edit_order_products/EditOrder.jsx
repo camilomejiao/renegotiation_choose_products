@@ -10,7 +10,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
 
 //Services
-import { userService } from "../../../../../helpers/services/UserServices";
+import { userServices } from "../../../../../helpers/services/UserServices";
 
 //Enum
 import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
@@ -27,7 +27,7 @@ export const EditOrder = () => {
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
         try {
-            const { data, status} = await userService.userInformation(cubId);
+            const { data, status} = await userServices.userInformation(cubId);
 
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);

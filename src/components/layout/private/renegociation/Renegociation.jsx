@@ -107,7 +107,9 @@ export const Renegociation = () => {
 
         if (planId) {
             const { data, status } = await renegotiationServices.getLine(planId, engagementId);
-            setLineaOptions(data);
+            if(status === ResponseStatusEnum.OK) {
+                setLineaOptions(data);
+            }
         }
     };
 
@@ -410,11 +412,11 @@ export const Renegociation = () => {
                         </Col>
 
                         <Col xs={12} md={3} className="justify-content-end mt-2 d-flex gap-2">
-                            <Button variant="primary" onClick={() => handleModalDetail()}>
+                            <Button variant="outline-primary" onClick={() => handleModalDetail()}>
                                 Detalles Plan
                             </Button>
 
-                            <Button variant="warning" onClick={() => handlePlanHistory(engagementId)}>
+                            <Button variant="outline-warning" onClick={() => handlePlanHistory(engagementId)}>
                                 Historico Plan
                             </Button>
                         </Col>
@@ -449,7 +451,7 @@ export const Renegociation = () => {
                         {/* Sección para los botones alineados a la derecha */}
                         <Col xs={12} md={6} className="justify-content-end d-flex gap-2">
                             <Button
-                                variant="success"
+                                variant="outline-success"
                                 disabled={!isSaveEnabled()}
                                 onClick={handleSaveInformationUser}
                             >
@@ -457,7 +459,7 @@ export const Renegociation = () => {
                             </Button>
 
                             <Button
-                                variant="danger"
+                                variant="outline-danger"
                                 disabled={isHandlePlanEnabled()}
                                 onClick={() => handlePlanToReport()}>
                                 Generar Plan
@@ -490,12 +492,12 @@ export const Renegociation = () => {
                             {/* Sección 1: Plan Firmado */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'acuerdo')}>
+                                    <Button variant="outline-secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'acuerdo')}>
                                         Subir Plan Firmado
                                     </Button>
                                 </Col>
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "acuerdo")}>
+                                    <Button variant="outline-info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "acuerdo")}>
                                         <FaEye className="me-2" /> Ver Plan Firmado
                                     </Button>
                                 </Col>
@@ -504,12 +506,12 @@ export const Renegociation = () => {
                             {/* Sección 2: Legalización */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'legalizacion')}>
+                                    <Button variant="outline-secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'legalizacion')}>
                                         Subir Legalización
                                     </Button>
                                 </Col>
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
-                                    <Button variant="info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "legalizacion")}>
+                                    <Button variant="outline-info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "legalizacion")}>
                                         <FaEye className="me-2" /> Ver Legalización
                                     </Button>
                                 </Col>
