@@ -61,7 +61,7 @@ class ConvocationServices {
      *
      */
     get() {
-        const url = this.buildUrl('/');
+        const url = this.buildUrl();
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
