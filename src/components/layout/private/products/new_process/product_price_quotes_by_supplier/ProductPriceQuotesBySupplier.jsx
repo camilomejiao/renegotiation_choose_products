@@ -101,7 +101,6 @@ export const ProductPriceQuotesBySupplier = () => {
 
     const normalizeRows = async (payload) => {
         const rows = payload?.data?.productos ?? [];
-        console.log(rows);
         try {
             return rows.map((row) => ({
                 id: row?.id,
@@ -113,7 +112,7 @@ export const ProductPriceQuotesBySupplier = () => {
                 price: row?.producto_valor_unitario ?? 0,
                 precio_min: Number(row?.precio_min),
                 precio_max: Number(row?.precio_max),
-                state: getProductState(row?.fecha_aprobado, row?.producto_aprobaciones),
+                state: getProductState(row?.faprobado, row?.producto_aprobaciones),
                 ...extractObservations(row?.producto_aprobaciones),
             }));
         } catch (error) {
@@ -129,11 +128,8 @@ export const ProductPriceQuotesBySupplier = () => {
         // Si no hay evaluaciones, no puede estar aprobado ni rechazado
         if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
 
-        const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id);
-        const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);
-
-        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID);
-        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID);
+        const allApproved = approvalList.every(it => it.aprobado === true);
+        const hasRejected = approvalList.some(it => it.aprobado === false);
 
         if (hasRejected) {
             return GeneralStatusProductEnum.REFUSED;
@@ -161,12 +157,13 @@ export const ProductPriceQuotesBySupplier = () => {
             return acc;
         }, {});
 
-        return rows.reduce((acc, { rol, estado, comentario, funcionario, fecha }) => {
-            const role = roleMap[rol];
+        return rows.reduce((acc, { rol_usuario, aprobado, comentario, usuario_modificacion, fecha_aprobacion }) => {
+            const role = roleMap[rol_usuario];
             if (!role) return acc;
+            let aaprobado = aprobado === true ? 1 : 0;
 
-            acc[role.statusKey] = statusMap[estado] ?? "Sin revisar";
-            acc[role.observationKey] = { comentario, funcionario, fecha };
+            acc[role.statusKey] = statusMap[aaprobado] ?? "Sin revisar";
+            acc[role.observationKey] = { comentario, usuario_modificacion, fecha_aprobacion };
 
             return acc;
         }, {});
