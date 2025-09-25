@@ -63,6 +63,10 @@ body,
   width: 10px;
 }
 
+::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
 /* Track */
 ::-webkit-scrollbar-track {
   background: #e0e0e0;

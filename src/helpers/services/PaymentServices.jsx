@@ -28,9 +28,13 @@ class PaymentServices {
      * @param {number} [pageSize=100] - Tamaño de página.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    getApprovedDeliveries(page = 1, pageSize = 100) {
-        const url = this.buildUrl(`cuentas-para-verificacion/?page=${page}&page_size=${pageSize}`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    getApprovedDeliveries(page = 1, pageSize = 100, search) {
+        let url = `?page=${page}&page_size=${pageSize}`;
+        if(search) {
+            url = `?search=${search}`;
+        }
+        const urlOpt = this.buildUrl(`cuentas-para-verificacion/${url}`);
+        return authTokenService.fetchWithAuth(urlOpt, { method: "GET" });
     }
 
     /**
