@@ -21,7 +21,6 @@ import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 import {
     GeneralStatusProductEnum,
     ResponseStatusEnum,
-    RolesEnum,
     StatusTeamProductEnum,
 } from "../../../../../../helpers/GlobalEnum";
 
@@ -35,7 +34,7 @@ import {
     getStatusProduct,
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
-const PAGE_SIZE = 1000;
+const PAGE_SIZE = 100;
 const BATCH_SIZE = 250;
 
 export const ValidationEnvironmental = () => {
@@ -57,6 +56,7 @@ export const ValidationEnvironmental = () => {
 
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
+    const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
 
     const [loading, setLoading] = useState(false);
@@ -88,7 +88,7 @@ export const ValidationEnvironmental = () => {
         try {
             const { data, status } = await convocationProductsServices.getConvocations();
             if (status === ResponseStatusEnum.OK) {
-                setConvocations(data.data.jornadas);
+                setConvocations(data?.data?.jornadas);
             }
         } catch (error) {
             console.error("Error al obtener la lista de jornadas:", error);
@@ -148,7 +148,7 @@ export const ValidationEnvironmental = () => {
             typePlan: option?.value ?? "",
         }));
         if (option?.value) {
-            await getProductList(option.value);
+            await getProductList(1, PAGE_SIZE,option.value);
         } else {
             setProductList([]);
             setFilteredData([]);
@@ -159,14 +159,15 @@ export const ValidationEnvironmental = () => {
      * Obtiene los productos de un plan (para la tabla).
      * @param {number} planId
      */
-    const getProductList = async (planId) => {
+    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId) => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch,planId);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
                 setFilteredData(products);
+                setRowCount(data?.data?.total_productos);
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
@@ -469,7 +470,7 @@ export const ValidationEnvironmental = () => {
             await processBatches(ids, estado, comment);
             showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
             if (selectedPlan?.value) {
-                await getProductList(selectedPlan.value);
+                await getProductList(1, PAGE_SIZE, selectedPlan.value);
             }
             handleCloseModalApproved();
         } catch (error) {
@@ -585,6 +586,11 @@ export const ValidationEnvironmental = () => {
         getEnvironmentalColumns();
     }, []);
 
+    useEffect(() => {
+        if (!selectedPlan?.value) return;
+        getProductList(page + 1, pageSize, selectedPlan?.value);
+    }, [page, pageSize, selectedPlan]);
+
     return (
         <>
             <div className="main-container">
@@ -652,13 +658,12 @@ export const ValidationEnvironmental = () => {
                             onRowSelectionModelChange={handleSelectionChange}
                             processRowUpdate={handleRowUpdate}
                             editMode="row"
-                            pagination
-                            page={page}
-                            pageSize={pageSize}
-                            onPageChange={(newPage) => setPage(newPage)}
-                            onPageSizeChange={(newPageSize) => {
-                                setPageSize(newPageSize);
-                                setPage(0);
+                            paginationMode="server"
+                            rowCount={rowCount}
+                            paginationModel={{ page, pageSize }}
+                            onPaginationModelChange={({ page, pageSize }) => {
+                                setPage(page);
+                                setPageSize(pageSize);
                             }}
                             rowsPerPageOptions={[10, 50, 100]}
                             componentsProps={{

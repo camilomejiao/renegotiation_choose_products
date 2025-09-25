@@ -1,29 +1,32 @@
-import { DataGrid } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { DataGrid } from "@mui/x-data-grid";
+import {Button, Col, Row} from "react-bootstrap";
+
+//
+import { beneficiaryColumns } from "../../../../../../helpers/utils/PaymentsColumns";
 
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
-    const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const beneficiaryColumns = [
-        { field: "id", headerName: "N° Entrega", width: 100 },
-        { field: "cub_id", headerName: "CUB", width: 100 },
-        { field: "name", headerName: "Beneficiario", width: 300 },
-        { field: "identification", headerName: "Identificación", width: 200 },
-        { field: "supplier_name", headerName: "Proveedor", width: 350 },
-        { field: "supplier_nit", headerName: "Nit", width: 150 },
-    ];
+    const searchTimerRef = useRef(null);
 
-    const getDeliveryList = async (pageToFetch = 1, sizeToFetch) => {
+
+    //
+    const baseColumns = beneficiaryColumns();
+    const columns = [...baseColumns];
+
+    const getDeliveryList = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         setLoading(true);
         try {
-            const { data, status } = await paymentServices.getApprovedDeliveries(pageToFetch, sizeToFetch);
+            const { data, status } = await paymentServices.getApprovedDeliveries(pageToFetch, sizeToFetch, search);
             if(status === ResponseStatusEnum.OK) {
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
@@ -51,16 +54,76 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         onRowSelect(params.id);
     }
 
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    //
+    const runSearch = (q = searchQuery) => {
+        // limpia un debounce previo
+        if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+
+        const query = (q || "").trim().toLowerCase();
+        const canSearch = query.length === 0 || query.length >= 5;
+        if (!canSearch) return; // no dispares la búsqueda si 1–4 chars
+
+        // opcional: resetear página si usas paginación
+        setPage(0);
+
+        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
+        searchTimerRef.current = setTimeout(() => {
+            getDeliveryList(1, pageSize, query);
+        }, 150);
+    };
+
+
     useEffect(() => {
-        getDeliveryList(page + 1, pageSize);
+        getDeliveryList(page + 1, pageSize, "");
     }, [page, pageSize]);
 
     return (
         <>
+            <Row className="gy-2 align-items-center mt-3 mb-3">
+                <Col xs={12} md={6} lg={5}>
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                runSearch();
+                            }
+                        }}
+                        className="form-control"
+                    />
+                </Col>
+
+                <Col>
+                    <Button
+                        variant="outline-primary"
+                        className="button-order-responsive"
+                        onClick={() => runSearch()}
+                        disabled={
+                            (searchQuery.trim().length > 0 &&
+                                searchQuery.trim().length < 5) || loading
+                        }
+                        title={
+                            searchQuery.trim().length > 0 && searchQuery.trim().length < 5
+                                ? "Escribe al menos 5 caracteres"
+                                : "Buscar"
+                        }
+                    >
+                        Buscar
+                    </Button>
+                </Col>
+            </Row>
+
             <div style={{ height: 500, width: "100%" }}>
                 <DataGrid
                     rows={dataTable}
-                    columns={beneficiaryColumns}
+                    columns={columns}
                     loading={loading}
                     paginationMode="server"
                     rowCount={rowCount}

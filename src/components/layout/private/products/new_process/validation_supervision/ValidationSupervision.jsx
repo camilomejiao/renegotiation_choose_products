@@ -440,7 +440,7 @@ export const ValidationSupervision = () => {
                             </div>
                         )}
 
-                        <div style={{height: 600, width: "100%"}}>
+                        <div className="grid-wrap" style={{height: 600, width: "100%"}}>
                             <DataGrid
                                 loading={loadingTable}
                                 columns={columns}
@@ -526,9 +526,7 @@ export const ValidationSupervision = () => {
                                 </Button>
                             </>
                         </div>
-
                     </div>
-
                 </div>
             </>
         );

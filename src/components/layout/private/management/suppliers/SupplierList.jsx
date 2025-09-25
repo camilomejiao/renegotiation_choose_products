@@ -70,7 +70,6 @@ export const SupplierList = () => {
     }
 
     const handleDeleteClick = async (SupplierId) => {
-        console.log(SupplierId);
         try {
             setLoading(true);
             const { status} = await supplierServices.deleteSupplier(SupplierId);
