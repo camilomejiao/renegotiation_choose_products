@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import {Button, Col, Row} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
 
@@ -29,6 +30,9 @@ import {
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 import Select from "react-select";
 
+//Css
+import './ProductPriceQuotesBySupplier.css';
+
 export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();
@@ -39,6 +43,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
     const [planRaw, setPlanRaw] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null);
+    const [onlyMine, setOnlyMine] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [loadingTable, setLoadingTable] = useState(false);
@@ -73,20 +78,19 @@ export const ProductPriceQuotesBySupplier = () => {
      * @param {{value:number,label:string}|null} option
      */
     const handleSelectedPlan = async (option) => {
-        setSelectedPlan(option.value ?? null);
+        setSelectedPlan(option);
         if (option?.value) {
-            await getProductList(option.value);
+            await getProductList(option.value, 0);
         } else {
             setProductList([]);
         }
     };
 
-
     //
-    const getProductList = async (jornadaPlanId) => {
+    const getProductList = async (jornadaPlanId, onlyMe) => {
         try {
             setLoadingTable(true);
-            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id, jornadaPlanId);
+            const { data, status } = await convocationProductsServices.getProductsBySupplier(userAuth.id, jornadaPlanId, onlyMe);
             if(status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data);
                 setProductList(products);
@@ -176,17 +180,6 @@ export const ProductPriceQuotesBySupplier = () => {
     const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
 
     const handleRowUpdate = (newRow) => {
-        // const pMin = Number(newRow.precio_min ?? 0);
-        // const pMax = Number(newRow.precio_max ?? Infinity);
-        // const price = Number(newRow.price ?? 0);
-        //
-        // if (price && (price < pMin || price > pMax)) {
-        //     handleError(
-        //         "Valor fuera de rango",
-        //         //`El precio debe estar entre ${formatPrice(pMin)} y ${formatPrice(pMax)}.`
-        //     );
-        // }
-
         setProductList((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
         return newRow;
@@ -215,22 +208,6 @@ export const ProductPriceQuotesBySupplier = () => {
     const handleSaveProducts = async () => {
         try {
             setLoading(true);
-
-            // const invalids = rows.filter(r => {
-            //     const price = Number(r?.price);
-            //     const pMin = Number(r?.precio_min);
-            //     const pMax = Number(r?.precio_max);
-            //     return price && (price < pMin || price > pMax);
-            // });
-            //
-            // if (invalids.length) {
-            //     handleError(
-            //         "Revisa precios",
-            //         `Tienes ${invalids.length} producto(s) con precio fuera de rango.`
-            //     );
-            //     setLoading(false);
-            //     return;
-            // }
 
             const emptyFields = productList.some(r => {
                 return !r.description || !r.brand || !r.price
@@ -278,6 +255,14 @@ export const ProductPriceQuotesBySupplier = () => {
         }));
     };
 
+    const handleToggleOnlyMine = (e) => {
+        const checked = e.target.checked;
+        setOnlyMine(checked);
+        if (selectedPlan?.value) {
+            getProductList(selectedPlan.value, checked);
+        }
+    };
+
     //Cargar datos iniciales
     useEffect(() => {
         getPlans();
@@ -310,7 +295,7 @@ export const ProductPriceQuotesBySupplier = () => {
                         {/* Select Plan */}
                         <Col xs={12} md={4}>
                             <Select
-                                value={selectedPlan ?? null}
+                                value={selectedPlan}
                                 options={planRaw.map((opt) => ({ value: opt.id, label: opt.plan_nombre }))}
                                 placeholder="Selecciona un Plan"
                                 onChange={handleSelectedPlan}
@@ -318,6 +303,19 @@ export const ProductPriceQuotesBySupplier = () => {
                                 isLoading={loading}
                                 classNamePrefix="custom-select"
                                 className="custom-select w-100"
+                            />
+                        </Col>
+
+                        <Col xs={12} md={4} className="d-flex justify-content-md-start">
+                            <Form.Check
+                                type="switch"
+                                id="only-mine-switch"
+                                label={`Ver solo mis productos (${onlyMine ? 'SI' : 'NO'})`}
+                                checked={onlyMine}
+                                onChange={handleToggleOnlyMine}
+                                reverse
+                                className="form-switch-lg switch-compact"
+                                disabled={!selectedPlan}
                             />
                         </Col>
                     </Row>
