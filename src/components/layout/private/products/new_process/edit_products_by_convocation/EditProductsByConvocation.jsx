@@ -28,6 +28,8 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 import {ConfirmationModal} from "../../../../shared/Modals/ConfirmationModal";
 
+const PAGE_SIZE = 100;
+
 export const EditProductsByConvocation = () => {
 
     const params = useParams();
@@ -36,6 +38,9 @@ export const EditProductsByConvocation = () => {
     const [planRaw, setPlanRaw] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null);
     const [productList, setProductList] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(PAGE_SIZE);
+    const [rowCount, setRowCount] = useState(0);
 
     const [showModal, setShowModal] = useState(false);
     const [selectedRowId, setSelectedRowId] = useState(null);
@@ -96,14 +101,15 @@ export const EditProductsByConvocation = () => {
      * Obtiene los productos de un plan (para la tabla).
      * @param {number} planId
      */
-    const getProductList = async (planId) => {
+    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId) => {
         setLoading(true);
         try {
-            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch, planId);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
                 setFilteredData(products);
+                setRowCount(data?.data?.total_productos);
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
@@ -160,7 +166,7 @@ export const EditProductsByConvocation = () => {
             if (status === ResponseStatusEnum.OK) {
                 showAlert("Bien hecho!", "Producto eliminado exitosamente.");
                 setShowModal(false);
-                getProductList(selectedPlan.value);
+                await getProductList(1, PAGE_SIZE, selectedPlan.value);
             }
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
@@ -272,6 +278,11 @@ export const EditProductsByConvocation = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (!selectedPlan?.value) return;
+        getProductList(page + 1, pageSize, selectedPlan?.value);
+    }, [page, pageSize, selectedPlan]);
+
     return (
         <>
             <div className="main-container">
@@ -343,13 +354,19 @@ export const EditProductsByConvocation = () => {
 
                     <div style={{height: 600, width: "100%"}}>
                         <DataGrid
-                            rows={filteredData}
                             columns={columns}
+                            rows={filteredData}
                             pagination
                             processRowUpdate={handleRowUpdate}
                             editMode="row"
-                            pageSize={100}
-                            rowsPerPageOptions={[100, 500, 1000]}
+                            paginationMode="server"
+                            rowCount={rowCount}
+                            paginationModel={{ page, pageSize }}
+                            onPaginationModelChange={({ page, pageSize }) => {
+                                setPage(page);
+                                setPageSize(pageSize);
+                            }}
+                            rowsPerPageOptions={[10, 50, 100]}
                             componentsProps={{
                                 columnHeader: {
                                     style: {
