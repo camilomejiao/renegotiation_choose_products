@@ -90,8 +90,8 @@ class ConvocationProductsServices {
      * @param {number|string} supplierId - ID del proveedor.
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
-    getProductsBySupplier(supplierId, jornadaPlanId) {
-        const url = this.buildUrl(`productos/proveedor/?proveedor_id=${supplierId}&jornada_plan_id=${jornadaPlanId}`);
+    getProductsBySupplier(supplierId, jornadaPlanId, onlyMe) {
+        const url = this.buildUrl(`productos/proveedor/?proveedor_id=${supplierId}&jornada_plan_id=${jornadaPlanId}&only_me=${onlyMe}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
