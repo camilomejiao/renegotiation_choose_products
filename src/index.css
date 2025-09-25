@@ -1,53 +1,100 @@
+/* =========================================================
+   Variables
+   ========================================================= */
+:root {
+  --header-h: 80px;  /* altura del header */
+  --sidebar-w: 50px; /* ancho del sidebar (si aplica) */
+  --brand: #046999;
+  --scroll-track: #e0e0e0;
+  --scroll-thumb: #888;
+}
+
+/* =========================================================
+   Reset & Base
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body,
-#root,
-.app,
-.content {
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
-  /*width: 100%;*/
-  overflow: hidden;
   font-family: 'Nunito', sans-serif;
+  overflow-x: hidden; /* evita scroll horizontal global */
 }
 
-/*html,*/
-/*body,*/
-/*#root {*/
-/*  height: 100%;*/
-/*  margin: 0;*/
-/*  padding: 0;*/
-/*  font-family: 'Nunito', sans-serif;*/
-/*  display: flex;*/
-/*  flex-direction: column; !* Diseño en columna *!*/
-/*}*/
+/* Contenedor de la app (si lo usas) */
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-/*.app {*/
-/*  flex: 1; !* Toma el espacio disponible *!*/
-/*  display: flex;*/
-/*  flex-direction: column;*/
-/*}*/
-
+/* =========================================================
+   Layout
+   ========================================================= */
+/* Header fijo arriba */
 .header {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 80px; /* Ajusta según sea necesario */
+  inset: 0 0 auto 0; /* top:0; right:0; left:0 */
   z-index: 1000;
+  height: var(--header-h);
   background-color: #fff;
-  border-bottom: 10px solid #046999;
+  border-bottom: 10px solid var(--brand);
 }
 
+/* Zona de contenido debajo del header.
+   Opción 1 (recomendada): usar padding-left para “dejar espacio” al sidebar.
+*/
 .content {
-  margin-top: 80px; /* Altura del header */
-  margin-left: 50px; /* Ancho del sidebar */
-  height: calc(100vh - 80px); /* Para ajustar el contenido y permitir scroll */
-  overflow-y: auto;
-  background-color: #ffffff; /* Ejemplo de fondo para el contenido */
+  margin-top: var(--header-h);          /* separa del header */
+  padding-left: var(--sidebar-w);       /* espacio visual para el sidebar fijo */
+  height: calc(100vh - var(--header-h));
+  width: 100vw;                         /* no permitir crecimiento extra */
+  max-width: 100vw;
+  overflow-y: auto;                     /* scroll vertical solo aquí */
+  overflow-x: hidden;                   /* previene desbordes horizontales */
+  background-color: #fff;
 }
 
-/* spinner */
+/* Si prefieres margin-left en lugar de padding-left,
+   sustituye el bloque anterior por éste:
+.content {
+  margin-top: var(--header-h);
+  margin-left: var(--sidebar-w);
+  height: calc(100vh - var(--header-h));
+  width: calc(100vw - var(--sidebar-w));  // clave para evitar desborde
+  max-width: 100vw;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #fff;
+}
+*/
+
+/* Wrapper para DataGrid o tablas que no deben generar scroll extra */
+.grid-wrap {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* el scroll vive en .content, no aquí */
+}
+
+/* Medios que podrían romper el layout */
+img,
+canvas,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================================================
+   Utilidades / Componentes
+   ========================================================= */
 .spinner-container {
   display: flex;
   align-items: center;
@@ -59,53 +106,44 @@ body,
   margin-left: 10px;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar:horizontal {
-  height: 8px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #e0e0e0;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-
-/* Handle on Hover */
-::-webkit-scrollbar-track:hover {
-  background: #555;
-}
-
 .page-not-found {
-  width: auto;
-  height: auto;
   text-align: center;
 }
 
-/* Fondo translúcido */
+/* Overlay de carga a pantalla completa */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.5);
 }
 
-/* Indicador de carga */
 .loader {
-  color: white;
+  color: #fff;
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+}
+
+/* =========================================================
+   Scrollbar (WebKit)
+   ========================================================= */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; /* por si aparece horizontal en algún contenedor interno */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+}
+
+::-webkit-scrollbar-track:hover {
+  background: #555;
 }

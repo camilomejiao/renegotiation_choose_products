@@ -1,0 +1,18 @@
+/* Aumenta el tamaño del switch */
+.form-switch.form-switch-lg .form-check-input {
+    transform: scale(1.9);
+    transform-origin: center;
+    margin-top: 5px;
+}
+
+/* Espaciado y tipografía del label */
+.form-switch.form-switch-lg .form-check-label {
+    font-size: 18px;
+    margin-right: 25px;
+}
+
+/* (Opcional) color cuando está activado */
+.form-switch.form-switch-lg .form-check-input:checked {
+    background-color: #40A581;
+    border-color: #40A581;
+}
