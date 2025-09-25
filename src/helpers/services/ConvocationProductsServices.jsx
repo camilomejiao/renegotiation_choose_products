@@ -116,8 +116,8 @@ class ConvocationProductsServices {
     /**
      *
      */
-    getProductByConvocationAndPlan(ConvocationPlanId) {
-        const url = this.buildUrl(`productos-por-plan/?jornada_plan_id=${ConvocationPlanId}`);
+    getProductByConvocationAndPlan(page = 1, pageSize = 100, ConvocationPlanId) {
+        const url = this.buildUrl(`productos-por-plan/?jornada_plan_id=${ConvocationPlanId}&page=${page}&page_size=${100}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
