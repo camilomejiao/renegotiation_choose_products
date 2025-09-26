@@ -43,7 +43,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
     const [planRaw, setPlanRaw] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null);
-    const [onlyMine, setOnlyMine] = useState(false);
+    const [onlyMine, setOnlyMine] = useState(true);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [loadingTable, setLoadingTable] = useState(false);
@@ -80,7 +80,7 @@ export const ProductPriceQuotesBySupplier = () => {
     const handleSelectedPlan = async (option) => {
         setSelectedPlan(option);
         if (option?.value) {
-            await getProductList(option.value, 0);
+            await getProductList(option.value, onlyMine);
         } else {
             setProductList([]);
         }
