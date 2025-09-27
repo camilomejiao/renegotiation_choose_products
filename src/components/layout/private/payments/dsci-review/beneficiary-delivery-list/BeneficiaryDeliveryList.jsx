@@ -135,11 +135,10 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                     }}
                     onRowClick={handleRowClick}
                     sx={{
-                        "& .MuiDataGrid-columnHeaders": {
+                        "& .MuiDataGrid-columnHeader": {
                             backgroundColor: "#40A581",
                             color: "white",
                             fontSize: "12px",
-                            lineHeight: 1.2,
                             textAlign: "center",
                             display: "flex",
                             justifyContent: "center",
@@ -154,11 +153,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                             textAlign: "left",
                             justifyContent: "left",
                             alignItems: "flex-start",
-                            whiteSpace: 'normal',
-                            wordBreak: 'break-word',
-                            display: 'block',
-                            paddingTop: '10px',
-                            paddingBottom: '10px'
+                            display: "flex",
                         },
                         "& .MuiSelect-root": {
                             fontSize: "12px",

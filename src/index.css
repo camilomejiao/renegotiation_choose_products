@@ -84,7 +84,6 @@ body,
 }
 
 /* Medios que podrían romper el layout */
-img,
 canvas,
 video {
   max-width: 100%;
