@@ -235,14 +235,14 @@ export const getObservationsSupervisionColumns = () => {
         {
             field: "observations_supervision",
             headerName: "Observación supervision",
-            width: 200,
+            width: 400,
             editable: false,
             renderCell: (params) => renderObservationCell(params, "Observación supervision..."),
         },
         {
             field: "status_supervision",
             headerName: "Estado supervision",
-            width: 120,
+            width: 150,
             editable: false,
             renderCell: renderStatusCell,
         },

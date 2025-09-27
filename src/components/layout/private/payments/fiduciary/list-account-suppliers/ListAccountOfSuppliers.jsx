@@ -97,8 +97,7 @@ export const ListAccountOfSuppliers = () => {
                                 backgroundColor: "#40A581",
                                 color: "white",
                                 fontSize: "12px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
+                                lineHeight: 1.2,
                                 textAlign: "center",
                                 display: "flex",
                                 justifyContent: "center",
@@ -113,7 +112,11 @@ export const ListAccountOfSuppliers = () => {
                                 textAlign: "left",
                                 justifyContent: "left",
                                 alignItems: "flex-start",
-                                display: "flex",
+                                whiteSpace: 'normal',
+                                wordBreak: 'break-word',
+                                display: 'block',
+                                paddingTop: '10px',
+                                paddingBottom: '10px'
                             },
                             "& .MuiSelect-root": {
                                 fontSize: "12px",

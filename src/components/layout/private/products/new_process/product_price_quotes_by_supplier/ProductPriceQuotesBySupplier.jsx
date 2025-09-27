@@ -39,15 +39,24 @@ export const ProductPriceQuotesBySupplier = () => {
     const navigate = useNavigate();
 
     const [productList, setProductList] = useState([]);
+    const [editedProducts, setEditedProducts] = useState([]);
     const [filteredRows, setFilteredRows] = useState([]);
 
     const [planRaw, setPlanRaw] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null);
-    const [onlyMine, setOnlyMine] = useState(false);
+    const [onlyMine, setOnlyMine] = useState(true);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [loadingTable, setLoadingTable] = useState(false);
     const [loading, setLoading] = useState(false);
+
+
+    //Columns
+    const baseColumns = getProductsPriceQuotesColumns();
+    const statusProduct = getStatusProduct();
+    const observationsColumns = getObservationsSupervisionColumns();
+
+    const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
 
     /**
      * Carga los planes de una jornada específica (cuando se selecciona una Jornada).
@@ -80,7 +89,7 @@ export const ProductPriceQuotesBySupplier = () => {
     const handleSelectedPlan = async (option) => {
         setSelectedPlan(option);
         if (option?.value) {
-            await getProductList(option.value, 0);
+            await getProductList(option.value, onlyMine);
         } else {
             setProductList([]);
         }
@@ -103,6 +112,12 @@ export const ProductPriceQuotesBySupplier = () => {
         }
     };
 
+    /**
+     * Convierte la lista cruda de productos al formato que usa el DataGrid.
+     * Incluye mapeo de campos visibles y los campos dinámicos ambientales.
+     * @param {Array<object>} data
+     * @returns {Promise<Array<object>>}
+     */
     const normalizeRows = async (payload) => {
         const rows = payload?.data?.productos ?? [];
         try {
@@ -173,15 +188,25 @@ export const ProductPriceQuotesBySupplier = () => {
         }, {});
     };
 
-    const baseColumns = getProductsPriceQuotesColumns();
-    const statusProduct = getStatusProduct();
-    const observationsColumns = getObservationsSupervisionColumns();
 
-    const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
-
-    const handleRowUpdate = (newRow) => {
-        setProductList((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
-        setFilteredRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
+    /**
+     * MUI DataGrid: procesa la actualización de una fila completa (modo "row").
+     * Guarda los cambios en `editedProducts` para enviar luego.
+     * @param {object} newRow
+     * @param {object} oldRow
+     */
+    const handleRowUpdate = (newRow, oldRow) => {
+        if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+            setEditedProducts((prevState) => {
+                const index = prevState.findIndex((product) => product.id === newRow.id);
+                if (index > -1) {
+                    prevState[index] = newRow;
+                } else {
+                    prevState.push(newRow);
+                }
+                return [...prevState];
+            });
+        }
         return newRow;
     };
 
@@ -209,20 +234,20 @@ export const ProductPriceQuotesBySupplier = () => {
         try {
             setLoading(true);
 
-            const emptyFields = productList.some(r => {
+            const emptyFields = editedProducts.some(r => {
                 return !r.description || !r.brand || !r.price
             });
 
             if (emptyFields) {
                 handleError(
                     "Revisa campos",
-                    `Tienes Algún campo vacio.`
+                    `La descripción, marca y precio son obligatorios, por favor revisa algún producto modificado.`
                 );
                 setLoading(false);
                 return;
             }
 
-            const productos = await transformData(productList);
+            const productos = await transformData(editedProducts);
 
             let sendData = {
                 proveedor_id: userAuth.id,
@@ -350,7 +375,12 @@ export const ProductPriceQuotesBySupplier = () => {
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#40A581",
                                     color: "white",
-                                    fontSize: "14px",
+                                    fontSize: "12px",
+                                    lineHeight: 1.2,
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
                                 },
                                 "& .MuiDataGrid-columnHeader": {
                                     textAlign: "center",
@@ -363,10 +393,15 @@ export const ProductPriceQuotesBySupplier = () => {
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
+                                    whiteSpace: 'normal',
+                                    wordBreak: 'break-word',
+                                    display: 'block',
+                                    paddingTop: '10px',
+                                    paddingBottom: '10px'
                                 },
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",
