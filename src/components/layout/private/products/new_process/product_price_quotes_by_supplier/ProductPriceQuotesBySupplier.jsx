@@ -375,7 +375,12 @@ export const ProductPriceQuotesBySupplier = () => {
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#40A581",
                                     color: "white",
-                                    fontSize: "14px",
+                                    fontSize: "12px",
+                                    lineHeight: 1.2,
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
                                 },
                                 "& .MuiDataGrid-columnHeader": {
                                     textAlign: "center",
@@ -388,10 +393,15 @@ export const ProductPriceQuotesBySupplier = () => {
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
+                                    whiteSpace: 'normal',
+                                    wordBreak: 'break-word',
+                                    display: 'block',
+                                    paddingTop: '10px',
+                                    paddingBottom: '10px'
                                 },
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",

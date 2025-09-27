@@ -183,15 +183,15 @@ export const getDeleteActionsColumns = (handleDeleteClick) => ([
 
 export const getProductsPriceQuotesColumns = () => ([
     { field: "id", headerName: "ID", width: 70 },
-    { field: "category", headerName: "CATEGORIA", width: 300 },
-    { field: "name", headerName: "NOMBRE PRODUCTO", width: 300 },
+    { field: "category", headerName: "CATEGORIA", width: 500 },
+    { field: "name", headerName: "NOMBRE PRODUCTO", width: 500 },
     { field: "unit", headerName: "UNIDAD", width: 150 },
-    { field: "description", headerName: "DESCRIPCION", width: 300, editable: true, },
-    { field: "brand", headerName: "MARCA", width: 200, editable: true, },
+    { field: "description", headerName: "DESCRIPCION", width: 500, editable: true, },
+    { field: "brand", headerName: "MARCA", width: 250, editable: true, },
     {
         field: "price",
         headerName: "VALOR",
-        width: 200,
+        width: 250,
         editable: true,
         renderCell: (params) => {
             const min = Number(params.row.precio_min ?? 0);
@@ -204,12 +204,6 @@ export const getProductsPriceQuotesColumns = () => ([
                     type="text"
                     value={current ? formatPrice(current) : ""}
                     fullWidth
-                    //error={outOfRange}
-                    // helperText={
-                    //     outOfRange
-                    //         ? `Fuera de rango (${formatPrice(min)} - ${formatPrice(max)})`
-                    //         : " "
-                    // }
                     onChange={(e) => {
                         // solo dígitos
                         const raw = e.target.value.replace(/[^\d]/g, "");
@@ -219,12 +213,6 @@ export const getProductsPriceQuotesColumns = () => ([
                         // esto re-renderiza la celda; el commit real se hace al salir de la fila
                         params.api.updateRows([newRow]);
                     }}
-                    // verde sutil si dentro de rango y hay valor
-                    // sx={
-                    //     !outOfRange && current
-                    //         ? { "& .MuiInputBase-input": { color: "green", fontWeight: 600 } }
-                    //         : undefined
-                    // }
                 />
             );
         },
