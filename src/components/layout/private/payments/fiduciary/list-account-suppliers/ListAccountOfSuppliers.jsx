@@ -22,7 +22,7 @@ export const ListAccountOfSuppliers = () => {
     const [rowCount, setRowCount] = useState(0);
 
     const columns = [
-        { field: "id", headerName: "ID", width: 180 },
+        { field: "id", headerName: "ID", width: 50 },
         { field: "collection_account", headerName: "N° Cuenta de Cobro", width: 180 },
         { field: "date", headerName: "Fecha Creación", width: 180 },
         { field: "supplier_nit", headerName: "Nit", width: 180 },
