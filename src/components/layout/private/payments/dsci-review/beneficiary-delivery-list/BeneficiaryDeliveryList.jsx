@@ -135,10 +135,12 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                     }}
                     onRowClick={handleRowClick}
                     sx={{
-                        "& .MuiDataGrid-columnHeader": {
+                        "& .MuiDataGrid-columnHeaders": {
                             backgroundColor: "#40A581",
                             color: "white",
                             fontSize: "12px",
+                        },
+                        "& .MuiDataGrid-columnHeader": {
                             textAlign: "center",
                             display: "flex",
                             justifyContent: "center",
