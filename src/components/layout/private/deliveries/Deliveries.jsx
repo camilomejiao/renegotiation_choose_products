@@ -1123,6 +1123,16 @@ export const Deliveries = () => {
                                     disableColumnMenu
                                     disableSelectionOnClick
                                     rowHeight={100}
+                                    componentsProps={{
+                                        columnHeader: {
+                                            style: {
+                                                textAlign: "left",
+                                                fontWeight: "bold",
+                                                fontSize: "10px",
+                                                wordWrap: "break-word",
+                                            },
+                                        },
+                                    }}
                                     sx={{
                                         "& .MuiDataGrid-columnHeaders": {
                                             backgroundColor: "#40A581",

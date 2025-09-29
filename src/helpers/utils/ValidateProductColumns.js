@@ -11,14 +11,14 @@ import { ResponseStatusEnum, RolesEnum, StatusTeamProductEnum } from "../GlobalE
 //
 export const getBaseColumns = () => ([
     { field: "id", headerName: "ID", width: 70 },
-    { field: "category", headerName: "Categoría", width: 300 },
+    { field: "category", headerName: "Categoría", width: 200 },
     { field: "name", headerName: "Nombre", width: 300},
-    { field: "description", headerName: "Descripción", width: 300},
+    { field: "description", headerName: "Descripción", width: 250},
     { field: "brand", headerName: "Marca", width: 150},
-    { field: "unit", headerName: "Unidad", width: 150 },
-    { field: "price_min", headerName: "Precio Min", width: 150},
-    { field: "price_max", headerName: "Precio Max", width: 150},
-    { field: "price", headerName: "VALOR", width: 150},
+    { field: "unit", headerName: "Unidad", width: 100 },
+    { field: "price_min", headerName: "Precio Min", width: 100},
+    { field: "price_max", headerName: "Precio Max", width: 100},
+    { field: "price", headerName: "VALOR", width: 100},
 ]);
 
 export const formatPrice = (value) => {
