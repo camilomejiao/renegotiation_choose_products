@@ -175,7 +175,7 @@ export const ValidationSupervision = () => {
         try {
             const { data, status } = await convocationProductsServices.convocationServices(formFields.typePlan, supplierId);
             if (status === ResponseStatusEnum.OK) {
-                const products =  await normalizeRows(data.data);
+                const products =  await normalizeRows(data?.data?.productos);
                 setProductList(products);
                 setFilteredData(products);
             }
