@@ -13,9 +13,10 @@ import glass from "../../../../assets/image/icons/magnifying_glass.png";
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
-import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
-import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { handleError, showAlert } from "../../../../helpers/utils/utils";
+import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
+import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
+import { BalanceInFavorReport } from "./balance_in_favor_report/BalanceInFavorReport";
 
 //Services
 import { userServices } from "../../../../helpers/services/UserServices";
@@ -26,9 +27,10 @@ import { filesServices } from "../../../../helpers/services/FilesServices";
 import './BeneficiariesManagement.css';
 
 //Enum
-import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import { BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
+const pickLatest = (arr = []) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null);
 
 export const BeneficiariesManagement = () => {
     const params = useParams();
@@ -36,13 +38,16 @@ export const BeneficiariesManagement = () => {
 
     //
     const headlineReportRef = useRef();
+    const headlineBalanceRef = useRef();
 
     //
     const [userData, setUserData] = useState({});
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [isReadyToPrintHeadLineInformation, setIsReadyToPrintHeadLineInformation] = useState(false);
+    const [isReadyToPrintBalanceInFavor, setIsReadyToPrintBalanceInFavor] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [consolidated, setConsolidated] = useState("")
+    const [consolidated, setConsolidated] = useState("");
+    const [balance, setBalance] = useState("");
 
     //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
@@ -50,7 +55,13 @@ export const BeneficiariesManagement = () => {
             const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
-                setConsolidated(data?.consolidado);
+
+                const archivos = data?.archivos ?? {};
+                const consolidado = pickLatest(archivos[BeneficiaresManagementEnum.CONSOLIDATED]);
+                const saldo       = pickLatest(archivos[BeneficiaresManagementEnum.BALANCE]);
+
+                setConsolidated(consolidado?.ruta ?? null);
+                setBalance(saldo?.ruta ?? null);
             }
         } catch (error) {
             console.error("Error obteniendo la informacion del usuario:", error);
@@ -92,6 +103,7 @@ export const BeneficiariesManagement = () => {
             }
 
             const formData = new FormData();
+            formData.append("tipo", type);
             formData.append("ruta", file);
 
             setLoading(true);
@@ -142,13 +154,25 @@ export const BeneficiariesManagement = () => {
     };
 
     //Imprime el reporte de compras del usuario
-    const handleHeadlineInformationToReport = async (cubId) => {
+    const handleHeadlineInformationToReport = async (cubId, type = "") => {
         setLoading(true);
         try {
             const { data, status} = await reportServices.headlineReport(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setHeadLineInformation(data);
-                setIsReadyToPrintHeadLineInformation(true);
+                if(type === BeneficiaresManagementEnum.CONSOLIDATED) {
+                    setIsReadyToPrintHeadLineInformation(true);
+                }
+
+                if(type === BeneficiaresManagementEnum.BALANCE) {
+                    const bruto = (Number(data?.saldo) || 0) - (Number(data?.invertido) || 0);
+                    const valor = Math.max(0, Math.round(bruto));
+                   if(valor > 10000 || valor === 0) {
+                       AlertComponent.warning("", "El saldo debe ser inferior a $ 10.000 PESOS M/CTE y mayor a 0");
+                       return;
+                   }
+                   setIsReadyToPrintBalanceInFavor(true);
+                }
             }
         } catch (error) {
             console.error("Error obteniendo el reporte:", error);
@@ -158,7 +182,7 @@ export const BeneficiariesManagement = () => {
     }
 
     //pdf de compras consolidadas del usuario
-    const printHeadlineReport = () => {
+    const printHeadlineReport = (ref) => {
         const printContent = `
         <html>
         <head>
@@ -172,7 +196,7 @@ export const BeneficiariesManagement = () => {
         </head>
         <body>
           <!-- Inyectamos el HTML del componente -->
-          ${headlineReportRef.current.innerHTML} 
+          ${ref.current.innerHTML} 
         </body>
         </html>`;
 
@@ -193,10 +217,18 @@ export const BeneficiariesManagement = () => {
     //Al dar click en el reporte
     useEffect(() => {
         if (isReadyToPrintHeadLineInformation) {
-            printHeadlineReport();
-            setIsReadyToPrintHeadLineInformation(false); // Restablecer el estado
+            printHeadlineReport(headlineReportRef);
+            setIsReadyToPrintHeadLineInformation(false);
         }
     }, [isReadyToPrintHeadLineInformation]);
+
+    //Al dar click en el reporte
+    useEffect(() => {
+        if (isReadyToPrintBalanceInFavor) {
+            printHeadlineReport(headlineBalanceRef);
+            setIsReadyToPrintBalanceInFavor(false);
+        }
+    }, [isReadyToPrintBalanceInFavor]);
 
     return (
         <>
@@ -224,17 +256,17 @@ export const BeneficiariesManagement = () => {
                     <Container>
                         <Row className="justify-content-start">
                             <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
-                                <button onClick={() => handleHeadlineInformationToReport(params.id)} className="reporting-system-button unique">
+                                <button onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.CONSOLIDATED)} className="reporting-system-button unique">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    REPORTE DE COMPRAS POR TITULAR
+                                    DOCUMENTO CONSOLIDADO DE ORDENES DE COMPRA POR TITULAR
                                 </button>
                             </Col>
-                            <Col xs={12} md={6} className="d-flex justify-content-center">
+                            <Col xs={12} md={9} className="d-flex justify-content-center">
                                 <button
-                                    onClick={() => handleUploadFile(params.id, 'acuerdo')}
+                                    onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.CONSOLIDATED)}
                                     className="reporting-system-button files">
                                     <img src={imgFrame} alt="icono único" className="button-icon" />
-                                    DOCUMENTOS SOPORTE
+                                    CARGAR CONSOLIDADO DE COMPRAS
                                 </button>
 
                                 {consolidated &&(
@@ -246,8 +278,35 @@ export const BeneficiariesManagement = () => {
                                         VER PDF
                                     </button>
                                 )}
-
                             </Col>
+                        </Row>
+                        <Row className="justify-content-start mt-2">
+                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                                <button onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.BALANCE)} className="reporting-system-button unique">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                    DOCUMENTO SALDO A FAVOR
+                                </button>
+                            </Col>
+                            <Col xs={12} md={9} className="d-flex justify-content-center">
+                                <button
+                                    onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.BALANCE)}
+                                    className="reporting-system-button files">
+                                    <img src={imgFrame} alt="icono único" className="button-icon" />
+                                    CARGAR DOCUMENTO DE SALDO A FAVOR
+                                </button>
+
+                                {balance &&(
+                                    <button
+                                        onClick={() => handleViewFile(balance)}
+                                        rel="noopener noreferrer"
+                                        className="reporting-system-button view-pdf">
+                                        <img src={glass} alt="icono pdf" className="button-icon" />
+                                        VER PDF
+                                    </button>
+                                )}
+                            </Col>
+                        </Row>
+                        <Row className="justify-content-start mt-2">
                             <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
                                 <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
@@ -266,6 +325,15 @@ export const BeneficiariesManagement = () => {
                     {isReadyToPrintHeadLineInformation && (
                         <div ref={headlineReportRef}>
                             <ConsolidatedPurchaseReport dataReport={headLineInformation} />
+                        </div>
+                    )}
+                </div>
+
+                {/* Aquí renderizas el componente pero lo ocultas */}
+                <div style={{ display: 'none' }}>
+                    {isReadyToPrintBalanceInFavor && (
+                        <div ref={headlineBalanceRef}>
+                            <BalanceInFavorReport dataReport={headLineInformation} />
                         </div>
                     )}
                 </div>

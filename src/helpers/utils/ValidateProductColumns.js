@@ -204,8 +204,8 @@ export const getObservationsSupervisionColumns = () => {
         return (
             <span style={{ color: comentario ? "black" : "gray" }}>
                 {comentario || placeholder}
-                {funcionario && fecha && (
-                    <span> (Revisado por: {funcionario} - {fecha})</span>
+                {funcionario && (
+                    <span> (Revisado por: {funcionario}{fecha ? ` - ${fecha}` : ""})</span>
                 )}
             </span>
         );

@@ -23,7 +23,7 @@ export const RolesEnum = {
     SYSTEM_USER: 8
 }
 
-export const GeneralStatusProductEnum = {
+export const GeneralStatusDeliveryProductEnum = {
     APPROVED: 'APROBADO',
     PENDING_APPROVAL: 'PENDIENTE',
     REFUSED: 'RECHAZADO'
@@ -45,4 +45,9 @@ export const UploadFileEnum = {
     PDF: 'pdf',
     EVIDENCE1: 'evidence_1',
     EVIDENCE2: 'evidence_2',
+}
+
+export const BeneficiaresManagementEnum = {
+    CONSOLIDATED: "consolidado",
+    BALANCE: "saldo"
 }

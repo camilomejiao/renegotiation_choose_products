@@ -6,33 +6,33 @@ import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
 
 // Img
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
-import { productServices } from "../../../../../../helpers/services/ProductServices";
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import { productServices } from "../../../../../helpers/services/ProductServices";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 // Enum
 import {
-    GeneralStatusProductEnum,
+    GeneralStatusDeliveryProductEnum,
     ResponseStatusEnum,
     RolesEnum,
     StatusTeamProductEnum
-} from "../../../../../../helpers/GlobalEnum";
+} from "../../../../../helpers/GlobalEnum";
 
 //Utils
-import { showAlert } from "../../../../../../helpers/utils/utils";
+import { showAlert } from "../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getObservationsSupervisionColumns,
     getStatusProduct,
 
-} from "../../../../../../helpers/utils/ValidateProductColumns";
+} from "../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 100;
 const BATCH_SIZE = 250;
@@ -222,23 +222,23 @@ export const ValidationSupervision = () => {
         const isEmpty = !Array.isArray(approvalList) || approvalList.length === 0;
 
         // Si no hay evaluaciones, no puede estar aprobado ni rechazado
-        if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
+        if (isEmpty) return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
 
         const APPROVED_ID = Number(StatusTeamProductEnum.APPROVED.id);
         const DENIED_ID   = Number(StatusTeamProductEnum.DENIED.id);
 
-        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID);
-        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID);
+        const allApproved = approvalList.every(it => Number(it.estado) === APPROVED_ID && it.rol === RolesEnum.SUPERVISION);
+        const hasRejected = approvalList.some(it => Number(it.estado) === DENIED_ID && it.rol === RolesEnum.SUPERVISION);
 
         if (hasRejected) {
-            return GeneralStatusProductEnum.REFUSED;
+            return GeneralStatusDeliveryProductEnum.REFUSED;
         }
 
         if (allApproved && approvalDate) {
-            return GeneralStatusProductEnum.APPROVED;
+            return GeneralStatusDeliveryProductEnum.APPROVED;
         }
 
-        return GeneralStatusProductEnum.PENDING_APPROVAL;
+        return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
     };
 
 
@@ -328,7 +328,6 @@ export const ValidationSupervision = () => {
         try {
             await processBatches(ids, estado, comment);
             showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
-            await getProductList(formFields.typeSupplier);
             handleCloseModalApproved();
         } catch (error) {
             console.error("Unexpected error during approval:", error);
