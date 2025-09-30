@@ -154,8 +154,8 @@ class ConvocationProductsServices {
     /**
      *
      */
-    convocationServices(convocationPlanId, supplierId) {
-        const url = this.buildUrl(`productos-con-aprobaciones/?jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}`);
+    convocationServices(page = 1, pageSize = 100, convocationPlanId, supplierId) {
+        const url = this.buildUrl(`productos-con-aprobaciones/?jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}&page=${page}&page_size=${100}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
