@@ -18,14 +18,13 @@ import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
 import { CreateOrder } from "../components/layout/private/purchase_orders/create_order/CreateOrder";
-import { EditOrder } from "../components/layout/private/purchase_orders/edit_order_products/EditOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports/report_company/CompanyReport";
 import { OrderReport } from "../components/layout/private/purchase_orders/order_report/OrderReport";
 import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
-import { ValidationSupervision } from "../components/layout/private/products/new_process/validation_supervision/ValidationSupervision";
+import { ValidationSupervision } from "../components/layout/private/products/validation_supervision/ValidationSupervision";
 //import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
 //import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
 import { MenuTab } from "../components/layout/private/management/MenuTab";
@@ -46,18 +45,18 @@ import {
     CollectionAccountDetails
 } from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
-import { ProductUploadTechnical } from "../components/layout/private/products/new_process/product_upload_technical/ProductUploadTechnical";
-import { ProductPriceQuotesBySupplier } from "../components/layout/private/products/new_process/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
+import { ProductUploadTechnical } from "../components/layout/private/products/product_upload_technical/ProductUploadTechnical";
+import { ProductPriceQuotesBySupplier } from "../components/layout/private/products/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {
     ListProductsByConvocation
-} from "../components/layout/private/products/new_process/list_products_by_convocation/ListProductsByConvocation";
+} from "../components/layout/private/products/list_products_by_convocation/ListProductsByConvocation";
 import {
     ValidationEnvironmental
-} from "../components/layout/private/products/new_process/validation_environmental/ValidationEnvironmental";
+} from "../components/layout/private/products/validation_environmental/ValidationEnvironmental";
 import {
     EditProductsByConvocation
-} from "../components/layout/private/products/new_process/edit_products_by_convocation/EditProductsByConvocation";
-import { ReportByConvocation } from "../components/layout/private/products/new_process/report/ReportByConvocation";
+} from "../components/layout/private/products/edit_products_by_convocation/EditProductsByConvocation";
+import { ReportByConvocation } from "../components/layout/private/products/report/ReportByConvocation";
 import { CreateSuppliers } from "../components/layout/private/management/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management/convocation/ConvocationList";
 import { ConvocationMenuTab } from "../components/layout/private/management/convocation/ConvocationMenuTab";
@@ -89,7 +88,6 @@ export const Routing = () => {
 
                         {/* Ordenes */}
                         <Route path={ RouterEnum.CreateOrder }  element={ <CreateOrder /> }  />
-                        <Route path={ RouterEnum.EditOrder }  element={ <EditOrder /> }  />
 
                         {/* Entregas */}
                         <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />

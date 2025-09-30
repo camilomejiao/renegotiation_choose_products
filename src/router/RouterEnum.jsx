@@ -15,7 +15,6 @@ export const RouterEnum = {
     //Ordenes de compra
     SearchUser: 'search-user',
     CreateOrder: 'create-order/:id',
-    EditOrder: 'edit-order/:order_id/:cub_id',
 
     //Entregas
     SearchUserForDeliveries: 'search-user-for-deliveries',

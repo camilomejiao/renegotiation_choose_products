@@ -6,26 +6,26 @@ import Select from "react-select";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Components
-import {HeaderImage} from "../../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import {HeaderImage} from "../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
 import {
     getBaseColumns,
     getObservationsColumns, getObservationsEnvironmentalColumns, getObservationsSupervisionColumns,
     getStatusProduct
-} from "../../../../../../helpers/utils/ValidateProductColumns";
+} from "../../../../../helpers/utils/ValidateProductColumns";
 
 //Services
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
 
 //Enum
 import {
-    GeneralStatusProductEnum,
+    GeneralStatusDeliveryProductEnum,
     ResponseStatusEnum,
     RolesEnum,
     StatusTeamProductEnum
-} from "../../../../../../helpers/GlobalEnum";
+} from "../../../../../helpers/GlobalEnum";
 
 
 const PAGE_SIZE = 100;
@@ -203,17 +203,17 @@ export const ReportByConvocation = () => {
         //Si todos están aprobados
         const allApproved = approvalList.every(item => item.estado === StatusTeamProductEnum.APPROVED.id);
         if (allApproved && approvalDate) {
-            return GeneralStatusProductEnum.APPROVED;
+            return GeneralStatusDeliveryProductEnum.APPROVED;
         }
 
         //Si alguno está rechazado
         const hasRejected = approvalList.some(item => item.estado === StatusTeamProductEnum.DENIED.id);
         if (hasRejected && !approvalDate) {
-            return GeneralStatusProductEnum.REFUSED;
+            return GeneralStatusDeliveryProductEnum.REFUSED;
         }
 
         if(!approvalDate) {
-            return GeneralStatusProductEnum.PENDING_APPROVAL;
+            return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
         }
     };
 

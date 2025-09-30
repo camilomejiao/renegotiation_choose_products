@@ -7,32 +7,32 @@ import Select from "react-select";
 import debounce from "lodash/debounce";
 
 // Img
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { ApprovedDeniedModal } from "../../../../shared/Modals/ApprovedDeniedModal";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 // Enum
 import {
-    GeneralStatusProductEnum,
+    GeneralStatusDeliveryProductEnum,
     ResponseStatusEnum,
     StatusTeamProductEnum,
-} from "../../../../../../helpers/GlobalEnum";
+} from "../../../../../helpers/GlobalEnum";
 
 // Utils
-import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
+import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 import {
     getBaseColumns,
     getEnvironmentalCategories,
     getObservationsEnvironmentalColumns,
     getEnvironmentalCategoriesColumns,
     getStatusProduct,
-} from "../../../../../../helpers/utils/ValidateProductColumns";
+} from "../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 100;
 const BATCH_SIZE = 250;
@@ -223,14 +223,14 @@ export const ValidationEnvironmental = () => {
         const hasDate = Boolean(approvDate);
 
         if (st === APPROVED_ID && hasUser && hasDate) {
-            return GeneralStatusProductEnum.APPROVED;
+            return GeneralStatusDeliveryProductEnum.APPROVED;
         }
 
         if (st === DENIED_ID && hasUser && hasDate) {
-            return GeneralStatusProductEnum.REFUSED;
+            return GeneralStatusDeliveryProductEnum.REFUSED;
         }
 
-        return GeneralStatusProductEnum.PENDING_APPROVAL;
+        return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
     };
 
 

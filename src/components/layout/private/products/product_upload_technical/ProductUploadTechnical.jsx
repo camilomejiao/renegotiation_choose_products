@@ -6,24 +6,24 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 
 //
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Utils
-import { getNewCatalogBaseColumns, getDeleteActionsColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+import { getNewCatalogBaseColumns, getDeleteActionsColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
 import {
     getCategoryOptions,
     getEnvironmentalCategories,
     getUnitOptions
-} from "../../../../../../helpers/utils/ValidateProductColumns";
-import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
+} from "../../../../../helpers/utils/ValidateProductColumns";
+import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Services
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 export const ProductUploadTechnical = () => {
 
