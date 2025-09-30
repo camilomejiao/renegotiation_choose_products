@@ -9,24 +9,24 @@ import Select from "react-select";
 import {
     getDeleteActionsColumns,
     getNewCatalogBaseColumns
-} from "../../../../../../helpers/utils/ConvocationProductColumns";
+} from "../../../../../helpers/utils/ConvocationProductColumns";
 import {
     getCategoryOptions,
     getEnvironmentalCategories,
     getUnitOptions
-} from "../../../../../../helpers/utils/ValidateProductColumns";
-import {handleError, showAlert} from "../../../../../../helpers/utils/utils";
+} from "../../../../../helpers/utils/ValidateProductColumns";
+import {handleError, showAlert} from "../../../../../helpers/utils/utils";
 
 //Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Enum
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Services
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-import {ConfirmationModal} from "../../../../shared/Modals/ConfirmationModal";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import {ConfirmationModal} from "../../../shared/Modals/ConfirmationModal";
 
 const PAGE_SIZE = 100;
 

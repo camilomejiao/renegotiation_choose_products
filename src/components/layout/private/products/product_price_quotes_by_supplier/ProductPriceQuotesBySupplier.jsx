@@ -6,28 +6,28 @@ import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
 
 //
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import { getProductsPriceQuotesColumns } from "../../../../../../helpers/utils/ConvocationProductColumns";
+import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
-import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
-import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
+import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 //Enum
 import {
-    GeneralStatusProductEnum,
+    GeneralStatusDeliveryProductEnum,
     ResponseStatusEnum, RolesEnum,
     StatusTeamProductEnum
-} from "../../../../../../helpers/GlobalEnum";
+} from "../../../../../helpers/GlobalEnum";
 
 //Utils
-import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
+import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 import {
     getObservationsSupervisionColumns,
     getStatusProduct
-} from "../../../../../../helpers/utils/ValidateProductColumns";
+} from "../../../../../helpers/utils/ValidateProductColumns";
 import Select from "react-select";
 
 //Css
@@ -145,20 +145,20 @@ export const ProductPriceQuotesBySupplier = () => {
         const isEmpty = !Array.isArray(approvalList) || approvalList.length === 0;
 
         // Si no hay evaluaciones, no puede estar aprobado ni rechazado
-        if (isEmpty) return GeneralStatusProductEnum.PENDING_APPROVAL;
+        if (isEmpty) return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
 
         const allApproved = approvalList.every(it => it.aprobado === true);
         const hasRejected = approvalList.some(it => it.aprobado === false);
 
         if (hasRejected) {
-            return GeneralStatusProductEnum.REFUSED;
+            return GeneralStatusDeliveryProductEnum.REFUSED;
         }
 
         if (allApproved && approvalDate) {
-            return GeneralStatusProductEnum.APPROVED;
+            return GeneralStatusDeliveryProductEnum.APPROVED;
         }
 
-        return GeneralStatusProductEnum.PENDING_APPROVAL;
+        return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
     };
 
 
