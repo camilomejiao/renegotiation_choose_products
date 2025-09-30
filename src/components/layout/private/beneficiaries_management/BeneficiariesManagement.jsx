@@ -223,13 +223,13 @@ export const BeneficiariesManagement = () => {
                 <div className="search-banner-reports">
                     <Container>
                         <Row className="justify-content-start">
-                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
+                            <Col xs={12} md={4} className="d-flex justify-content-center mb-3 mb-md-0">
                                 <button onClick={() => handleHeadlineInformationToReport(params.id)} className="reporting-system-button unique">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     REPORTE DE COMPRAS POR TITULAR
                                 </button>
                             </Col>
-                            <Col xs={12} md={6} className="d-flex justify-content-center">
+                            <Col xs={12} md={8} className="d-flex justify-content-center">
                                 <button
                                     onClick={() => handleUploadFile(params.id, 'acuerdo')}
                                     className="reporting-system-button files">
@@ -246,9 +246,36 @@ export const BeneficiariesManagement = () => {
                                         VER PDF
                                     </button>
                                 )}
-
                             </Col>
-                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
+                        </Row>
+                        <Row className="justify-content-start mt-2">
+                            <Col xs={12} md={4} className="d-flex justify-content-center mb-3 mb-md-0">
+                                <button onClick={() => handleHeadlineInformationToReport(params.id)} className="reporting-system-button unique">
+                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                    REPORTE DE COMPRAS POR TITULAR
+                                </button>
+                            </Col>
+                            <Col xs={12} md={8} className="d-flex justify-content-center">
+                                <button
+                                    onClick={() => handleUploadFile(params.id, 'acuerdo')}
+                                    className="reporting-system-button files">
+                                    <img src={imgFrame} alt="icono único" className="button-icon" />
+                                    DOCUMENTOS SOPORTE
+                                </button>
+
+                                {consolidated &&(
+                                    <button
+                                        onClick={() => handleViewFile(consolidated)}
+                                        rel="noopener noreferrer"
+                                        className="reporting-system-button view-pdf">
+                                        <img src={glass} alt="icono pdf" className="button-icon" />
+                                        VER PDF
+                                    </button>
+                                )}
+                            </Col>
+                        </Row>
+                        <Row className="justify-content-start mt-2">
+                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-end">
                                 <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     ENTREGAS

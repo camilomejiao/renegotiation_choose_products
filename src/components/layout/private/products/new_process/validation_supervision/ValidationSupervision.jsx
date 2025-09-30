@@ -34,7 +34,7 @@ import {
 
 } from "../../../../../../helpers/utils/ValidateProductColumns";
 
-const PAGE_SIZE = 1000;
+const PAGE_SIZE = 100;
 const BATCH_SIZE = 250;
 
 export const ValidationSupervision = () => {
@@ -56,6 +56,7 @@ export const ValidationSupervision = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
+    const [rowCount, setRowCount] = useState(0);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
@@ -165,23 +166,27 @@ export const ValidationSupervision = () => {
             typeSupplier: option?.value ?? ""
         }));
         if (option?.value) {
-            await getProductList(option.value);
+            await getProductList(1, PAGE_SIZE, selectedPlan.value, option.value);
         }
     };
 
     //Obtener la lista de productos
-    const getProductList = async (supplierId) => {
+    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, plan, supplierId) => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationProductsServices.convocationServices(formFields.typePlan, supplierId);
+            const { data, status } = await convocationProductsServices.convocationServices(pageToFetch, sizeToFetch, plan, supplierId);
             if (status === ResponseStatusEnum.OK) {
                 const products =  await normalizeRows(data?.data?.productos);
                 setProductList(products);
                 setFilteredData(products);
+                setRowCount(data?.data?.total_productos);
             }
 
             if (status === ResponseStatusEnum.BAD_REQUEST) {
                 showInfo('Proveedor no ha llenado la cotización de los productos.');
+                setProductList([]);
+                setFilteredData([]);
+                setRowCount(0);
             }
         } catch (error) {
             console.error("Error al obtener la lista de productos:", error);
@@ -361,6 +366,11 @@ export const ValidationSupervision = () => {
         getConvocations();
     }, []);
 
+    useEffect(() => {
+        if (!selectedSupplier?.value) return;
+        getProductList(page + 1, pageSize, selectedPlan.value, selectedSupplier.value);
+    }, [page, pageSize, selectedPlan, selectedSupplier]);
+
     return (
             <>
                 <div className="main-container">
@@ -447,14 +457,12 @@ export const ValidationSupervision = () => {
                                 rows={filteredData}
                                 checkboxSelection
                                 onRowSelectionModelChange={handleSelectionChange}
-                                editMode="row"
-                                pagination
-                                page={page}
-                                pageSize={pageSize}
-                                onPageChange={(newPage) => setPage(newPage)}
-                                onPageSizeChange={(newPageSize) => {
-                                    setPageSize(newPageSize);
-                                    setPage(0);
+                                paginationMode="server"
+                                rowCount={rowCount}
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={({ page, pageSize }) => {
+                                    setPage(page);
+                                    setPageSize(pageSize);
                                 }}
                                 rowsPerPageOptions={[10, 50, 100]}
                                 componentsProps={{
