@@ -328,6 +328,7 @@ export const ValidationSupervision = () => {
         try {
             await processBatches(ids, estado, comment);
             showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
+            await getProductList(page, pageSize, selectedPlan.value, selectedSupplier.value);
             handleCloseModalApproved();
         } catch (error) {
             console.error("Unexpected error during approval:", error);
