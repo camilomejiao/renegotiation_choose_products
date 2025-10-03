@@ -15,7 +15,7 @@ class DeliveriesCorrectionServices {
         return this.baseUrl + endpoint;
     }
 
-    getDeliveriesCorrection(page = 1, pageSize = 100, search) {
+    getDeliveriesCorrection(page = 1, pageSize = 100, search, statusDelivery) {
         let url = `?page=${page}&page_size=${pageSize}`;
         if(search) {
             url = `?search=${search}`;
