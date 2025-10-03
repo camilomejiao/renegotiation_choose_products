@@ -64,8 +64,8 @@ import {
     ListConciliation
 } from "../components/layout/private/payments_module/conciliation/list-conciliation/ListConciliation";
 import {
-    CorrectionDeliveries
-} from "../components/layout/private/deliveries_module/correction-deliveries/CorrectionDeliveries";
+    DeliveriesCorrection
+} from "../components/layout/private/deliveries_module/deliveries-correction/DeliveriesCorrection";
 
 export const Routing = () => {
     return (
@@ -99,7 +99,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
                         <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
-                        <Route path={ RouterEnum.CorrectionDeliveries }  element={ <CorrectionDeliveries /> }  />
+                        <Route path={ RouterEnum.CorrectionDeliveries }  element={ <DeliveriesCorrection /> }  />
 
                         {/* Productos */}
                         {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}

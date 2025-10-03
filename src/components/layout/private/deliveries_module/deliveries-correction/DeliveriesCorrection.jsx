@@ -1,14 +1,24 @@
 import imgPayments from "../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
-import {HeaderImage} from "../../../shared/header_image/HeaderImage";
-import {useEffect, useRef, useState} from "react";
-import {DataGrid} from "@mui/x-data-grid";
-import {beneficiaryColumns} from "../../../../../helpers/utils/PaymentsColumns";
-import {paymentServices} from "../../../../../helpers/services/PaymentServices";
-import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
-import {Button, Col, Row} from "react-bootstrap";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { useEffect, useRef, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Button, Col, Row } from "react-bootstrap";
 
-export const CorrectionDeliveries = () => {
+//Columns
+import { beneficiaryColumns } from "../../../../../helpers/utils/PaymentsColumns";
+
+//services
+import { deliveriesCorrectionServices } from "../../../../../helpers/services/DeliveriesCorrectionServices";
+
+//Enum
+import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import {useNavigate, useOutletContext} from "react-router-dom";
+
+export const DeliveriesCorrection = () => {
+
+    const { userAuth } = useOutletContext();
+    const navigate = useNavigate();
 
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
@@ -22,10 +32,10 @@ export const CorrectionDeliveries = () => {
     const baseColumns = beneficiaryColumns();
     const columns = [...baseColumns];
 
-    const getCorrectionDeliveries = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
+    const getDeliveriesCorrection = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         setLoading(true);
         try {
-            const {data, status} = await paymentServices.getApprovedDeliveries(pageToFetch, sizeToFetch, search);
+            const {data, status} = await deliveriesCorrectionServices.getDeliveriesCorrection(pageToFetch, sizeToFetch, search);
             if (status === ResponseStatusEnum.OK) {
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
@@ -46,11 +56,12 @@ export const CorrectionDeliveries = () => {
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
+            beneficiario_id: row?.beneficiario?.id,
         }));
     }
 
     const handleRowClick = (params) => {
-        console.log(params.id);
+        navigate(`/admin/deliveries/${params?.row?.beneficiario_id}`)
     }
 
     const handleSearchChange = (e) => {
@@ -71,12 +82,12 @@ export const CorrectionDeliveries = () => {
 
         // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getCorrectionDeliveries(1, pageSize, query);
+            getDeliveriesCorrection(1, pageSize, query);
         }, 150);
     };
 
     useEffect(() => {
-        getCorrectionDeliveries(page + 1, pageSize, "");
+        getDeliveriesCorrection(page + 1, pageSize, "");
     }, [page, pageSize]);
 
     return (
