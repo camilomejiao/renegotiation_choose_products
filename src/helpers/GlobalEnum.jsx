@@ -54,8 +54,8 @@ export const BeneficiaresManagementEnum = {
 }
 
 export const DeliveryStatusEnum = {
-    REGISTRADO:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO"  },
-    ENTREGADO:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO"   },
-    PAGADO:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO"      },
+    REGISTRADO:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO" },
+    ENTREGADO:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO" },
+    PAGADO:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
     SUBSANACION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
 };
