@@ -13,53 +13,59 @@ import { RouterEnum } from "./RouterEnum";
 
 //Private
 import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
-import { SearchUser } from "../components/layout/private/search_user/SearchUser.jsx";
+import { SearchUser } from "../components/layout/private/search_user_module/SearchUser.jsx";
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
-import { CreateOrder } from "../components/layout/private/purchase_orders/create_order/CreateOrder";
-import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management/BeneficiariesManagement";
-import { CompanyReport } from "../components/layout/private/reports/report_company/CompanyReport";
-import { OrderReport } from "../components/layout/private/purchase_orders/order_report/OrderReport";
-import { Deliveries } from "../components/layout/private/deliveries/Deliveries";
-import { SearchUserForDeliveries } from "../components/layout/private/deliveries/SearchUserForDeliveries";
-import { EditDeliveryOrder } from "../components/layout/private/deliveries/EditDeliveryOrder";
-import { ValidationSupervision } from "../components/layout/private/products/validation_supervision/ValidationSupervision";
+import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
+import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
+import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
+import { OrderReport } from "../components/layout/private/purchase_orders_module/order_report/OrderReport";
+import { Deliveries } from "../components/layout/private/deliveries_module/Deliveries";
+import { SearchUserForDeliveries } from "../components/layout/private/deliveries_module/SearchUserForDeliveries";
+import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
+import { ValidationSupervision } from "../components/layout/private/products_module/validation_supervision/ValidationSupervision";
 //import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
 //import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
-import { MenuTab } from "../components/layout/private/management/MenuTab";
-import { CreateUser } from "../components/layout/private/management/user/CreateUser";
-import { SearchUserForRenegociation } from "../components/layout/private/renegociation/SearchUserForRenegociation";
-import { Renegociation } from "../components/layout/private/renegociation/Renegociation";
-import { PaymentsMenu } from "../components/layout/private/payments/dsci-review/payments-menu/PaymentsMenu";
-import { PaySuppliers } from "../components/layout/private/payments/suppliers/pay-suppliers/PaySuppliers";
-import { BeneficiaryDeliveryReview } from "../components/layout/private/payments/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
-import { CreateCallSuppliers } from "../components/layout/private/suppliers/calls_suppliers/CreateCallSuppliers";
-import { SupplierValidation } from "../components/layout/private/suppliers/supplier_validation/SupplierValidation";
-import { ReviewDocuments } from "../components/layout/private/payments/dsci-review/review-documents/ReviewDocuments";
+import { MenuTab } from "../components/layout/private/management_module/MenuTab";
+import { CreateUser } from "../components/layout/private/management_module/user/CreateUser";
+import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
+import { Renegociation } from "../components/layout/private/renegociation_module/Renegociation";
+import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
+import { PaySuppliers } from "../components/layout/private/payments_module/suppliers/pay-suppliers/PaySuppliers";
+import { BeneficiaryDeliveryReview } from "../components/layout/private/payments_module/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
+import { CreateCallSuppliers } from "../components/layout/private/suppliers_module/convocation_suppliers/CreateCallSuppliers";
+import { SupplierValidation } from "../components/layout/private/suppliers_module/supplier_validation/SupplierValidation";
+import { ReviewDocuments } from "../components/layout/private/payments_module/dsci-review/review-documents/ReviewDocuments";
 import {
     CreateCollectionAccount
-} from "../components/layout/private/payments/suppliers/create-collection-account/CreateCollectionAccount";
-import {ListAccountOfSuppliers} from "../components/layout/private/payments/fiduciary/list-account-suppliers/ListAccountOfSuppliers";
+} from "../components/layout/private/payments_module/suppliers/create-collection-account/CreateCollectionAccount";
+import {ListAccountOfSuppliers} from "../components/layout/private/payments_module/fiduciary/list-account-suppliers/ListAccountOfSuppliers";
 import {
     CollectionAccountDetails
-} from "../components/layout/private/payments/fiduciary/collection-account-details/CollectionAccountDetails";
+} from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
-import { ProductUploadTechnical } from "../components/layout/private/products/product_upload_technical/ProductUploadTechnical";
-import { ProductPriceQuotesBySupplier } from "../components/layout/private/products/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
+import { ProductUploadTechnical } from "../components/layout/private/products_module/product_upload_technical/ProductUploadTechnical";
+import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {
     ListProductsByConvocation
-} from "../components/layout/private/products/list_products_by_convocation/ListProductsByConvocation";
+} from "../components/layout/private/products_module/list_products_by_convocation/ListProductsByConvocation";
 import {
     ValidationEnvironmental
-} from "../components/layout/private/products/validation_environmental/ValidationEnvironmental";
+} from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
 import {
     EditProductsByConvocation
-} from "../components/layout/private/products/edit_products_by_convocation/EditProductsByConvocation";
-import { ReportByConvocation } from "../components/layout/private/products/report/ReportByConvocation";
-import { CreateSuppliers } from "../components/layout/private/management/suppliers/CreateSuppliers";
-import { ConvocationList } from "../components/layout/private/management/convocation/ConvocationList";
-import { ConvocationMenuTab } from "../components/layout/private/management/convocation/ConvocationMenuTab";
+} from "../components/layout/private/products_module/edit_products_by_convocation/EditProductsByConvocation";
+import { ReportByConvocation } from "../components/layout/private/products_module/report/ReportByConvocation";
+import { CreateSuppliers } from "../components/layout/private/management_module/suppliers/CreateSuppliers";
+import { ConvocationList } from "../components/layout/private/management_module/convocation/ConvocationList";
+import { ConvocationMenuTab } from "../components/layout/private/management_module/convocation/ConvocationMenuTab";
+import {
+    ListConciliation
+} from "../components/layout/private/payments_module/conciliation/list-conciliation/ListConciliation";
+import {
+    CorrectionDeliveries
+} from "../components/layout/private/deliveries_module/correction-deliveries/CorrectionDeliveries";
 
 export const Routing = () => {
     return (
@@ -93,6 +99,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
                         <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
+                        <Route path={ RouterEnum.CorrectionDeliveries }  element={ <CorrectionDeliveries /> }  />
 
                         {/* Productos */}
                         {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
@@ -115,6 +122,9 @@ export const Routing = () => {
                         {/* Fiduciary */}
                         <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
                         <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
+
+                        {/* Conciliation */}
+                        <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />
 
                         {/* Management */}
                         <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />

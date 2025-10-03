@@ -16,27 +16,31 @@ import printJS from "print-js";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Components
-import { DeliveryReport } from "./delivery-report/DeliveryReport";
-import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
+import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
+import { FEModal } from "../../shared/Modals/FEModal";
+
+//Util
+import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgFrame2 from "../../../../assets/image/icons/deliveries-img.png";
+import imgAdd from "../../../../assets/image/payments/imgPay.png";
 
 //Services
 import { deliveriesServices } from "../../../../helpers/services/DeliveriesServices";
 import { userServices } from "../../../../helpers/services/UserServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
+import { filesServices } from "../../../../helpers/services/FilesServices";
 
 //Css
 import './Deliveries.css';
 
 //Enum
-import {ResponseStatusEnum, RolesEnum, UploadFileEnum} from "../../../../helpers/GlobalEnum";
-import { filesServices } from "../../../../helpers/services/FilesServices";
-import {FEModal} from "../../shared/Modals/FEModal";
+import { ResponseStatusEnum, RolesEnum, UploadFileEnum } from "../../../../helpers/GlobalEnum";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -257,11 +261,12 @@ export const Deliveries = () => {
      * - Rol del usuario autenticado.
      */
     const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
-        if((row.actions.approvedTerritorial === true ||
-            row.actions.approvedTerritorial === false) &&
-            (rolId === RolesEnum.TERRITORIAL_LINKS ||
-             rolId === RolesEnum.TECHNICAL ||
-             rolId === RolesEnum.SUPPLIER)) {
+        if((row.actions.approvedTerritorial === true || row.actions.approvedTerritorial === false) &&
+            (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.SUPPLIER)) {
+            return true;
+        }
+
+        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER) {
             return true;
         }
     };
@@ -744,7 +749,7 @@ export const Deliveries = () => {
 
                 setTimeout(() => {
                     refreshPage();
-                }, 2000);
+                }, 1500);
 
                 return;
             }
@@ -825,9 +830,6 @@ export const Deliveries = () => {
         setAction('approve');
     };
 
-
-
-
     /**
      * Maneja el envío de archivos al backend (consolidado o FE).
      * @param {File}   file
@@ -895,7 +897,6 @@ export const Deliveries = () => {
         setLoading(true);
         try {
             const { data } = await deliveriesServices.deliveryReport(deliveryId);
-            console.log('Entregas: ', data);
             setDeliveryInformation(data);
             setIsReadyToPrintDeliveryInformation(true);
         } catch (error) {
@@ -997,24 +998,24 @@ export const Deliveries = () => {
 
     //
     const handleSaveFe = async ({ feNumber, feFile }) => {
-            try {
-                setFeLoading(true);
+        try {
+            setFeLoading(true);
 
-                // Guardas FE (archivo + número)
-                await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
+            // Guardas FE (archivo + número)
+            await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
 
-                // Refrescas la tabla completa
-                await getListDeliveriesToUser(params.id);
+            // Refrescas la tabla completa
+            await getListDeliveriesToUser(params.id);
 
-                showAlert("¡Listo!", "Factura electrónica registrada.");
-                closeFeModal();
-            } catch (error) {
-                console.error(error);
-                showError("Error", "No se pudo registrar la FE.");
-            } finally {
-                setFeLoading(false);
-            }
-        };
+            showAlert("¡Listo!", "Factura electrónica registrada.");
+            closeFeModal();
+        } catch (error) {
+            console.error(error);
+            showError("Error", "No se pudo registrar la FE.");
+        } finally {
+            setFeLoading(false);
+        }
+    };
 
 
     //
@@ -1056,12 +1057,14 @@ export const Deliveries = () => {
     return (
         <>
             <div className="main-container">
-                <div className="header-image position-relative">
-                    <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
-                    <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>¡Entrega de Productos!</h1>
-                    </div>
-                </div>
+                <HeaderImage
+                    imageHeader={imgDCSIPeople}
+                    titleHeader={'Entrega de productos'}
+                    bannerIcon={imgAdd}
+                    backgroundIconColor={'#2148C0'}
+                    bannerInformation={'Aquí podrás realizar la entrega de todos tus productos.'}
+                    backgroundInformationColor={'#F66D1F'}
+                />
 
                 {/* Contenedor de la información del usuario */}
                 <UserInformation userData={userData} />
@@ -1084,11 +1087,7 @@ export const Deliveries = () => {
                                 )}
 
                                 {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPPLIER || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                                    <Col
-                                        xs={12}
-                                        md={6}
-                                        className="d-flex align-items-center justify-content-md-start justify-content-center"
-                                    >
+                                    <Col xs={12} md={6} className="d-flex align-items-center justify-content-md-start justify-content-center">
                                         <button
                                             onClick={handleCreateDeliveries}
                                             className="deliveries-button deliveries d-flex align-items-center"
@@ -1253,8 +1252,6 @@ export const Deliveries = () => {
                     {isReadyToPrintDeliveryInformation && (
                         <div ref={deliveryReportRef}>
                             <DeliveryReport deliveryInformation={deliveryInformation} />
-                            {/*<div className="page-break"></div>*/}
-                            {/*<PhotographicEvidenceReport deliveryInformation={deliveryInformation} />*/}
                         </div>
                     )}
                 </div>

@@ -1,10 +1,14 @@
-import {useEffect, useRef, useState} from "react";
-import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { useEffect, useRef, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import {Button, Col, Row} from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 
-//
+//Services
+import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
+
+//Enum
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+
+//Columns
 import { beneficiaryColumns } from "../../../../../../helpers/utils/PaymentsColumns";
 
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
@@ -17,7 +21,6 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     const [searchQuery, setSearchQuery] = useState("");
 
     const searchTimerRef = useRef(null);
-
 
     //
     const baseColumns = beneficiaryColumns();
@@ -42,7 +45,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     const normalizeRows = async (data) => {
         return data.map((row) => ({
             id: row?.id,
-            cub_id: row?.beneficiario?.id,
+            cub_id: row?.beneficiario?.cub_id,
             name: `${row?.beneficiario?.nombre_completo ?? ''}`,
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
@@ -75,7 +78,6 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
             getDeliveryList(1, pageSize, query);
         }, 150);
     };
-
 
     useEffect(() => {
         getDeliveryList(page + 1, pageSize, "");
@@ -120,7 +122,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                 </Col>
             </Row>
 
-            <div style={{ height: 500, width: "100%" }}>
+            <div style={{ height: 600, width: "100%" }}>
                 <DataGrid
                     rows={dataTable}
                     columns={columns}
@@ -134,31 +136,31 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                         setPageSize(pageSize);
                     }}
                     onRowClick={handleRowClick}
+                    componentsProps={{
+                        columnHeader: {
+                            style: {
+                                textAlign: "left",
+                                fontWeight: "bold",
+                                fontSize: "10px",
+                                wordWrap: "break-word",
+                            },
+                        },
+                    }}
                     sx={{
                         "& .MuiDataGrid-columnHeaders": {
                             backgroundColor: "#40A581",
                             color: "white",
-                            fontSize: "12px",
-                            lineHeight: 1.2,
-                            textAlign: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            fontSize: "14px",
                         },
                         "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                             backgroundColor: "#40A581 !important",
                             color: "white !important",
                         },
                         "& .MuiDataGrid-cell": {
-                            fontSize: "12px",
-                            textAlign: "left",
-                            justifyContent: "left",
-                            alignItems: "flex-start",
-                            whiteSpace: 'normal',
-                            wordBreak: 'break-word',
-                            display: 'block',
-                            paddingTop: '10px',
-                            paddingBottom: '10px'
+                            fontSize: "14px",
+                            textAlign: "center",
+                            justifyContent: "center",
+                            display: "flex",
                         },
                         "& .MuiSelect-root": {
                             fontSize: "12px",

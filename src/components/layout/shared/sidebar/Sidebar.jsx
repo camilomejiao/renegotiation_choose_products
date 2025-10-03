@@ -12,7 +12,7 @@ import {
     FaRegBuilding,
     FaUser,
     FaHandshake,
-    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower,
+    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower, FaExclamationTriangle,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -55,6 +55,11 @@ const menuConfig = {
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
+    [RolesEnum.TRUST_PAYMENTS]: [
+        { path: "/", icon: FaHouseUser, label: "Inicio" },
+        { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
+    ],
     [RolesEnum.ENVIRONMENTAL]: [
         { path: "/admin/products-enviromental", icon: FaBoxOpen, label: "Validación de Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
@@ -78,17 +83,16 @@ const menuConfig = {
     [RolesEnum.SUPPLIER]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotización de catalogos" },
-        // {
-        //     label: "Catálogo de productos",
-        //     icon: FaBoxOpen,
-        //     children: [
-        //         { path: "/admin/products", icon: FaDollyFlatbed, label: "Subida de Catálogo" },
-        //         { path: "/admin/product-price-quotes", icon: FaDollyFlatbed, label: "Cotización de catalogos" },
-        //     ]
-        // },
         { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
         { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
-        { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
+        {
+            label: "Entregas",
+            icon: FaShippingFast,
+            children: [
+                { path: "/admin/search-user-for-deliveries", icon: FaDollyFlatbed, label: "Realizar Entregas" },
+                { path: "/admin/correction-deliveries", icon: FaExclamationTriangle, label: "Subsanación de entregas" },
+            ]
+        },
         { path: "/admin/payments-suppliers", icon: BsCashStack, label: "Solicitud de pago" },
         { path: "/admin/company-reports", icon: FaChartPie, label: "Reportes general" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },

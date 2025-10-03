@@ -20,7 +20,8 @@ export const RolesEnum = {
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,
     PAYMENTS: 7,
-    SYSTEM_USER: 8
+    SYSTEM_USER: 8,
+    TRUST_PAYMENTS: 9
 }
 
 export const GeneralStatusDeliveryProductEnum = {

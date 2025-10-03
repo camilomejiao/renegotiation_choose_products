@@ -1,5 +1,4 @@
-
-import {useNavigate, useOutletContext} from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -7,8 +6,6 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 //Img
 import imgPayments from "../../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-import territorial from "../../../../../../assets/image/payments/territorial.png";
-import tecnico from "../../../../../../assets/image/payments/tecnico.png";
 import supervision from "../../../../../../assets/image/payments/supervision.png";
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 import fiduciaria from "../../../../../../assets/image/payments/fiduciaria.png";
@@ -20,9 +17,7 @@ import { RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import "./PaymentsMenu.css";
 
 const userCards = [
-    { title: "Pagos", role: RolesEnum.PAYMENTS, key: "pagos", img: pagos },
-    { title: "Territorial", role: RolesEnum.TERRITORIAL_LINKS, key: "territorial", img: territorial },
-    { title: "Técnico", role: RolesEnum.TECHNICAL, key: "tecnico", img: tecnico },
+    { title: "Pagos", role: [RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS], key: "pagos", img: pagos },
     { title: "Supervisión", role: RolesEnum.SUPERVISION, key: "supervision", img: supervision },
 ];
 
@@ -37,6 +32,10 @@ export const PaymentsMenu = () => {
 
     const handleFiduciary = () => {
         navigate(`/admin/fiduciary/list-account-suppliers`);
+    }
+
+    const handleConciliation = () => {
+        navigate(`/admin/conciliation/list-conciliation`);
     }
 
     return (
@@ -55,26 +54,35 @@ export const PaymentsMenu = () => {
                 <div className="revisions">
                     <h3>Revisiones</h3>
                     <div className="payment-cards">
-                        {userCards.map(card => (
-                            <div
-                                key={card.key}
-                                className={`payment-card ${userAuth.rol_id !== card.role ? "disabled" : ""}`}
-                                onClick={() => userAuth.rol_id === card.role && handleRedirect(card.key)}
-                                style={{ cursor: userAuth.rol_id === card.role ? "pointer" : "not-allowed" }}
-                            >
-                                <p className="payment-card-title">{card.title}</p>
-                                <img src={card.img} alt={card.title} />
-                            </div>
-                        ))}
+                        {userCards.map((card) => {
+                            const roles = Array.isArray(card.role) ? card.role : [card.role];
+                            const userRole = userAuth?.rol_id;
+                            const hasAccess = userRole != null && roles.includes(userRole);
+
+                            return (
+                                <div
+                                    key={card.key}
+                                    className={`payment-card ${hasAccess ? "" : "disabled"}`}
+                                    onClick={hasAccess ? () => handleRedirect(card.key) : undefined}
+                                    style={{ cursor: hasAccess ? "pointer" : "not-allowed" }}
+                                    role="button"
+                                    aria-disabled={!hasAccess}
+                                    tabIndex={hasAccess ? 0 : -1}
+                                >
+                                    <p className="payment-card-title">{card.title}</p>
+                                    <img src={card.img} alt={card.title} />
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
                 {
-                    [RolesEnum.ADMIN, RolesEnum.PAYMENTS].includes(userAuth.rol_id) && (
+                    [RolesEnum.ADMIN, RolesEnum.TRUST_PAYMENTS].includes(userAuth.rol_id) && (
                         <>
                             <div className="payment-status">
                                 <div className="payment-srarys-content">
-                                    <h3>Estado</h3>
+                                    <h3>Fiduciaria</h3>
                                     <div
                                         className="payment-status-card"
                                         onClick={() => handleFiduciary()}
@@ -84,7 +92,10 @@ export const PaymentsMenu = () => {
                                         <img src={fiduciaria} alt="Fiduciaria" />
                                     </div>
                                 </div>
-                                <div className="payment-srarys-content">
+                                <div className="payment-srarys-content"
+                                     onClick={() => handleConciliation()}
+                                     style={{ cursor: "pointer" }}
+                                >
                                     <h3>Conciliación</h3>
                                     <div className="payment-status-card">
                                         <p className="payment-status-text">Conciliación</p>
