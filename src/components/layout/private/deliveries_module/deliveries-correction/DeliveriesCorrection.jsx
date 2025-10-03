@@ -1,14 +1,27 @@
 import imgPayments from "../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
-import {HeaderImage} from "../../../shared/header_image/HeaderImage";
-import {useEffect, useRef, useState} from "react";
-import {DataGrid} from "@mui/x-data-grid";
-import {beneficiaryColumns} from "../../../../../helpers/utils/PaymentsColumns";
-import {paymentServices} from "../../../../../helpers/services/PaymentServices";
-import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
-import {Button, Col, Row} from "react-bootstrap";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { useEffect, useRef, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import {Button, Col, Nav, Row} from "react-bootstrap";
 
-export const CorrectionDeliveries = () => {
+//Columns
+import { beneficiaryColumns } from "../../../../../helpers/utils/PaymentsColumns";
+
+//services
+import { deliveriesCorrectionServices } from "../../../../../helpers/services/DeliveriesCorrectionServices";
+
+//Enum
+import { DeliveryStatusEnum, ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import {useNavigate, useOutletContext} from "react-router-dom";
+
+//Status
+const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
+
+export const DeliveriesCorrection = () => {
+
+    const { userAuth } = useOutletContext();
+    const navigate = useNavigate();
 
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
@@ -17,15 +30,18 @@ export const CorrectionDeliveries = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTRADO.key);
+
     const searchTimerRef = useRef(null);
 
     const baseColumns = beneficiaryColumns();
     const columns = [...baseColumns];
 
-    const getCorrectionDeliveries = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
+    const getDeliveriesCorrection = async (pageToFetch = 1, sizeToFetch = 100, search = "", statusDeliveryKey) => {
         setLoading(true);
         try {
-            const {data, status} = await paymentServices.getApprovedDeliveries(pageToFetch, sizeToFetch, search);
+            const statusValue = getStatusValueFromKey(statusDeliveryKey);
+            const {data, status} = await deliveriesCorrectionServices.getDeliveriesCorrection(pageToFetch, sizeToFetch, search, statusValue);
             if (status === ResponseStatusEnum.OK) {
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
@@ -46,11 +62,12 @@ export const CorrectionDeliveries = () => {
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
+            beneficiario_id: row?.beneficiario?.id,
         }));
     }
 
     const handleRowClick = (params) => {
-        console.log(params.id);
+        navigate(`/admin/deliveries/${params?.row?.beneficiario_id}`)
     }
 
     const handleSearchChange = (e) => {
@@ -71,12 +88,21 @@ export const CorrectionDeliveries = () => {
 
         // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getCorrectionDeliveries(1, pageSize, query);
+            getDeliveriesCorrection(1, pageSize, query, activeStatusKey);
         }, 150);
     };
 
+    const getStatusValueFromKey = (key) => STATUS_ARRAY.find(s => s.key === key)?.value ?? null;
+
+    const handleChangeStatus = (newKey) => {
+        if (newKey === activeStatusKey) return;
+        setActiveStatusKey(newKey);
+        setPage(0);
+        getDeliveriesCorrection(1, pageSize, (searchQuery || "").trim().toLowerCase(), newKey);
+    };
+
     useEffect(() => {
-        getCorrectionDeliveries(page + 1, pageSize, "");
+        getDeliveriesCorrection(page + 1, pageSize, "", activeStatusKey);
     }, [page, pageSize]);
 
     return (
@@ -91,43 +117,50 @@ export const CorrectionDeliveries = () => {
             />
 
             <div className="container mt-lg-5">
-
                 <Row className="gy-2 align-items-center mt-3 mb-3">
-                <Col xs={12} md={6} lg={5}>
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                e.preventDefault();
-                                runSearch();
+                    <Col xs={12} md={4}>
+                        <input
+                            type="text"
+                            placeholder="Buscar..."
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    runSearch();
+                                }
+                            }}
+                            className="form-control"
+                        />
+                    </Col>
+                    <Col xs={12} md={5}>
+                        <Nav variant="tabs" activeKey={activeStatusKey} onSelect={(k) => handleChangeStatus(k)}>
+                            {STATUS_ARRAY.map(st => (
+                                <Nav.Item key={st.key}>
+                                    <Nav.Link eventKey={st.key}>{st.label}</Nav.Link>
+                                </Nav.Item>
+                            ))}
+                        </Nav>
+                    </Col>
+                    <Col xs={12} md={3}>
+                        <Button
+                            variant="outline-primary"
+                            className="button-order-responsive"
+                            onClick={() => runSearch()}
+                            disabled={
+                                (searchQuery.trim().length > 0 &&
+                                    searchQuery.trim().length < 5) || loading
                             }
-                        }}
-                        className="form-control"
-                    />
-                </Col>
-
-                <Col>
-                    <Button
-                        variant="outline-primary"
-                        className="button-order-responsive"
-                        onClick={() => runSearch()}
-                        disabled={
-                            (searchQuery.trim().length > 0 &&
-                                searchQuery.trim().length < 5) || loading
-                        }
-                        title={
-                            searchQuery.trim().length > 0 && searchQuery.trim().length < 5
-                                ? "Escribe al menos 5 caracteres"
-                                : "Buscar"
-                        }
-                    >
-                        Buscar
-                    </Button>
-                </Col>
-            </Row>
+                            title={
+                                searchQuery.trim().length > 0 && searchQuery.trim().length < 5
+                                    ? "Escribe al menos 5 caracteres"
+                                    : "Buscar"
+                            }
+                        >
+                            Buscar
+                        </Button>
+                    </Col>
+                </Row>
 
                 <div style={{ height: 600, width: "100%" }}>
                     <DataGrid
