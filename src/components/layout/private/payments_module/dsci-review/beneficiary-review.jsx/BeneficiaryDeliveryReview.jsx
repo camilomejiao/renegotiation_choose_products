@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 //Components
@@ -8,8 +8,6 @@ import { BeneficiaryDeliveryList } from "../beneficiary-delivery-list/Beneficiar
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-import territorial from "../../../../../../assets/image/payments/territorial.png";
-import tecnico from "../../../../../../assets/image/payments/tecnico.png";
 import supervision from "../../../../../../assets/image/payments/supervision.png";
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 
@@ -34,14 +32,6 @@ export const BeneficiaryDeliveryReview = () => {
 
     const getTitleAndImage = (role) => {
         switch(role) {
-            case 'territorial':
-                setTitle(capitalizeFirstLetter(role));
-                setImg(territorial);
-                break;
-            case 'tecnico':
-                setTitle(capitalizeFirstLetter(role));
-                setImg(tecnico);
-                break;
             case 'pagos':
                 setTitle(capitalizeFirstLetter(role));
                 setImg(pagos);

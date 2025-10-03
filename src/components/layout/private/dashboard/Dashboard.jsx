@@ -115,7 +115,7 @@ export const Dashboard = () => {
     const { userAuth } = useOutletContext?.() || {};
     const nombre = userAuth?.nombres || userAuth?.name || "proveedor/a";
 
-    //Quitar cuando ya se pueda ver
+    // //Quitar cuando ya se pueda ver
     useEffect(() => {
         navigate("/admin/search-user", { replace: true });
     }, []);

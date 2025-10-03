@@ -20,7 +20,8 @@ export const RolesEnum = {
     TECHNICAL: 5,
     ENVIRONMENTAL: 6,
     PAYMENTS: 7,
-    SYSTEM_USER: 8
+    SYSTEM_USER: 8,
+    TRUST_PAYMENTS: 9
 }
 
 export const GeneralStatusDeliveryProductEnum = {
@@ -51,3 +52,10 @@ export const BeneficiaresManagementEnum = {
     CONSOLIDATED: "consolidado",
     BALANCE: "saldo"
 }
+
+export const DeliveryStatusEnum = {
+    REGISTRADO:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO" },
+    ENTREGADO:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO" },
+    PAGADO:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
+    SUBSANACION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
+};

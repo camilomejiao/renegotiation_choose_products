@@ -29,7 +29,6 @@ export const ApprovedDeniedModal = ({
                             </Form.Select>
                         </Form.Group>
 
-
                         <Form.Group className="mb-3" >
                             <Form.Label>Comentario</Form.Label>
                             <Form.Control

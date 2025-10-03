@@ -17,7 +17,7 @@ import './CreateOrder.css';
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
-import { CompanyReportPrinting } from "../../reports/report_company/report/CompanyReportPrinting";
+import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
