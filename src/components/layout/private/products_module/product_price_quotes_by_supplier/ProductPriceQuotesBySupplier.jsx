@@ -176,8 +176,8 @@ export const ProductPriceQuotesBySupplier = () => {
             return acc;
         }, {});
 
-        return rows.reduce((acc, { rol_usuario, aprobado, comentario, usuario_modificacion, fecha_aprobacion }) => {
-            const role = roleMap[rol_usuario];
+        return rows.reduce((acc, { rol_id, aprobado, comentario, usuario_modificacion, fecha_aprobacion }) => {
+            const role = roleMap[rol_id];
             if (!role) return acc;
             let aaprobado = aprobado === true ? 1 : 0;
 
