@@ -156,7 +156,7 @@ export const ReviewDocuments = () => {
 
     const getDenyDestinationOptions = (userRole, RolesEnum) => {
         if ([RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS].includes(userRole)) {
-            return [{ id: RolesEnum.PROVIDER, label: "Proveedor" }];
+            return [{ id: RolesEnum.SUPPLIER, label: "Proveedor" }];
         }
         if (userRole === RolesEnum.SUPERVISION) {
             return [
