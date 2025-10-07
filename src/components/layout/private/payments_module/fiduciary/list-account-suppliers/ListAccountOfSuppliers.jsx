@@ -97,7 +97,8 @@ export const ListAccountOfSuppliers = () => {
                                 backgroundColor: "#40A581",
                                 color: "white",
                                 fontSize: "12px",
-                                lineHeight: 1.2,
+                            },
+                            "& .MuiDataGrid-columnHeader": {
                                 textAlign: "center",
                                 display: "flex",
                                 justifyContent: "center",
