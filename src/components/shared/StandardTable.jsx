@@ -151,8 +151,8 @@ export const StandardTable = ({
 
     // Altura base: Header (56px) + Footer (52px) = 108px
     const baseHeight = 108;
-    // Altura por fila: 52px
-    const rowHeight = 52;
+    // Altura por fila: 72px (aumentada para acomodar texto largo y múltiples líneas)
+    const rowHeight = 72;
 
     // Número de filas reales en la tabla (funciona tanto para paginación cliente como servidor)
     const actualRows = rows.length;
@@ -167,8 +167,8 @@ export const StandardTable = ({
     // Calcular altura exacta para las filas actuales
     const calculatedHeight = baseHeight + actualRows * rowHeight;
 
-    // Máximo de 15 filas visibles antes de scroll (888px)
-    const maxVisibleRows = 15;
+    // Máximo de 12 filas visibles antes de scroll (972px) - reducido para acomodar filas más altas
+    const maxVisibleRows = 12;
     const maxHeight = baseHeight + maxVisibleRows * rowHeight;
 
     // Si tenemos menos filas que el máximo, usar altura exacta
@@ -197,10 +197,11 @@ export const StandardTable = ({
       // Headers modernos
       "& .MuiDataGrid-columnHeaders": {
         backgroundColor: "#f8f9fa",
-        borderBottom: "1px solid #e9ecef",
+        borderBottom: "2px solid #e9ecef", // Borde inferior más grueso para mejor separación
         minHeight: "56px !important",
         height: "56px !important",
         borderRadius: "0",
+        marginBottom: "2px", // Margen inferior adicional
       },
       "& .MuiDataGrid-columnHeader": {
         borderRight: "none !important",
@@ -225,7 +226,10 @@ export const StandardTable = ({
         borderRight: "none !important",
         padding: "12px 16px",
         display: "flex",
-        alignItems: "center",
+        alignItems: "flex-start", // Cambiado de center a flex-start para texto largo
+        whiteSpace: "normal", // Permite que el texto se ajuste en múltiples líneas
+        wordWrap: "break-word", // Permite que las palabras largas se rompan
+        lineHeight: "1.4", // Mejor espaciado entre líneas
         "&:focus": {
           outline: "none",
         },
@@ -235,16 +239,21 @@ export const StandardTable = ({
         },
       },
 
-      // Filas con separación sutil
+      // Filas con altura automática
       "& .MuiDataGrid-row": {
-        minHeight: "52px !important",
-        height: "52px !important",
+        minHeight: "52px !important", // Altura mínima mantenida
+        height: "auto !important", // Altura automática para contenido largo
         borderBottom: "1px solid #f1f3f4",
         "&:hover": {
           backgroundColor: "#f8f9fa",
         },
         "&:last-child": {
           borderBottom: "none",
+        },
+        "&:first-of-type": {
+          // Separación adicional para la primera fila
+          marginTop: "8px",
+          paddingTop: "4px",
         },
         "&.Mui-selected": {
           backgroundColor: "#e3f2fd",
@@ -272,9 +281,14 @@ export const StandardTable = ({
       // Virtualización sin scroll cuando hay pocas filas
       "& .MuiDataGrid-virtualScroller": {
         backgroundColor: "#ffffff",
-        // Scroll solo si hay más de 15 filas
-        overflowY: rows.length > 15 ? "auto" : "hidden !important",
+        // Scroll solo si hay más de 12 filas (ajustado para filas más altas)
+        overflowY: rows.length > 12 ? "auto" : "hidden !important",
         overflowX: "hidden",
+      },
+
+      // Contenedor principal de filas con espaciado superior
+      "& .MuiDataGrid-main": {
+        paddingTop: "4px", // Espaciado adicional entre header y primera fila
       },
 
       ...sx,
@@ -295,6 +309,7 @@ export const StandardTable = ({
           rows={rows}
           columns={processedColumns}
           loading={loading}
+          getRowHeight={() => "auto"} // Altura automática para contenido largo
           disableColumnMenu={false}
           disableColumnSelector={false}
           disableDensitySelector={false}

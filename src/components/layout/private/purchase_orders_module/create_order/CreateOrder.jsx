@@ -356,6 +356,10 @@ export const CreateOrder = () => {
                       }
                     }}
                     placeholder="Buscar productos..."
+                    menuPortalTarget={document.body}
+                    styles={{
+                      menuPortal: (base) => ({ ...base, zIndex: 10002 }),
+                    }}
                   />
                   <Button
                     variant="outline-success"

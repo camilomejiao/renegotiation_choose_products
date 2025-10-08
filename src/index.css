@@ -2474,6 +2474,8 @@ video {
 /* Contenedor principal */
 .gov-select__container {
   font-family: inherit !important;
+  position: relative !important;
+  z-index: 1000 !important;
 }
 
 /* Control (input principal) */
@@ -2520,7 +2522,7 @@ video {
   border-radius: 8px !important;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
   overflow: hidden !important;
-  z-index: 1060 !important;
+  z-index: 9999 !important;
 }
 
 /* Lista de opciones */
@@ -3045,10 +3047,22 @@ video {
   position: relative;
   box-shadow: var(--shadow-md);
   padding: 0 var(--space-6);
+  z-index: 1050;
 }
 
 .select-container {
   width: min(460px, 100%);
+  position: relative;
+  z-index: 1051;
+}
+
+/* Asegurar que el select dentro del search-banner tenga máxima prioridad */
+.search-banner .gov-select__container {
+  z-index: 1051 !important;
+}
+
+.search-banner .gov-select__menu {
+  z-index: 10001 !important;
 }
 
 .search-select {
