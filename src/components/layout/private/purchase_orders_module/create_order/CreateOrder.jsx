@@ -416,8 +416,8 @@ export const CreateOrder = () => {
 
           {/* Tabla */}
           <div className="mt-3 table-responsive scrollable-thead-body">
-            <Table bordered hover>
-              <thead style={{ backgroundColor: "#40A581", color: "white" }}>
+            <Table bordered hover className="professional-table">
+              <thead className="table-header-professional">
                 <tr>
                   <th>COD</th>
                   <th>Nombre</th>
