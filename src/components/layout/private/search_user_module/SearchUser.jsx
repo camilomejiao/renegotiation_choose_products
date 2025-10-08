@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
-
-//css
-import './SearchUser.css';
 
 //Component
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
@@ -28,23 +24,26 @@ export const SearchUser = () => {
     useEffect(() => {}, []);
 
     return (
-        <>
-            <Container fluid className="dashboard-container">
-                <Row className="text-center mt-5">
-                    <Col>
-                        <h1 className="dashboard-title">
-                            Bienvenido al <span className="highlight-text">banco de <br/>Proveedores</span> de la DSCI
-                        </h1>
-                        <p className="green-box">
-                            Da el siguiente paso en tus <span className="highlight-text2">ventas</span> ahora.
-                        </p>
-                    </Col>
-                </Row>
+        <div className="page-wrapper">
+            <section className="page-hero">
+                <h1 className="page-hero__title">
+                    Bienvenido al <span className="text-highlight">Banco de Proveedores</span> de la DSCI
+                </h1>
+                <p className="page-hero__subtitle">
+                    Da el siguiente paso en tus <strong>ventas</strong> ahora.
+                </p>
+            </section>
 
-                <Row className="justify-content-center mt-4">
+            <section className="surface-card">
+                <header className="surface-card__header">
+                    <h2 className="surface-card__title">Consulta de beneficiarios</h2>
+                    <span className="text-soft">Ingresa el documento o CUB para iniciar</span>
+                </header>
+
+                <div className="surface-card__body">
                     <SearchUserForm component={ComponentEnum.USER} onSearchSuccess={handleSearchSuccess} />
-                </Row>
-            </Container>
-        </>
+                </div>
+            </section>
+        </div>
     );
 }

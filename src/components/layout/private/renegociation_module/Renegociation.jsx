@@ -347,6 +347,7 @@ export const Renegociation = () => {
         return userData.plan_anterior !== "" && userData.linea_anterior !== "";
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (params.cub_id) {
             getUserInformation(params.cub_id);

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import {
@@ -78,7 +78,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
     });
 
     //
-    const loadDepartmentsOnce = async () => {
+    const loadDepartmentsOnce = useCallback(async () => {
         if (deptsLoadedRef.current) {
             return;
         }
@@ -94,10 +94,10 @@ export const Location = ({ id, onBack, refreshPage }) => {
             console.error(error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    };
+    }, []);
 
     //
-    const refreshMunicipalities = async (selectedDepts) => {
+    const refreshMunicipalities = useCallback(async (selectedDepts) => {
         if (!selectedDepts?.length) {
             setMuniOptions([]);
             formik.setFieldValue("muni", []);
@@ -108,7 +108,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
         const lists = await Promise.all(
             selectedDepts.map(async ({ id }) => {
                 if (!muniCacheRef.current.has(id)) {
-                    const {data, status} = await locationServices.getMunis(id);
+                    const { data } = await locationServices.getMunis(id);
                     muniCacheRef.current.set(id, data);
                 }
                 return muniCacheRef.current.get(id);
@@ -129,7 +129,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
         }
 
         setLoadingMunis(false);
-    };
+    }, [formik]);
 
     //
     const handleDeptChange = async (_evt, value) => {
@@ -142,7 +142,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
         formik.setFieldValue("muni", value);
     };
 
-    const fetchLocationData = async () => {
+    const fetchLocationData = useCallback(async () => {
         try {
             const {data, status} = await convocationServices.getAssociateLocationToAConvocation(id);
             if (status === ResponseStatusEnum.OK) {
@@ -152,7 +152,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
             console.error(error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    }
+    }, [id]);
 
     const handleDeleteLocation = async (locationId) => {
         try{
@@ -175,7 +175,7 @@ export const Location = ({ id, onBack, refreshPage }) => {
     useEffect(() => {
         loadDepartmentsOnce();
         fetchLocationData();
-    }, [id]);
+    }, [fetchLocationData, loadDepartmentsOnce]);
 
     // -------------------- Render --------------------
     return (

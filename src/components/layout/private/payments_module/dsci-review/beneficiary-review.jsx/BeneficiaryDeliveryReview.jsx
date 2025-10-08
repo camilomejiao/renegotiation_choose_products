@@ -1,5 +1,5 @@
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -11,9 +11,6 @@ import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import supervision from "../../../../../../assets/image/payments/supervision.png";
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 
-//Css
-import './BeneficiaryDeliveryReview.css';
-
 export const BeneficiaryDeliveryReview = () => {
 
     const params = useParams();
@@ -22,15 +19,15 @@ export const BeneficiaryDeliveryReview = () => {
     const [title, setTitle] = useState('');
     const [img, setImg] = useState('');
 
-    const capitalizeFirstLetter = (text) => {
+    const capitalizeFirstLetter = useCallback((text = "") => {
         return text
             .toLowerCase()
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
-    };
+    }, []);
 
-    const getTitleAndImage = (role) => {
+    const getTitleAndImage = useCallback((role) => {
         switch(role) {
             case 'pagos':
                 setTitle(capitalizeFirstLetter(role));
@@ -40,8 +37,12 @@ export const BeneficiaryDeliveryReview = () => {
                 setTitle(capitalizeFirstLetter(role));
                 setImg(supervision);
                 break;
+            default:
+                setTitle('');
+                setImg('');
+                break;
         }
-    }
+    }, [capitalizeFirstLetter]);
 
     const handleRowSelect = (id) => {
         navigate(`/admin/payments-beneficiary/${id}/${params.role}`);
@@ -51,7 +52,7 @@ export const BeneficiaryDeliveryReview = () => {
         if(params.role){
             getTitleAndImage(params.role);
         }
-    },[params.role]);
+    },[getTitleAndImage, params.role]);
 
     return (
         <>

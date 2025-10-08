@@ -1,10 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
 import { FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
-
-//Css
-import './ListCollectionAccount.css';
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
@@ -19,7 +16,6 @@ export const ListCollectionAccount = () => {
 
     const [loading, setLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
-    const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({
         next: null,
         previous: null,
@@ -30,16 +26,16 @@ export const ListCollectionAccount = () => {
     const [collectionAccounts, setCollectionAccounts] = useState([]);
     const [detailCollectionAccounts, setDetailCollectionAccounts] = useState({});
 
-    const getSupplierId = () => {
+    const getSupplierId = useCallback(() => {
         let supplierId = null;
         if (userAuth.rol_id === RolesEnum.SUPPLIER) {
             supplierId = supplierServices.getSupplierId();
         }
 
         return supplierId;
-    }
+    }, [userAuth?.rol_id]);
 
-    const getListCollectionAccount = async (pageToFetch = 1, sizeToFetch) => {
+    const getListCollectionAccount = useCallback(async (pageToFetch = 1, sizeToFetch = 100) => {
         setLoading(true);
         setInformationLoadingText("Obteniendo información");
         try {
@@ -51,7 +47,7 @@ export const ListCollectionAccount = () => {
                     next: data.next,
                     previous: data.previous,
                     count: data.count,
-                    currentPage: page,
+                    currentPage: pageToFetch,
                     totalPages: isNaN(totalPages) ? 1 : totalPages,
                 });
             }
@@ -60,7 +56,7 @@ export const ListCollectionAccount = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [getSupplierId]);
 
     const getDetailCollectionAccount = async (accountId) => {
         if (detailCollectionAccounts[accountId]) return;
@@ -119,7 +115,7 @@ export const ListCollectionAccount = () => {
 
     useEffect(() => {
         getListCollectionAccount(1, 100);
-    }, [page]);
+    }, [getListCollectionAccount]);
 
     return (
         <>

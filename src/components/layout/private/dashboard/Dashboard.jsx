@@ -1,5 +1,4 @@
-import {useNavigate, useOutletContext} from "react-router-dom";
-import { Container, Row, Col, Card, Badge } from "react-bootstrap";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
@@ -35,51 +34,55 @@ const pieData = [
 
 const levelToVariant = (level) => {
     switch (level) {
-        case "warning": return "warning";
-        case "danger":  return "danger";
-        case "info":    return "info";
-        case "success": return "success";
-        default:        return "secondary";
+        case "warning":
+        case "danger":
+        case "info":
+        case "success":
+            return level;
+        default:
+            return "secondary";
     }
 };
 
 // ----- Componente: Tarjeta de alerta -----
 const AlertCard = ({ title, text, level }) => (
-    <Card className="h-100 shadow-sm" style={{ borderLeft: `6px solid ${COLORS.green}` }}>
-        <Card.Body>
-            <div className="d-flex justify-content-between align-items-start">
-                <Card.Title className="mb-1" style={{ fontWeight: 700 }}>{title}</Card.Title>
-                <Badge bg={levelToVariant(level)}>{level.toUpperCase()}</Badge>
-            </div>
-            <Card.Text className="mb-0" style={{ color: "#444" }}>{text}</Card.Text>
-        </Card.Body>
-    </Card>
+    <div className={`alert-card alert-card--${level}`}>
+        <div className="alert-card__header">
+            <h4 className="alert-card__title">{title}</h4>
+            <span className={`badge-soft badge-soft--${levelToVariant(level)}`}>
+                {level.toUpperCase()}
+            </span>
+        </div>
+        <p className="alert-card__text">{text}</p>
+    </div>
 );
 
 // ----- Componente: Bloque de gráficas -----
 const ChartsBlock = () => (
-    <Card className="shadow-sm">
-        <Card.Header style={{ background: COLORS.green, color: "#fff", fontWeight: 700 }}>
-            Indicadores
-        </Card.Header>
-        <Card.Body>
-            <Row className="g-4">
-                <Col xs={12} lg={8}>
-                    <div style={{ height: 320 }}>
+    <section className="surface-card">
+        <header className="surface-card__header">
+            <h3 className="surface-card__title">Indicadores</h3>
+            <span className="text-soft">Últimos 6 meses</span>
+        </header>
+
+        <div className="surface-card__body">
+            <div className="dashboard-charts">
+                <div>
+                    <div className="dashboard-chart">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={barData}>
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
+                                <XAxis dataKey="name" stroke="#9ba9bf" tickLine={false} axisLine={{ stroke: "#e0e6f0" }} />
+                                <YAxis stroke="#9ba9bf" tickLine={false} axisLine={{ stroke: "#e0e6f0" }} />
+                                <Tooltip cursor={{ fill: "rgba(4, 105, 153, 0.05)" }} />
                                 <Bar dataKey="entregas" radius={[6, 6, 0, 0]} fill={COLORS.blue} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="mt-2 text-muted small">Entregas por mes</div>
-                </Col>
+                    <p className="dashboard-chart__caption">Entregas por mes</p>
+                </div>
 
-                <Col xs={12} lg={4}>
-                    <div style={{ height: 320 }}>
+                <div>
+                    <div className="dashboard-chart">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -87,7 +90,7 @@ const ChartsBlock = () => (
                                     dataKey="value"
                                     nameKey="name"
                                     innerRadius={60}
-                                    outerRadius={90}
+                                    outerRadius={92}
                                     paddingAngle={4}
                                 >
                                     <Cell fill={COLORS.green} />
@@ -99,11 +102,11 @@ const ChartsBlock = () => (
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="mt-2 text-muted small">Estado de entregas</div>
-                </Col>
-            </Row>
-        </Card.Body>
-    </Card>
+                    <p className="dashboard-chart__caption">Estado de entregas</p>
+                </div>
+            </div>
+        </div>
+    </section>
 );
 
 export const Dashboard = () => {
@@ -118,58 +121,40 @@ export const Dashboard = () => {
     // //Quitar cuando ya se pueda ver
     useEffect(() => {
         navigate("/admin/search-user", { replace: true });
-    }, []);
+    }, [navigate]);
 
     return (
-        <div className="pb-5">
-            {/* Banner de bienvenida */}
-            <div
-                className="mb-4 p-4 p-md-5 rounded-3 shadow-sm"
-                style={{
-                    background: `linear-gradient(90deg, ${COLORS.green}, ${COLORS.blue})`,
-                    color: "#fff",
-                }}
-            >
-                <Container>
-                    <h2 className="mb-1" style={{ fontWeight: 800 }}>
-                        ¡Bienvenido, {nombre}!
-                    </h2>
-                    <p className="mb-0">
-                        Portal de la <b>Dirección de Sustitución de Cultivos de Uso Ilícito</b>.
-                    </p>
-                </Container>
-            </div>
+        <div className="dashboard-layout">
+            <section className="page-hero">
+                <h2 className="page-hero__title">¡Bienvenido, {nombre}!</h2>
+                <p className="page-hero__subtitle">
+                    Portal de la <strong>Dirección de Sustitución de Cultivos de Uso Ilícito</strong>.
+                </p>
+                <div className="page-hero__cta">
+                    Gestión integrada de beneficiarios, proveedores y entregas.
+                </div>
+            </section>
 
-            <Container>
-                <Row className="g-4">
-                    {/* Sección de Alertas */}
-                    <Col xs={12}>
-                        <Card className="shadow-sm">
-                            <Card.Header style={{ background: COLORS.green, color: "#fff", fontWeight: 700 }}>
-                                Alertas
-                            </Card.Header>
-                            <Card.Body>
-                                {mockAlerts.length === 0 ? (
-                                    <div className="text-muted">No hay alertas por ahora.</div>
-                                ) : (
-                                    <Row className="g-3">
-                                        {mockAlerts.map((a) => (
-                                            <Col xs={12} md={6} lg={4} key={a.id}>
-                                                <AlertCard {...a} />
-                                            </Col>
-                                        ))}
-                                    </Row>
-                                )}
-                            </Card.Body>
-                        </Card>
-                    </Col>
+            <section className="surface-card">
+                <header className="surface-card__header">
+                    <h3 className="surface-card__title">Alertas</h3>
+                    <span className="text-soft">Tareas rápidas por resolver</span>
+                </header>
 
-                    {/* Sección de Gráficas */}
-                    <Col xs={12}>
-                        <ChartsBlock />
-                    </Col>
-                </Row>
-            </Container>
+                <div className="surface-card__body">
+                    {mockAlerts.length === 0 ? (
+                        <div className="text-soft">No hay alertas por ahora.</div>
+                    ) : (
+                        <div className="stat-grid">
+                            {mockAlerts.map((alert) => (
+                                <AlertCard key={alert.id} {...alert} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <ChartsBlock />
         </div>
     );
 }

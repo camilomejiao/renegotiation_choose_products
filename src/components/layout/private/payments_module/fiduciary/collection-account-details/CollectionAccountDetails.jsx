@@ -19,9 +19,6 @@ import { filesServices } from "../../../../../../helpers/services/FilesServices"
 // Enums
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
-// CSS
-import './CollectionAccountDetails.css';
-
 export const CollectionAccountDetails = () => {
     const params = useParams();
     const navigate = useNavigate();

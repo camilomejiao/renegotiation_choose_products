@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Col, Container, Row, Spinner } from "react-bootstrap";
 import printJS from "print-js";
 
@@ -22,9 +22,6 @@ import { BalanceInFavorReport } from "./balance_in_favor_report/BalanceInFavorRe
 import { userServices } from "../../../../helpers/services/UserServices";
 import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
-
-//Css
-import './BeneficiariesManagement.css';
 
 //Enum
 import { BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
@@ -50,7 +47,7 @@ export const BeneficiariesManagement = () => {
     const [balance, setBalance] = useState("");
 
     //Obtiene la información del usuario
-    const getUserInformation = async (cubId) => {
+    const getUserInformation = useCallback(async (cubId) => {
         try {
             const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
@@ -66,7 +63,7 @@ export const BeneficiariesManagement = () => {
         } catch (error) {
             console.error("Error obteniendo la informacion del usuario:", error);
         }
-    }
+    }, []);
 
     const handleDeliveries = (cubId) => {
         navigate(`/admin/deliveries/${cubId}`)
@@ -209,10 +206,10 @@ export const BeneficiariesManagement = () => {
 
     //Al cargar el componente
     useEffect(() => {
-        if(params.id){
+        if (params.id) {
             getUserInformation(params.id);
         }
-    }, []);
+    }, [params.id, getUserInformation]);
 
     //Al dar click en el reporte
     useEffect(() => {

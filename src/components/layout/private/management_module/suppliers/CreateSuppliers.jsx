@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import * as yup from "yup";
 import { FormControlLabel, Switch, TextField } from "@mui/material";
 import { Button } from "react-bootstrap";
@@ -72,9 +72,9 @@ export const CreateSuppliers = () => {
         },
     });
 
-    const fetchSupplierData = async (id) => {
+    const fetchSupplierData = useCallback(async (supplierId) => {
         try {
-            const {data, status} = await supplierServices.getSupplierById(id);
+            const {data, status} = await supplierServices.getSupplierById(supplierId);
             console.log(data);
             if(status === ResponseStatusEnum.OK) {
                 const resp = data?.data?.proveedor;
@@ -92,13 +92,13 @@ export const CreateSuppliers = () => {
             console.error("Error al enviar el formulario:", error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    }
+    }, [formik]);
 
     useEffect(() => {
         if (id) {
             fetchSupplierData(id)
         }
-    }, []);
+    }, [fetchSupplierData, id]);
 
     return(
         <>

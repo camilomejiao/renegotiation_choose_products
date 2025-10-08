@@ -1,5 +1,4 @@
 import { useState } from "react";
-import {Button, Col, Form, Row} from "react-bootstrap";
 import magnifyingGlass from "../../../../assets/image/icons/magnifying_glass.png";
 import PropTypes from "prop-types";
 
@@ -9,8 +8,6 @@ import { userServices } from "../../../../helpers/services/UserServices";
 //Enum
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
-//Css
-import './SearchUserForm.css';
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import {renegotiationServices} from "../../../../helpers/services/RenegociationServices";
 
@@ -76,60 +73,42 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
         return false;
     }
 
+    const isRenegotiation = component === ComponentEnum.RENEGOTIATION;
+
     return (
-        <Col md={12} className="text-center">
-            <Form className="search-form" onSubmit={handleSearch}>
-                <Row className="g-2 justify-content-center align-items-center">
-                    {component === ComponentEnum.RENEGOTIATION ? (
-                        <Col xs={12} sm={7} md={6} className="d-flex align-items-start gap-2">
-                            <Form.Select
-                                value={searchType}
-                                onChange={(e) => setSearchType(e.target.value)}
-                                className="search-select"
-                            >
-                                <option value="2">Cédula</option>
-                                <option value="1">CUB</option>
-                            </Form.Select>
+        <form className="search-panel" onSubmit={handleSearch}>
+            <div className="search-panel__controls">
+                {isRenegotiation && (
+                    <select
+                        value={searchType}
+                        onChange={(e) => setSearchType(e.target.value)}
+                        className="input-field input-field--accent search-panel__input"
+                    >
+                        <option value="2">Cédula</option>
+                        <option value="1">CUB</option>
+                    </select>
+                )}
 
-                            <Form.Control
-                                type="number"
-                                min="1"
-                                placeholder="Buscar"
-                                className="search-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                style={{ width: '80% !important' }}
-                            />
+                <input
+                    type="number"
+                    min="1"
+                    placeholder="Buscar"
+                    className="input-field input-field--accent search-panel__input"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                />
 
-                            <Button type="submit" variant="outline-primary" className="search-button">
-                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '20px', height: '20px' }} />
-                            </Button>
-                        </Col>
-                    ) : (
-                        <Col xs={12} sm={7} md={6} className="search-form2 d-flex align-items-end gap-2">
-                            <Form.Control
-                                type="number"
-                                min="1"
-                                placeholder="Buscar"
-                                className="search-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                style={{ width: '95% !important' }}
-                            />
+                <button type="submit" className="button-pill button-pill--icon" aria-label="Buscar">
+                    <img src={magnifyingGlass} alt="" role="presentation" width="22" height="22" />
+                </button>
+            </div>
 
-                            <Button type="submit" variant="outline-primary" className="search-button" style={{marginLeft: '10px'}}>
-                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '20px', height: '20px', }} />
-                            </Button>
-                        </Col>
-                    )}
-                </Row>
-            </Form>
-
-            <p className="search-helper-text mt-2">
-                {searchType === "2" ? "Ingrese número de cédula del titular PNIS" : "Ingrese número del CUB del titular PNIS"}
+            <p className="search-panel__hint">
+                {isRenegotiation && searchType === "1"
+                    ? "Ingrese número del CUB del titular PNIS"
+                    : "Ingrese número de cédula del titular PNIS"}
             </p>
-        </Col>
-
+        </form>
     );
 };
 

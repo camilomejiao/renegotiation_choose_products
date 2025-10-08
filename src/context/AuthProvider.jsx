@@ -43,6 +43,7 @@ export const AuthProvider = ({children}) => {
         authUser();
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         authUser();
 

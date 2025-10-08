@@ -18,9 +18,6 @@ import closeImg from "../../../../../../assets/image/payments/close.png";
 import imgPayments from "../../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 
-//Css
-import './ReviewDocuments.css';
-
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 import { filesServices } from "../../../../../../helpers/services/FilesServices";
@@ -142,7 +139,7 @@ export const ReviewDocuments = () => {
 
         try {
             setInformationLoadingText("Guardando");
-            const {data, status} = await paymentServices.approveOrDenyPayments(payload, params.id, accion);
+            const { status } = await paymentServices.approveOrDenyPayments(payload, params.id, accion);
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success('', `${accion} exitosamente!`);
                 navigate(`/admin/payments/${params.role}`);

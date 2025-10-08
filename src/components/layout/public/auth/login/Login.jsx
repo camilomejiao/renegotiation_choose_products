@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import imageLogin from '../../../../../assets/image/login/principal-image.png';
-import imageLoginForm from '../../../../../assets/image/login/login-image-1.png';
-import userInput from '../../../../../assets/image/login/user.png';
-import lockInput from '../../../../../assets/image/login/lock.png';
-import { Formik } from 'formik';
-import * as yup from 'yup';
+import { useState } from "react";
+import { Formik } from "formik";
+import * as yup from "yup";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-//css
-import './Login.css';
+import imageLogin from "../../../../../assets/image/login/principal-image.png";
+import imageLoginForm from "../../../../../assets/image/login/login-image-1.png";
+import userInput from "../../../../../assets/image/login/user.png";
+import lockInput from "../../../../../assets/image/login/lock.png";
 
-//
 import useAuth from "../../../../../hooks/useAuth";
-
-//Services
 import { authService } from "../../../../../helpers/services/Auth";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-import {Header} from "../../../shared/header/Header";
+import { Header } from "../../../shared/header/Header";
 
 const initialValues = {
     email: "",
@@ -25,127 +19,133 @@ const initialValues = {
 };
 
 const loginSchema = yup.object().shape({
-    email: yup.string().required("Email es requerido"),
-    password: yup.string().required("Contraseña es requerida"),
+    email: yup.string().required("Correo electrónico requerido"),
+    password: yup.string().required("Contraseña requerida"),
 });
 
 export const Login = () => {
-
-    const {setAuth} = useAuth();
-
+    const { setAuth } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+    const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+
     const handleLogin = async (values, { resetForm }) => {
-        const informationToSend = {
-            'mail' : values.valueOf().email,
-            'pass': values.valueOf().password
-        }
+        const payload = { mail: values.email, pass: values.password };
 
-        // Lógica para manejar el login
-        const respServicesLogin = await authService.login(informationToSend).then((data) => {
-            return data;
-        });
+        const response = await authService.login(payload);
 
-        if(!respServicesLogin.access && !respServicesLogin.refresh) {
-            AlertComponent.error('Oops...', respServicesLogin.error);
+        if (!response.access && !response.refresh) {
+            AlertComponent.error("Oops...", response.error);
         } else {
-            AlertComponent.success('Bien hecho!', respServicesLogin.message);
-            setAuth(respServicesLogin);
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+            AlertComponent.success("Bien hecho!", response.message);
+            setAuth(response);
+            setTimeout(() => window.location.reload(), 2000);
         }
 
-        // Reiniciar el formulario después del envío
         resetForm();
     };
 
     return (
         <>
             <Header />
-            <Container fluid className="login-container d-flex justify-content-center align-items-center">
-                <Row className="login-row">
-                    <Col md={6} className="login-form-container d-flex flex-column justify-content-center align-items-center">
-                        <div className="">
-                            <div className="text-center mb-4">
-                                <img src={imageLoginForm} alt="login icon" className="w-25" />
+            <main className="auth-page">
+                <div className="auth-page__grid">
+                    <section className="surface-card auth-page__card">
+                        <div className="auth-page__headline">
+                            <img src={imageLoginForm} alt="Portal proveedores" />
+                            <div>
+                                <h2 className="page-header__title">Ingreso</h2>
+                                <p className="text-soft">
+                                    Accede con tu correo y contraseña para continuar con la gestión de proveedores PNIS.
+                                </p>
                             </div>
-                            <Formik
-                                initialValues={initialValues}
-                                validationSchema={loginSchema}
-                                onSubmit={handleLogin}
-                            >
-                                {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
-                                    <Form onSubmit={handleSubmit}>
-                                        <Form.Group controlId="email" className="mb-3">
-                                            <div className="input-icon-wrapper">
-                                                <img src={userInput} alt="icono usuario" className="input-icon-img" />
-                                                <Form.Control
-                                                    type="email"
-                                                    name="email"
-                                                    placeholder="EMAIL"
-                                                    value={values.email}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    isInvalid={!!errors.email && touched.email}
-                                                />
-                                            </div>
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors.email}
-                                            </Form.Control.Feedback>
-                                        </Form.Group>
-
-                                        <Form.Group controlId="password" className="mb-3 position-relative">
-                                            <div className="input-icon-wrapper">
-                                                {/* Icono del candado */}
-                                                <img src={lockInput} alt="icono candado" className="input-icon-img" />
-
-                                                {/* Campo de entrada de contraseña */}
-                                                <Form.Control
-                                                    type={showPassword ? "text" : "password"}
-                                                    name="password"
-                                                    placeholder="CONTRASEÑA"
-                                                    value={values.password}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    isInvalid={!!errors.password && touched.password}
-                                                />
-
-                                                {/* Icono del ojito para alternar visibilidad */}
-                                                <div className="password-toggle-icon" onClick={togglePasswordVisibility}>
-                                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                                </div>
-                                            </div>
-
-                                            {/* Mensaje de error */}
-                                            <Form.Control.Feedback type="invalid">
-                                                {errors.password}
-                                            </Form.Control.Feedback>
-                                        </Form.Group>
-
-                                        <Button type="submit" className="login-button w-100 mb-3">
-                                            LOGIN
-                                        </Button>
-                                        <div className="d-flex justify-content-end">
-                                            <a href="/forgot-password" className="forgot-password-link">
-                                                ¿Olvidó su contraseña?
-                                            </a>
-                                        </div>
-                                    </Form>
-                                )}
-                            </Formik>
                         </div>
-                    </Col>
-                    <Col md={6} className="login-image-container d-none d-md-block">
-                        <img src={imageLogin} alt="Imagen Login" className="login-image" />
-                    </Col>
-                </Row>
-            </Container>
-            {/* Aquí agregas el Footer */}
-            {/*<Footer2 />*/}
+
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={loginSchema}
+                            onSubmit={handleLogin}
+                        >
+                            {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+                                <form className="form-section" onSubmit={handleSubmit} noValidate>
+                                    <div>
+                                        <label htmlFor="email" className="form-section__subtitle">Correo electrónico</label>
+                                        <div className="input-with-icon">
+                                            <img src={userInput} alt="" className="input-with-icon__icon" />
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                name="email"
+                                                className="input-field input-field--accent"
+                                                placeholder="correo@dominio.com"
+                                                value={values.email}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                aria-invalid={!!errors.email && touched.email}
+                                                aria-describedby="email-error"
+                                            />
+                                            {errors.email && touched.email && (
+                                                <span id="email-error" className="input-error">{errors.email}</span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="password" className="form-section__subtitle">Contraseña</label>
+                                        <div className="input-with-icon">
+                                            <img src={lockInput} alt="" className="input-with-icon__icon" />
+                                            <input
+                                                id="password"
+                                                type={showPassword ? "text" : "password"}
+                                                name="password"
+                                                className="input-field input-field--accent"
+                                                placeholder="********"
+                                                value={values.password}
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                aria-invalid={!!errors.password && touched.password}
+                                                aria-describedby="password-error"
+                                            />
+                                            <span
+                                                className="input-with-icon__toggle"
+                                                onClick={togglePasswordVisibility}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter" || event.key === " ") {
+                                                        event.preventDefault();
+                                                        togglePasswordVisibility();
+                                                    }
+                                                }}
+                                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                            >
+                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </span>
+                                            {errors.password && touched.password && (
+                                                <span id="password-error" className="input-error">{errors.password}</span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" className="button-pill button-pill--full">
+                                        Iniciar sesión
+                                    </button>
+
+                                    <div className="auth-page__footer">
+                                        <a href="/forgot-password" className="auth-page__link">
+                                            ¿Olvidó su contraseña?
+                                        </a>
+                                    </div>
+                                </form>
+                            )}
+                        </Formik>
+                    </section>
+
+                    <aside className="auth-page__illustration">
+                        <img src={imageLogin} alt="Ilustración ingreso" />
+                    </aside>
+                </div>
+            </main>
         </>
     );
 };

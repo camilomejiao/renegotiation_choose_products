@@ -1,117 +1,57 @@
-import { Col, Container, Row } from "react-bootstrap";
-
-//Img
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
 
-//Css
-import './UserInformation.css';
+const detailsConfig = [
+    { key: "departamento", label: "Departamento" },
+    { key: "municipio", label: "Municipio" },
+    { key: "vereda", label: "Vereda" },
+    { key: "estado_cub", label: "Estado" },
+    { key: "actividad", label: "Actividad" },
+    { key: "tipo", label: "Tipo de persona" },
+    { key: "telefono", label: "Teléfono" },
+    { key: "plan", label: "Plan" },
+    { key: "linea", label: "Línea" },
+    { key: "restriccion", label: "Restricción" },
+    { key: "etnico", label: "Etnia" },
+    { key: "observaciones", label: "Observaciones" },
+];
 
-export const UserInformation = ({userData}) => {
+export const UserInformation = ({ userData = {} }) => {
+    const nombre = [userData?.nombre, userData?.apellido].filter(Boolean).join(" ");
+
+    const entries = detailsConfig
+        .map(({ key, label }) => ({ label, value: userData?.[key] }))
+        .filter(({ value }) => value !== undefined && value !== null && value !== "");
 
     return (
-        <>
-            <div className="user-info-container">
-                <Container>
-                    <Row className="align-items-center">
-                        <Col xs={12} className="d-flex justify-content-center mb-2">
-                            <img src={imgAdd} alt="Icono Usuario" className="user-icon" />
-                            <div className="user-name-container">
-                                <div className="user-name">
-                                    <span><strong>NOMBRE: </strong></span>{userData?.nombre} {userData?.apellido}
-                                </div>
-                                <div className="user-id">
-                                    <strong>C.C:</strong> {userData?.identificacion}
-                                    <span className="ms-3"><strong>CUB:</strong> {userData?.cub_id}</span>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col xs={12} className="user-details mt-5">
-                            <Row className="gx-0 gy-3 px-2">
-                                {/* Ubicación */}
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Departamento</span>
-                                        <div className="value">{userData?.departamento}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Municipio</span>
-                                        <div className="value">{userData?.municipio}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Vereda</span>
-                                        <div className="value">{userData?.vereda}</div>
-                                    </div>
-                                </div>
+        <section className="surface-card profile-card">
+            <div className="profile-card__header">
+                <img src={imgAdd} alt="Icono Usuario" className="profile-card__avatar" />
 
-                                {/* Información del CUB */}
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Estado</span>
-                                        <div className="value">{userData?.estado_cub}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Actividad</span>
-                                        <div className="value">{userData?.actividad}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Tipo de persona</span>
-                                        <div className="value">{userData?.tipo}</div>
-                                    </div>
-                                </div>
+                <div className="profile-card__identity">
+                    <div className="profile-card__name">
+                        <strong>Nombre:</strong>
+                        <span>{nombre || "No disponible"}</span>
+                    </div>
 
-                                {/* Contacto */}
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Teléfono</span>
-                                        <div className="value">{userData?.telefono}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Plan</span>
-                                        <div className="value">{userData?.plan}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Línea</span>
-                                        <div className="value">{userData?.linea}</div>
-                                    </div>
-                                </div>
-
-                                {/* Otros */}
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Restricción</span>
-                                        <div className="value">{userData?.restriccion}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Etnia</span>
-                                        <div className="value">{userData?.etnico}</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6 col-lg-4 px-2">
-                                    <div className="user-detail-item bg-card">
-                                        <span className="label">Observaciones</span>
-                                        <div className="value">{userData?.restriccion}</div>
-                                    </div>
-                                </div>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Container>
+                    <div className="profile-card__meta">
+                        <strong>C.C:</strong>
+                        <span>{userData?.identificacion || "—"}</span>
+                        <strong>CUB:</strong>
+                        <span>{userData?.cub_id || "—"}</span>
+                    </div>
+                </div>
             </div>
 
-        </>
-    )
-}
+            {entries.length > 0 && (
+                <div className="profile-card__grid">
+                    {entries.map(({ label, value }) => (
+                        <div key={label} className="profile-card__item">
+                            <span className="profile-card__label">{label}</span>
+                            <span className="profile-card__value">{value}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </section>
+    );
+};

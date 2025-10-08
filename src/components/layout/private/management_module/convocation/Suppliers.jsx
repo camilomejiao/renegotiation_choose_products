@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {
@@ -108,7 +108,7 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
     });
 
     //
-    const normalizeCatalogSuppliers = (data) => {
+    const normalizeCatalogSuppliers = useCallback((data) => {
         const rows =  data?.data?.proveedores;
         return rows.map((row) => ({
             id: Number(row?.id),
@@ -116,20 +116,20 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
             nit: row?.nit,
             persisted: false,
         }));
-    }
+    }, []);
 
     //Ajusta estos campos según tu respuesta real del backend de asociados
-    const normalizeAssociatedSuppliers = (data) => {
+    const normalizeAssociatedSuppliers = useCallback((data) => {
         const payload = data?.data?.jornada_proveedores;
         return payload.map((row) => ({
             id: Number(row?.id),
             name: String(row?.proveedor?.nombre),
             persisted: true,
         }));
-    }
+    }, []);
 
     // === Carga catálogo (activos) una sola vez ===
-    const loadSuppliersOnce = async () => {
+    const loadSuppliersOnce = useCallback(async () => {
         if (loadedRef.current) return;
         setLoadingOptions(true);
         try {
@@ -146,10 +146,10 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         } finally {
             setLoadingOptions(false);
         }
-    };
+    }, [normalizeCatalogSuppliers]);
 
     // === Carga los asociados a la jornada (ya guardados en BD) ===
-    const fetchAssociatedSuppliers = async () => {
+    const fetchAssociatedSuppliers = useCallback(async () => {
         try {
             const { data, status } = await convocationServices.getAssociateSupplierToAConvocation(id);
             if (status === ResponseStatusEnum.OK) {
@@ -159,7 +159,7 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         } catch (error) {
             console.error("Error cargando proveedores asociados:", error);
         }
-    };
+    }, [formik, id, normalizeAssociatedSuppliers]);
 
     // === Agregar proveedor (evita duplicados) ===
     const handleAddSupplier = () => {
@@ -217,7 +217,7 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
     useEffect(() => {
         loadSuppliersOnce();
         fetchAssociatedSuppliers();
-    }, [id]);
+    }, [fetchAssociatedSuppliers, loadSuppliersOnce]);
 
     return (
         <form onSubmit={formik.handleSubmit} className="container">

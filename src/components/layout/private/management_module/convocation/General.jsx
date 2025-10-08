@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import {Autocomplete, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
@@ -87,7 +87,7 @@ export const General = ({id, onBack}) => {
         },
     });
 
-    const loadPlansOnce = async () => {
+    const loadPlansOnce = useCallback(async () => {
         if (plansLoadedRef.current) {
             return;
         }
@@ -104,11 +104,11 @@ export const General = ({id, onBack}) => {
             console.error(error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    }
+    }, []);
 
-    const fetchConvocationData = async (id) => {
+    const fetchConvocationData = useCallback(async (convocationId) => {
         try {
-            const {data, status} = await convocationServices.getById(id);
+            const {data, status} = await convocationServices.getById(convocationId);
             const resp = data.data.jornada;
             if (status === ResponseStatusEnum.OK) {
                 await formik.setValues({
@@ -123,14 +123,14 @@ export const General = ({id, onBack}) => {
             console.error("Error al obtener datos del usuario:", error);
             AlertComponent.warning("No se pudieron cargar los datos de la jornada.");
         }
-    }
+    }, [formik]);
 
     useEffect(() => {
         loadPlansOnce();
         if (id) {
             fetchConvocationData(id);
         }
-    }, []);
+    }, [fetchConvocationData, id, loadPlansOnce]);
 
     return (
         <>

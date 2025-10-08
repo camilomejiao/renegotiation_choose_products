@@ -34,6 +34,7 @@ export const Conex = () => {
         }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
         const uuid = queryParams.get("uuid");

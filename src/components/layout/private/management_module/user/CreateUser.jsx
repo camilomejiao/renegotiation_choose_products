@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -200,7 +200,15 @@ export const CreateUser = () => {
         }));
     }
 
-    const getRoles = async () => {
+    const normalizeRolesRows = useCallback(async (payload) => {
+        const rows = payload?.data?.roles;
+        return rows.map((row) => ({
+            id: Number(row?.id),
+            nombre: row?.nombre,
+        }));
+    }, []);
+
+    const getRoles = useCallback(async () => {
         try {
             setLoadingRoles(true);
             const {data, status} = await userServices.getRoles();
@@ -216,30 +224,22 @@ export const CreateUser = () => {
         } finally {
             setLoadingRoles(false);
         }
-    }
-
-    const normalizeRolesRows = async (payload) => {
-        const rows = payload?.data?.roles;
-        return rows.map((row) => ({
-            id: Number(row?.id),
-            nombre: row?.nombre,
-        }));
-    }
+    }, [normalizeRolesRows]);
 
     //Buscamos el proveedor
-    const upsertSupplierOption = (prov) => {
+    const upsertSupplierOption = useCallback((prov) => {
         if (!prov) return;
         setSuppliersOptions((prev) => {
             const exists = prev.some((p) => Number(p.id) === Number(prov.id));
             return exists ? prev : [...prev, prov];
         });
-    };
+    }, []);
 
     // Edición: cargar usuario
-    const fetchUserData = async (id) => {
+    const fetchUserData = useCallback(async (userId) => {
         try {
             setLoadingUser(true);
-            const { data, status } = await userServices.getUserById(id);
+            const { data, status } = await userServices.getUserById(userId);
             const datResp = data?.data?.usuario;
 
             if (status === ResponseStatusEnum.OK && datResp) {
@@ -287,7 +287,7 @@ export const CreateUser = () => {
         } finally {
             setLoadingUser(false);
         }
-    };
+    }, [formik, upsertSupplierOption]);
 
     // Al seleccionar proveedor del Autocomplete
     const handleSelectSupplier = (prov) => {
@@ -360,7 +360,7 @@ export const CreateUser = () => {
         if (isEdit) {
             fetchUserData(id);
         }
-    }, [isEdit]);
+    }, [fetchUserData, getRoles, id, isEdit]);
 
     return (
         <>
