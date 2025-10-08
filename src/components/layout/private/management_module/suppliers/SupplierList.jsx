@@ -1,8 +1,9 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useApiLoading } from "../../../../../hooks/useApiLoading";
+import StandardTable from "../../../../shared/StandardTable";
 
 //Utils
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -17,14 +18,14 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 export const SupplierList = () => {
   const navigate = useNavigate();
+  const { loading: apiLoading, executeWithLoading } = useApiLoading();
 
   const [filteredSuppliers, setFilteredSuppliers] = useState([]);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const [rowCount, setRowCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [loadingTable, setLoadingTable] = useState(false);
+  const [loading, setLoading] = useState(false); // Para el overlay general
 
   const searchTimerRef = useRef(null);
 
@@ -47,9 +48,7 @@ export const SupplierList = () => {
 
   const getSuppliers = useCallback(
     async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
-      try {
-        setLoading(true);
-        setLoadingTable(true);
+      return executeWithLoading(async () => {
         const { data, status } = await supplierServices.getSuppliersByPage(
           sizeToFetch,
           pageToFetch,
@@ -60,14 +59,9 @@ export const SupplierList = () => {
           setFilteredSuppliers(suppliers);
           setRowCount(data.count);
         }
-      } catch (error) {
-        console.error("Error al obtener la lista de proveedores:", error);
-      } finally {
-        setLoading(false);
-        setLoadingTable(false);
-      }
+      });
     },
-    [normalizeRows]
+    [normalizeRows, executeWithLoading]
   );
 
   const handleActiveAndInactive = (SupplierId) => {
@@ -155,19 +149,22 @@ export const SupplierList = () => {
         )}
 
         <div className="data-grid-card" style={{ height: 600 }}>
-          <DataGrid
+          <StandardTable
             className="data-grid"
             rows={filteredSuppliers}
             columns={columns}
-            loading={loadingTable}
-            paginationMode="server"
-            rowCount={rowCount}
-            pageSizeOptions={[10, 25, 50, 100]}
-            paginationModel={{ page, pageSize }}
-            onPaginationModelChange={({ page, pageSize }) => {
-              setPage(page);
-              setPageSize(pageSize);
+            loading={apiLoading} // ← Usa el loading del hook
+            customProps={{
+              paginationMode: "server",
+              rowCount: rowCount,
+              pageSizeOptions: [10, 25, 50, 100],
+              paginationModel: { page, pageSize },
+              onPaginationModelChange: ({ page, pageSize }) => {
+                setPage(page);
+                setPageSize(pageSize);
+              },
             }}
+            enableDynamicHeight={true}
           />
         </div>
       </div>

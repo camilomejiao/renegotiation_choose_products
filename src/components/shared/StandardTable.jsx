@@ -40,37 +40,51 @@ const isActionField = (field) => {
 };
 
 /**
- * Procesa las columnas para agregar alineación automática
+ * Procesa las columnas para agregar alineación automática y ancho
  * - Columnas de acciones: centradas
  * - Valores monetarios: alineados a la derecha
  * - Texto/números normales: alineados a la izquierda
+ * - Ancho "auto": se convierte a undefined para auto-ajuste
  * @param {Array} columns - Configuración original de columnas
- * @returns {Array} - Columnas procesadas con alineación
+ * @returns {Array} - Columnas procesadas con alineación y ancho
  */
 const processColumnsWithAlignment = (columns) => {
   return columns.map((col) => {
+    let processedCol = { ...col };
+    // Procesar ancho de columna si es "auto"
+    if (processedCol.width === "auto") {
+      // Eliminar la propiedad width para que DataGrid use auto-ajuste
+      delete processedCol.width;
+      // Establecer flex para distribución automática del espacio
+      processedCol.flex = processedCol.flex || 1;
+    }
+
     // Si la columna ya tiene headerAlign y align definidos, respetarlos
-    if (col.headerAlign !== undefined && col.align !== undefined) {
-      return col;
+    if (
+      processedCol.headerAlign !== undefined &&
+      processedCol.align !== undefined
+    ) {
+      return processedCol;
     }
 
     // Determinar alineación basada en el tipo de campo
-    const isAction = isActionField(col.field);
-    const isMonetary = isMonetaryField(col.field);
+    const isAction = isActionField(processedCol.field);
+    const isMonetary = isMonetaryField(processedCol.field);
 
     // Prioridad: Acciones > Monetario > Default (izquierda)
     if (isAction) {
       return {
-        ...col,
+        ...processedCol,
         headerAlign: "center",
         align: "center",
       };
     }
 
     return {
-      ...col,
+      ...processedCol,
       headerAlign: isMonetary ? "right" : "left",
       align: isMonetary ? "right" : "left",
+      padding: 0,
     };
   });
 };
@@ -78,9 +92,15 @@ const processColumnsWithAlignment = (columns) => {
 /**
  * Componente de tabla estandarizado para toda la aplicación
  * Calcula altura dinámica basada en el número real de filas visibles
+ *
+ * Funcionalidades automáticas:
+ * - Alineación inteligente según tipo de campo
+ * - Ancho automático cuando se especifica width: "auto"
+ * - Altura dinámica responsiva
+ *
  * @param {Object} props - Props del componente
  * @param {Array} props.rows - Datos de las filas
- * @param {Array} props.columns - Configuración de las columnas
+ * @param {Array} props.columns - Configuración de las columnas (width: "auto" para ancho automático)
  * @param {Object} props.customProps - Props personalizadas para DataGrid
  * @param {Boolean} props.loading - Estado de carga
  * @param {String} props.noRowsText - Texto cuando no hay datos
@@ -288,6 +308,7 @@ export const StandardTable = ({
           hideFooterSelectedRowCount={true}
           localeText={{
             noRowsLabel: noRowsText,
+            loadingOverlayLabel: "Obteniendo información...",
             toolbarDensity: "Densidad",
             toolbarDensityLabel: "Densidad",
             toolbarDensityCompact: "Compacta",

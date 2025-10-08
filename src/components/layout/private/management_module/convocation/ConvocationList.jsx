@@ -1,8 +1,8 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import StandardTable from "../../../../shared/StandardTable";
 
 //Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -169,55 +169,21 @@ export const ConvocationList = () => {
           )}
 
           <div style={{ height: 600, width: "100%" }}>
-            <DataGrid
+            <StandardTable
               rows={filteredConvocations}
               columns={columns}
-              editMode="row"
-              pagination
               loading={loadingTable}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 25 },
-                },
-              }}
-              pageSizeOptions={[10, 25, 50, 100]}
-              componentsProps={{
-                columnHeader: {
-                  style: {
-                    textAlign: "left",
-                    fontWeight: "bold",
-                    fontSize: "10px",
-                    wordWrap: "break-word",
+              customProps={{
+                editMode: "row",
+                pagination: true,
+                initialState: {
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 25 },
                   },
                 },
+                pageSizeOptions: [10, 25, 50, 100],
               }}
-              sx={{
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#40A581",
-                  color: "white",
-                  fontSize: "14px",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  textAlign: "center",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]":
-                  {
-                    backgroundColor: "#40A581 !important",
-                    color: "white !important",
-                  },
-                "& .MuiDataGrid-cell": {
-                  fontSize: "14px",
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                },
-                "& .MuiDataGrid-row:hover": {
-                  backgroundColor: "#E8F5E9",
-                },
-              }}
+              enableDynamicHeight={true}
             />
           </div>
         </div>

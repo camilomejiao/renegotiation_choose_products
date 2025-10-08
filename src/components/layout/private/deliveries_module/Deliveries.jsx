@@ -1,4 +1,3 @@
-import { DataGrid } from "@mui/x-data-grid";
 import printJS from "print-js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
@@ -14,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
+import StandardTable from "../../../shared/StandardTable";
 
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
@@ -1226,19 +1226,22 @@ export const Deliveries = () => {
             {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
               <>
                 <div className="data-grid-card" style={{ height: 520 }}>
-                  <DataGrid
+                  <StandardTable
                     className="data-grid"
                     rows={listDeliveriesToUser}
                     columns={deliveryColumns}
-                    initialState={{
-                      pagination: {
-                        paginationModel: { page: 0, pageSize: 25 },
+                    customProps={{
+                      initialState: {
+                        pagination: {
+                          paginationModel: { page: 0, pageSize: 25 },
+                        },
                       },
+                      pageSizeOptions: [10, 25, 50, 100],
+                      disableColumnMenu: true,
+                      disableSelectionOnClick: true,
+                      rowHeight: 100,
                     }}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    disableColumnMenu
-                    disableSelectionOnClick
-                    rowHeight={100}
+                    enableDynamicHeight={true}
                   />
                 </div>
                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
@@ -1262,18 +1265,21 @@ export const Deliveries = () => {
             {showDeliveryForm && (
               <>
                 <div className="data-grid-card" style={{ height: 520 }}>
-                  <DataGrid
+                  <StandardTable
                     className="data-grid"
                     rows={deliveryProducts}
                     columns={productsToBeDeliveredColumns}
-                    initialState={{
-                      pagination: {
-                        paginationModel: { page: 0, pageSize: 25 },
+                    customProps={{
+                      initialState: {
+                        pagination: {
+                          paginationModel: { page: 0, pageSize: 25 },
+                        },
                       },
+                      pageSizeOptions: [10, 25, 50, 100],
+                      disableColumnMenu: true,
+                      disableSelectionOnClick: true,
                     }}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    disableColumnMenu
-                    disableSelectionOnClick
+                    enableDynamicHeight={true}
                   />
                 </div>
 

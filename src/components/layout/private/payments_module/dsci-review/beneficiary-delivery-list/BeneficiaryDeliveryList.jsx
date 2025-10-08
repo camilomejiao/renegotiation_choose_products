@@ -1,6 +1,6 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
+import StandardTable from "../../../../../shared/StandardTable";
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
@@ -14,7 +14,6 @@ import { beneficiaryColumns } from "../../../../../../helpers/utils/PaymentsColu
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
   const [dataTable, setDataTable] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingTable, setLoadingTable] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const [rowCount, setRowCount] = useState(0);
@@ -130,58 +129,23 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         </Col>
       </Row>
 
-      <div style={{ height: 600, width: "100%" }}>
-        <DataGrid
-          rows={dataTable}
-          columns={columns}
-          loading={loading}
-          paginationMode="server"
-          rowCount={rowCount}
-          pageSizeOptions={[10, 25, 50, 100]}
-          paginationModel={{ page, pageSize }}
-          onPaginationModelChange={({ page, pageSize }) => {
+      <StandardTable
+        loading={loading}
+        columns={columns}
+        rows={dataTable}
+        customProps={{
+          paginationMode: "server",
+          rowCount: rowCount,
+          paginationModel: { page, pageSize },
+          onPaginationModelChange: ({ page, pageSize }) => {
             setPage(page);
             setPageSize(pageSize);
-          }}
-          onRowClick={handleRowClick}
-          componentsProps={{
-            columnHeader: {
-              style: {
-                textAlign: "left",
-                fontWeight: "bold",
-                fontSize: "10px",
-                wordWrap: "break-word",
-              },
-            },
-          }}
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#40A581",
-              color: "white",
-              fontSize: "14px",
-            },
-            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]":
-              {
-                backgroundColor: "#40A581 !important",
-                color: "white !important",
-              },
-            "& .MuiDataGrid-cell": {
-              fontSize: "14px",
-              textAlign: "center",
-              justifyContent: "center",
-              display: "flex",
-            },
-            "& .MuiSelect-root": {
-              fontSize: "12px",
-              fontFamily: "Arial, sans-serif",
-              width: "100%",
-            },
-            "& .MuiDataGrid-row:hover": {
-              backgroundColor: "#E8F5E9",
-            },
-          }}
-        />
-      </div>
+          },
+          onRowClick: handleRowClick,
+          pageSizeOptions: [10, 25, 50, 100],
+        }}
+        enableDynamicHeight={true}
+      />
     </>
   );
 };

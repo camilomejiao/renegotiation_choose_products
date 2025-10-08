@@ -1,9 +1,9 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import StandardTable from "../../../../shared/StandardTable";
 
 //
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
@@ -430,56 +430,23 @@ export const ProductUploadTechnical = () => {
         )}
 
         <div style={{ height: 600, width: "100%" }}>
-          <DataGrid
+          <StandardTable
             rows={filteredRows}
             columns={columns}
-            pagination
-            processRowUpdate={handleRowUpdate}
-            editMode="row"
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 25 },
-              },
-            }}
-            pageSizeOptions={[10, 25, 50, 100]}
-            checkboxSelection
-            componentsProps={{
-              columnHeader: {
-                style: {
-                  textAlign: "left",
-                  fontWeight: "bold",
-                  fontSize: "10px",
-                  wordWrap: "break-word",
+            loading={loading}
+            customProps={{
+              pagination: true,
+              processRowUpdate: handleRowUpdate,
+              editMode: "row",
+              initialState: {
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 25 },
                 },
               },
+              pageSizeOptions: [10, 25, 50, 100],
+              checkboxSelection: true,
             }}
-            sx={{
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: "#40A581",
-                color: "white",
-                fontSize: "14px",
-              },
-              "& .MuiDataGrid-columnHeader": {
-                textAlign: "center",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              },
-              "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]":
-                {
-                  backgroundColor: "#40A581 !important",
-                  color: "white !important",
-                },
-              "& .MuiDataGrid-cell": {
-                fontSize: "14px",
-                textAlign: "center",
-                justifyContent: "center",
-                display: "flex",
-              },
-              "& .MuiDataGrid-row:hover": {
-                backgroundColor: "#E8F5E9",
-              },
-            }}
+            enableDynamicHeight={true}
           />
         </div>
 

@@ -1,6 +1,6 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StandardTable from "../../../../../shared/StandardTable";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -87,20 +87,23 @@ export const ListAccountOfSuppliers = () => {
 
       <div className="container mt-lg-5">
         <div className="data-grid-card" style={{ height: 500 }}>
-          <DataGrid
+          <StandardTable
             className="data-grid"
             rows={dataTable}
             columns={columns}
             loading={loading}
-            paginationMode="server"
-            rowCount={rowCount}
-            pageSizeOptions={[10, 25, 50, 100]}
-            paginationModel={{ page, pageSize }}
-            onPaginationModelChange={({ page, pageSize }) => {
-              setPage(page);
-              setPageSize(pageSize);
+            customProps={{
+              paginationMode: "server",
+              rowCount: rowCount,
+              pageSizeOptions: [10, 25, 50, 100],
+              paginationModel: { page, pageSize },
+              onPaginationModelChange: ({ page, pageSize }) => {
+                setPage(page);
+                setPageSize(pageSize);
+              },
+              onRowClick: handleRowClick,
             }}
-            onRowClick={handleRowClick}
+            enableDynamicHeight={true}
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Container, Form, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
+import StandardTable from "../../../shared/StandardTable";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -297,55 +297,21 @@ export const EditDeliveryOrder = () => {
 
         <div className="p-5">
           <Container>
-            <DataGrid
+            <StandardTable
               rows={listDeliveryProducts}
               columns={columns}
               loading={isLoading}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 25 },
-                },
-              }}
-              pageSizeOptions={[10, 25, 50, 100]}
-              disableColumnMenu
-              disableSelectionOnClick
-              componentsProps={{
-                columnHeader: {
-                  style: {
-                    textAlign: "left", // Alinea los títulos a la izquierda
-                    fontWeight: "bold", // Opcional: Aplica un peso específico
-                    fontSize: "14px", // Ajusta el tamaño de fuente
-                    wordWrap: "break-word", // Permite que el título se divida en varias líneas
+              customProps={{
+                initialState: {
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 25 },
                   },
                 },
+                pageSizeOptions: [10, 25, 50, 100],
+                disableColumnMenu: true,
+                disableSelectionOnClick: true,
               }}
-              sx={{
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#40A581",
-                  color: "white",
-                  fontSize: "14px",
-                },
-                "& .MuiDataGrid-columnHeader": {
-                  textAlign: "center",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                },
-                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]":
-                  {
-                    backgroundColor: "#40A581 !important",
-                    color: "white !important",
-                  },
-                "& .MuiDataGrid-cell": {
-                  fontSize: "14px",
-                  textAlign: "center",
-                  justifyContent: "center",
-                  display: "flex",
-                },
-                "& .MuiDataGrid-row:hover": {
-                  backgroundColor: "#E8F5E9",
-                },
-              }}
+              enableDynamicHeight={true}
             />
 
             <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
