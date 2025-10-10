@@ -15,6 +15,16 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import {supplierServices} from "../../../../../helpers/services/SupplierServices";
 
+const validationSchema = yup.object().shape({
+    company_name: yup.string().required("El nombre de la compañia es requerido"),
+    nit: yup.string().required("El nit o cedula es requerido"),
+    legal_representative: yup.string().required("El nombre del representante es requerido"),
+    cellphone: yup.number().required("El telefono es requerido"),
+    email: yup.string().email().required("El email es requerido"),
+    active: yup.boolean().required("Activo o Inactivo"),
+    resolution: yup.string().optional("El número de resolución es opcional"),
+});
+
 const initialValues = {
     company_name: "",
     nit: "",
@@ -24,16 +34,6 @@ const initialValues = {
     active: true,
     resolution: "",
 };
-
-const validationSchema = yup.object().shape({
-    company_name: yup.string().required("El nombre de la compañia es requerido"),
-    nit: yup.number().required("El nit o cedula es requerido"),
-    legal_representative: yup.string().required("El nombre del representante es requerido"),
-    cellphone: yup.number().required("El telefono es requerido"),
-    email: yup.string().email().required("El email es requerido"),
-    active: yup.boolean().required("Activo o Inactivo"),
-    resolution: yup.string().optional("El número de resolución es opcional"),
-});
 
 export const CreateSuppliers = () => {
 
