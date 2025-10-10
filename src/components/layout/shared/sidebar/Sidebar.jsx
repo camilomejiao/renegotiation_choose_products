@@ -70,14 +70,12 @@ const menuConfig = {
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/list-products-by-convocation", icon: FaBoxOpen, label: "Administración de Catálogo" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
-        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
-        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [

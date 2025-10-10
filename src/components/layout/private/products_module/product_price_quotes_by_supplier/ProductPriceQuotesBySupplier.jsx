@@ -376,11 +376,6 @@ export const ProductPriceQuotesBySupplier = () => {
                                     backgroundColor: "#40A581",
                                     color: "white",
                                     fontSize: "12px",
-                                    lineHeight: 1.2,
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
                                 },
                                 "& .MuiDataGrid-columnHeader": {
                                     textAlign: "center",
