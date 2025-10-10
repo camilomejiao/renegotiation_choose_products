@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
 import {
   FaBars,
@@ -25,7 +26,6 @@ import {
   FaUsersCog,
 } from "react-icons/fa";
 import { MdCampaign, MdPeople } from "react-icons/md";
-import { useLocation, useNavigate } from "react-router-dom";
 
 //Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
@@ -125,7 +125,6 @@ const menuConfig = {
       icon: FaUsersCog,
       label: "Gestión De Beneficiarios",
     },
-    { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
     { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
   ],
   [RolesEnum.TERRITORIAL_LINKS]: [
@@ -140,7 +139,6 @@ const menuConfig = {
       icon: FaUsersCog,
       label: "Gestión De Beneficiarios",
     },
-    { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
     { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
   ],
   [RolesEnum.SUPPLIER]: [
