@@ -30,8 +30,9 @@ const menuConfig = {
             label: "Administración Catalogo de productos",
             icon: FaBoxOpen,
             children: [
-                { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Administración de Catálogo" },
-                { path: "/admin/products-supervision", icon: FaBroadcastTower, label: "Catálogo de productos" },
+                { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Administración de Catálogo Tecnica" },
+                { path: "/admin/products-enviromental", icon: FaBoxOpen, label: "Validación de Ambiental" },
+                { path: "/admin/products-supervision", icon: FaBroadcastTower, label: "Validación de Supervisión" },
             ]
         },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },

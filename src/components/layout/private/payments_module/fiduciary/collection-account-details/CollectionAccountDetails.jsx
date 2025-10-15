@@ -50,8 +50,9 @@ export const CollectionAccountDetails = () => {
             AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
             return;
         }
-        setLoading(true);
+
         try {
+            setLoading(true);
             setInformationLoadingText("Obteniendo archivo");
 
             const { blob, status } = await filesServices.downloadFile(pdfUrl?.url_descarga);
@@ -70,10 +71,34 @@ export const CollectionAccountDetails = () => {
         }
     };
 
-    const handleGenerateDocument = async () => {
-        setLoading(true);
+    const handleGenerateDocument = async (SPId) => {
         try {
+            setLoading(true);
             setInformationLoadingText("Generando documento");
+
+            const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(SPId);
+            console.log(blob, status);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const fileURL = URL.createObjectURL(blob);
+                // Si es PDF y quieres abrir en otra pestaña:
+                if ((type).includes('pdf')) {
+                    window.open(fileURL, '_blank');
+                } else {
+                    // Descarga (Excel u otros binarios)
+                    const a = document.createElement('a');
+                    a.href = fileURL;
+                    a.download = filename || 'reporte.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+
+                // Limpia el ObjectURL
+                setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
+            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
         } finally {
@@ -130,9 +155,6 @@ export const CollectionAccountDetails = () => {
                     <Row className="mb-4">
                         <Col md={6}>
                             <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.solicitud_cuenta)}>
-                                <img src={downloadImg} alt="" /> Solicitud cuenta
-                            </button>
                             <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
                             </button>
@@ -152,15 +174,20 @@ export const CollectionAccountDetails = () => {
                     </Row>
 
                     <Row className="justify-content-center mt-4">
+                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
+                            <Button className="generate" variant="outline-success" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                📝 Generar documento excel
+                            </Button>
+                        </Col>
+                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
+                            <Button className="generate" variant="outline-warning" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                📝 Generar documento pdf
+                            </Button>
+                        </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
                             <button className="button-back" onClick={() => navigate(-1)}>
                                 <BsArrowLeft size={18} /> Cuentas de cobro
                             </button>
-                        </Col>
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-danger" onClick={handleGenerateDocument}>
-                                📝 Generar documento
-                            </Button>
                         </Col>
                     </Row>
                 </div>
