@@ -1642,8 +1642,6 @@ video {
 
 /* Review documents */
 .content-review-documents {
-  width: min(1200px, 100%);
-  margin: var(--space-7) auto;
   padding: var(--space-6);
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -1705,6 +1703,13 @@ video {
   background: linear-gradient(120deg, #40a581, #68c7a5);
 }
 
+.btn-approve img,
+.btn-deny img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .btn-approve:hover,
 .btn-deny:hover,
 .btn-back:hover,
@@ -1713,8 +1718,16 @@ video {
   box-shadow: var(--shadow-md);
 }
 
+.documents-download {
+  display: grid;
+  gap: 10px;
+  align-items: start;       /* ← clave */
+  align-content: start;     /* ← ayuda a evitar repartir el alto disponible */
+  grid-auto-rows: max-content;
+}
+
 .documents-download .button-download {
-  width: 100%;
+  width: 70%;
   justify-content: flex-start;
   padding: var(--space-4) var(--space-5);
   font-size: 1rem;
@@ -1766,7 +1779,6 @@ video {
 }
 
 .review-section {
-  display: grid;
   gap: var(--space-5);
 }
 
@@ -1807,14 +1819,14 @@ video {
   box-shadow: var(--shadow-md);
 }
 
-.generate {
+.generate-excel {
   width: min(100%, 320px);
   padding: var(--space-5);
   border-radius: var(--radius-md);
   border: none;
-  background: linear-gradient(120deg, #f54d4d, #ff7a7a);
+  background: linear-gradient(120deg, #21a266, #21a266);
   color: #fff;
-  font-size: 1.15rem;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -1822,7 +1834,27 @@ video {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.generate:hover {
+.generate-excel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.generate-pdf {
+  width: min(100%, 320px);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: none;
+  background: linear-gradient(120deg, #f54d4d, #ff7a7a);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.generate-pdf:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -1843,6 +1875,11 @@ video {
   .btn-back {
     width: 100%;
   }
+
+  .documents-download .button-download {
+    width: 100%;
+  }
+
 }
 
 /* Supplier payments */
@@ -3487,6 +3524,20 @@ a.button-pill {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(4, 105, 153, 0.15);
   outline: none;
+}
+
+/* Search User Form */
+.search-input-group .button-pill--icon {
+  flex: 0 0 48px;   /* NO se encoge, ancho fijo */
+  width: 48px;
+  height: 48px;
+  padding: 0;
+}
+
+.search-input-group .button-pill--icon img {
+  width: 20px;
+  height: 20px;
+  max-width: none;  /* anula img { max-width:100% } */
 }
 
 .input-field--accent {

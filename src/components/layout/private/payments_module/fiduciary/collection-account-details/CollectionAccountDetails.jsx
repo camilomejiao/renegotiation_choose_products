@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
-import { BsArrowLeft } from "react-icons/bs";
+import { FaStepBackward } from "react-icons/fa";
 
 // Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -102,7 +102,7 @@ export const CollectionAccountDetails = () => {
             )}
 
             {accountInformation && (
-                <div className="content-collection-details">
+                <div className="content-review-documents">
                     <Row className="mb-4">
                         <Col md={5}>
                             <h5 className="section-title">Proveedor</h5>
@@ -124,12 +124,22 @@ export const CollectionAccountDetails = () => {
                         </Col>
                     </Row>
 
-                    <Row className="mb-4">
-                        <Col md={6}>
-                            <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.solicitud_cuenta)}>
-                                <img src={downloadImg} alt="" /> Solicitud cuenta
-                            </button>
+                    <Row className="review-section">
+                        <Col md={6} xs={12} className="observations-history">
+                            <h5 className="section-title">Entregas</h5>
+                            {accountInformation?.detalles.map((item, idx) => (
+                                <div key={idx} className="revision-box">
+                                    <div>
+                                        <strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()}
+                                        <strong>CUB:</strong> {item?.entrega?.cub}
+                                        <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}
+                                    </div>
+                                </div>
+                            ))}
+                        </Col>
+
+                        <Col md={5} xs={12} className="documents-download">
+                            <h5 className="section-title mb-4">Documentos adjuntos</h5>
                             <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
                             </button>
@@ -137,27 +147,23 @@ export const CollectionAccountDetails = () => {
                                 <img src={downloadImg} alt="" /> RUT
                             </button>
                         </Col>
-
-                        <Col md={6}>
-                            <h5 className="section-title">Entregas</h5>
-                            {accountInformation?.detalles.map((item, idx) => (
-                                <div key={idx} className="revision-box">
-                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
-                                </div>
-                            ))}
-                        </Col>
                     </Row>
 
                     <Row className="justify-content-center mt-4">
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
-                            <button className="button-back" onClick={() => navigate(-1)}>
-                                <BsArrowLeft size={18} /> Cuentas de cobro
-                            </button>
+                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
+                            <Button className="generate-excel" onClick={handleGenerateDocument}>
+                                📝 Generar Documento Excel
+                            </Button>
                         </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-danger" onClick={handleGenerateDocument}>
-                                📝 Generar documento
+                            <Button className="generate-pdf" onClick={handleGenerateDocument}>
+                                📝 Generar Documento PDF
                             </Button>
+                        </Col>
+                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
+                            <button className="button-back" onClick={() => navigate(-1)}>
+                                <FaStepBackward /> Cuentas de cobro
+                            </button>
                         </Col>
                     </Row>
                 </div>

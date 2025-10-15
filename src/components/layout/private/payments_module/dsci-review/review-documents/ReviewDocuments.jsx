@@ -255,7 +255,7 @@ export const ReviewDocuments = () => {
                                     )}
                                     {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
                                         <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
-                                            <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                                            <img src={downloadImg} alt=""  /> FE Ó Documento Equivalente
                                         </button>
                                     )}
                                 </>

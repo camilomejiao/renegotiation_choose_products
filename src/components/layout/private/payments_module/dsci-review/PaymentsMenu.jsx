@@ -1,17 +1,17 @@
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 //Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 
 //Img
-import imgPayments from "../../../../../../assets/image/payments/payments.png";
-import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-import supervision from "../../../../../../assets/image/payments/supervision.png";
-import pagos from "../../../../../../assets/image/payments/pagos.png";
-import fiduciaria from "../../../../../../assets/image/payments/fiduciaria.png";
+import imgPayments from "../../../../../assets/image/payments/payments.png";
+import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import supervision from "../../../../../assets/image/payments/supervision.png";
+import pagos from "../../../../../assets/image/payments/pagos.png";
+import fiduciaria from "../../../../../assets/image/payments/fiduciaria.png";
 
 //Enum
-import { RolesEnum } from "../../../../../../helpers/GlobalEnum";
+import { RolesEnum } from "../../../../../helpers/GlobalEnum";
 
 const userCards = [
     { title: "Pagos", role: [RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS], key: "pagos", img: pagos },

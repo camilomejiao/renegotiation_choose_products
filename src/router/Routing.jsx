@@ -31,7 +31,7 @@ import { MenuTab } from "../components/layout/private/management_module/MenuTab"
 import { CreateUser } from "../components/layout/private/management_module/user/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation_module/Renegociation";
-import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
+import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/PaymentsMenu";
 import { PaySuppliers } from "../components/layout/private/payments_module/suppliers/pay-suppliers/PaySuppliers";
 import { BeneficiaryDeliveryReview } from "../components/layout/private/payments_module/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
 import { CreateCallSuppliers } from "../components/layout/private/suppliers_module/convocation_suppliers/CreateCallSuppliers";

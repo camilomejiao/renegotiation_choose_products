@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
 
+//
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../assets/image/payments/imgPay.png";
+
 //Components
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
+import { HeaderImage } from "../../shared/header_image/HeaderImage";
 
 //Enums
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";
-
 
 export const SearchUserForDeliveries = () => {
 
@@ -19,14 +23,14 @@ export const SearchUserForDeliveries = () => {
     return (
         <>
             <div className="page-wrapper">
-                <section className="page-hero">
-                    <h1 className="page-hero__title">
-                        Bienvenido al <span className="text-highlight">Banco de Proveedores</span> de la DSCI
-                    </h1>
-                    <p className="page-hero__subtitle">
-                        Da el siguiente paso en tus <strong>entregas</strong> ahora.
-                    </p>
-                </section>
+                <HeaderImage
+                    imageHeader={imgDCSIPeople}
+                    titleHeader={`DSCI Banco de Proveedores`}
+                    bannerIcon={imgAdd}
+                    backgroundIconColor={"#2148C0"}
+                    bannerInformation={`Entregas.`}
+                    backgroundInformationColor={"#F66D1F"}
+                />
 
                 <section className="surface-card">
                     <header className="surface-card__header">

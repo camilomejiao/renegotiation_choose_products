@@ -1,8 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Col, Container, Row } from "react-bootstrap";
+
+//Img
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../assets/image/payments/imgPay.png";
 
 //Components
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
+import { HeaderImage } from "../../shared/header_image/HeaderImage";
+
+//Enum
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 export const SearchUserForRenegociation = () => {
@@ -17,14 +23,14 @@ export const SearchUserForRenegociation = () => {
     return (
         <>
             <div className="page-wrapper">
-                <section className="page-hero">
-                    <h1 className="page-hero__title">
-                        Bienvenido al <span className="text-highlight">Banco de Proveedores</span> de la DSCI
-                    </h1>
-                    <p className="page-hero__subtitle">
-                        <strong>RENEGOCIACIÓN.</strong>
-                    </p>
-                </section>
+                <HeaderImage
+                    imageHeader={imgDCSIPeople}
+                    titleHeader={`Bienvenido al Banco de Proveedores`}
+                    bannerIcon={imgAdd}
+                    backgroundIconColor={"#2148C0"}
+                    bannerInformation={"RENEGOCIACIÓN."}
+                    backgroundInformationColor={"#F66D1F"}
+                />
 
                 <section className="surface-card">
                     <header className="surface-card__header">

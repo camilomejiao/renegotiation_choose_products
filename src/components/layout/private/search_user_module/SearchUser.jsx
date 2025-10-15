@@ -1,8 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
+//Img
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
+import imgAdd from "../../../../assets/image/payments/imgPay.png";
+
 //Component
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
+import { HeaderImage } from "../../shared/header_image/HeaderImage";
 
 //Enums
 import { ComponentEnum, RolesEnum } from "../../../../helpers/GlobalEnum";
@@ -25,14 +30,14 @@ export const SearchUser = () => {
 
     return (
         <div className="page-wrapper">
-            <section className="page-hero">
-                <h1 className="page-hero__title">
-                    Bienvenido al <span className="text-highlight">Banco de Proveedores</span> de la DSCI
-                </h1>
-                <p className="page-hero__subtitle">
-                    Da el siguiente paso en tus <strong>ventas</strong> ahora.
-                </p>
-            </section>
+            <HeaderImage
+                imageHeader={imgDCSIPeople}
+                titleHeader={`Bienvenido al Banco de Proveedores DSCI`}
+                bannerIcon={imgAdd}
+                backgroundIconColor={"#2148C0"}
+                bannerInformation={`Da el siguiente paso en tus ventas ahora.`}
+                backgroundInformationColor={"#F66D1F"}
+            />
 
             <section className="surface-card">
                 <header className="surface-card__header">

@@ -100,7 +100,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
                     />
 
                     <button type="submit" className="button-pill button-pill--icon" aria-label="Buscar">
-                        <img src={magnifyingGlass} alt="" role="presentation" width="25" height="25" />
+                        <img src={magnifyingGlass} alt="" />
                     </button>
                 </div>
             </div>
