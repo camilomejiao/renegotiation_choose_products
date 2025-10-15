@@ -1032,17 +1032,16 @@ video {
 }
 
 .search-banner-reports {
-  display: flex;
+  margin-top: 15px;
+  display: grid;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-4);
   width: 100%;
   padding: var(--space-6) var(--space-5);
   border-radius: var(--radius-md);
   background: linear-gradient(
     120deg,
-    rgba(4, 105, 153, 0.95) 0%,
-    rgba(33, 72, 192, 0.75) 100%
+    rgba(207, 213, 215, 0.95) 0%,
+    rgba(182, 187, 199, 0.75) 100%
   );
   box-shadow: var(--shadow-md);
 }
