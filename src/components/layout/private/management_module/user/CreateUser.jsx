@@ -15,7 +15,7 @@ import {Button, Spinner} from "react-bootstrap";
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { PasswordChangeDialog } from "../../../shared/Modals/PasswordChangeDialog";
+import { PasswordChangeDialog } from "../../../shared/modals/PasswordChangeDialog";
 
 // Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -236,7 +236,7 @@ export const CreateUser = () => {
     }, []);
 
     // Edición: cargar usuario
-    const fetchUserData = useCallback(async (userId) => {
+    const fetchUserData = async (userId) => {
         try {
             setLoadingUser(true);
             const { data, status } = await userServices.getUserById(userId);
@@ -287,7 +287,7 @@ export const CreateUser = () => {
         } finally {
             setLoadingUser(false);
         }
-    }, [formik, upsertSupplierOption]);
+    };
 
     // Al seleccionar proveedor del Autocomplete
     const handleSelectSupplier = (prov) => {
@@ -356,216 +356,89 @@ export const CreateUser = () => {
     };
 
     useEffect(() => {
-        getRoles();
         if (isEdit) {
             fetchUserData(id);
         }
-    }, [fetchUserData, getRoles, id, isEdit]);
+    }, [id, isEdit]);
+
+    useEffect(() => {
+        getRoles();
+    }, []);
 
     return (
         <>
-            <div className="main-container">
-                <HeaderImage
-                    imageHeader={imgPeople}
-                    titleHeader={isEdit ? "Editar usuario" : "¡Registra tus usuarios!"}
-                    bannerIcon={""}
-                    backgroundIconColor={""}
-                    bannerInformation={""}
-                    backgroundInformationColor={""}
-                />
+            <HeaderImage
+                imageHeader={imgPeople}
+                titleHeader={isEdit ? "Editar usuario" : "¡Registra tus usuarios!"}
+                bannerIcon={""}
+                backgroundIconColor={""}
+                bannerInformation={""}
+                backgroundInformationColor={""}
+            />
 
-                {loadingUser && (
-                    <div className="overlay">
-                        <Spinner animation="border" variant="success" />
-                        <div className="loader">Cargando...</div>
+            {loadingUser && (
+                <div className="overlay">
+                    <Spinner animation="border" variant="success" />
+                    <div className="loader">Cargando...</div>
+                </div>
+            )}
+
+            <form
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    const errs = await formik.validateForm();
+                    if (Object.keys(errs).length) {
+                        formik.setTouched(Object.fromEntries(Object.keys(errs).map(k => [k, true])));
+                        console.log("Errores de validación:", errs);
+                        AlertComponent.warning("Revisa los campos obligatorios.");
+                        return;
+                    }
+                    formik.handleSubmit(e);
+                }}
+              className="container"
+            >
+                <div className="row g-3 mt-4">
+                    {/* Switch proveedor */}
+                    <div className="col-md-12 d-flex align-items-center">
+                        <FormControlLabel
+                            label="¿Usuario es proveedor?"
+                            labelPlacement="start"
+                            control={
+                                <Switch
+                                    color="warning"
+                                    checked={formik.values.isSupplier}
+                                    onChange={(e) => handleToggleSupplier(e.target.checked)}
+                                />
+                            }
+                        />
                     </div>
-                )}
 
-                <form
-                    onSubmit={async (e) => {
-                        e.preventDefault();
-                        const errs = await formik.validateForm();
-                        if (Object.keys(errs).length) {
-                            formik.setTouched(Object.fromEntries(Object.keys(errs).map(k => [k, true])));
-                            console.log("Errores de validación:", errs);
-                            AlertComponent.warning("Revisa los campos obligatorios.");
-                            return;
-                        }
-                        formik.handleSubmit(e);
-                    }}
-                  className="container"
-                >
-                    <div className="row g-3 mt-4">
-                        {/* Switch proveedor */}
-                        <div className="col-md-12 d-flex align-items-center">
-                            <FormControlLabel
-                                label="¿Usuario es proveedor?"
-                                labelPlacement="start"
-                                control={
-                                    <Switch
-                                        color="warning"
-                                        checked={formik.values.isSupplier}
-                                        onChange={(e) => handleToggleSupplier(e.target.checked)}
-                                    />
-                                }
-                            />
-                        </div>
-
-                        {/* Select/Autocomplete de proveedores (solo si esSupplier) */}
-                        {formik.values.isSupplier && (
-                            <div className="col-12">
-                                <Autocomplete
-                                    multiple={false}
-                                    options={suppliersOptions}
-                                    value={formik.values.supplier}
-                                    onChange={(_, value) => handleSelectSupplier(value)}
-                                    openOnFocus
-                                    getOptionLabel={(o) => (o?.nombre ?? "").trim()}
-                                    isOptionEqualToValue={(o, v) => o?.id === v?.id}
-                                    loading={loadingSuppliers}
-                                    noOptionsText={loadingSuppliers ? "Cargando..." : "Sin resultados"}
-                                    loadingText="Cargando..."
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label="Selecciona proveedor"
-                                            placeholder="Escribe para filtrar..."
-                                            error={Boolean(formik.touched.supplier_id && formik.errors.supplier_id)}
-                                            helperText={formik.touched.supplier_id && formik.errors.supplier_id}
-                                            InputProps={{
-                                                ...params.InputProps,
-                                                endAdornment: (
-                                                    <>
-                                                        {loadingSuppliers ? <CircularProgress size={18} /> : null}
-                                                        {params.InputProps.endAdornment}
-                                                    </>
-                                                ),
-                                            }}
-                                        />
-                                    )}
-                                />
-
-                            </div>
-                        )}
-
-                        {/* Nombre */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Nombre"
-                                {...formik.getFieldProps("name")}
-                                error={formik.touched.name && Boolean(formik.errors.name)}
-                                helperText={formik.touched.name && formik.errors.name}
-                                InputProps={{
-                                    readOnly: false,
-                                }}
-                            />
-                        </div>
-
-                        {/* Número de identificación */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Número de identificación"
-                                {...formik.getFieldProps("identification_number")}
-                                error={formik.touched.identification_number && Boolean(formik.errors.identification_number)}
-                                helperText={formik.touched.identification_number && formik.errors.identification_number}
-                            />
-                        </div>
-
-                        {/* Apellido */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Apellido"
-                                {...formik.getFieldProps("last_name")}
-                                error={formik.touched.last_name && Boolean(formik.errors.last_name)}
-                                helperText={formik.touched.last_name && formik.errors.last_name}
-                            />
-                        </div>
-
-                        {/* Email */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                {...formik.getFieldProps("email")}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                                helperText={formik.touched.email && formik.errors.email}
-                            />
-                        </div>
-
-                        {/* Teléfono */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Teléfono"
-                                {...formik.getFieldProps("cellphone")}
-                                error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
-                                helperText={formik.touched.cellphone && formik.errors.cellphone}
-                            />
-                        </div>
-
-                        {/* Username */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Usuario"
-                                {...formik.getFieldProps("username")}
-                                error={formik.touched.username && Boolean(formik.errors.username)}
-                                helperText={formik.touched.username && formik.errors.username}
-                            />
-                        </div>
-
-                        {/* Password: botón en edición / input en creación */}
-                        {isEdit ? (
-                            <div className="col-md-6 d-flex align-items-end gap-2">
-                                <Button
-                                    variant="outline-primary"
-                                    type="button"
-                                    onClick={() => setPwdOpen(true)}
-                                >
-                                    Cambiar contraseña
-                                </Button>
-                                {formik.values.password ? (
-                                    <span className="badge bg-success">Nueva contraseña lista</span>
-                                ) : (
-                                    <span className="badge bg-secondary">Sin cambios</span>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="col-md-6">
-                                <TextField
-                                    type="password"
-                                    fullWidth
-                                    label="Contraseña"
-                                    {...formik.getFieldProps("password")}
-                                    error={formik.touched.password && Boolean(formik.errors.password)}
-                                    helperText={formik.touched.password && formik.errors.password}
-                                />
-                            </div>
-                        )}
-
-                        <div className="col-md-6">
+                    {/* Select/Autocomplete de proveedores (solo si esSupplier) */}
+                    {formik.values.isSupplier && (
+                        <div className="col-12">
                             <Autocomplete
-                                options={roleOptions}
-                                value={roleOptions.find(o => o.id === formik.values.role) || null}
-                                onChange={(_, value) => formik.setFieldValue("role", value?.id ?? null)}
+                                multiple={false}
+                                options={suppliersOptions}
+                                value={formik.values.supplier}
+                                onChange={(_, value) => handleSelectSupplier(value)}
+                                openOnFocus
                                 getOptionLabel={(o) => (o?.nombre ?? "").trim()}
                                 isOptionEqualToValue={(o, v) => o?.id === v?.id}
-                                loading={loadingRoles}
+                                loading={loadingSuppliers}
+                                noOptionsText={loadingSuppliers ? "Cargando..." : "Sin resultados"}
+                                loadingText="Cargando..."
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Selecciona Rol"
+                                        label="Selecciona proveedor"
                                         placeholder="Escribe para filtrar..."
-                                        error={Boolean(formik.touched.role && formik.errors.role)}
-                                        helperText={formik.touched.role && formik.errors.role}
+                                        error={Boolean(formik.touched.supplier_id && formik.errors.supplier_id)}
+                                        helperText={formik.touched.supplier_id && formik.errors.supplier_id}
                                         InputProps={{
                                             ...params.InputProps,
                                             endAdornment: (
                                                 <>
-                                                    {loadingRoles ? <CircularProgress size={18} /> : null}
+                                                    {loadingSuppliers ? <CircularProgress size={18} /> : null}
                                                     {params.InputProps.endAdornment}
                                                 </>
                                             ),
@@ -573,49 +446,177 @@ export const CreateUser = () => {
                                     />
                                 )}
                             />
-                        </div>
 
-                        {/* Activo */}
-                        <div className="col-md-6 d-flex align-items-center">
-                            <FormControlLabel
-                                label="Activo"
-                                labelPlacement="start"
-                                control={
-                                    <Switch
-                                        color="success"
-                                        checked={formik.values.active}
-                                        onChange={(e) => formik.setFieldValue("active", e.target.checked)}
-                                    />
-                                }
+                        </div>
+                    )}
+
+                    {/* Nombre */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Nombre"
+                            {...formik.getFieldProps("name")}
+                            error={formik.touched.name && Boolean(formik.errors.name)}
+                            helperText={formik.touched.name && formik.errors.name}
+                            InputProps={{
+                                readOnly: false,
+                            }}
+                        />
+                    </div>
+
+                    {/* Número de identificación */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Número de identificación"
+                            {...formik.getFieldProps("identification_number")}
+                            error={formik.touched.identification_number && Boolean(formik.errors.identification_number)}
+                            helperText={formik.touched.identification_number && formik.errors.identification_number}
+                        />
+                    </div>
+
+                    {/* Apellido */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Apellido"
+                            {...formik.getFieldProps("last_name")}
+                            error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+                            helperText={formik.touched.last_name && formik.errors.last_name}
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            {...formik.getFieldProps("email")}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                    </div>
+
+                    {/* Teléfono */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Teléfono"
+                            {...formik.getFieldProps("cellphone")}
+                            error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
+                            helperText={formik.touched.cellphone && formik.errors.cellphone}
+                        />
+                    </div>
+
+                    {/* Username */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Usuario"
+                            {...formik.getFieldProps("username")}
+                            error={formik.touched.username && Boolean(formik.errors.username)}
+                            helperText={formik.touched.username && formik.errors.username}
+                        />
+                    </div>
+
+                    {/* Password: botón en edición / input en creación */}
+                    {isEdit ? (
+                        <div className="col-md-6 d-flex align-items-end gap-2">
+                            <Button
+                                variant="outline-primary"
+                                type="button"
+                                onClick={() => setPwdOpen(true)}
+                            >
+                                Cambiar contraseña
+                            </Button>
+                            {formik.values.password ? (
+                                <span className="badge bg-success">Nueva contraseña lista</span>
+                            ) : (
+                                <span className="badge bg-secondary">Sin cambios</span>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="col-md-6">
+                            <TextField
+                                type="password"
+                                fullWidth
+                                label="Contraseña"
+                                {...formik.getFieldProps("password")}
+                                error={formik.touched.password && Boolean(formik.errors.password)}
+                                helperText={formik.touched.password && formik.errors.password}
                             />
                         </div>
+                    )}
+
+                    <div className="col-md-6">
+                        <Autocomplete
+                            options={roleOptions}
+                            value={roleOptions.find(o => o.id === formik.values.role) || null}
+                            onChange={(_, value) => formik.setFieldValue("role", value?.id ?? null)}
+                            getOptionLabel={(o) => (o?.nombre ?? "").trim()}
+                            isOptionEqualToValue={(o, v) => o?.id === v?.id}
+                            loading={loadingRoles}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Selecciona Rol"
+                                    placeholder="Escribe para filtrar..."
+                                    error={Boolean(formik.touched.role && formik.errors.role)}
+                                    helperText={formik.touched.role && formik.errors.role}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <>
+                                                {loadingRoles ? <CircularProgress size={18} /> : null}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
                     </div>
 
-                    {/* Modal de contraseña */}
-                    <PasswordChangeDialog
-                        open={pwdOpen}
-                        onClose={() => setPwdOpen(false)}
-                        onSave={handlePasswordSaved}
-                        minLength={8}
-                    />
-
-                    <div className="text-end mt-4 d-flex gap-2 justify-content-end">
-                        <Button variant="outline-success"
-                                color="success"
-                                type="submit"
-                                disabled={loadingUser}
-                        >
-                            {isEdit ? "Actualizar" : "Guardar"}
-                        </Button>
-                        <Button variant="outline-danger"
-                                type="button"
-                                onClick={() => navigate("/admin/management")}
-                        >
-                            Cancelar
-                        </Button>
+                    {/* Activo */}
+                    <div className="col-md-6 d-flex align-items-center">
+                        <FormControlLabel
+                            label="Activo"
+                            labelPlacement="start"
+                            control={
+                                <Switch
+                                    color="success"
+                                    checked={formik.values.active}
+                                    onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+                                />
+                            }
+                        />
                     </div>
-                </form>
-            </div>
+                </div>
+
+                {/* Modal de contraseña */}
+                <PasswordChangeDialog
+                    open={pwdOpen}
+                    onClose={() => setPwdOpen(false)}
+                    onSave={handlePasswordSaved}
+                    minLength={8}
+                />
+
+                <div className="text-end mt-4 d-flex gap-2 justify-content-end">
+                    <Button variant="outline-success"
+                            color="success"
+                            type="submit"
+                            disabled={loadingUser}
+                    >
+                        {isEdit ? "Actualizar" : "Guardar"}
+                    </Button>
+                    <Button variant="outline-danger"
+                            type="button"
+                            onClick={() => navigate("/admin/management")}
+                    >
+                        Cancelar
+                    </Button>
+                </div>
+            </form>
         </>
     );
 };

@@ -3,7 +3,9 @@ import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useApiLoading } from "../../../../../hooks/useApiLoading";
-import StandardTable from "../../../../shared/StandardTable";
+
+//
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Utils
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -11,10 +13,13 @@ import {
   getAccionColumns,
   getSuppliersColumns,
 } from "../../../../../helpers/utils/ManagementColumns";
+
 //Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+
 
 export const SupplierList = () => {
   const navigate = useNavigate();
@@ -121,26 +126,25 @@ export const SupplierList = () => {
 
   return (
     <>
-      <div className="container mt-lg-3">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="input-responsive me-2"
-          />
-          <div className="text-end">
-            <Button
-              variant="outline-success"
-              size="md"
-              onClick={() => navigate("/admin/create-suppliers")}
-              className="button-order-responsive"
-            >
-              <FaPlus /> Crear Proveedor
-            </Button>
-          </div>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="input-responsive me-2"
+        />
+        <div className="text-end">
+          <Button
+            variant="outline-success"
+            size="md"
+            onClick={() => navigate("/admin/create-suppliers")}
+            className="button-order-responsive"
+          >
+            <FaPlus /> Crear Proveedor
+          </Button>
         </div>
+      </div>
 
         {loading && (
           <div className="overlay">
@@ -148,26 +152,23 @@ export const SupplierList = () => {
           </div>
         )}
 
-        <div className="data-grid-card" style={{ height: 600 }}>
-          <StandardTable
-            className="data-grid"
-            rows={filteredSuppliers}
-            columns={columns}
-            loading={apiLoading} // ← Usa el loading del hook
-            customProps={{
-              paginationMode: "server",
-              rowCount: rowCount,
-              pageSizeOptions: [10, 25, 50, 100],
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-            }}
-            enableDynamicHeight={true}
-          />
-        </div>
-      </div>
+        <StandardTable
+          className="data-grid"
+          rows={filteredSuppliers}
+          columns={columns}
+          loading={apiLoading} // ← Usa el loading del hook
+          customProps={{
+            paginationMode: "server",
+            rowCount: rowCount,
+            pageSizeOptions: [10, 25, 50, 100],
+            paginationModel: { page, pageSize },
+            onPaginationModelChange: ({ page, pageSize }) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          enableDynamicHeight={true}
+        />
     </>
   );
 };

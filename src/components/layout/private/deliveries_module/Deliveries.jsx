@@ -13,12 +13,12 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
-import StandardTable from "../../../shared/StandardTable";
+import StandardTable from "../../shared/standardTable/StandardTable";
 
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
-import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
-import { FEModal } from "../../shared/Modals/FEModal";
+import { ApprovedDeniedModal } from "../../shared/modals/ApprovedDeniedModal";
+import { FEModal } from "../../shared/modals/FEModal";
 import { UserInformation } from "../../shared/user_information/UserInformation";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 
@@ -307,7 +307,7 @@ export const Deliveries = () => {
       return true;
     }
 
-    if (rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER) {
+    if (rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.ADMIN) {
       return true;
     }
   };
@@ -813,7 +813,7 @@ export const Deliveries = () => {
 
         setTimeout(() => {
           refreshPage();
-        }, 1500);
+        }, 1000);
 
         return;
       }
@@ -1123,7 +1123,7 @@ export const Deliveries = () => {
   const refreshPage = () => {
     setTimeout(() => {
       window.location.reload();
-    }, 2000);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -1166,7 +1166,7 @@ export const Deliveries = () => {
 
         <div className="deliveries-banner">
           <Container>
-            <Row className="justify-content-start align-items-center mt-4">
+            <Row className="justify-content-end align-items-center mt-4">
               <>
                 {(userAuth.rol_id === RolesEnum.ADMIN ||
                   userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
@@ -1183,6 +1183,12 @@ export const Deliveries = () => {
                       placeholder="Selecciona una compañía"
                       classNamePrefix="custom-select"
                       className="custom-select w-100"
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: base => ({ ...base, zIndex: 10000 }),
+                        menu: base => ({ ...base, zIndex: 10000 })
+                      }}
                     />
                   </Col>
                 )}
@@ -1193,7 +1199,7 @@ export const Deliveries = () => {
                   <Col
                     xs={12}
                     md={6}
-                    className="d-flex align-items-center justify-content-md-start justify-content-center"
+                    className="d-flex align-items-end justify-content-md-end justify-content-end"
                   >
                     <button
                       onClick={handleCreateDeliveries}
@@ -1220,30 +1226,29 @@ export const Deliveries = () => {
           </div>
         )}
 
-        <div className="">
+        <div className="deliveries-banner">
           <Container>
-            <hr />
+          <hr />
             {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
               <>
-                <div className="data-grid-card" style={{ height: 520 }}>
-                  <StandardTable
-                    className="data-grid"
-                    rows={listDeliveriesToUser}
-                    columns={deliveryColumns}
-                    customProps={{
-                      initialState: {
-                        pagination: {
-                          paginationModel: { page: 0, pageSize: 25 },
-                        },
+                <StandardTable
+                  className="data-grid"
+                  rows={listDeliveriesToUser}
+                  columns={deliveryColumns}
+                  customProps={{
+                    initialState: {
+                      pagination: {
+                        paginationModel: { page: 0, pageSize: 25 },
                       },
-                      pageSizeOptions: [10, 25, 50, 100],
-                      disableColumnMenu: true,
-                      disableSelectionOnClick: true,
-                      rowHeight: 100,
-                    }}
-                    enableDynamicHeight={true}
-                  />
-                </div>
+                    },
+                    pageSizeOptions: [25, 50, 100],
+                    disableColumnMenu: true,
+                    disableSelectionOnClick: true,
+                    rowHeight: 100,
+                  }}
+                  enableDynamicHeight={true}
+                />
+
                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                   <Button
                     variant="outline-secondary"
@@ -1264,24 +1269,22 @@ export const Deliveries = () => {
 
             {showDeliveryForm && (
               <>
-                <div className="data-grid-card" style={{ height: 520 }}>
-                  <StandardTable
-                    className="data-grid"
-                    rows={deliveryProducts}
-                    columns={productsToBeDeliveredColumns}
-                    customProps={{
-                      initialState: {
-                        pagination: {
-                          paginationModel: { page: 0, pageSize: 25 },
-                        },
+                <StandardTable
+                  className="data-grid"
+                  rows={deliveryProducts}
+                  columns={productsToBeDeliveredColumns}
+                  customProps={{
+                    initialState: {
+                      pagination: {
+                        paginationModel: { page: 0, pageSize: 25 },
                       },
-                      pageSizeOptions: [10, 25, 50, 100],
-                      disableColumnMenu: true,
-                      disableSelectionOnClick: true,
-                    }}
-                    enableDynamicHeight={true}
-                  />
-                </div>
+                    },
+                    pageSizeOptions: [25, 50, 100],
+                    disableColumnMenu: true,
+                    disableSelectionOnClick: true,
+                  }}
+                  enableDynamicHeight={true}
+                />
 
                 <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                   <Button
@@ -1302,7 +1305,7 @@ export const Deliveries = () => {
                 </div>
               </>
             )}
-          </Container>
+        </Container>
         </div>
 
         {/* Aquí renderizas el componente pero lo ocultas */}

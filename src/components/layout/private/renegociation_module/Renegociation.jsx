@@ -13,13 +13,15 @@ import { renegotiationServices } from "../../../../helpers/services/Renegociatio
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import { UserInformation } from "../../shared/user_information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
-import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
+import { LineDetailModal } from "../../shared/modals/LineDetailModal";
 
 //Enum
-import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
+import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
-import {PlanHistory} from "../../shared/Modals/PlanHistory";
-import {ConfirmationModal} from "../../shared/Modals/ConfirmationModal";
+
+//Modals
+import { PlanHistory } from "../../shared/modals/PlanHistory";
+import { ConfirmationModal } from "../../shared/modals/ConfirmationModal";
 export const Renegociation = () => {
 
     const params = useParams();

@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import StandardTable from "../../../../shared/StandardTable";
+
+//
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Utils
 import { getBeneficiaryColumn } from "../../../../../helpers/utils/ManagementColumns";
+
 
 const mockData = [
   {

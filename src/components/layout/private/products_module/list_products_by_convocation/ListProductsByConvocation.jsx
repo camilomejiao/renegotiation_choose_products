@@ -2,10 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { FaFileExcel, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import StandardTable from "../../../../shared/StandardTable";
 
+//Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+
+//Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //
 import {
@@ -108,7 +111,7 @@ export const ListProductsByConvocation = () => {
   }, [getProductsByConvocation]);
 
   return (
-    <div className="main-container">
+    <>
       <HeaderImage
         imageHeader={imgPeople}
         titleHeader={"¡Empieza a agregar tus productos!"}
@@ -150,6 +153,7 @@ export const ListProductsByConvocation = () => {
               className="input-responsive me-2"
             />
           </div>
+
         </div>
 
         <StandardTable
@@ -210,6 +214,6 @@ export const ListProductsByConvocation = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </>
   );
 };

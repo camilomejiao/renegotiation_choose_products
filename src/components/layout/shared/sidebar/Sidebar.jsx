@@ -40,12 +40,17 @@ const menuConfig = {
         {
           path: "/admin/list-products-by-convocation",
           icon: FaDollyFlatbed,
-          label: "Administración de Catálogo",
+          label: "Administración de Catálogo Tecnica",
+        },
+        {
+          path: "/admin/products-enviromental",
+          icon: FaBoxOpen,
+          label: "Validación de Catálogo de productos ambiental",
         },
         {
           path: "/admin/products-supervision",
           icon: FaBroadcastTower,
-          label: "Catálogo de productos",
+          label: "Catálogo de productos supervisión",
         },
       ],
     },

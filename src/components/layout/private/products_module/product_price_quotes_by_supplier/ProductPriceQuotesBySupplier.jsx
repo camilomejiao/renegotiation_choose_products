@@ -3,18 +3,21 @@ import { Button, Col, Row } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { FaSave } from "react-icons/fa";
 import { useOutletContext } from "react-router-dom";
-import StandardTable from "../../../../shared/StandardTable";
 
-//
+//Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 
-//
+//Components
+import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../shared/standardTable/StandardTable";
+
+//Utils
 import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+
 //Enum
 import {
   GeneralStatusDeliveryProductEnum,

@@ -66,7 +66,7 @@ class UserServices {
      *
      */
     getUserById(id) {
-        const url = this.buildUrl(`usuarios/${id}`);
+        const url = this.buildUrl(`usuarios/${id}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

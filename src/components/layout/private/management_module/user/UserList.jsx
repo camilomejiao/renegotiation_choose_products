@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import StandardTable from "../../../../shared/StandardTable";
+
+//
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Utils
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -114,51 +116,50 @@ export const UserList = () => {
 
   return (
     <>
-      <div className="container mt-lg-3">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="input-responsive me-2"
-          />
-          <div className="text-end">
-            <Button
-              variant="outline-success"
-              size="md"
-              onClick={() => navigate("/admin/create-users")}
-              className="button-order-responsive"
-            >
-              <FaPlus /> Crear Usuario
-            </Button>
-          </div>
-        </div>
-
-        {loading && (
-          <div className="overlay">
-            <div className="loader">Cargando Datos...</div>
-          </div>
-        )}
-
-        <StandardTable
-          rows={filteredUsers}
-          columns={columns}
-          loading={loadingTable}
-          noRowsText="No hay usuarios disponibles"
-          customProps={{
-            paginationMode: "server",
-            rowCount: rowCount,
-            pageSizeOptions: [10, 25, 50, 100],
-            paginationModel: { page, pageSize },
-            onPaginationModelChange: ({ page, pageSize }) => {
-              setPage(page);
-              setPageSize(pageSize);
-            },
-          }}
-          enableDynamicHeight={true}
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="input-responsive me-2"
         />
+        <div className="text-end">
+          <Button
+            variant="outline-success"
+            size="md"
+            onClick={() => navigate("/admin/create-users")}
+            className="button-order-responsive"
+          >
+            <FaPlus /> Crear Usuario
+          </Button>
+        </div>
       </div>
+
+      {loading && (
+        <div className="overlay">
+          <div className="loader">Cargando Datos...</div>
+        </div>
+      )}
+
+      <StandardTable
+        rows={filteredUsers}
+        columns={columns}
+        loading={loadingTable}
+        noRowsText="No hay usuarios disponibles"
+        customProps={{
+          paginationMode: "server",
+          rowCount: rowCount,
+          pageSizeOptions: [10, 25, 50, 100],
+          paginationModel: { page, pageSize },
+          onPaginationModelChange: ({ page, pageSize }) => {
+            setPage(page);
+            setPageSize(pageSize);
+          },
+          autoHeight: true,
+        }}
+        enableDynamicHeight={true}
+      />
     </>
   );
 };

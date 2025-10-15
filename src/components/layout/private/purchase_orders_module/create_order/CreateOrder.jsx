@@ -397,8 +397,7 @@ export const CreateOrder = () => {
                     color: "#FFF",
                   }}
                 >
-                  Saldo: $
-                  {parseFloat(saldoRestante).toLocaleString("es-CO", {
+                  Saldo: ${parseFloat(saldoRestante).toLocaleString("es-CO", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
                   })}
@@ -484,7 +483,7 @@ export const CreateOrder = () => {
 
           {/* Totales */}
           <Row className="mt-2 justify-content-md-end justify-content-center">
-            <Col xs={12} md={6} className="text-end">
+            <Col xs={12} md={3} className="text-end">
               <p className="subtotal-text">
                 <strong>SUBTOTAL:</strong> ${subtotal.toLocaleString()}
               </p>

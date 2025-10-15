@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import Select from "react-select";
-import StandardTable from "../../../../shared/StandardTable";
 
 //Components
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
@@ -26,6 +25,7 @@ import {
   RolesEnum,
   StatusTeamProductEnum,
 } from "../../../../../helpers/GlobalEnum";
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 const PAGE_SIZE = 25;
 

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import StandardTable from "../../../../../shared/StandardTable";
+
+//Components
+import StandardTable from "../../../../shared/standardTable/StandardTable";
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
@@ -10,6 +12,7 @@ import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Columns
 import { beneficiaryColumns } from "../../../../../../helpers/utils/PaymentsColumns";
+
 
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
   const [dataTable, setDataTable] = useState([]);

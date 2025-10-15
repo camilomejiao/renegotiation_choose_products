@@ -37,7 +37,7 @@ export const SearchUser = () => {
             <section className="surface-card">
                 <header className="surface-card__header">
                     <h2 className="surface-card__title">Consulta de beneficiarios</h2>
-                    <span className="text-soft">Ingresa el documento o CUB para iniciar</span>
+                    <span className="text-soft">Ingresa el documento para iniciar</span>
                 </header>
 
                 <div className="surface-card__body">

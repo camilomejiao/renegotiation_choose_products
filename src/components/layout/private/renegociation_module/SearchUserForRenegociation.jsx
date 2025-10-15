@@ -16,23 +16,27 @@ export const SearchUserForRenegociation = () => {
 
     return (
         <>
-            <Container fluid className="dashboard-container">
-                <Row className="text-center mt-5">
-                    <Col>
-                        <h1 className="dashboard-title">
-                            Bienvenido al <span className="highlight-text">banco de <br/>Proveedores</span> de la DSCI
-                        </h1>
-                        <p className="green-box">
-                            Da el siguiente paso en tus <span className="highlight-text2">entregas</span> ahora.
-                        </p>
-                    </Col>
-                </Row>
+            <div className="page-wrapper">
+                <section className="page-hero">
+                    <h1 className="page-hero__title">
+                        Bienvenido al <span className="text-highlight">Banco de Proveedores</span> de la DSCI
+                    </h1>
+                    <p className="page-hero__subtitle">
+                        <strong>RENEGOCIACIÓN.</strong>
+                    </p>
+                </section>
 
-                <Row className="justify-content-center mt-4">
-                    <SearchUserForm component={ComponentEnum.RENEGOTIATION} onSearchSuccess={handleSearchSuccess} />
-                </Row>
+                <section className="surface-card">
+                    <header className="surface-card__header">
+                        <h2 className="surface-card__title">Consulta de beneficiarios</h2>
+                        <span className="text-soft">Ingresa el documento para iniciar</span>
+                    </header>
 
-            </Container>
+                    <div className="surface-card__body">
+                        <SearchUserForm component={ComponentEnum.RENEGOTIATION} onSearchSuccess={handleSearchSuccess} />
+                    </div>
+                </section>
+            </div>
         </>
     );
 }

@@ -3,14 +3,18 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import Select from "react-select";
-import StandardTable from "../../../../shared/StandardTable";
+
 
 // Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
+import StandardTable from "../../../shared/standardTable/StandardTable";
+
+//Modals
+import { ApprovedDeniedModal } from "../../../shared/modals/ApprovedDeniedModal";
+
 
 // Services
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -619,7 +623,7 @@ export const ValidationEnvironmental = () => {
   useEffect(() => {
     if (!selectedPlan?.value) return;
     getProductList(page + 1, pageSize, selectedPlan?.value);
-  }, [page, pageSize, selectedPlan]);
+  }, [page, pageSize]);
 
   return (
     <>
@@ -696,7 +700,11 @@ export const ValidationEnvironmental = () => {
             rows={filteredData}
             customProps={{
               checkboxSelection: true,
-              onRowSelectionModelChange: handleSelectionChange,
+              rowSelectionModel: selectedIds,
+              onRowSelectionModelChange: (model) => {
+                setSelectedIds(model);
+                handleSelectionChange(model);
+              },
               processRowUpdate: handleRowUpdate,
               editMode: "row",
               paginationMode: "server",

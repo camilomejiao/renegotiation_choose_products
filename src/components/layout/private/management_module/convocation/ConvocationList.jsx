@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import StandardTable from "../../../../shared/StandardTable";
+
+//
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -21,6 +23,8 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Helper
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import {HeaderImage} from "../../../shared/header_image/HeaderImage";
 
 export const ConvocationList = () => {
   const navigate = useNavigate();
@@ -130,64 +134,58 @@ export const ConvocationList = () => {
 
   return (
     <>
-      <div className="main-container">
-        <div className="header-image position-relative">
-          <img
-            src={imgDCSIPeople}
-            alt="Fondo"
-            className="background-image w-100"
-          />
-          <div className="overlay-text position-absolute w-100 text-center">
-            <h1>¡Gestión de Jornadas!</h1>
-          </div>
-        </div>
+      <HeaderImage
+          imageHeader={imgDCSIPeople}
+          titleHeader={"¡Gestión de Jornadas!"}
+          bannerIcon={imgAdd}
+          backgroundIconColor={"#2148C0"}
+          bannerInformation={
+            "Aquí podrás realizar la entrega de todos tus productos."
+          }
+          backgroundInformationColor={"#F66D1F"}
+      />
 
-        <div className="container mt-lg-3">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="input-responsive me-2"
-            />
-            <div className="text-end">
-              <Button
-                variant="outline-success"
-                onClick={() => navigate("/admin/create-convocation")}
-                className="button-order-responsive"
-              >
-                <FaPlus /> Crear Jornada
-              </Button>
-            </div>
-          </div>
-
-          {loading && (
-            <div className="overlay">
-              <div className="loader">Cargando Datos...</div>
-            </div>
-          )}
-
-          <div style={{ height: 600, width: "100%" }}>
-            <StandardTable
-              rows={filteredConvocations}
-              columns={columns}
-              loading={loadingTable}
-              customProps={{
-                editMode: "row",
-                pagination: true,
-                initialState: {
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 25 },
-                  },
-                },
-                pageSizeOptions: [10, 25, 50, 100],
-              }}
-              enableDynamicHeight={true}
-            />
-          </div>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="input-responsive me-2"
+        />
+        <div className="text-end">
+          <Button
+            variant="outline-success"
+            onClick={() => navigate("/admin/create-convocation")}
+            className="button-order-responsive"
+          >
+            <FaPlus /> Crear Jornada
+          </Button>
         </div>
       </div>
+
+      {loading && (
+        <div className="overlay">
+          <div className="loader">Cargando Datos...</div>
+        </div>
+      )}
+
+      <StandardTable
+        rows={filteredConvocations}
+        columns={columns}
+        loading={loadingTable}
+        customProps={{
+          editMode: "row",
+          pagination: true,
+          initialState: {
+            pagination: {
+              paginationModel: { page: 0, pageSize: 25 },
+            },
+          },
+          pageSizeOptions: [10, 25, 50, 100],
+        }}
+        enableDynamicHeight={true}
+      />
     </>
   );
 };

@@ -78,29 +78,31 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
     return (
         <form className="search-panel" onSubmit={handleSearch}>
             <div className="search-panel__controls">
-                {isRenegotiation && (
-                    <select
-                        value={searchType}
-                        onChange={(e) => setSearchType(e.target.value)}
+                <div className="search-input-group">
+                    {isRenegotiation && (
+                        <select
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value)}
+                            className="input-field input-field--accent search-panel__input"
+                        >
+                            <option value="2">Cédula</option>
+                            <option value="1">CUB</option>
+                        </select>
+                    )}
+
+                    <input
+                        type="number"
+                        min="1"
+                        placeholder="Buscar"
                         className="input-field input-field--accent search-panel__input"
-                    >
-                        <option value="2">Cédula</option>
-                        <option value="1">CUB</option>
-                    </select>
-                )}
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                    />
 
-                <input
-                    type="number"
-                    min="1"
-                    placeholder="Buscar"
-                    className="input-field input-field--accent search-panel__input"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                />
-
-                <button type="submit" className="button-pill button-pill--icon" aria-label="Buscar">
-                    <img src={magnifyingGlass} alt="" role="presentation" width="22" height="22" />
-                </button>
+                    <button type="submit" className="button-pill button-pill--icon" aria-label="Buscar">
+                        <img src={magnifyingGlass} alt="" role="presentation" width="25" height="25" />
+                    </button>
+                </div>
             </div>
 
             <p className="search-panel__hint">

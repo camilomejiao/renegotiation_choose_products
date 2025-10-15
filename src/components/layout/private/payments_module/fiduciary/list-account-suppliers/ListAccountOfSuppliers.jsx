@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import StandardTable from "../../../../../shared/StandardTable";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../../shared/standardTable/StandardTable";
 
 //img
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
+
+//Enum
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+
+//Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
+
 
 export const ListAccountOfSuppliers = () => {
   const navigate = useNavigate();

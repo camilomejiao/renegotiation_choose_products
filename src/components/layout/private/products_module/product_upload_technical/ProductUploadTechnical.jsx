@@ -3,11 +3,13 @@ import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
-import StandardTable from "../../../../shared/StandardTable";
 
-//
+//Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+
+//Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Utils
 import {

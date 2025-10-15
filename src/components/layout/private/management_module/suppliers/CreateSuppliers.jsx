@@ -1,16 +1,19 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useEffect } from "react";
-import * as yup from "yup";
-import { FormControlLabel, Switch, TextField } from "@mui/material";
+import { useEffect } from "react";
 import { Button } from "react-bootstrap";
+import { FormControlLabel, Switch, TextField } from "@mui/material";
+import * as yup from "yup";
 import { useFormik } from "formik";
 
 //Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import {supplierServices} from "../../../../../helpers/services/SupplierServices";
@@ -72,7 +75,7 @@ export const CreateSuppliers = () => {
         },
     });
 
-    const fetchSupplierData = useCallback(async (supplierId) => {
+    const fetchSupplierData = async (supplierId) => {
         try {
             const {data, status} = await supplierServices.getSupplierById(supplierId);
             console.log(data);
@@ -92,131 +95,126 @@ export const CreateSuppliers = () => {
             console.error("Error al enviar el formulario:", error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    }, [formik]);
+    };
 
     useEffect(() => {
         if (id) {
             fetchSupplierData(id)
         }
-    }, [fetchSupplierData, id]);
+    }, [id]);
 
     return(
         <>
+            <HeaderImage
+                imageHeader={imgPeople}
+                titleHeader={"¡Registra tus proveedores!"}
+                bannerIcon={''}
+                backgroundIconColor={''}
+                bannerInformation={''}
+                backgroundInformationColor={''}
+            />
 
-            <div className="main-container">
-                <HeaderImage
-                    imageHeader={imgPeople}
-                    titleHeader={"¡Registra tus proveedores!"}
-                    bannerIcon={''}
-                    backgroundIconColor={''}
-                    bannerInformation={''}
-                    backgroundInformationColor={''}
-                />
+            <form onSubmit={formik.handleSubmit} className="container">
+                <div className="row g-3 mt-5">
 
-                <form onSubmit={formik.handleSubmit} className="container">
-                    <div className="row g-3 mt-5">
-
-                        {/* Nombre */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Nombre de la compañia"
-                                {...formik.getFieldProps("company_name")}
-                                error={formik.touched.company_name && Boolean(formik.errors.company_name)}
-                                helperText={formik.touched.company_name && formik.errors.company_name}
-                            />
-                        </div>
-
-                        {/* Nit */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Nit"
-                                {...formik.getFieldProps("nit")}
-                                error={formik.touched.nit && Boolean(formik.errors.nit)}
-                                helperText={formik.touched.nit && formik.errors.nit}
-                            />
-                        </div>
-
-                        {/* Email */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                {...formik.getFieldProps("email")}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                                helperText={formik.touched.email && formik.errors.email}
-                            />
-                        </div>
-
-                        {/* fullWidth */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Telefono"
-                                {...formik.getFieldProps("cellphone")}
-                                error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
-                                helperText={formik.touched.cellphone && formik.errors.cellphone}
-                            />
-                        </div>
-
-                        {/* Representante */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Nombre del Representante legal"
-                                {...formik.getFieldProps("legal_representative")}
-                                error={formik.touched.legal_representative && Boolean(formik.errors.legal_representative)}
-                                helperText={formik.touched.legal_representative && formik.errors.legal_representative}
-                            />
-                        </div>
-
-                        {/* Número de resolución */}
-                        <div className="col-md-6">
-                            <TextField
-                                fullWidth
-                                label="Número de resolución"
-                                {...formik.getFieldProps("resolution")}
-                                error={formik.touched.resolution && Boolean(formik.errors.resolution)}
-                                helperText={formik.touched.resolution && formik.errors.resolution}
-                            />
-                        </div>
-
-                        {/* Activo */}
-                        <div className="col-md-6">
-                            <FormControlLabel
-                                label="Activo"
-                                labelPlacement="start"
-                                control={
-                                    <Switch
-                                        color="success"
-                                        checked={formik.values.active}
-                                        onChange={(e) => formik.setFieldValue("active", e.target.checked)}
-                                    />
-                                }
-                            />
-                        </div>
-
-                    </div>
-                    <div className="text-end mt-4 d-flex gap-2 justify-content-end">
-                        <Button variant="outline-success"
-                                color="success"
-                                type="submit"
-                        >
-                            Guardar
-                        </Button>
-
-                        <Button variant="outline-danger"
-                                type="button"
-                                onClick={() => navigate("/admin/management")}
-                        >
-                            Cancelar
-                        </Button>
+                    {/* Nombre */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Nombre de la compañia"
+                            {...formik.getFieldProps("company_name")}
+                            error={formik.touched.company_name && Boolean(formik.errors.company_name)}
+                            helperText={formik.touched.company_name && formik.errors.company_name}
+                        />
                     </div>
 
-                </form>
+                    {/* Nit */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Nit"
+                            {...formik.getFieldProps("nit")}
+                            error={formik.touched.nit && Boolean(formik.errors.nit)}
+                            helperText={formik.touched.nit && formik.errors.nit}
+                        />
+                    </div>
 
-            </div>
+                    {/* Email */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Email"
+                            {...formik.getFieldProps("email")}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                    </div>
+
+                    {/* fullWidth */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Telefono"
+                            {...formik.getFieldProps("cellphone")}
+                            error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
+                            helperText={formik.touched.cellphone && formik.errors.cellphone}
+                        />
+                    </div>
+
+                    {/* Representante */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Nombre del Representante legal"
+                            {...formik.getFieldProps("legal_representative")}
+                            error={formik.touched.legal_representative && Boolean(formik.errors.legal_representative)}
+                            helperText={formik.touched.legal_representative && formik.errors.legal_representative}
+                        />
+                    </div>
+
+                    {/* Número de resolución */}
+                    <div className="col-md-6">
+                        <TextField
+                            fullWidth
+                            label="Número de resolución"
+                            {...formik.getFieldProps("resolution")}
+                            error={formik.touched.resolution && Boolean(formik.errors.resolution)}
+                            helperText={formik.touched.resolution && formik.errors.resolution}
+                        />
+                    </div>
+
+                    {/* Activo */}
+                    <div className="col-md-6">
+                        <FormControlLabel
+                            label="Activo"
+                            labelPlacement="start"
+                            control={
+                                <Switch
+                                    color="success"
+                                    checked={formik.values.active}
+                                    onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+                                />
+                            }
+                        />
+                    </div>
+
+                </div>
+                <div className="text-end mt-4 d-flex gap-2 justify-content-end">
+                    <Button variant="outline-success"
+                            color="success"
+                            type="submit"
+                    >
+                        Guardar
+                    </Button>
+
+                    <Button variant="outline-danger"
+                            type="button"
+                            onClick={() => navigate("/admin/management")}
+                    >
+                        Cancelar
+                    </Button>
+                </div>
+            </form>
         </>
     )
 }

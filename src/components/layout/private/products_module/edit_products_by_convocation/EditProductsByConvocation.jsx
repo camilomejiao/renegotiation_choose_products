@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaFastBackward, FaPlus, FaSave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
-import StandardTable from "../../../../shared/StandardTable";
 
 //Utils
 import {
@@ -20,15 +19,16 @@ import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 //Components
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../shared/standardTable/StandardTable";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
-import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
+import { ConfirmationModal } from "../../../shared/modals/ConfirmationModal";
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 100;
 
 export const EditProductsByConvocation = () => {
   const params = useParams();
@@ -93,7 +93,7 @@ export const EditProductsByConvocation = () => {
   const handleSelectedPlan = async (option) => {
     if (option?.value) {
       setSelectedPlan(option);
-      await getProductList(option.value);
+      await getProductList(1, PAGE_SIZE, option.value);
     }
   };
 
@@ -106,8 +106,8 @@ export const EditProductsByConvocation = () => {
     sizeToFetch = PAGE_SIZE,
     planId
   ) => {
-    setLoading(true);
     try {
+      setLoading(true);
       const { data, status } =
         await convocationProductsServices.getProductByConvocationAndPlan(
           pageToFetch,
@@ -156,15 +156,18 @@ export const EditProductsByConvocation = () => {
    * Guarda los cambios en `editedProducts` para enviar luego.
    * @param {object} newRow
    */
-  const handleRowUpdate = (newRow) => {
-    setProductList((prev) =>
-      prev.map((r) => (r.id === newRow.id ? newRow : r))
-    );
-    setFilteredData((prev) =>
-      prev.map((r) => (r.id === newRow.id ? newRow : r))
-    );
-    return newRow;
-  };
+  const handleRowUpdate = useCallback((newRow) => {
+    setProductList((prev) => {
+      const idx = prev.findIndex((r) => r.id === newRow.id);
+      if (idx === -1) return prev;
+      // inmutabilidad minimal
+      const next = prev.slice();
+      next[idx] = { ...prev[idx], ...newRow };
+      return next;
+    });
+    return newRow; // requerido por MUI
+  }, []);
+
 
   const handleDeleteClick = async (productId) => {
     setSelectedRowId(productId);
@@ -181,6 +184,7 @@ export const EditProductsByConvocation = () => {
       if (status === ResponseStatusEnum.OK) {
         showAlert("Bien hecho!", "Producto eliminado exitosamente.");
         setShowModal(false);
+        console.log('pag');
         await getProductList(1, PAGE_SIZE, selectedPlan.value);
       }
     } catch (error) {
@@ -297,11 +301,10 @@ export const EditProductsByConvocation = () => {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!selectedPlan?.value) return;
     getProductList(page + 1, pageSize, selectedPlan?.value);
-  }, [page, pageSize, selectedPlan]);
+  }, [page, pageSize]);
 
   return (
     <>
@@ -316,10 +319,9 @@ export const EditProductsByConvocation = () => {
         />
 
         {loading && (
-          <div className="spinner-container">
-            <Spinner animation="border" variant="success" />
-            <span>Cargando...</span>
-          </div>
+            <div className="overlay">
+              <div className="loader">Cargando Datos...</div>
+            </div>
         )}
 
         <div className="container mt-lg-3">
@@ -389,7 +391,7 @@ export const EditProductsByConvocation = () => {
                 setPage(page);
                 setPageSize(pageSize);
               },
-              pageSizeOptions: [10, 25, 50, 100],
+              pageSizeOptions: [25, 50, 100],
               getRowClassName: (params) =>
                 params.row.status === "Abierto" ? "row-open" : "row-closed",
             }}

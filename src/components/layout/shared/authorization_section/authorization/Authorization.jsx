@@ -112,13 +112,13 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>{opt1?.label || '\u00A0'}</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt1?.label ? opt1?.label : '\u00A0'}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>{opt2.label || '\u00A0'}</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt2?.label ? opt2?.label : '\u00A0'}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{width: '1%', border: '1px solid black'}}>{opt3.label || '\u00A0'}</td>
+                                        <td style={{width: '1%', border: '1px solid black'}}>{opt3?.label ? opt3?.label : '\u00A0'}</td>
                                     </tr>
                                 </table>
                             </th>

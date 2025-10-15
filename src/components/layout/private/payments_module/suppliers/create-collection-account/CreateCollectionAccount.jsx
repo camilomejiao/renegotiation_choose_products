@@ -3,17 +3,21 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FaSave, FaStepBackward } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+//Img
+import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
+import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
+import imgWorker from "../../../../../../assets/image/payments/worker.png";
+
 // Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 
 // Enums
-import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
-import imgWorker from "../../../../../../assets/image/payments/worker.png";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+
+//Componentes
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
-import StandardTable from "../../../../../shared/StandardTable";
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../../shared/standardTable/StandardTable";
 
 export const CreateCollectionAccount = () => {
   const navigate = useNavigate();

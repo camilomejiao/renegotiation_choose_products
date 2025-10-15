@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button, Container, Form, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import StandardTable from "../../../shared/StandardTable";
+import StandardTable from "../../shared/standardTable/StandardTable";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";

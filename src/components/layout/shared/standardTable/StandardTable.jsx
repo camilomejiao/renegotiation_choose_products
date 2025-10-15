@@ -2,10 +2,8 @@ import { Box } from "@mui/material"; // CRÍTICO: Box es necesario para las lín
 import { ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
-import {
-  defaultTableProps,
-  globalTableTheme,
-} from "../../helpers/utils/TableConfig";
+
+import { globalTableTheme, defaultTableProps } from "../../../../helpers/utils/TableConfig";
 
 /**
  * Determina si una columna contiene valores monetarios basándose en el field
@@ -256,9 +254,9 @@ export const StandardTable = ({
           paddingTop: "4px",
         },
         "&.Mui-selected": {
-          backgroundColor: "#e3f2fd",
+          backgroundColor: "#1a6ca2",
           "&:hover": {
-            backgroundColor: "#bbdefb",
+            backgroundColor: "#4377a9",
           },
         },
       },

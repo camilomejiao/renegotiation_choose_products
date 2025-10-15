@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import Select from "react-select";
-import StandardTable from "../../../../shared/StandardTable";
 
 // Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
+import StandardTable from "../../../shared/standardTable/StandardTable";
+
+//MOda
+import { ApprovedDeniedModal } from "../../../shared/modals/ApprovedDeniedModal";
+
 
 // Services
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -291,6 +294,7 @@ export const ValidationSupervision = () => {
 
   //Manejar selección de filas
   const handleSelectionChange = (newSelection) => {
+    console.log(newSelection);
     setSelectedIds(newSelection);
   };
 
@@ -407,130 +411,132 @@ export const ValidationSupervision = () => {
 
   return (
     <>
-      <div className="main-container">
         <HeaderImage
           imageHeader={imgPeople}
           titleHeader="¡Listado de productos!"
         />
 
-        <div className="container mt-lg-3">
-          <Row className="gy-2 align-items-center mt-3 mb-3">
-            {/* Select Jornada */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedConvocation ?? null}
-                options={convocations?.map((opt) => ({
-                  value: opt.id,
-                  label: opt.nombre,
-                }))}
-                placeholder="Selecciona una Jornada"
-                onChange={handleSelectedConvocation}
-                isClearable
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                styles={{
-                  placeholder: (base) => ({ ...base, color: "#6c757d" }),
-                  singleValue: (base) => ({ ...base, color: "#212529" }),
-                }}
-                noOptionsMessage={() => "Sin opciones"}
-              />
-            </Col>
+        <Row className="gy-2 align-items-center mt-3">
+          {/* Select Jornada */}
+          <Col xs={12} md={4}>
+            <Select
+              value={selectedConvocation ?? null}
+              options={convocations?.map((opt) => ({
+                value: opt.id,
+                label: opt.nombre,
+              }))}
+              placeholder="Selecciona una Jornada"
+              onChange={handleSelectedConvocation}
+              isClearable
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              styles={{
+                placeholder: (base) => ({ ...base, color: "#6c757d" }),
+                singleValue: (base) => ({ ...base, color: "#212529" }),
+              }}
+              noOptionsMessage={() => "Sin opciones"}
+            />
+          </Col>
 
-            {/* Select Plan */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedPlan ?? null}
-                options={planRaw.map((opt) => ({
-                  value: opt.id,
-                  label: opt.plan_nombre,
-                }))}
-                placeholder="Selecciona un Plan"
-                onChange={handleSelectedPlan}
-                isClearable
-                isDisabled={!selectedConvocation || loading}
-                isLoading={loading}
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                noOptionsMessage={() =>
-                  selectedConvocation ? "Sin planes" : "Selecciona una jornada"
-                }
-              />
-            </Col>
+          {/* Select Plan */}
+          <Col xs={12} md={4}>
+            <Select
+              value={selectedPlan ?? null}
+              options={planRaw.map((opt) => ({
+                value: opt.id,
+                label: opt.plan_nombre,
+              }))}
+              placeholder="Selecciona un Plan"
+              onChange={handleSelectedPlan}
+              isClearable
+              isDisabled={!selectedConvocation || loading}
+              isLoading={loading}
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              noOptionsMessage={() =>
+                selectedConvocation ? "Sin planes" : "Selecciona una jornada"
+              }
+            />
+          </Col>
 
-            {/* Select Supplier */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedSupplier}
-                options={suppliers.map((opt) => ({
-                  value: opt.id,
-                  label: opt.nombre,
-                }))}
-                placeholder="Selecciona un Proveedor"
-                onChange={handleSelectedSupplier}
-                isClearable
-                isDisabled={!selectedConvocation || loading}
-                isLoading={loading}
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                noOptionsMessage={() =>
-                  selectedConvocation
-                    ? "Sin proveedores"
-                    : "Selecciona una jornada"
-                }
-              />
-            </Col>
-          </Row>
+          {/* Select Supplier */}
+          <Col xs={12} md={4}>
+            <Select
+              value={selectedSupplier}
+              options={suppliers.map((opt) => ({
+                value: opt.id,
+                label: opt.nombre,
+              }))}
+              placeholder="Selecciona un Proveedor"
+              onChange={handleSelectedSupplier}
+              isClearable
+              isDisabled={!selectedConvocation || loading}
+              isLoading={loading}
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              noOptionsMessage={() =>
+                selectedConvocation
+                  ? "Sin proveedores"
+                  : "Selecciona una jornada"
+              }
+            />
+          </Col>
+        </Row>
 
-          <Row className="gy-2 align-items-center mt-3 mb-3">
-            <Col xs={12} md={4}>
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={handleSearchQueryChange}
-                className="form-control"
-              />
-            </Col>
-          </Row>
+        <Row className="gy-2 align-items-center mt-3 mb-3">
+          <Col xs={12} md={4}>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={handleSearchQueryChange}
+              className="form-control"
+            />
+          </Col>
+        </Row>
 
-          {loading && (
-            <div className="overlay">
-              <div className="loader">Cargando...</div>
-            </div>
-          )}
+        {loading && (
+          <div className="overlay">
+            <div className="loader">Cargando...</div>
+          </div>
+        )}
 
-          <StandardTable
-            loading={loadingTable}
-            columns={columns}
-            rows={filteredData}
-            customProps={{
-              checkboxSelection: true,
-              onRowSelectionModelChange: handleSelectionChange,
-              paginationMode: "server",
-              rowCount: rowCount,
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-              pageSizeOptions: [10, 25, 50, 100],
-            }}
-            enableDynamicHeight={true}
-          />
+        <StandardTable
+          loading={loadingTable}
+          columns={columns}
+          rows={filteredData}
+          customProps={{
+            checkboxSelection: true,
+            rowSelectionModel: selectedIds,
+            onRowSelectionModelChange: (model) => {
+              setSelectedIds(model);
+              handleSelectionChange(model);
+            },
+            paginationMode: "server",
+            rowCount: rowCount,
+            paginationModel: { page, pageSize },
+            onPaginationModelChange: ({ page, pageSize }) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+            pageSizeOptions: [10, 25, 50, 100],
+          }}
+          enableDynamicHeight={true}
+        />
 
-          {/* Modal de aprobación/denegación */}
-          <ApprovedDeniedModal
-            open={openModal}
-            onClose={handleCloseModalApproved}
-            action={action}
-            setAction={setAction}
-            comment={comment}
-            setComment={setComment}
-            onSubmit={handleApproveDenySubmit}
-          />
+        {/* Modal de aprobación/denegación */}
+        <ApprovedDeniedModal
+          open={openModal}
+          onClose={handleCloseModalApproved}
+          action={action}
+          setAction={setAction}
+          comment={comment}
+          setComment={setComment}
+          onSubmit={handleApproveDenySubmit}
+        />
 
-          {/* Botón Guardar */}
-          <div className="d-flex justify-content-end gap-2 mt-3">
+        {/* Botón Guardar */}
+        <div className="d-flex justify-content-end gap-2 mt-3">
             <>
               <Button
                 variant="outline-warning"
@@ -542,8 +548,6 @@ export const ValidationSupervision = () => {
               </Button>
             </>
           </div>
-        </div>
-      </div>
     </>
   );
 };

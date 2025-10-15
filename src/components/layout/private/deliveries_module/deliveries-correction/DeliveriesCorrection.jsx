@@ -3,7 +3,7 @@ import { Button, Col, Nav, Row } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import imgPayments from "../../../../../assets/image/payments/payments.png";
-import StandardTable from "../../../../shared/StandardTable";
+import StandardTable from "../../../shared/standardTable/StandardTable";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 
 //Columns

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { FaBroom, FaSearch, FaTrash } from "react-icons/fa";
-import StandardTable from "../../../../shared/StandardTable";
 
-// Image
+// Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 // Services
@@ -12,11 +11,13 @@ import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseO
 // Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
-import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-
 //Components
-import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import StandardTable from "../../../shared/standardTable/StandardTable";
+
+//Modals
+import { ConfirmationModal } from "../../../shared/modals/ConfirmationModal";
 
 const PAGE_SIZE = 25;
 

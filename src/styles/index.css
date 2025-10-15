@@ -644,7 +644,7 @@ video {
 }
 
 .app-footer__image {
-  width: min(600px, 100%);
+  width: auto;
   margin-inline: auto;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -738,7 +738,8 @@ video {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
+  justify-content: center;
+  text-align: center;
 }
 
 .profile-card__avatar {
@@ -751,7 +752,6 @@ video {
 
 .profile-card__identity {
   display: grid;
-  gap: var(--space-3);
   min-width: min(260px, 100%);
 }
 
@@ -769,13 +769,14 @@ video {
 }
 
 .profile-card__name {
-  background: var(--color-accent);
+  background: var(--color-surface-muted);
   color: #1f2a15;
 }
 
 .profile-card__meta {
   background: var(--color-primary);
   font-size: 0.95rem;
+  width: 100%;
 }
 
 .profile-card__grid {
@@ -882,6 +883,7 @@ video {
   color: #fff;
   box-shadow: var(--shadow-md);
   position: relative;
+  margin-top: 25px;
 }
 
 .info-banner__icon {
@@ -941,6 +943,7 @@ video {
   padding: var(--space-6);
   box-shadow: var(--shadow-sm);
   border: 1px solid rgba(40, 71, 117, 0.08);
+  margin-top: 15px;
 }
 
 .surface-card__header {
@@ -1108,8 +1111,9 @@ video {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: var(--space-4);
+  margin-top: 10px;
 }
 
 .deliveries-button {
@@ -3049,7 +3053,7 @@ video {
 }
 
 .select-container {
-  width: min(460px, 100%);
+  width: min(660px, 100%);
   position: relative;
   z-index: 1051;
 }
@@ -3124,6 +3128,7 @@ video {
   padding: var(--space-4);
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 60px
 }
 
 .scrollable-thead-body {
@@ -3259,7 +3264,7 @@ video {
   border: none !important;
   border-bottom: 2px solid #e9ecef !important;
   font-weight: 600 !important;
-  text-align: center !important;
+  text-align: left !important;
   padding: 16px 12px !important;
   font-size: 0.9rem !important;
 }
@@ -3309,7 +3314,7 @@ video {
   }
 
   .select-container {
-    width: 80%;
+    width: 100%;
   }
 
   .title-div h3 {
@@ -3457,7 +3462,7 @@ a.button-pill {
 }
 
 .button-pill--icon {
-  width: 52px;
+  width: 60px;
   height: 52px;
   padding: 0;
   border-radius: 50%;
@@ -3563,6 +3568,28 @@ a.button-pill {
   text-align: center;
 }
 
+/* Agrupa input + botón para que nunca se separen */
+.search-input-group {
+  display: inline-flex;
+  align-items: stretch;
+  white-space: nowrap;
+  gap: 10px;
+}
+
+/* que visualmente se “unan” */
+.search-input-group__field {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.search-input-group__btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 48px;            /* mismo alto que el input */
+  min-width: 52px;         /* cómodo para el icono */
+  padding: 0;              /* ya es icon-only */
+}
+
 @media (max-width: 576px) {
   .button-pill--icon {
     width: 48px;
@@ -3572,6 +3599,11 @@ a.button-pill {
   .search-panel__input {
     min-width: 180px;
   }
+
+  .search-panel__controls { gap: var(--space-3); }
+  .search-input-group { width: 100%; }
+  .search-input-group__field { flex: 1 1 auto; }
+  .search-input-group__btn { flex: 0 0 auto; }
 }
 
 /* react-select overrides */
@@ -3728,3 +3760,4 @@ a.button-pill {
   border-left: 1px solid #5ba3d4 !important;
   border-right: 1px solid #5ba3d4 !important;
 }
+

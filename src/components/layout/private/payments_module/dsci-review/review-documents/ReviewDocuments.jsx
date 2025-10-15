@@ -6,7 +6,7 @@ import { FaStepBackward } from "react-icons/fa";
 //Components
 import { UserInformation } from "../../../../shared/user_information/UserInformation";
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { PaymentsConfirmationModal } from "../../../../shared/Modals/PaymentsConfirmationModal";
+import { PaymentsConfirmationModal } from "../../../../shared/modals/PaymentsConfirmationModal";
 
 //helper
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
