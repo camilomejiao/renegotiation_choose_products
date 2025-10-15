@@ -22,6 +22,8 @@ import { AuthorizationSection } from "../../shared/authorization_section/Authori
 //Modals
 import { PlanHistory } from "../../shared/modals/PlanHistory";
 import { ConfirmationModal } from "../../shared/modals/ConfirmationModal";
+import {HeaderImage} from "../../shared/header_image/HeaderImage";
+import imgAdd from "../../../../assets/image/payments/imgPay.png";
 export const Renegociation = () => {
 
     const params = useParams();
@@ -366,18 +368,21 @@ export const Renegociation = () => {
 
     return (
         <>
-            <div className="main-container">
-                <div className="header-image position-relative">
-                    <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
-                    <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>¡Renegociación!</h1>
-                    </div>
-                </div>
+            <HeaderImage
+                imageHeader={imgDCSIPeople}
+                titleHeader={"¡Renegociación!"}
+                bannerIcon={imgAdd}
+                backgroundIconColor={"#2148C0"}
+                bannerInformation={
+                    "Aquí podrás realizar la elección de tu plan de inversión."
+                }
+                backgroundInformationColor={"#F66D1F"}
+            />
 
-                {/* Contenedor de la información del usuario */}
-                <UserInformation userData={userData} />
+            {/* Contenedor de la información del usuario */}
+            <UserInformation userData={userData} />
 
-                <Container>
+            <Container>
                     <Row className="justify-content-start align-items-center mt-4">
                         {/* Select para Plan */}
                         <Col xs={12} md={3} className="mb-3">
@@ -522,7 +527,6 @@ export const Renegociation = () => {
                         </Col>
                     </Row>
                 </Container>
-            </div>
 
             {/* Aquí renderizas el componente pero lo ocultas */}
             <div style={{ display: 'none' }}>
