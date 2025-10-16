@@ -128,9 +128,21 @@ class PaymentServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    /**
+     *
+     */
     getExcelAndPdfFile(SPId) {
         const url = this.buildUrl(`cuentas-cobro/reporte-excel/?numero_cuenta_cobro=${SPId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
+    changeStatusCollectionDetail(SPId) {
+        const url = this.buildUrl(`entregas-revision/${SPId}/aprobar/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(SPId),
+        });
     }
 
 }

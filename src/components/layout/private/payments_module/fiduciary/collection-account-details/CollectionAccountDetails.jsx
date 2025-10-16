@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
-import { BsArrowLeft } from "react-icons/bs";
+import { FaStepBackward } from "react-icons/fa";
 
 // Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -106,6 +106,18 @@ export const CollectionAccountDetails = () => {
         }
     };
 
+    const handleChangeStatusAccount = () => {
+        setLoading(true);
+        try {
+            setInformationLoadingText("Validando entregas y pago");
+
+        } catch (error) {
+            console.error("Error obteniendo las entregas:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         if (params.id) {
             getAccountInformaction(params.id);
@@ -155,11 +167,17 @@ export const CollectionAccountDetails = () => {
                     <Row className="mb-4">
                         <Col md={6}>
                             <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
+                            <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
                             </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
+                            <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
                                 <img src={downloadImg} alt="" /> RUT
+                            </button>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                <img src={downloadImg} alt="" /> Generar documento excel
+                            </button>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                <img src={downloadImg} alt="" /> Generar documento pdf
                             </button>
                         </Col>
 
@@ -175,18 +193,13 @@ export const CollectionAccountDetails = () => {
 
                     <Row className="justify-content-center mt-4">
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-success" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
-                                📝 Generar documento excel
-                            </Button>
-                        </Col>
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-warning" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
-                                📝 Generar documento pdf
+                            <Button className="generate" variant="outline-warning" onClick={handleChangeStatusAccount}>
+                                Emitir pago
                             </Button>
                         </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
                             <button className="button-back" onClick={() => navigate(-1)}>
-                                <BsArrowLeft size={18} /> Cuentas de cobro
+                                <FaStepBackward /> Cuentas de cobro
                             </button>
                         </Col>
                     </Row>

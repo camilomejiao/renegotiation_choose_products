@@ -2,7 +2,7 @@
    CONTENEDOR PRINCIPAL
 ================================= */
 .content-collection-details {
-    max-width: 1200px;
+    max-width: 1150px;
     margin: 50px auto;
     padding: 25px;
     background: #fff;
@@ -23,7 +23,7 @@
 /* ================================
    BOTONES DE DESCARGA
 ================================= */
-.button-download {
+.button-download-collection {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -40,11 +40,37 @@
     transition: background-color 0.3s;
 }
 
-.button-download:hover {
+.button-download-collection:hover {
     background-color: #368a6c;
 }
 
-.button-download img {
+.button-download-collection img {
+    width: 24px;
+    height: 24px;
+}
+
+.button-generate {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 320px; /* Uniformidad visual */
+    padding: 12px 16px;
+    background-color: #e43e31;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.button-generate:hover {
+    background-color: #8a3636;
+}
+
+.button-generate img {
     width: 24px;
     height: 24px;
 }
