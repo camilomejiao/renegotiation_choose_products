@@ -28,7 +28,7 @@ class AuthTokenService {
             return {status: 401, message: "No token available" };
         }
 
-        const contentType = response.headers.get('content-type');
+        const contentType = (response.headers.get('content-type') || '').toLowerCase();
         const contentLength = response.headers.get('content-length');
         const hasBody =
             !(response.status === 204 || response.status === 205 || response.status === 304) && contentLength !== '0';
@@ -37,30 +37,43 @@ class AuthTokenService {
             return { status: response.status };
         }
 
-        const isPdf    = contentType.includes('application/pdf');
-        const isImage  = contentType.startsWith('image/');
-
-        if (isPdf || isImage) {
-            const blob = await response.blob();
-            const type = contentType || blob.type;
-            return {
-                blob,
-                status: response.status,
-                type
-            };
+        // Si es JSON -> parsea JSON; si NO, devuelve blob (excel, pdf, zip, imagen, etc.)
+        if (contentType.includes('application/json')) {
+            try {
+                return {
+                    data: await response.json(),
+                    status: response.status,
+                    statusText: response.statusText
+                };
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                return { status: response.status, message: 'Invalid JSON response' };
+            }
         }
 
-        // Si no es PDF, intenta parsear como JSON
-        try {
-            return {
-                data: await response.json(),
-                status: response.status,
-                statusText: response.statusText
-            };
-        } catch (error) {
-            console.error("Error parsing JSON:", error);
-            return { status: response.status, message: "Invalid JSON response" };
+        // Extrae filename del Content-Disposition si viene
+        const disposition = response.headers.get('content-disposition') || '';
+        let filename = 'archivo';
+        const match1 = /filename\*=(?:UTF-8'')?([^;]+)/i.exec(disposition);
+        const match2 = /filename="?([^"]+)"?/i.exec(disposition);
+        if (match1) {
+            filename = decodeURIComponent(match1[1]);
+        } else if (match2) {
+            filename = match2[1];
+        } else {
+            // fallback por tipo
+            if (contentType.includes('spreadsheetml')) filename += '.xlsx';
+            else if (contentType.includes('ms-excel')) filename += '.xls';
+            else if (contentType.includes('pdf')) filename += '.pdf';
         }
+
+        const blob = await response.blob();
+        return {
+            blob,
+            status: response.status,
+            type: contentType,
+            filename
+        };
     }
 }
 

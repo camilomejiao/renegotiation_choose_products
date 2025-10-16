@@ -96,7 +96,7 @@ class PaymentServices {
      * @returns {Promise<Response>} Respuesta del servidor.
      */
     getCollectionAccountsById(accountId) {
-        const url = this.buildUrl(`cuenta-cobro-entregas/por-cuenta-cobro/${accountId}`);
+        const url = this.buildUrl(`cuenta-cobro-entregas/por-cuenta-cobro/${accountId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -126,6 +126,23 @@ class PaymentServices {
     getAllApprovedDeliveriesBySupplier(page = 1, pageSize = 100) {
         const url = this.buildUrl(`entregas-aprobadas/?page=${page}&page_size=${pageSize}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    getExcelAndPdfFile(SPId) {
+        const url = this.buildUrl(`cuentas-cobro/reporte-excel/?numero_cuenta_cobro=${SPId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
+    changeStatusCollectionDetail(SPId) {
+        const url = this.buildUrl(`entregas-revision/${SPId}/aprobar/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(SPId),
+        });
     }
 
 }

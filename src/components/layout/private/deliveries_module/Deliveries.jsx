@@ -155,53 +155,65 @@ export const Deliveries = () => {
   const [feDeliveryId, setFeDeliveryId] = useState(null);
   const [feLoading, setFeLoading] = useState(false);
 
-  /**
-   * Obtiene los proveedores asociados al usuario autenticado.
-   * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION → consulta todos los proveedores del titular.
-   * - Si el usuario es SUPPLIER → consulta solo su proveedor.
-   */
-  const getSuppliersFromWhomYouPurchased = useCallback(async () => {
-    try {
-      if (
-        userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS ||
-        userAuth.rol_id === RolesEnum.ADMIN ||
-        userAuth.rol_id === RolesEnum.SUPERVISION
-      ) {
-        const { data, status } = await deliveriesServices.getSuppliers(
-          params.id
-        );
-        if (status === ResponseStatusEnum.OK) {
-          setSuppliers(data);
-        }
-      }
 
-      if (userAuth.rol_id === RolesEnum.SUPPLIER) {
-        const itemId = await supplierServices.getSupplierId();
-        const singleSupplier = [{ id: itemId }];
-        setSuppliers(singleSupplier);
-      }
-    } catch (error) {
-      console.error("Error obteniendo proveedores:", error);
+    /**
+     * Obtiene los proveedores asociados al usuario autenticado.
+     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION → consulta todos los proveedores del titular.
+     * - Si el usuario es SUPPLIER → consulta solo su proveedor.
+     */
+    const getSuppliersFromWhomYouPurchased = async () => {
+        try {
+            if (userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS || userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPERVISION) {
+                const { data, status} = await deliveriesServices.getSuppliers(params.id);
+                if (status === ResponseStatusEnum.OK) {
+                    setSuppliers(data);
+                }
+            }
+
+            if (userAuth.rol_id === RolesEnum.SUPPLIER) {
+                const itemId = await supplierServices.getSupplierId();
+                const singleSupplier = [{ id: itemId }];
+                setSuppliers(singleSupplier);
+            }
+        } catch (error) {
+            console.error("Error obteniendo proveedores:", error);
+        }
     }
-  }, [params.id, userAuth?.rol_id]);
+
+    /**
+     * Lista las entregas asociadas a un titular (CUB).
+     * @param {number} cubId - ID del titular (CUB).
+     */
+    const getListDeliveriesToUser = async (cubId) => {
+        try {
+            setLoading(true);
+            const { data, status} = await deliveriesServices.searchDeliveriesToUser(cubId);
+            if(status === ResponseStatusEnum.OK) {
+                const rows = await normalizeDeliveryRows(data);
+                setListDeliveriesToUser(rows);
+            }
+        } catch (error) {
+            console.error("Error fetching deliveries:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
   //
   const pick = (arr, key) =>
     arr.find((x) => String(x?.indice || "").toLowerCase() === key)?.ruta ||
     null;
 
-  /**
-   * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
-   * @param {number} deliveryId - ID de la entrega.
-   * @returns {Object} Información de archivos y estados de aprobación.
-   */
-  const getDeliveryUrl = useCallback(async (deliveryId) => {
-    try {
-      const { data, status } = await deliveriesServices.searchDeliveriesPDF(
-        deliveryId
-      );
-      if (status === ResponseStatusEnum.OK) {
-        const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
+    /**
+     * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
+     * @param {number} deliveryId - ID de la entrega.
+     * @returns {Object} Información de archivos y estados de aprobación.
+     */
+    const getDeliveryUrl = async (deliveryId) => {
+        try {
+            const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
+            if(status === ResponseStatusEnum.OK) {
+                const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
 
         return {
           consolidatedFileUrl: pick(archivos, "pdf"),
@@ -217,81 +229,54 @@ export const Deliveries = () => {
     } catch (error) {
       console.error("Error fetching delivery URL:", error);
     }
-  }, []);
 
-  /**
-   * Normaliza el arreglo de entregas para adaptarlo al DataGrid.
-   * @param {Array} data - Lista de entregas obtenida desde el backend.
-   * @returns {Array} Entregas normalizadas con campos fe_number, evidencePdf, etc.
-   */
-  const normalizeDeliveryRows = useCallback(
-    async (data) => {
-      return await Promise.all(
-        data.map(async (row) => {
-          const deliveryIdInfo = await getDeliveryUrl(row?.id);
-          return {
-            id: row?.id,
-            date: row?.fecha_creacion.split("T")[0],
-            supplier: row?.proveedor,
-            fe_number: deliveryIdInfo?.fe_number,
-            statusDelivery: deliveryIdInfo?.statusDelivery ?? "",
-            evidencePdf: {
-              consolidatedFileUrl: deliveryIdInfo?.consolidatedFileUrl ?? "",
-              feFileUrl: deliveryIdInfo?.feFileUrl ?? "",
-            },
-            evidenceImg: {
-              imgEvidence1Url: deliveryIdInfo?.evidence1Url ?? "",
-              imgEvidence2Url: deliveryIdInfo?.evidence2Url ?? "",
-            },
-            actions: {
-              approvedTechnical: deliveryIdInfo?.approvedTechnical,
-              approvedTerritorial: deliveryIdInfo?.approvedTerritorial,
-            },
-          };
-        })
-      );
-    },
-    [getDeliveryUrl]
-  );
+    /**
+     * Normaliza el arreglo de entregas para adaptarlo al DataGrid.
+     * @param {Array} data - Lista de entregas obtenida desde el backend.
+     * @returns {Array} Entregas normalizadas con campos fe_number, evidencePdf, etc.
+     */
+    const normalizeDeliveryRows = async (data) => {
+        return await Promise.all(
+            data.map(async (row) => {
+                const deliveryIdInfo = await getDeliveryUrl(row?.id);
+                return {
+                    id: row?.id,
+                    date: row?.fecha_creacion.split("T")[0],
+                    supplier: row?.proveedor,
+                    fe_number: deliveryIdInfo?.fe_number,
+                    statusDelivery: deliveryIdInfo?.statusDelivery ?? "",
+                    evidencePdf: {
+                        consolidatedFileUrl: deliveryIdInfo?.consolidatedFileUrl ?? "",
+                        feFileUrl: deliveryIdInfo?.feFileUrl ?? ""
+                    },
+                    evidenceImg: {
+                        imgEvidence1Url: deliveryIdInfo?.evidence1Url ?? "",
+                        imgEvidence2Url: deliveryIdInfo?.evidence2Url ?? ""
+                    },
+                    actions: {
+                        approvedTechnical: deliveryIdInfo?.approvedTechnical,
+                        approvedTerritorial: deliveryIdInfo?.approvedTerritorial,
+                    }
+                };
+            })
+        );
+    };
 
-  /**
-   * Lista las entregas asociadas a un titular (CUB).
-   * @param {number} cubId - ID del titular (CUB).
-   */
-  const getListDeliveriesToUser = useCallback(
-    async (cubId) => {
-      try {
-        setLoading(true);
-        const { data, status } =
-          await deliveriesServices.searchDeliveriesToUser(cubId);
-        if (status === ResponseStatusEnum.OK) {
-          const rows = await normalizeDeliveryRows(data);
-          setListDeliveriesToUser(rows);
+    /**
+     * Obtiene información del titular (datos personales).
+     * @param {number} cubId - ID del titular.
+     */
+    const getUserInformation = async (cubId) => {
+        try {
+            const { data, status} = await userServices.userInformation(cubId);
+            if(status === ResponseStatusEnum.OK) {
+                setUserData(data);
+            }
+        } catch (error) {
+            console.log(error);
+            showError(error, 'Error buscando productos:');
         }
-      } catch (error) {
-        console.error("Error fetching deliveries:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [normalizeDeliveryRows]
-  );
-
-  /**
-   * Obtiene información del titular (datos personales).
-   * @param {number} cubId - ID del titular.
-   */
-  const getUserInformation = useCallback(async (cubId) => {
-    try {
-      const { data, status } = await userServices.userInformation(cubId);
-      if (status === ResponseStatusEnum.OK) {
-        setUserData(data);
-      }
-    } catch (error) {
-      console.log(error);
-      showError(error, "Error buscando productos:");
     }
-  }, []);
 
   /**
    * Determina si un botón debe estar deshabilitado según:
@@ -307,8 +292,8 @@ export const Deliveries = () => {
       return true;
     }
 
-    if (rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.ADMIN) {
-      return true;
+    if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.ADMIN) {
+       return true;
     }
   };
 
@@ -316,11 +301,11 @@ export const Deliveries = () => {
   const isButtonDisabledTecnical = (row) => {
     const { approvedTechnical } = row.actions;
 
-    if (approvedTechnical === true || approvedTechnical === false) {
-      return true;
-    }
-    return false;
-  };
+        if(approvedTechnical === true) {
+            return true;
+        }
+        return false;
+    };
 
   /** Renderiza el ícono de aprobación (aprobado, denegado o pendiente). */
   const renderApprovalIcon = (status) => {
@@ -991,7 +976,7 @@ export const Deliveries = () => {
     const printContent = `
             <html>
                 <head>
-                  <style>
+                  <style>           
                     body {
                       font-family: Arial, sans-serif;
                       margin: 20px;

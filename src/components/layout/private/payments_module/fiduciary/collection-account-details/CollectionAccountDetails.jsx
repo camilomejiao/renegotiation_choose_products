@@ -47,8 +47,9 @@ export const CollectionAccountDetails = () => {
             AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
             return;
         }
-        setLoading(true);
+
         try {
+            setLoading(true);
             setInformationLoadingText("Obteniendo archivo");
 
             const { blob, status } = await filesServices.downloadFile(pdfUrl?.url_descarga);
@@ -67,16 +68,52 @@ export const CollectionAccountDetails = () => {
         }
     };
 
-    const handleGenerateDocument = async () => {
-        setLoading(true);
+    const handleGenerateDocument = async (SPId) => {
         try {
+            setLoading(true);
             setInformationLoadingText("Generando documento");
+
+            const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(SPId);
+            console.log(blob, status);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const fileURL = URL.createObjectURL(blob);
+                // Si es PDF y quieres abrir en otra pestaña:
+                if ((type).includes('pdf')) {
+                    window.open(fileURL, '_blank');
+                } else {
+                    // Descarga (Excel u otros binarios)
+                    const a = document.createElement('a');
+                    a.href = fileURL;
+                    a.download = filename || 'reporte.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+
+                // Limpia el ObjectURL
+                setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
+            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
         } finally {
             setLoading(false);
         }
     };
+
+    const handleChangeStatusAccount = () => {
+        setLoading(true);
+        try {
+            setInformationLoadingText("Validando entregas y pago");
+
+        } catch (error) {
+            console.error("Error obteniendo las entregas:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
         if (params.id) {
@@ -143,21 +180,31 @@ export const CollectionAccountDetails = () => {
                             <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
                             </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
+                            <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
                                 <img src={downloadImg} alt="" /> RUT
                             </button>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                <img src={downloadImg} alt="" /> Generar documento excel
+                            </button>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                                <img src={downloadImg} alt="" /> Generar documento pdf
+                            </button>
+                        </Col>
+
+                        <Col md={6}>
+                            <h5 className="section-title">Entregas</h5>
+                            {accountInformation?.detalles.map((item, idx) => (
+                                <div key={idx} className="revision-box">
+                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
+                                </div>
+                            ))}
                         </Col>
                     </Row>
 
                     <Row className="justify-content-center mt-4">
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate-excel" onClick={handleGenerateDocument}>
-                                📝 Generar Documento Excel
-                            </Button>
-                        </Col>
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate-pdf" onClick={handleGenerateDocument}>
-                                📝 Generar Documento PDF
+                            <Button className="generate" variant="outline-warning" onClick={handleChangeStatusAccount}>
+                                Emitir pago
                             </Button>
                         </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
