@@ -211,24 +211,25 @@ export const Deliveries = () => {
      */
     const getDeliveryUrl = async (deliveryId) => {
         try {
-            const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
-            if(status === ResponseStatusEnum.OK) {
+            const {data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
+            if (status === ResponseStatusEnum.OK) {
                 const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
 
-        return {
-          consolidatedFileUrl: pick(archivos, "pdf"),
-          feFileUrl: pick(archivos, "fe"),
-          evidence1Url: pick(archivos, "evidence_1"),
-          evidence2Url: pick(archivos, "evidence_2"),
-          approvedTechnical: data?.aprobado_tecnica ?? null,
-          approvedTerritorial: data?.aprobado_territorial ?? null,
-          fe_number: data?.numero_fe ?? null,
-          statusDelivery: data?.estado ?? null,
-        };
-      }
-    } catch (error) {
-      console.error("Error fetching delivery URL:", error);
-    }
+                return {
+                    consolidatedFileUrl: pick(archivos, "pdf"),
+                    feFileUrl: pick(archivos, "fe"),
+                    evidence1Url: pick(archivos, "evidence_1"),
+                    evidence2Url: pick(archivos, "evidence_2"),
+                    approvedTechnical: data?.aprobado_tecnica ?? null,
+                    approvedTerritorial: data?.aprobado_territorial ?? null,
+                    fe_number: data?.numero_fe ?? null,
+                    statusDelivery: data?.estado ?? null,
+                };
+            }
+        } catch (error) {
+            console.error("Error fetching delivery URL:", error);
+        }
+    };
 
     /**
      * Normaliza el arreglo de entregas para adaptarlo al DataGrid.
@@ -276,7 +277,7 @@ export const Deliveries = () => {
             console.log(error);
             showError(error, 'Error buscando productos:');
         }
-    }
+    };
 
   /**
    * Determina si un botón debe estar deshabilitado según:
@@ -301,11 +302,11 @@ export const Deliveries = () => {
   const isButtonDisabledTecnical = (row) => {
     const { approvedTechnical } = row.actions;
 
-        if(approvedTechnical === true) {
-            return true;
-        }
-        return false;
-    };
+    if(approvedTechnical === true) {
+        return true;
+    }
+    return false;
+  };
 
   /** Renderiza el ícono de aprobación (aprobado, denegado o pendiente). */
   const renderApprovalIcon = (status) => {

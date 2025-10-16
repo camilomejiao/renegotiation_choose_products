@@ -190,15 +190,6 @@ export const CollectionAccountDetails = () => {
                                 <img src={downloadImg} alt="" /> Generar documento pdf
                             </button>
                         </Col>
-
-                        <Col md={6}>
-                            <h5 className="section-title">Entregas</h5>
-                            {accountInformation?.detalles.map((item, idx) => (
-                                <div key={idx} className="revision-box">
-                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
-                                </div>
-                            ))}
-                        </Col>
                     </Row>
 
                     <Row className="justify-content-center mt-4">
