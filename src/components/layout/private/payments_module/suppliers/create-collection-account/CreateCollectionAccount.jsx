@@ -40,7 +40,7 @@ export const CreateCollectionAccount = () => {
         { field: "name", headerName: "Beneficiario", width: 300 },
         { field: "identification", headerName: "Identificacion", width: 200 },
         { field: "date", headerName: "Fecha", width: 150 },
-        { field: "amount", headerName: "Cantidad de Productos", width: 150 },
+        //{ field: "amount", headerName: "Cantidad de Productos", width: 150 },
         { field: "amount_of_money", headerName: "Valor", width: 150 },
     ];
 

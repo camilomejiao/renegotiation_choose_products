@@ -17,7 +17,7 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { filesServices } from "../../../../../../helpers/services/FilesServices";
 
 // Enums
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import {ReportTypePaymentsEnum, ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
 
 // CSS
 import './CollectionAccountDetails.css';
@@ -71,12 +71,12 @@ export const CollectionAccountDetails = () => {
         }
     };
 
-    const handleGenerateDocument = async (SPId) => {
+    const handleGenerateDocument = async (SPId, reportType) => {
         try {
             setLoading(true);
             setInformationLoadingText("Generando documento");
 
-            const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(SPId);
+            const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(SPId, reportType);
             console.log(blob, status);
 
             if (status === ResponseStatusEnum.OK && blob) {
@@ -173,10 +173,10 @@ export const CollectionAccountDetails = () => {
                             <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
                                 <img src={downloadImg} alt="" /> RUT
                             </button>
-                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.EXCEL)}>
                                 <img src={downloadImg} alt="" /> Generar documento excel
                             </button>
-                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero)}>
+                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.PDF)}>
                                 <img src={downloadImg} alt="" /> Generar documento pdf
                             </button>
                         </Col>

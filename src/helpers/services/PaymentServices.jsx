@@ -131,8 +131,8 @@ class PaymentServices {
     /**
      *
      */
-    getExcelAndPdfFile(SPId) {
-        const url = this.buildUrl(`cuentas-cobro/reporte-excel/?numero_cuenta_cobro=${SPId}`);
+    getExcelAndPdfFile(SPId, reportType) {
+        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?numero_cuenta_cobro=${SPId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

@@ -59,3 +59,8 @@ export const DeliveryStatusEnum = {
     PAGADO:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
     SUBSANACION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
 };
+
+export const ReportTypePaymentsEnum = {
+    EXCEL: "excel",
+    PDF: "pdf"
+}
