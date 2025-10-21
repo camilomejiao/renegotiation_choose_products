@@ -66,6 +66,9 @@ import {
 import {
     DeliveriesCorrection
 } from "../components/layout/private/deliveries_module/deliveries-correction/DeliveriesCorrection";
+import {
+    ConciliationDetail
+} from "../components/layout/private/payments_module/conciliation/conciliation-detail/ConciliationDetail";
 
 export const Routing = () => {
     return (
@@ -125,6 +128,7 @@ export const Routing = () => {
 
                         {/* Conciliation */}
                         <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />
+                        <Route path={ RouterEnum.ConciliationDetail }  element={ <ConciliationDetail /> }  />
 
                         {/* Management */}
                         <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />

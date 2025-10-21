@@ -30,8 +30,9 @@ const menuConfig = {
             label: "Administración Catalogo de productos",
             icon: FaBoxOpen,
             children: [
-                { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Administración de Catálogo" },
-                { path: "/admin/products-supervision", icon: FaBroadcastTower, label: "Catálogo de productos" },
+                { path: "/admin/list-products-by-convocation", icon: FaDollyFlatbed, label: "Administración de Catálogo Tecnica" },
+                { path: "/admin/products-enviromental", icon: FaBoxOpen, label: "Validación de Ambiental" },
+                { path: "/admin/products-supervision", icon: FaBroadcastTower, label: "Validación de Supervisión" },
             ]
         },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
@@ -70,14 +71,12 @@ const menuConfig = {
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/list-products-by-convocation", icon: FaBoxOpen, label: "Administración de Catálogo" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
-        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
-        { path: "/admin/payments", icon: BsCashStack, label: "Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [

@@ -53,7 +53,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                                             textAlign: 'center'
                                         }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO
                                         </td>
-                                        <td style={{borderRight: '1px solid black', textAlign: 'center'}}>&nbsp;</td>
+                                        <td style={{borderRight: '1px solid black', textAlign: 'center'}}>{deliveryInformation?.id}</td>
                                         <td style={{borderRight: '1px solid black', textAlign: 'center'}}>&nbsp;</td>
                                         <td style={{textAlign: 'center'}}>&nbsp;</td>
                                     </tr>

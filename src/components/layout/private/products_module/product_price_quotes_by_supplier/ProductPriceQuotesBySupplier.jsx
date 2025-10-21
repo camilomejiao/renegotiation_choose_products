@@ -4,10 +4,13 @@ import {Button, Col, Row} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
+import Select from "react-select";
+
+//
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
@@ -15,6 +18,7 @@ import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/Conv
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+
 //Enum
 import {
     GeneralStatusDeliveryProductEnum,
@@ -28,7 +32,6 @@ import {
     getObservationsSupervisionColumns,
     getStatusProduct
 } from "../../../../../helpers/utils/ValidateProductColumns";
-import Select from "react-select";
 
 //Css
 import './ProductPriceQuotesBySupplier.css';
@@ -375,7 +378,7 @@ export const ProductPriceQuotesBySupplier = () => {
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#40A581",
                                     color: "white",
-                                    fontSize: "14px",
+                                    fontSize: "12px",
                                 },
                                 "& .MuiDataGrid-columnHeader": {
                                     textAlign: "center",
@@ -388,10 +391,15 @@ export const ProductPriceQuotesBySupplier = () => {
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
+                                    fontSize: "12px",
+                                    textAlign: "left",
+                                    justifyContent: "left",
+                                    alignItems: "flex-start",
+                                    whiteSpace: 'normal',
+                                    wordBreak: 'break-word',
+                                    display: 'block',
+                                    paddingTop: '10px',
+                                    paddingBottom: '10px'
                                 },
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",

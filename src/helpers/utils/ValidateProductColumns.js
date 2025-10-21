@@ -16,9 +16,9 @@ export const getBaseColumns = () => ([
     { field: "description", headerName: "Descripción", width: 250},
     { field: "brand", headerName: "Marca", width: 150},
     { field: "unit", headerName: "Unidad", width: 100 },
-    { field: "price_min", headerName: "Precio Min", width: 100},
-    { field: "price_max", headerName: "Precio Max", width: 100},
-    { field: "price", headerName: "VALOR", width: 100},
+    { field: "price_min", headerName: "Precio Min", width: 80},
+    { field: "price_max", headerName: "Precio Max", width: 80},
+    { field: "price", headerName: "VALOR", width: 80},
 ]);
 
 export const formatPrice = (value) => {
@@ -52,7 +52,7 @@ export const getCategoryOptions = async () => {
 
 //
 export const getStatusProduct = () => [
-    { field: "state", headerName: "ESTADO", width: 150, },
+    { field: "state", headerName: "ESTADO", width: 80, },
 ];
 
 //Obtener restricciones ambientales
@@ -235,7 +235,7 @@ export const getObservationsSupervisionColumns = () => {
         {
             field: "observations_supervision",
             headerName: "Observación supervision",
-            width: 400,
+            width: 150,
             editable: false,
             renderCell: (params) => renderObservationCell(params, "Observación supervision..."),
         },
