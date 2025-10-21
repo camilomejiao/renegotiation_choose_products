@@ -10,7 +10,11 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 // Enums
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+
+//Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+
+//Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import imgWorker from "../../../../../../assets/image/payments/worker.png";
@@ -35,13 +39,14 @@ export const CreateCollectionAccount = () => {
     const [sendingData, setSendingData] = useState(false);
 
     const statusCollectionAccountColumns = [
-        { field: "id", headerName: "ID", width: 80 },
-        { field: "cub_id", headerName: "Cub", width: 90 },
-        { field: "name", headerName: "Beneficiario", width: 300 },
-        { field: "identification", headerName: "Identificacion", width: 200 },
-        { field: "date", headerName: "Fecha", width: 150 },
-        //{ field: "amount", headerName: "Cantidad de Productos", width: 150 },
-        { field: "amount_of_money", headerName: "Valor", width: 150 },
+        { field: "id", headerName: "N° Entrega", flex: 0.8 },
+        { field: "cub_id", headerName: "Cub", flex: 0.4 },
+        { field: "name", headerName: "Beneficiario", flex: 2.5 },
+        { field: "identification", headerName: "Identificacion", flex: 1 },
+        { field: "date", headerName: "Fecha", flex: 0.6 },
+        { field: "unid", headerName: "Productos", flex: 0.6 },
+        { field: "amount", headerName: "Cantidad de Productos", flex: 1.2 },
+        { field: "amount_of_money", headerName: "Valor", flex: 1 },
     ];
 
     const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch) => {
@@ -67,7 +72,8 @@ export const CreateCollectionAccount = () => {
             name: `${row?.beneficiario?.nombre ?? ''} ${row?.beneficiario?.apellido ?? ''}`,
             identification: row?.beneficiario?.identificacion,
             date: row?.fecha_creacion.split('T')[0],
-            amount: row?.cantidad_productos,
+            unid: row?.cantidad_productos,
+            amount: row?.total_cantidad_productos,
             amount_of_money: parseFloat(row?.valor).toLocaleString('es-CO')
         }));
     };

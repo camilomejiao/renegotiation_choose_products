@@ -64,3 +64,9 @@ export const ReportTypePaymentsEnum = {
     EXCEL: "excel",
     PDF: "pdf"
 }
+
+export const CollectionAccountStatusEnum = {
+    REGISTERED: "REGISTRADA",
+    PAID: "PAGADA",
+    ISSUED_FOR_PAYMENT: "EMITIDO_PARA_PAGO"
+}

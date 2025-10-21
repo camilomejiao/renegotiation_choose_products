@@ -72,8 +72,8 @@ class PaymentServices {
      * @param {number|string} [supplierId] - ID del proveedor (opcional).
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    getCollectionAccounts(page = 1, pageSize = 100, supplierId) {
-        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}`;
+    getCollectionAccounts(page = 1, pageSize = 100, supplierId, status) {
+        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}&estado=${status}`;
         if (supplierId) {
             url += `&proveedor_id=${supplierId}`;
         }
@@ -137,10 +137,10 @@ class PaymentServices {
     }
 
     //
-    changeStatusCollectionDetail(SPId) {
-        const url = this.buildUrl(`entregas-revision/${SPId}/aprobar/`);
+    changeStatusCollectionAccountDetail(SPId) {
+        const url = this.buildUrl(`fiduciaria/${SPId}/emitir-para-pago/`);
         return authTokenService.fetchWithAuth(url, {
-            method: "POST",
+            method: "PATCH",
             body: JSON.stringify(SPId),
         });
     }

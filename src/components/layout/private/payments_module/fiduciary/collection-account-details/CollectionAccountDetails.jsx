@@ -17,7 +17,7 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { filesServices } from "../../../../../../helpers/services/FilesServices";
 
 // Enums
-import {ReportTypePaymentsEnum, ResponseStatusEnum} from "../../../../../../helpers/GlobalEnum";
+import { ReportTypePaymentsEnum, ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 // CSS
 import './CollectionAccountDetails.css';
@@ -106,17 +106,26 @@ export const CollectionAccountDetails = () => {
         }
     };
 
-    const handleChangeStatusAccount = () => {
-        setLoading(true);
+    const handleChangeStatusAccount = async (SPId) => {
         try {
+            setLoading(true);
             setInformationLoadingText("Validando entregas y pago");
+            const {data, status} = await paymentServices.changeStatusCollectionAccountDetail(SPId);
+            console.log(data);
+            if (status === ResponseStatusEnum.OK) {
+                AlertComponent.success(data.mensaje);
+                navigate(`/admin/fiduciary/list-account-suppliers`);
+            }
 
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                AlertComponent.error(data.detail);
+            }
         } catch (error) {
             console.error("Error obteniendo las entregas:", error);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
         if (params.id) {
@@ -193,8 +202,8 @@ export const CollectionAccountDetails = () => {
 
                     <Row className="justify-content-center mt-4">
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-warning" onClick={handleChangeStatusAccount}>
-                                Emitir pago
+                            <Button className="generate" variant="outline-warning" onClick={() => handleChangeStatusAccount(accountInformation?.cuenta_cobro?.id)}>
+                                Emitir para pago
                             </Button>
                         </Col>
                         <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">

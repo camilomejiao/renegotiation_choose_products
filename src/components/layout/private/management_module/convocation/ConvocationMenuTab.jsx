@@ -9,6 +9,9 @@ import { Suppliers } from "./Suppliers";
 import { Location } from "./Location";
 import { General } from "./General";
 import {useState} from "react";
+import imgPayments from "../../../../../assets/image/payments/pay-supplier.png";
+import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import {HeaderImage} from "../../../shared/header_image/HeaderImage";
 
 export const ConvocationMenuTab = () => {
     const navigate = useNavigate();
@@ -28,13 +31,15 @@ export const ConvocationMenuTab = () => {
     }
 
     return (
-        <div className="main-container">
-            <div className="header-image position-relative">
-                <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
-                <div className="overlay-text position-absolute w-100 text-center">
-                    <h1>¡Creación de Jornadas!</h1>
-                </div>
-            </div>
+        <>
+            <HeaderImage
+                imageHeader={imgPayments}
+                titleHeader={'Creacion de jornadas'}
+                bannerIcon={imgAdd}
+                backgroundIconColor={'#2148C0'}
+                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
+                backgroundInformationColor={'#40A581'}
+            />
 
             {loading && (
                 <div className="spinner-container">
@@ -76,6 +81,6 @@ export const ConvocationMenuTab = () => {
                     </Tab>
                 </Tabs>
             </div>
-        </div>
+        </>
     );
 };
