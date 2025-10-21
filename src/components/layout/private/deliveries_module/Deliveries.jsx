@@ -266,7 +266,7 @@ export const Deliveries = () => {
             return true;
         }
 
-        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER) {
+        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.ADMIN) {
             return true;
         }
     };
@@ -275,7 +275,7 @@ export const Deliveries = () => {
     const isButtonDisabledTecnical = (row) => {
         const { approvedTerritorial, approvedTechnical } = row.actions;
 
-        if(approvedTechnical === true || approvedTechnical === false) {
+        if(approvedTechnical === true) {
             return true;
         }
         return false;

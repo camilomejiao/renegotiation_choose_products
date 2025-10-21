@@ -72,8 +72,8 @@ class PaymentServices {
      * @param {number|string} [supplierId] - ID del proveedor (opcional).
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    getCollectionAccounts(page = 1, pageSize = 100, supplierId) {
-        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}`;
+    getCollectionAccounts(page = 1, pageSize = 100, supplierId, status) {
+        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}&estado=${status}`;
         if (supplierId) {
             url += `&proveedor_id=${supplierId}`;
         }
@@ -96,7 +96,7 @@ class PaymentServices {
      * @returns {Promise<Response>} Respuesta del servidor.
      */
     getCollectionAccountsById(accountId) {
-        const url = this.buildUrl(`cuenta-cobro-entregas/por-cuenta-cobro/${accountId}`);
+        const url = this.buildUrl(`cuenta-cobro-entregas/por-cuenta-cobro/${accountId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -126,6 +126,23 @@ class PaymentServices {
     getAllApprovedDeliveriesBySupplier(page = 1, pageSize = 100) {
         const url = this.buildUrl(`entregas-aprobadas/?page=${page}&page_size=${pageSize}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    /**
+     *
+     */
+    getExcelAndPdfFile(SPId, reportType) {
+        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?numero_cuenta_cobro=${SPId}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
+    changeStatusCollectionAccountDetail(SPId) {
+        const url = this.buildUrl(`fiduciaria/${SPId}/emitir-para-pago/`);
+        return authTokenService.fetchWithAuth(url, {
+            method: "PATCH",
+            body: JSON.stringify(SPId),
+        });
     }
 
 }

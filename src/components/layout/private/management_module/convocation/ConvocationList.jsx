@@ -18,6 +18,9 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Helper
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import imgPayments from "../../../../../assets/image/payments/pay-supplier.png";
+import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import {HeaderImage} from "../../../shared/header_image/HeaderImage";
 
 
 export const ConvocationList = () => {
@@ -126,90 +129,91 @@ export const ConvocationList = () => {
 
     return (
         <>
-            <div className="main-container">
-                <div className="header-image position-relative">
-                    <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
-                    <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>¡Gestión de Jornadas!</h1>
+            <HeaderImage
+                imageHeader={imgPayments}
+                titleHeader={'Gestión de jornadas'}
+                bannerIcon={imgAdd}
+                backgroundIconColor={'#2148C0'}
+                bannerInformation={'Aquí podrás ver el listado de las jornadas.'}
+                backgroundInformationColor={'#40A581'}
+            />
+
+            <div className="container mt-lg-3">
+
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+                    <input
+                        type="text"
+                        placeholder="Buscar..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="input-responsive me-2"
+                    />
+                    <div className="text-end">
+                        <Button
+                            variant="outline-success"
+                            onClick={() => navigate('/admin/create-convocation')}
+                            className="button-order-responsive"
+                        >
+                            <FaPlus/> Crear Jornada
+                        </Button>
                     </div>
                 </div>
 
-                <div className="container mt-lg-3">
-
-                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
-                        <input
-                            type="text"
-                            placeholder="Buscar..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="input-responsive me-2"
-                        />
-                        <div className="text-end">
-                            <Button
-                                variant="outline-success"
-                                onClick={() => navigate('/admin/create-convocation')}
-                                className="button-order-responsive"
-                            >
-                                <FaPlus/> Crear Jornada
-                            </Button>
-                        </div>
+                {loading && (
+                    <div className="overlay">
+                        <div className="loader">Cargando Datos...</div>
                     </div>
+                )}
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">Cargando Datos...</div>
-                        </div>
-                    )}
-
-                    <div style={{height: 600, width: "100%"}}>
-                        <DataGrid
-                            rows={filteredConvocations}
-                            columns={columns}
-                            editMode="row"
-                            pagination
-                            loading={loadingTable}
-                            pageSize={100}
-                            rowsPerPageOptions={[100, 500, 1000]}
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left",
-                                        fontWeight: "bold",
-                                        fontSize: "10px",
-                                        wordWrap: "break-word",
-                                    },
+                <div style={{height: 600, width: "100%"}}>
+                    <DataGrid
+                        rows={filteredConvocations}
+                        columns={columns}
+                        editMode="row"
+                        pagination
+                        loading={loadingTable}
+                        pageSize={100}
+                        rowsPerPageOptions={[100, 500, 1000]}
+                        componentsProps={{
+                            columnHeader: {
+                                style: {
+                                    textAlign: "left",
+                                    fontWeight: "bold",
+                                    fontSize: "10px",
+                                    wordWrap: "break-word",
                                 },
-                            }}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
-                        />
-                    </div>
+                            },
+                        }}
+                        sx={{
+                            "& .MuiDataGrid-columnHeaders": {
+                                backgroundColor: "#40A581",
+                                color: "white",
+                                fontSize: "14px",
+                            },
+                            "& .MuiDataGrid-columnHeader": {
+                                textAlign: "center",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            },
+                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                backgroundColor: "#40A581 !important",
+                                color: "white !important",
+                            },
+                            "& .MuiDataGrid-cell": {
+                                fontSize: "14px",
+                                textAlign: "center",
+                                justifyContent: "center",
+                                display: "flex",
+                            },
+                            "& .MuiDataGrid-row:hover": {
+                                backgroundColor: "#E8F5E9",
+                            },
+                        }}
+                    />
                 </div>
             </div>
+
 
         </>
     )
