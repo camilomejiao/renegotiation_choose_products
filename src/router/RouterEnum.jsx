@@ -53,6 +53,7 @@ export const RouterEnum = {
     //Fiduciary
     ListAccountOfSuppliers: 'fiduciary/list-account-suppliers',
     CollectionAccountDetails: 'fiduciary/collection-account-details/:id',
+    SearchSP: 'fiduciary/search-sp',
 
     //Conciliation
     ListConciliation: 'conciliation/list-conciliation',

@@ -230,12 +230,12 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
                         value={selected}
                         onChange={(_, value) => setSelected(value)}
                         onOpen={loadSuppliersOnce}
-                        getOptionLabel={(opt) => (opt?.name ?? "").trim()}
+                        getOptionLabel={(opt) => (`${opt?.name} - ${opt?.nit}` ?? "").trim()}
                         isOptionEqualToValue={(opt, variable) => opt.id === variable.id}
                         loading={loadingOptions}
                         renderOption={(props, option) => (
                             <li {...props} key={option.id}>
-                                {option.name}
+                                {`${option.name} - ${option.nit}`}
                             </li>
                         )}
                         renderInput={(params) => (

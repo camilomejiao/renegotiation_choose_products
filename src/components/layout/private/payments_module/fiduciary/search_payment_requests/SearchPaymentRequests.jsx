@@ -1,53 +1,58 @@
-import imgPayments from "../../../../../assets/image/payments/payments.png";
-import imgAdd from "../../../../../assets/image/payments/imgPay.png";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { useEffect, useRef, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import {Button, Col, Nav, Row} from "react-bootstrap";
+import {useEffect, useRef, useState} from "react";
+import { useNavigate } from "react-router-dom";
+import {Button, Col, Container, Nav, Row} from "react-bootstrap";
 
-//services
-import { deliveriesCorrectionServices } from "../../../../../helpers/services/DeliveriesCorrectionServices";
+//Components
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+
+//img
+import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
+import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
+
+//Services
+import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 
 //Enum
-import { DeliveryStatusEnum, ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-import {useNavigate, useOutletContext} from "react-router-dom";
+import { CollectionAccountStatusEnum, ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
-//Status
-const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
+//
+const STATUS_ARRAY = Object.values(CollectionAccountStatusEnum);
 
-export const DeliveriesCorrection = () => {
+export const SearchPaymentRequests = () => {
 
-    const { userAuth } = useOutletContext();
     const navigate = useNavigate();
 
+    const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
 
-    const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTRADO.key);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const [activeStatusKey, setActiveStatusKey] = useState(CollectionAccountStatusEnum.REGISTERED.key);
 
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "N° Entrega", width: 100 },
-        { field: "cub_id", headerName: "CUB", width: 80 },
-        { field: "name", headerName: "Beneficiario", width: 350 },
-        { field: "identification", headerName: "Identificación", width: 100 },
-        { field: "supplier_name", headerName: "Proveedor", width: 350 },
-        { field: "supplier_nit", headerName: "Nit", width: 150 },
+        { field: "id", headerName: "ID", flex: 0.2 },
+        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
+        { field: "status", headerName: "Estado", flex: 0.3 },
+        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
+        { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
+        { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
+        { field: "total", headerName: "Valor Total", flex: 0.5 },
     ];
 
-    const getStatusValueFromKey = (key) => STATUS_ARRAY.find(s => s.key === key)?.value ?? null;
+    const getStatusValueFromKey = (key) => STATUS_ARRAY.find((s) => s.key === key)?.key ?? null;
 
-    const getDeliveriesCorrection = async (pageToFetch = 1, sizeToFetch = 100, search = "", statusDeliveryKey) => {
+    const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "", statusKey = "") => {
         setLoading(true);
         try {
-            const statusValue = getStatusValueFromKey(statusDeliveryKey);
-            const {data, status} = await deliveriesCorrectionServices.getDeliveriesCorrection(pageToFetch, sizeToFetch, search, statusValue);
-            if (status === ResponseStatusEnum.OK) {
+            const statusValue = getStatusValueFromKey(statusKey);
+            const {data, status} = await paymentServices.getCollectionAccounts(pageToFetch, sizeToFetch, '', statusValue, search);
+            if(status === ResponseStatusEnum.OK) {
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
                 setRowCount(data.count);
@@ -62,18 +67,15 @@ export const DeliveriesCorrection = () => {
     const normalizeRows = async (data) => {
         return data.map((row) => ({
             id: row?.id,
-            cub_id: row?.beneficiario?.cub_id,
-            name: `${row?.beneficiario?.nombre_completo ?? ''}`,
-            identification: row?.beneficiario?.identificacion,
-            supplier_name: row?.proveedor?.nombre,
-            supplier_nit: row?.proveedor?.nit,
-            beneficiario_id: row?.beneficiario?.id,
+            collection_account: row?.numero,
+            status: row?.estado_nombre,
+            date: row?.fecha_cuenta_cobro.split("T")[0],
+            supplier_name: row?.nombre_proveedor,
+            supplier_nit: row?.nit_proveedor,
+            total: `$ ${parseFloat(row?.valor_total).toLocaleString()}`,
         }));
     }
 
-    const handleRowClick = (params) => {
-        navigate(`/admin/deliveries/${params?.row?.beneficiario_id}`)
-    }
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -85,15 +87,14 @@ export const DeliveriesCorrection = () => {
         if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
 
         const query = (q || "").trim().toLowerCase();
-        const canSearch = query.length === 0 || query.length >= 5;
-        if (!canSearch) return; // no dispares la búsqueda si 1–4 chars
-
-        // opcional: resetear página si usas paginación
+        const canSearch = query.length === 0 || query.length >= 4;
+        if (!canSearch) return;
+        //opcional: resetear página si usas paginación
         setPage(0);
 
-        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
+        //Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getDeliveriesCorrection(1, pageSize, query, activeStatusKey);
+            getAccountOfSuppliers(1, pageSize, query, '');
         }, 150);
     };
 
@@ -101,27 +102,28 @@ export const DeliveriesCorrection = () => {
         if (newKey === activeStatusKey) return;
         setActiveStatusKey(newKey);
         setPage(0);
-        getDeliveriesCorrection(1, pageSize, (searchQuery || "").trim().toLowerCase(), newKey);
+        setSearchQuery("");
+        getAccountOfSuppliers(1, pageSize, "", newKey);
     };
 
     useEffect(() => {
-        getDeliveriesCorrection(page + 1, pageSize, "", activeStatusKey);
+        getAccountOfSuppliers(page + 1, pageSize, searchQuery, activeStatusKey);
     }, [page, pageSize]);
 
     return (
         <>
             <HeaderImage
                 imageHeader={imgPayments}
-                titleHeader={'Subsanación De Entregas'}
+                titleHeader={'Fiduciara'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás revisar tus entregas que estan en estado de subsanación.'}
-                backgroundInformationColor={'#F66D1F'}
+                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
+                backgroundInformationColor={'#40A581'}
             />
 
-            <div className="container mt-lg-5">
+            <Container>
                 <Row className="gy-2 align-items-center mt-3 mb-3">
-                    <Col xs={12} md={4}>
+                    <Col xs={12} md={6} lg={5}>
                         <input
                             type="text"
                             placeholder="Buscar..."
@@ -136,6 +138,25 @@ export const DeliveriesCorrection = () => {
                             className="form-control"
                         />
                     </Col>
+
+                    <Col>
+                        <Button
+                            variant="outline-primary"
+                            className="button-order-responsive"
+                            onClick={() => runSearch()}
+                            disabled={
+                                (searchQuery.trim().length > 0 && searchQuery.trim().length < 4) || loading
+                            }
+                            title={
+                                searchQuery.trim().length > 0 && searchQuery.trim().length < 4
+                                    ? "Escribe al menos 4 caracteres"
+                                    : "Buscar"
+                            }
+                        >
+                            Buscar
+                        </Button>
+                    </Col>
+
                     <Col xs={12} md={5}>
                         <Nav variant="tabs" activeKey={activeStatusKey} onSelect={(k) => handleChangeStatus(k)}>
                             {STATUS_ARRAY.map(st => (
@@ -145,27 +166,9 @@ export const DeliveriesCorrection = () => {
                             ))}
                         </Nav>
                     </Col>
-                    <Col xs={12} md={3}>
-                        <Button
-                            variant="outline-primary"
-                            className="button-order-responsive"
-                            onClick={() => runSearch()}
-                            disabled={
-                                (searchQuery.trim().length > 0 &&
-                                    searchQuery.trim().length < 5) || loading
-                            }
-                            title={
-                                searchQuery.trim().length > 0 && searchQuery.trim().length < 5
-                                    ? "Escribe al menos 5 caracteres"
-                                    : "Buscar"
-                            }
-                        >
-                            Buscar
-                        </Button>
-                    </Col>
                 </Row>
 
-                <div style={{ height: 600, width: "100%" }}>
+                <div style={{ height: 600, width: "auto" }}>
                     <DataGrid
                         rows={dataTable}
                         columns={columns}
@@ -178,13 +181,12 @@ export const DeliveriesCorrection = () => {
                             setPage(page);
                             setPageSize(pageSize);
                         }}
-                        onRowClick={handleRowClick}
                         componentsProps={{
                             columnHeader: {
                                 style: {
                                     textAlign: "left",
                                     fontWeight: "bold",
-                                    fontSize: "10px",
+                                    fontSize: "9px",
                                     wordWrap: "break-word",
                                 },
                             },
@@ -193,32 +195,32 @@ export const DeliveriesCorrection = () => {
                             "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#40A581",
                                 color: "white",
-                                fontSize: "14px",
+                                fontSize: "12px",
+                            },
+                            "& .MuiDataGrid-columnHeader": {
+                                textAlign: "center",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                                 backgroundColor: "#40A581 !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {
-                                fontSize: "14px",
+                                fontSize: "12px",
                                 textAlign: "center",
                                 justifyContent: "center",
                                 display: "flex",
-                            },
-                            "& .MuiSelect-root": {
-                                fontSize: "12px",
-                                fontFamily: "Arial, sans-serif",
-                                width: "100%",
                             },
                             "& .MuiDataGrid-row:hover": {
                                 backgroundColor: "#E8F5E9",
                             },
                         }}
                     />
-
                 </div>
-            </div>
-            
+
+            </Container>
         </>
     )
 }

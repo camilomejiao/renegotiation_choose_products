@@ -69,6 +69,9 @@ import {
 import {
     ConciliationDetail
 } from "../components/layout/private/payments_module/conciliation/conciliation-detail/ConciliationDetail";
+import {
+    SearchPaymentRequests
+} from "../components/layout/private/payments_module/fiduciary/search_payment_requests/SearchPaymentRequests";
 
 export const Routing = () => {
     return (
@@ -125,6 +128,7 @@ export const Routing = () => {
                         {/* Fiduciary */}
                         <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
                         <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
+                        <Route path={ RouterEnum.SearchSP }  element={ <SearchPaymentRequests /> }  />
 
                         {/* Conciliation */}
                         <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />

@@ -479,7 +479,7 @@ export const ValidationSupervision = () => {
                                     "& .MuiDataGrid-columnHeaders": {
                                         backgroundColor: "#40A581",
                                         color: "white",
-                                        fontSize: "12px",
+                                        fontSize: "14px",
                                     },
                                     "& .MuiDataGrid-columnHeader": {
                                         textAlign: "center",
@@ -492,16 +492,10 @@ export const ValidationSupervision = () => {
                                         color: "white !important",
                                     },
                                     "& .MuiDataGrid-cell": {
-                                        fontSize: "12px",
-                                        textAlign: "left",
-                                        justifyContent: "left",
-                                        alignItems: "flex-start",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                        justifyContent: "center",
                                         display: "flex",
-                                    },
-                                    "& .MuiSelect-root": {
-                                        fontSize: "12px",
-                                        fontFamily: "Arial, sans-serif",
-                                        width: "100%",
                                     },
                                     "& .MuiDataGrid-row:hover": {
                                         backgroundColor: "#E8F5E9",

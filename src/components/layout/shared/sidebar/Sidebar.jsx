@@ -12,7 +12,7 @@ import {
     FaRegBuilding,
     FaUser,
     FaHandshake,
-    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower, FaExclamationTriangle,
+    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower, FaExclamationTriangle, FaSearchDollar,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -39,6 +39,7 @@ const menuConfig = {
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
         { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
@@ -59,6 +60,7 @@ const menuConfig = {
     [RolesEnum.TRUST_PAYMENTS]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [

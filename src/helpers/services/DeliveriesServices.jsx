@@ -161,6 +161,14 @@ class DeliveriesServices {
             body: formData,
         });
     }
+
+    /**
+     *
+     */
+    getExcelDeliveriesDetailToSupervision() {
+        const url = this.buildUrl(`aprobaciones/reporte-excel/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 }
 
 export const deliveriesServices = new DeliveriesServices();

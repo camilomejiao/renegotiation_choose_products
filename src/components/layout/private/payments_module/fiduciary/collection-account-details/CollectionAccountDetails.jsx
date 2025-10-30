@@ -174,7 +174,7 @@ export const CollectionAccountDetails = () => {
                     </Row>
 
                     <Row className="mb-4">
-                        <Col md={6}>
+                        <Col md={5}>
                             <h5 className="section-title">Documentos adjuntos</h5>
                             <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
                                 <img src={downloadImg} alt="" /> Certificado bancario
@@ -190,11 +190,16 @@ export const CollectionAccountDetails = () => {
                             </button>
                         </Col>
 
-                        <Col md={6}>
+                        <Col md={7}>
                             <h5 className="section-title">Entregas</h5>
                             {accountInformation?.detalles.map((item, idx) => (
                                 <div key={idx} className="revision-box">
-                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
+                                    <div>
+                                        <strong>N°:</strong> {item?.entrega?.id} &nbsp;
+                                        <strong>CUB:</strong> {item?.entrega?.cub} &nbsp;
+                                        <strong>Identificación:</strong> {item?.entrega?.numero_documento_beneficiario} &nbsp;
+                                        <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}
+                                    </div>
                                 </div>
                             ))}
                         </Col>

@@ -66,7 +66,13 @@ export const ReportTypePaymentsEnum = {
 }
 
 export const CollectionAccountStatusEnum = {
-    REGISTERED: "REGISTRADA",
-    PAID: "PAGADA",
-    ISSUED_FOR_PAYMENT: "EMITIDO_PARA_PAGO"
+    REGISTERED: { key: "REGISTRADA",  label: "Registrado" },
+    PAID: { key: "PAGADA",  label: "Pagado" },
+    ISSUED_FOR_PAYMENT: { key: "EMITIDO_PARA_PAGO",  label: "Emitido para Pago" }
+}
+
+export const DeliveryDocumentReviewAction = {
+    DENY: "denegar",
+    APPROVE: "aprobar"
+
 }
