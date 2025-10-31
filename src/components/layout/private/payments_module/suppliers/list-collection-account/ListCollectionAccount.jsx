@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
-import { FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMoneyCheck, FaReceipt } from "react-icons/fa";
 
 //Css
 import './ListCollectionAccount.css';
@@ -11,7 +11,7 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 //Enum
-import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
+import { CollectionAccountStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 export const ListCollectionAccount = () => {
 
@@ -86,25 +86,25 @@ export const ListCollectionAccount = () => {
 
     const renderEstadoIcon = (estado) => {
         switch (estado) {
-            case "APROBADO":
+            case CollectionAccountStatusEnum.REGISTERED.label:
                 return (
                     <>
-                        <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
-                        APROBADO
+                        <FaReceipt  style={{ color: "green", marginRight: "8px" }} />
+                        SP REGISTRADA
                     </>
                 );
-            case "ACTIVO":
+            case CollectionAccountStatusEnum.PAID.label:
                 return (
                     <>
-                        <FaHourglassHalf style={{ color: "orange", marginRight: "8px" }} />
-                        PENDIENTE
+                        <FaCheckCircle  style={{ color: "orange", marginRight: "8px" }} />
+                        PAGADO
                     </>
                 );
-            case "RECHAZADO":
+            case CollectionAccountStatusEnum.ISSUED_FOR_PAYMENT.label:
                 return (
                     <>
-                        <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
-                        RECHAZADO
+                        <FaMoneyCheck style={{ color: "red", marginRight: "8px" }} />
+                        EMITIDO PARA PAGO
                     </>
                 );
             default:

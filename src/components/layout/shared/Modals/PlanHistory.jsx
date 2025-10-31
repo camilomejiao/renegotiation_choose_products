@@ -9,7 +9,7 @@ export const PlanHistory = ({ show, handleClose, data }) => {
             </Modal.Header>
             <Modal.Body>
                 {data.length === 0 ? (
-                    <p className="text-center">No hay detalles historicos disponibles.</p>
+                    <p className="text-center">No existen cambios de plan registrados.</p>
                 ) : (
                     <table style={{ borderCollapse: "collapse", width: "100%" }}>
                         <thead>

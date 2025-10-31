@@ -20,13 +20,13 @@ import {handleError, showAlert} from "../../../../../helpers/utils/utils";
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
-import {ConfirmationModal} from "../../../shared/Modals/ConfirmationModal";
 
 const PAGE_SIZE = 100;
 
@@ -93,7 +93,8 @@ export const EditProductsByConvocation = () => {
     const handleSelectedPlan = async (option) => {
         if (option?.value) {
             setSelectedPlan(option);
-            await getProductList(option.value);
+            console.log(option);
+            await getProductList(1, PAGE_SIZE, option.value);
         }
     };
 
@@ -195,6 +196,7 @@ export const EditProductsByConvocation = () => {
                 (product.price_min || "").toLowerCase().includes(query.toLowerCase())
         );
 
+        console.log(filtered);
         setFilteredData(filtered);
     };
 
@@ -281,7 +283,7 @@ export const EditProductsByConvocation = () => {
     useEffect(() => {
         if (!selectedPlan?.value) return;
         getProductList(page + 1, pageSize, selectedPlan?.value);
-    }, [page, pageSize, selectedPlan]);
+    }, [page, pageSize]);
 
     return (
         <>

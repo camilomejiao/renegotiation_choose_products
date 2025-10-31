@@ -64,11 +64,14 @@ import {
     ListConciliation
 } from "../components/layout/private/payments_module/conciliation/list-conciliation/ListConciliation";
 import {
-    DeliveriesCorrection
-} from "../components/layout/private/deliveries_module/deliveries-correction/DeliveriesCorrection";
+    DeliveriesInformation
+} from "../components/layout/private/deliveries_module/deliveries-information/DeliveriesInformation";
 import {
     ConciliationDetail
 } from "../components/layout/private/payments_module/conciliation/conciliation-detail/ConciliationDetail";
+import {
+    SearchPaymentRequests
+} from "../components/layout/private/payments_module/fiduciary/search_payment_requests/SearchPaymentRequests";
 
 export const Routing = () => {
     return (
@@ -102,7 +105,7 @@ export const Routing = () => {
                         <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
                         <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
                         <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
-                        <Route path={ RouterEnum.CorrectionDeliveries }  element={ <DeliveriesCorrection /> }  />
+                        <Route path={ RouterEnum.DeliveryInformationAndTracking } element={ <DeliveriesInformation /> }  />
 
                         {/* Productos */}
                         {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
@@ -125,6 +128,7 @@ export const Routing = () => {
                         {/* Fiduciary */}
                         <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
                         <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
+                        <Route path={ RouterEnum.SearchSP }  element={ <SearchPaymentRequests /> }  />
 
                         {/* Conciliation */}
                         <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />

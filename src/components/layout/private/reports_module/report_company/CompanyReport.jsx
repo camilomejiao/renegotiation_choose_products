@@ -256,37 +256,6 @@ export const CompanyReport = () => {
                     </Container>
                 </div>
 
-                <div className="banner-reports">
-                    <Container>
-                        <Row className="justify-content-around">
-                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center">
-                                <button onClick={handleDownloadInstructions} className="reporting-system-button general">
-                                    <img src={imgFrame1} alt="icono general" className="button-icon" />
-                                    INSTRUCTIVO PARA PAGOS
-                                </button>
-                            </Col>
-                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center justify-content-md-end">
-                                <button onClick={handleDocumentsForPaymentRequest} className="reporting-system-button deliveries">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    DOCUMENTOS PARA SOLICITUD DE PAGO
-                                </button>
-                            </Col>
-                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center">
-                                <button onClick={handleCollectionAccountFormat} className="reporting-system-button unique">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                   FORMATO DE CUENTA DE COBRO
-                                </button>
-                            </Col>
-                            <Col xs={12} md={3} className="d-flex flex-column justify-content-center justify-content-md-end">
-                                <button onClick={handleAccountList} className="reporting-system-button deliveries">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    SOLICITUD DE PAGO
-                                </button>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
-
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
                     {companyInformation && (

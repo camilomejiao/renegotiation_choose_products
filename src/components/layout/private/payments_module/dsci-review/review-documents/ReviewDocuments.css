@@ -59,7 +59,6 @@
 }
 
 .button-download {
-    width: 300px !important;
     height: 60px;
     background-color: #40A581;
     color: white;
@@ -71,6 +70,28 @@
 }
 
 .button-download img {
+    width: 40px;
+    height: 40px;
+}
+
+.button-download_histoy {
+    width: 100%;
+    margin-bottom: 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #a5a340;
+    color: white;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.button-download_histoy img {
     width: 40px;
     height: 40px;
 }
@@ -97,20 +118,42 @@
     background-color: #368a6c;
 }
 
-.documents-download .button-download img {
+/* Estado disabled para los botones de descarga */
+.button-download:disabled {
+    background-color: #bfbfbf !important;  /* gris */
+    color: #f5f5f5 !important;              /* texto casi blanco */
+    cursor: not-allowed !important;         /* icono de prohibido */
+    opacity: 0.7;                           /* ligera transparencia */
+    border: none !important;
+}
+
+.button-download:disabled img {
+    filter: grayscale(100%) brightness(1.2); /* icono gris */
+    opacity: 0.8;
+}
+
+/* Botón historial (consistencia visual) */
+.button-download_histoy {
+    border: 2px solid #a5a340;
+}
+.button-download_histoy:hover {
+    background-color: #95933a;
+}
+
+.documents-download .button-download .button-download_histoy img {
     width: 24px;
     height: 24px;
 }
 
 /* ========== TOTAL ========== */
-.total {
-    width: 64%;
+.total_ {
+    width: 57%;
     padding: 16px 24px;
     margin-top: 20px;
     background-color: #AECA13;
     color: #ffffff;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 500;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -171,6 +214,96 @@
     border-left: 6px solid #F54D4D;
 }
 
+/* ====== Card sección Validaciones ====== */
+.supervision-card {
+    padding: 14px 16px;
+    border: 1.5px solid #e8ecef;
+    border-radius: 14px;
+    background: #fff;
+}
+
+/* ====== Campos (labels + inputs) ====== */
+.supervision-field {
+    margin-bottom: 12px;
+}
+.supervision-field label {
+    font-weight: 600;
+    color: #2148C0;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* Inputs base */
+.rb-input {
+    border: 2px solid #dfe5ea !important;
+    border-radius: 12px !important;
+    height: 42px;
+    font-size: 14px;
+    transition: box-shadow .2s ease, border-color .2s ease;
+    padding-inline: 12px;
+    background-color: #fff !important;
+}
+
+/* Focus accesible */
+.rb-input:focus {
+    border-color: #2148C0 !important;
+    box-shadow: 0 0 0 4px rgba(33,72,192,.12) !important;
+}
+
+/* Placeholder sobrio */
+.rb-input::placeholder {
+    color: #9aa6b2;
+}
+
+/* Quitar spinners de number (Chrome/Edge) */
+.rb-input[type=number]::-webkit-outer-spin-button,
+.rb-input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.rb-input[type=number] { -moz-appearance: textfield; }
+
+/* Texto de ayuda bajo el input */
+.field-hint {
+    font-size: 12px;
+    color: #6b7785;
+    margin-top: 4px;
+}
+
+/* Estados de error (si usas .is-invalid de RB) */
+.rb-input.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 4px rgba(220,53,69,.12) !important;
+}
+
+/* ====== Checkbox ====== */
+.supervision-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+/* color del check moderno (solo CSS nativo) */
+.supervision-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #40A581;
+    cursor: pointer;
+}
+
+/* label del check */
+.supervision-check label {
+    margin: 0;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+}
+
+/* Separador sutil entre grupos */
+.supervision-sep {
+    height: 1px;
+    background: #eef2f6;
+    margin: 12px 0;
+}
+
 /* ========== RESPONSIVE (mobile / tablet) ========== */
 @media screen and (max-width: 768px) {
     .content-review-documents {
@@ -185,8 +318,15 @@
     .btn-approve,
     .btn-deny,
     .btn-back {
-        width: 100%;
+        width: 98%;
+        font-size: 16px;
+        height: 45px;
         margin-bottom: 10px;
+    }
+
+    .btn-approve img, .btn-deny img, .btn-back img {
+        width: 25px;
+        height: 25px;
     }
 
     .button-group-review {
@@ -211,5 +351,35 @@
     .observations img {
         width: 36px;
         height: 36px;
+    }
+
+    /* Mejora responsive del bloque de validaciones */
+    .supervision-card { padding: 12px; }
+    .rb-input { height: 40px; }
+}
+
+@media screen and (max-width: 385px) {
+    .total_ {
+        font-size: 12px;
+    }
+
+    .documents-download .button-download .button-download_histoy  {
+        font-size: 12px;
+        width: 98%;
+        height: 45px;
+    }
+
+    .btn-approve,
+    .btn-deny,
+    .btn-back {
+        width: 98%;
+        font-size: 16px;
+        height: 45px;
+        margin-bottom: 10px;
+    }
+
+    .btn-approve img, .btn-deny img, .btn-back img {
+        width: 25px;
+        height: 25px;
     }
 }

@@ -19,7 +19,7 @@ export const RouterEnum = {
     SearchUserForDeliveries: 'search-user-for-deliveries',
     Deliveries: 'deliveries/:id',
     EditDeliveryOrder: 'edit-delivery-order/:id',
-    CorrectionDeliveries: 'correction-deliveries',
+    DeliveryInformationAndTracking: 'delivery-information-and-tracking',
 
     //Productos
     Products: 'products',
@@ -53,6 +53,7 @@ export const RouterEnum = {
     //Fiduciary
     ListAccountOfSuppliers: 'fiduciary/list-account-suppliers',
     CollectionAccountDetails: 'fiduciary/collection-account-details/:id',
+    SearchSP: 'fiduciary/search-sp',
 
     //Conciliation
     ListConciliation: 'conciliation/list-conciliation',

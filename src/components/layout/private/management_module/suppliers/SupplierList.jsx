@@ -143,7 +143,7 @@ export const SupplierList = () => {
                     </div>
                 )}
 
-                <div style={{height: 600, width: "100%"}}>
+                <div style={{ height: 600, width: "auto" }}>
                     <DataGrid
                         rows={filteredSuppliers}
                         columns={columns}
