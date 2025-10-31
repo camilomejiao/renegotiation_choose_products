@@ -183,8 +183,15 @@ export const ReviewDocuments = () => {
                     accion === DeliveryDocumentReviewAction.APPROVE ? "La entrega cumple con todos los requisitos." : comments,
                 ...(accion === DeliveryDocumentReviewAction.DENY && rolDestinoId
                     ? { rol_destino: rolDestinoId }
-                    : {}),
+                    : { rol_destino: "" }),
+                fecha_entrega: fechaEntrega ?? null,
+                fecha_factura: fechaFactura ?? null,
+                valor_factura: valorFactura ?? null,
+                acta_entrega_correcta: okActa ?? null,
+                orden_compra_correcta: okOrden ?? null,
             };
+
+            console.log('payload: ', payload);
 
             try {
                 setLoading(true);
@@ -233,7 +240,7 @@ export const ReviewDocuments = () => {
     const validateSupervisionFields = () => {
         // Checks obligatorios
         if (!okOrden || !okActa) {
-            AlertComponent.warning("Debes marcar 'Orden OK' y 'Acta OK' para aprobar.");
+            AlertComponent.warning("Debes marcar 'Orden de compra' y 'Acta de entrega' para aprobar.");
             return false;
         }
         // Fechas obligatorias
@@ -454,7 +461,7 @@ export const ReviewDocuments = () => {
                                                 id="orden-ok"
                                                 type="checkbox"
                                                 className="supervision-check"
-                                                label="Orden OK"
+                                                label="Orden de compra"
                                                 checked={okOrden}
                                                 onChange={(e) => setOkOrden(e.target.checked)}
                                                 disabled={loading}
@@ -464,7 +471,7 @@ export const ReviewDocuments = () => {
                                                 id="acta-ok"
                                                 type="checkbox"
                                                 className="supervision-check"
-                                                label="Acta OK"
+                                                label="Acta de entrega"
                                                 checked={okActa}
                                                 onChange={(e) => setOkActa(e.target.checked)}
                                                 disabled={loading}

@@ -19,7 +19,7 @@ export const RouterEnum = {
     SearchUserForDeliveries: 'search-user-for-deliveries',
     Deliveries: 'deliveries/:id',
     EditDeliveryOrder: 'edit-delivery-order/:id',
-    CorrectionDeliveries: 'correction-deliveries',
+    DeliveryInformationAndTracking: 'delivery-information-and-tracking',
 
     //Productos
     Products: 'products',

@@ -135,7 +135,7 @@ export const SearchPaymentRequests = () => {
                                     runSearch();
                                 }
                             }}
-                            className="form-control"
+                            className="form-control search-input"
                         />
                     </Col>
 
@@ -147,11 +147,7 @@ export const SearchPaymentRequests = () => {
                             disabled={
                                 (searchQuery.trim().length > 0 && searchQuery.trim().length < 4) || loading
                             }
-                            title={
-                                searchQuery.trim().length > 0 && searchQuery.trim().length < 4
-                                    ? "Escribe al menos 4 caracteres"
-                                    : "Buscar"
-                            }
+                            title={"Buscar"}
                         >
                             Buscar
                         </Button>

@@ -54,10 +54,11 @@ export const BeneficiaresManagementEnum = {
 }
 
 export const DeliveryStatusEnum = {
-    REGISTRADO:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO" },
-    ENTREGADO:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO" },
-    PAGADO:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
-    SUBSANACION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
+    REGISTERED:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO" },
+    DELIVERED:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO" },
+    PAID:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
+    CORRECTION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
+    ISSUEDFORPAYMENT: { key: "emitido_para_pago",  label: "Emitido para pago", value: "EMITIDO_PARA_PAGO" },
 };
 
 export const ReportTypePaymentsEnum = {

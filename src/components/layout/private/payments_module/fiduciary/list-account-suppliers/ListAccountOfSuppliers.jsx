@@ -177,7 +177,7 @@ export const ListAccountOfSuppliers = () => {
                                     runSearch();
                                 }
                             }}
-                            className="form-control payments-toolbar__input"
+                            className="form-control search-input"
                         />
                     </Col>
 

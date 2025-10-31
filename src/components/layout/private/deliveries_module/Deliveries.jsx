@@ -206,6 +206,7 @@ export const Deliveries = () => {
                     aprobadoProveedor:   data?.aprobado_proveedor ?? null,
                     fe_number:           data?.numero_fe ?? null,
                     statusDelivery:      data?.estado ?? null,
+                    observation:         data?.observacion ?? "",
                 };
             }
         } catch (error) {
@@ -239,7 +240,8 @@ export const Deliveries = () => {
                     actions: {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
                         aprobadoProveedor: deliveryIdInfo?.aprobadoProveedor,
-                    }
+                    },
+                    observation: deliveryIdInfo?.observation
                 };
             })
         );
@@ -594,8 +596,8 @@ export const Deliveries = () => {
 
     //===== Columnas =====
     const deliveryColumns = [
-        { field: "id", headerName: "N° ENTREGA", width: 150 },
-        { field: "date", headerName: "FECHA", width: 150 },
+        { field: "id", headerName: "N° ENTREGA", width: 120 },
+        { field: "date", headerName: "FECHA", width: 100 },
         { field: "supplier", headerName: "PROVEEDOR", width: 350 },
         {
             field: "generatePdf",
@@ -630,11 +632,28 @@ export const Deliveries = () => {
             filterable: false,
         },
         { field: "statusDelivery", headerName: "ESTADO", width: 150 },
-        { field: "observations", headerName: "OBSERVACIÓN", width: 150 },
+        {
+            field: "observation",
+            headerName: "OBSERVACIÓN",
+            flex: 1,
+            minWidth: 250,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
         {
             field: "actions",
             headerName: "ACCIONES",
-            width: 300,
+            width: 350,
             renderCell: renderActionsCell,
             sortable: false,
             filterable: false,

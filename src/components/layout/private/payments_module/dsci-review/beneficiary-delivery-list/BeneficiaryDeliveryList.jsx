@@ -148,7 +148,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                                 runSearch();
                             }
                         }}
-                        className="form-control"
+                        className="form-control search-input"
                     />
                 </Col>
 

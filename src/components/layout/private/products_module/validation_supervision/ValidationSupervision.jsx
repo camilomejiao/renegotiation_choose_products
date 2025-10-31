@@ -28,10 +28,8 @@ import {
 //Utils
 import { showAlert } from "../../../../../helpers/utils/utils";
 import {
-    getBaseColumns,
     getObservationsSupervisionColumns,
     getStatusProduct,
-
 } from "../../../../../helpers/utils/ValidateProductColumns";
 
 const PAGE_SIZE = 100;
@@ -68,7 +66,104 @@ export const ValidationSupervision = () => {
     const [action, setAction] = useState('approve');
 
     //
-    const baseColumns = getBaseColumns();
+    const getBaseColumns = [
+        { field: "id", headerName: "ID", width: 70 },
+        {
+            field: "category",
+            headerName: "CATEGORIA",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "name",
+            headerName: "Nombre",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "description",
+            headerName: "Descripción",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "brand",
+            headerName: "Marca",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "unit",
+            headerName: "Unidad",
+            flex: 1,
+            minWidth: 100,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        { field: "price_min", headerName: "Precio Min", width: 100},
+        { field: "price_max", headerName: "Precio Max", width: 100},
+        { field: "price", headerName: "VALOR", width: 100},
+    ];
+
+    const baseColumns = getBaseColumns;
     const statusProduct = getStatusProduct();
     const observationsColumns = getObservationsSupervisionColumns();
 
@@ -465,6 +560,8 @@ export const ValidationSupervision = () => {
                                     setPageSize(pageSize);
                                 }}
                                 rowsPerPageOptions={[10, 50, 100]}
+                                rowHeight={64}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                                headerHeight={48}
                                 componentsProps={{
                                     columnHeader: {
                                         style: {
@@ -491,11 +588,22 @@ export const ValidationSupervision = () => {
                                         backgroundColor: "#40A581 !important",
                                         color: "white !important",
                                     },
+                                    "& .MuiDataGrid-cellContent": {
+                                        whiteSpace: "normal",
+                                        wordBreak: "break-word",
+                                        lineHeight: 1.4,
+                                    },
                                     "& .MuiDataGrid-cell": {
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                        justifyContent: "center",
-                                        display: "flex",
+                                        fontSize: "12px",
+                                        textAlign: "left",
+                                        justifyContent: "left",
+                                        whiteSpace: 'normal',
+                                        wordBreak: 'break-word',
+                                        display: 'block',
+                                        paddingTop: '10px',
+                                        alignItems: "flex-start",
+                                        paddingBottom: '10px',
+                                        lineHeight: "1.4 !important",
                                     },
                                     "& .MuiDataGrid-row:hover": {
                                         backgroundColor: "#E8F5E9",

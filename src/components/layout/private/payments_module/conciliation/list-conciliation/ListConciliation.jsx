@@ -120,7 +120,7 @@ export const ListConciliation = () => {
                                     runSearch();
                                 }
                             }}
-                            className="form-control"
+                            className="form-control search-input"
                         />
                     </Col>
 
