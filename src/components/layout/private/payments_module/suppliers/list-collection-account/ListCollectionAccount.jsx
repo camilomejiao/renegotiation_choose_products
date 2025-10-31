@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
-import { FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMoneyCheck, FaReceipt } from "react-icons/fa";
 
 //Css
 import './ListCollectionAccount.css';
@@ -89,21 +89,21 @@ export const ListCollectionAccount = () => {
             case CollectionAccountStatusEnum.REGISTERED.label:
                 return (
                     <>
-                        <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                        <FaReceipt  style={{ color: "green", marginRight: "8px" }} />
                         SP REGISTRADA
                     </>
                 );
             case CollectionAccountStatusEnum.PAID.label:
                 return (
                     <>
-                        <FaHourglassHalf style={{ color: "orange", marginRight: "8px" }} />
+                        <FaCheckCircle  style={{ color: "orange", marginRight: "8px" }} />
                         PAGADO
                     </>
                 );
             case CollectionAccountStatusEnum.ISSUED_FOR_PAYMENT.label:
                 return (
                     <>
-                        <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
+                        <FaMoneyCheck style={{ color: "red", marginRight: "8px" }} />
                         EMITIDO PARA PAGO
                     </>
                 );
