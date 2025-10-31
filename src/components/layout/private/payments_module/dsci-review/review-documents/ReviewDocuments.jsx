@@ -177,7 +177,8 @@ export const ReviewDocuments = () => {
         }
 
         if(canShowSupervision) {
-            validateSupervisionFields();
+            const ok = validateSupervisionFields();
+            if (!ok) return;
         }
 
         const payload = {
@@ -187,11 +188,11 @@ export const ReviewDocuments = () => {
             ...(accion === DeliveryDocumentReviewAction.DENY && rolDestinoId
                 ? { rol_destino: rolDestinoId }
                 : { }),
-            fecha_entrega: fechaEntrega ?? null,
-            fecha_factura: fechaFactura ?? null,
-            valor_factura: valorFactura ?? null,
-            acta_entrega_correcta: okActa ?? null,
-            orden_compra_correcta: okOrden ?? null,
+            fecha_entrega: canShowSupervision ? fechaEntrega : null,
+            fecha_factura: canShowSupervision ? fechaFactura : null,
+            valor_factura: canShowSupervision ? valorFactura : null,
+            acta_entrega_correcta: canShowSupervision ? okActa : null,
+            orden_compra_correcta: canShowSupervision ? okOrden : null,
         };
 
         try {
