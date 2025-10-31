@@ -11,7 +11,7 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 //Enum
-import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
+import { CollectionAccountStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 export const ListCollectionAccount = () => {
 
@@ -86,25 +86,25 @@ export const ListCollectionAccount = () => {
 
     const renderEstadoIcon = (estado) => {
         switch (estado) {
-            case "APROBADO":
+            case CollectionAccountStatusEnum.REGISTERED.label:
                 return (
                     <>
                         <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
-                        APROBADO
+                        SP REGISTRADA
                     </>
                 );
-            case "ACTIVO":
+            case CollectionAccountStatusEnum.PAID.label:
                 return (
                     <>
                         <FaHourglassHalf style={{ color: "orange", marginRight: "8px" }} />
-                        PENDIENTE
+                        PAGADO
                     </>
                 );
-            case "RECHAZADO":
+            case CollectionAccountStatusEnum.ISSUED_FOR_PAYMENT.label:
                 return (
                     <>
                         <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
-                        RECHAZADO
+                        EMITIDO PARA PAGO
                     </>
                 );
             default:

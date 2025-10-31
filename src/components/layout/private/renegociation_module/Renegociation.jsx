@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
-import printJS from "print-js";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Col, Container, Row, Form, Spinner } from "react-bootstrap";
 import { TextField } from "@mui/material";
 import { FaEye } from "react-icons/fa";
+import printJS from "print-js";
+
+//
+import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 //Services
 import { renegotiationServices } from "../../../../helpers/services/RenegociationServices";
@@ -14,12 +16,14 @@ import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import { UserInformation } from "../../shared/user_information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
 import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
+import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
+import { PlanHistory } from "../../shared/Modals/PlanHistory";
+import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 //Enum
-import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
-import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
-import {PlanHistory} from "../../shared/Modals/PlanHistory";
-import {ConfirmationModal} from "../../shared/Modals/ConfirmationModal";
+import { ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+
+
 export const Renegociation = () => {
 
     const params = useParams();

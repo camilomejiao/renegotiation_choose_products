@@ -52,7 +52,7 @@ export const getCategoryOptions = async () => {
 
 //
 export const getStatusProduct = () => [
-    { field: "state", headerName: "ESTADO", width: 80, },
+    { field: "state", headerName: "ESTADO", width: 100, },
 ];
 
 //Obtener restricciones ambientales

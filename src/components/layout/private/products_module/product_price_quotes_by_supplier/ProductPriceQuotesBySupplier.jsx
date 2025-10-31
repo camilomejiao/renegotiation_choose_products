@@ -5,15 +5,13 @@ import Form from "react-bootstrap/Form";
 import { DataGrid } from "@mui/x-data-grid";
 import { FaSave } from "react-icons/fa";
 import Select from "react-select";
+import { TextField } from "@mui/material";
 
 //
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-
-//
-import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
@@ -29,6 +27,7 @@ import {
 //Utils
 import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 import {
+    formatPrice,
     getObservationsSupervisionColumns,
     getStatusProduct
 } from "../../../../../helpers/utils/ValidateProductColumns";
@@ -55,7 +54,114 @@ export const ProductPriceQuotesBySupplier = () => {
 
 
     //Columns
-    const baseColumns = getProductsPriceQuotesColumns();
+    const getProductsPriceQuotesColumns = [
+        { field: "id", headerName: "ID", width: 70 },
+        {
+            field: "category",
+            headerName: "CATEGORIA",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "name",
+            headerName: "NOMBRE PRODUCTO",
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        { field: "unit", headerName: "UNIDAD", width: 150 },
+        {
+            field: "description",
+            headerName: "DESCRIPCION",
+            flex: 1,
+            minWidth: 200,
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "brand",
+            headerName: "MARCA",
+            flex: 1,
+            minWidth: 200,
+            editable: true,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
+        {
+            field: "price",
+            headerName: "VALOR",
+            width: 250,
+            editable: true,
+            renderCell: (params) => {
+                const min = Number(params.row.precio_min ?? 0);
+                const max = Number(params.row.precio_max ?? Infinity);
+                const current = Number(params.row.price ?? 0);
+
+                return (
+                    <TextField
+                        type="text"
+                        value={current ? formatPrice(current) : ""}
+                        fullWidth
+                        onChange={(e) => {
+                            // solo dígitos
+                            const raw = e.target.value.replace(/[^\d]/g, "");
+                            const value = raw ? Number(raw) : 0;
+
+                            const newRow = { ...params.row, price: value };
+                            // esto re-renderiza la celda; el commit real se hace al salir de la fila
+                            params.api.updateRows([newRow]);
+                        }}
+                    />
+                );
+            },
+        },
+    ];
+
+    const baseColumns = getProductsPriceQuotesColumns;
     const statusProduct = getStatusProduct();
     const observationsColumns = getObservationsSupervisionColumns();
 
@@ -364,6 +470,8 @@ export const ProductPriceQuotesBySupplier = () => {
                             loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
+                            rowHeight={64} // ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                            headerHeight={48}
                             componentsProps={{
                                 columnHeader: {
                                     style: {
@@ -390,16 +498,22 @@ export const ProductPriceQuotesBySupplier = () => {
                                     backgroundColor: "#40A581 !important",
                                     color: "white !important",
                                 },
+                                "& .MuiDataGrid-cellContent": {
+                                    whiteSpace: "normal",
+                                    wordBreak: "break-word",
+                                    lineHeight: 1.4,
+                                },
                                 "& .MuiDataGrid-cell": {
                                     fontSize: "12px",
                                     textAlign: "left",
                                     justifyContent: "left",
-                                    alignItems: "flex-start",
                                     whiteSpace: 'normal',
                                     wordBreak: 'break-word',
                                     display: 'block',
                                     paddingTop: '10px',
-                                    paddingBottom: '10px'
+                                    alignItems: "flex-start",
+                                    paddingBottom: '10px',
+                                    lineHeight: "1.4 !important",
                                 },
                                 "& .MuiDataGrid-row:hover": {
                                     backgroundColor: "#E8F5E9",

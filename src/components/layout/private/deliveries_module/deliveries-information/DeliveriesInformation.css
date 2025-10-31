@@ -1,0 +1,42 @@
+/* Tabs ocupando todo el ancho, con mejor legibilidad */
+.nav-tabs.nav-tabs-stretch .nav-link {
+    white-space: nowrap;
+}
+
+.supplier-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.supplier-select-container input {
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+    transition: 0.2s;
+}
+
+.supplier-select-container input:focus {
+    border-color: #2148C0;
+    box-shadow: 0 0 0 3px rgba(33,72,192,0.1);
+}
+
+.supplier-select-container select {
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e1;
+}
+
+
+/* En pantallas pequeñas: permitir scroll horizontal suave */
+@media (max-width: 768px) {
+    .nav-tabs.nav-tabs-stretch {
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: flex;
+        flex-wrap: nowrap;
+        scrollbar-width: thin;        /* Firefox */
+    }
+    .nav-tabs.nav-tabs-stretch .nav-item {
+        flex: 0 0 auto;               /* no colapsar ítems */
+    }
+}
+

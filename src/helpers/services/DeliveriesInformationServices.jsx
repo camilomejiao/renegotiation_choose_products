@@ -1,7 +1,7 @@
 import {GlobalConnex} from "../GlobalConnex";
 import {authTokenService} from "./AuthTokenService";
 
-class DeliveriesCorrectionServices {
+class DeliveriesInformationServices {
     constructor() {
         this.baseUrl = GlobalConnex.url;
     }
@@ -15,14 +15,24 @@ class DeliveriesCorrectionServices {
         return this.baseUrl + endpoint;
     }
 
-    getDeliveriesCorrection(page = 1, pageSize = 100, search, statusDelivery) {
+    /**
+     *
+     *
+     */
+    getDeliveriesInformation(page = 1, pageSize = 100, search, statusDelivery, supplierId) {
         let url = `?page=${page}&page_size=${pageSize}`;
-        if(search) {
-            url = `?search=${search}`;
+        if(statusDelivery) {
+            url += `&state=${statusDelivery}`;
         }
-        const urlOpt = this.buildUrl(`entregas-subsanar/${url}`);
+        if(search) {
+            url += `&search=${search}`;
+        }
+        if(supplierId) {
+            url += `&provider_id=${supplierId}`;
+        }
+        const urlOpt = this.buildUrl(`entrega-reporte/${url}`);
         return authTokenService.fetchWithAuth(urlOpt, { method: "GET" });
     }
 }
 
-export const deliveriesCorrectionServices = new DeliveriesCorrectionServices();
+export const deliveriesInformationServices = new DeliveriesInformationServices();

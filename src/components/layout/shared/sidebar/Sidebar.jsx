@@ -12,7 +12,7 @@ import {
     FaRegBuilding,
     FaUser,
     FaHandshake,
-    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower, FaExclamationTriangle,
+    FaHardHat, FaHouseUser, FaBoxOpen, FaDollyFlatbed, FaBroadcastTower, FaExclamationTriangle, FaSearchDollar,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsCashStack, BsShieldCheck } from "react-icons/bs";
@@ -39,6 +39,8 @@ const menuConfig = {
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
         { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         //{ path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         //{ path: "/admin/create-calls-suppliers", icon: MdCampaign, label: "Convocatorias" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
@@ -49,16 +51,17 @@ const menuConfig = {
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.PAYMENTS]: [
-        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TRUST_PAYMENTS]: [
-        { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [
@@ -71,12 +74,14 @@ const menuConfig = {
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/list-products-by-convocation", icon: FaBoxOpen, label: "Administración de Catálogo" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TERRITORIAL_LINKS]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
@@ -89,7 +94,7 @@ const menuConfig = {
             icon: FaShippingFast,
             children: [
                 { path: "/admin/search-user-for-deliveries", icon: FaDollyFlatbed, label: "Realizar Entregas" },
-                { path: "/admin/correction-deliveries", icon: FaExclamationTriangle, label: "Subsanación de entregas" },
+                { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
             ]
         },
         { path: "/admin/payments-suppliers", icon: BsCashStack, label: "Solicitud de pago" },
@@ -98,12 +103,14 @@ const menuConfig = {
     ],
     [RolesEnum.SYSTEM_USER]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
+        { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
+        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaUsersCog, label: "Gestión De Beneficiarios" },
         { path: "/admin/products-supervision", icon: FaBoxOpen, label: "Catálogo de productos" },
         { path: "/admin/management", icon: MdPeople, label: "Gestión de Usuarios" },
-        { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
-        { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
+        { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ]
 };

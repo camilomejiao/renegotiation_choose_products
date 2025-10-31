@@ -72,10 +72,16 @@ class PaymentServices {
      * @param {number|string} [supplierId] - ID del proveedor (opcional).
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    getCollectionAccounts(page = 1, pageSize = 100, supplierId, status) {
-        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}&estado=${status}`;
+    getCollectionAccounts(page = 1, pageSize = 100, supplierId, status, search) {
+        let url = `cuentas-cobro/?page=${page}&page_size=${pageSize}`;
         if (supplierId) {
             url += `&proveedor_id=${supplierId}`;
+        }
+        if(status) {
+            url += `&estado=${status}`;
+        }
+        if(search) {
+            url += `&search=${search}`;
         }
         return authTokenService.fetchWithAuth(this.buildUrl(url), { method: "GET" });
     }
@@ -132,7 +138,7 @@ class PaymentServices {
      *
      */
     getExcelAndPdfFile(SPId, reportType) {
-        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?numero_cuenta_cobro=${SPId}`);
+        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?numeros_cuentas=${SPId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
