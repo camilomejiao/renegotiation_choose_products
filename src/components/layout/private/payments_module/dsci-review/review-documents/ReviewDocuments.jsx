@@ -183,7 +183,7 @@ export const ReviewDocuments = () => {
                     accion === DeliveryDocumentReviewAction.APPROVE ? "La entrega cumple con todos los requisitos." : comments,
                 ...(accion === DeliveryDocumentReviewAction.DENY && rolDestinoId
                     ? { rol_destino: rolDestinoId }
-                    : { rol_destino: "" }),
+                    : { }),
                 fecha_entrega: fechaEntrega ?? null,
                 fecha_factura: fechaFactura ?? null,
                 valor_factura: valorFactura ?? null,
