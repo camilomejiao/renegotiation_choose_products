@@ -62,6 +62,7 @@ export const DeliveriesInformation = () => {
 
     const columns = [
         { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "send_date", headerName: "Fecha de envio", width: 100 },
         { field: "status", headerName: "Estado", width: 110 },
         { field: "cub_id", headerName: "CUB", width: 80 },
         {
@@ -160,6 +161,7 @@ export const DeliveriesInformation = () => {
         return data.map((row) => ({
             id: row?.id,
             status: row?.estado,
+            send_date: row?.fecha_envio_proveedor,
             cub_id: row?.beneficiario?.cub_id,
             name: `${row?.beneficiario?.nombre_completo ?? ''}`,
             identification: row?.beneficiario?.identificacion,

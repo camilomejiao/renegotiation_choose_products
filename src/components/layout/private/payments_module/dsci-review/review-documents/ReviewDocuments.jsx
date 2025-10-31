@@ -176,37 +176,39 @@ export const ReviewDocuments = () => {
             return;
         }
 
-        if(DeliveryDocumentReviewAction.APPROVE && validateSupervisionFields()) {
-            const payload = {
-                aprobado: accion === DeliveryDocumentReviewAction.APPROVE ? 1 : 0,
-                observacion:
-                    accion === DeliveryDocumentReviewAction.APPROVE ? "La entrega cumple con todos los requisitos." : comments,
-                ...(accion === DeliveryDocumentReviewAction.DENY && rolDestinoId
-                    ? { rol_destino: rolDestinoId }
-                    : { }),
-                fecha_entrega: fechaEntrega ?? null,
-                fecha_factura: fechaFactura ?? null,
-                valor_factura: valorFactura ?? null,
-                acta_entrega_correcta: okActa ?? null,
-                orden_compra_correcta: okOrden ?? null,
-            };
-
-            console.log('payload: ', payload);
-
-            try {
-                setLoading(true);
-                setInformationLoadingText("Guardando");
-                const {data, status} = await paymentServices.approveOrDenyPayments(payload, params.id, accion);
-                if(status === ResponseStatusEnum.OK) {
-                    AlertComponent.success('', `${accion} exitosamente!`);
-                    navigate(`/admin/payments/${params.role}`);
-                }
-            } catch (error) {
-                console.error("Error al aprobar o denegar:", error);
-            } finally {
-                setLoading(false);
-            }
+        if(canShowSupervision) {
+            const ok = validateSupervisionFields();
+            if (!ok) return;
         }
+
+        const payload = {
+            aprobado: accion === DeliveryDocumentReviewAction.APPROVE ? 1 : 0,
+            observacion:
+                accion === DeliveryDocumentReviewAction.APPROVE ? "La entrega cumple con todos los requisitos." : comments,
+            ...(accion === DeliveryDocumentReviewAction.DENY && rolDestinoId
+                ? { rol_destino: rolDestinoId }
+                : { }),
+            fecha_entrega: canShowSupervision ? fechaEntrega : null,
+            fecha_factura: canShowSupervision ? fechaFactura : null,
+            valor_factura: canShowSupervision ? valorFactura : null,
+            acta_entrega_correcta: canShowSupervision ? okActa : null,
+            orden_compra_correcta: canShowSupervision ? okOrden : null,
+        };
+
+        try {
+            setLoading(true);
+            setInformationLoadingText("Guardando");
+            const {data, status} = await paymentServices.approveOrDenyPayments(payload, params.id, accion);
+            if(status === ResponseStatusEnum.OK) {
+                AlertComponent.success('', `${accion} exitosamente!`);
+                navigate(`/admin/payments/${params.role}`);
+            }
+        } catch (error) {
+            console.error("Error al aprobar o denegar:", error);
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     //
