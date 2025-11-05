@@ -140,8 +140,12 @@ export const DeliveriesInformation = () => {
             }
 
             const statusValue = getStatusValueFromKey(statusDeliveryKey);
+            let onlySended = false;
+            if(statusValue === DeliveryStatusEnum.REGISTERED.value){
+                onlySended = true;
+            }
             const { data, status } = await deliveriesInformationServices.getDeliveriesInformation(
-                pageToFetch, sizeToFetch, search, statusValue, singleSupplier
+                pageToFetch, sizeToFetch, search, statusValue, singleSupplier, onlySended
             );
 
             if (status === ResponseStatusEnum.OK) {
@@ -179,7 +183,6 @@ export const DeliveriesInformation = () => {
         try {
             setLoading(true);
             const { data, status } = await supplierServices.getSuppliers();
-            console.log('suppliers: ', data);
             if (status === ResponseStatusEnum.OK) {
                 setDataDataSuppliers(normalizeCatalogSuppliers(data));
                 loadedRef.current = true;
