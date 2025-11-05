@@ -19,10 +19,10 @@ class DeliveriesInformationServices {
      *
      *
      */
-    getDeliveriesInformation(page = 1, pageSize = 100, search, statusDelivery, supplierId) {
+     getDeliveriesInformation(page = 1, pageSize = 100, search, statusDelivery, supplierId, onlySended = false) {
         let url = `?page=${page}&page_size=${pageSize}`;
         if(statusDelivery) {
-            url += `&state=${statusDelivery}`;
+            url += `&state=${statusDelivery}&only_sended=${onlySended}`;
         }
         if(search) {
             url += `&search=${search}`;

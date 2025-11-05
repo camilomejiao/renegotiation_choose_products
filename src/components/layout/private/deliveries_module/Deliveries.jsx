@@ -339,7 +339,7 @@ export const Deliveries = () => {
                         }}
                     >
                         <FaCheck />
-                        Aprobado
+                        Enviada a supervisión
                 </span>
             );
 
@@ -1028,7 +1028,7 @@ export const Deliveries = () => {
             }
 
             try {
-                const { status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
+                const { data, status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === ResponseStatusEnum.CREATED) {
                     showAlert('Éxito', 'Archivo enviado exitosamente');
@@ -1036,10 +1036,15 @@ export const Deliveries = () => {
                     await getListDeliveriesToUser(params.id);
                 }
 
-                if (status === ResponseStatusEnum.BAD_REQUEST ||
-                    status === ResponseStatusEnum.INTERNAL_SERVER_ERROR ||
-                    status !== ResponseStatusEnum.CREATED) {
+                if (status === ResponseStatusEnum.BAD_REQUEST) {
+                    console.log(data);
+                    if(data?.error) showError('Error', `${data?.error}`); return;
+                    showError('Error', 'Error al enviar el archivo'); return;
+                }
+
+                if (status === ResponseStatusEnum.INTERNAL_SERVER_ERROR || status !== ResponseStatusEnum.CREATED) {
                     showError('Error', 'Error al enviar el archivo');
+                    return;
                 }
             } catch (error) {
                 console.error("Error al enviar el archivo:", error);
@@ -1160,8 +1165,6 @@ export const Deliveries = () => {
 
             // Refrescas la tabla completa
             await getListDeliveriesToUser(params.id);
-
-            showAlert("¡Listo!", "Factura electrónica registrada.");
             closeFeModal();
         } catch (error) {
             console.error(error);
