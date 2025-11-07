@@ -65,7 +65,7 @@ import {
 } from "../components/layout/private/payments_module/conciliation/list-conciliation/ListConciliation";
 import {
     DeliveriesInformation
-} from "../components/layout/private/deliveries_module/deliveries-information/DeliveriesInformation";
+} from "../components/layout/private/deliveries_module/deliveries-information-table/DeliveriesInformation";
 import {
     ConciliationDetail
 } from "../components/layout/private/payments_module/conciliation/conciliation-detail/ConciliationDetail";
