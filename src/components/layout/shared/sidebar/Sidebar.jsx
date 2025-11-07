@@ -61,6 +61,7 @@ const menuConfig = {
     ],
     [RolesEnum.TRUST_PAYMENTS]: [
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
+        { path: "/admin/delivery-information-and-tracking", icon: FaExclamationTriangle, label: "Seguimiento de entregas" },
         { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],

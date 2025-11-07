@@ -41,7 +41,13 @@ import { filesServices } from "../../../../helpers/services/FilesServices";
 import './Deliveries.css';
 
 //Enum
-import { ResponseStatusEnum, RolesEnum, UploadFileEnum } from "../../../../helpers/GlobalEnum";
+import {
+    BeneficiaresManagementEnum,
+    ResponseStatusEnum,
+    RolesEnum,
+    UploadFileEnum
+} from "../../../../helpers/GlobalEnum";
+import glass from "../../../../assets/image/icons/magnifying_glass.png";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -106,6 +112,9 @@ const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
  */
 const hasPdfOK = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl && row?.evidencePdf?.feFileUrl && row?.evidenceImg?.imgEvidence1Url && row?.evidenceImg?.imgEvidence2Url);
 
+/*
+ */
+const pickLatest = (arr = []) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null);
 export const Deliveries = () => {
 
     const { userAuth } = useOutletContext();
@@ -138,7 +147,8 @@ export const Deliveries = () => {
     const [comment, setComment] = useState('');
     const [action, setAction] = useState('approve');
 
-
+    //
+    const [consolidated, setConsolidated] = useState("");
 
     /**
      * Obtiene los proveedores asociados al usuario autenticado.
@@ -256,6 +266,12 @@ export const Deliveries = () => {
             const { data, status} = await userServices.userInformation(cubId);
             if(status === ResponseStatusEnum.OK) {
                 setUserData(data);
+
+                const archivos = data?.archivos ?? {};
+                const consolidado = pickLatest(archivos[BeneficiaresManagementEnum.CONSOLIDATED]);
+
+                setConsolidated(consolidado?.ruta ?? null);
+
             }
         } catch (error) {
             console.log(error);
@@ -269,12 +285,24 @@ export const Deliveries = () => {
      * - Rol del usuario autenticado.
      */
     const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
-        if(row.actions.aprobadoProveedor === true) {
+        if(row.actions.aprobadoProveedor === true && rolId === RolesEnum.SUPPLIER) {
             return true;
         }
 
-        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.ADMIN) {
+        if(row.actions.aprobadoProveedor === true && row.actions.approvedTechnical === true && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
             return true;
+        }
+
+        if((row.actions.aprobadoProveedor === true || row.actions.aprobadoProveedor === null) && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
+            return false;
+        }
+
+        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.TECHNICAL) {
+            return true;
+        }
+
+        if(rolId === RolesEnum.ADMIN) {
+            return false;
         }
     };
 
@@ -499,7 +527,7 @@ export const Deliveries = () => {
                 )}
 
                 {/* Aprobación Técnica/Admin (solo si hay consolidado) */}
-                {hasPdfOK(row) && isTechOrAdmin && (
+                {hasPdfOK(row) && isTechOrAdmin && row?.actions?.aprobadoProveedor && (
                     <Button
                         style={{ backgroundColor: "#FFF", marginRight: 10 }}
                         onClick={() => {
@@ -1228,23 +1256,34 @@ export const Deliveries = () => {
 
                 <div className="deliveries-banner">
                     <Container>
-                        <Row className="justify-content-start align-items-center mt-4">
-                            <>
-                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                                    <Col xs={12} md={6} className="d-flex align-items-center">
-                                        <Select
-                                            value={selectedSupplier}
-                                            onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
-                                            options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
-                                            placeholder="Selecciona una compañía"
-                                            classNamePrefix="custom-select"
-                                            className="custom-select w-100"
-                                        />
-                                    </Col>
+                        <Row className="justify-content-end align-items-center mt-4">
+                            <Col xs={12} md={6}>
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL) && consolidated &&(
+                                    <button
+                                        onClick={() => handleViewFile(consolidated)}
+                                        rel="noopener noreferrer"
+                                        className="reporting-system-button view-pdf"
+                                    >
+                                        VER CONSOLIDADO DE COMPRAS
+                                    </button>
                                 )}
+                            </Col>
+                        </Row>
+                        <Row className="justify-content-end align-items-center mt-4">
+                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
+                                <Col xs={12} md={8} className="d-flex justify-content-end align-items-center gap-3">
+                                    <Select
+                                        value={selectedSupplier}
+                                        onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
+                                        options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
+                                        placeholder="Selecciona una compañía"
+                                        classNamePrefix="custom-select"
+                                        className="custom-select flex-grow-1"
+                                    />
 
-                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.SUPPLIER || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                                    <Col xs={12} md={6} className="d-flex align-items-center justify-content-md-start justify-content-center">
+                                    {(userAuth.rol_id === RolesEnum.ADMIN ||
+                                        userAuth.rol_id === RolesEnum.SUPPLIER ||
+                                        userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                         <button
                                             onClick={handleCreateDeliveries}
                                             className="deliveries-button deliveries d-flex align-items-center"
@@ -1252,9 +1291,9 @@ export const Deliveries = () => {
                                             <img src={imgFrame2} alt="icono único" className="button-icon" />
                                             CREAR ENTREGAS
                                         </button>
-                                    </Col>
-                                )}
-                            </>
+                                    )}
+                                </Col>
+                            )}
                         </Row>
                     </Container>
                 </div>
