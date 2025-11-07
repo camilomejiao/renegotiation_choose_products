@@ -1,10 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Col, Nav, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 
-//
-import './DeliveriesInformation.css';
 
 //img
 import imgPayments from "../../../../../assets/image/payments/payments.png";
@@ -284,10 +282,10 @@ export const DeliveriesInformation = () => {
                 {/* Toolbar */}
                 <Row className="toolbar gy-2 align-items-center mt-3">
                     {/* Buscador + botón pegado */}
-                    <Col xs={12} md={5}>
+                    <Col xs={12} md={6}>
                         <input
                             type="text"
-                            placeholder="Buscar por nombre/CUB/NIT..."
+                            placeholder="Buscar por Nombre/CUB/NIT..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={(e) => {
@@ -300,7 +298,7 @@ export const DeliveriesInformation = () => {
                         />
                     </Col>
                     {/* Buscador + botón pegado */}
-                    <Col xs={12} md={1}>
+                    <Col xs={12} md={2}>
                         <Button
                             variant="outline-primary"
                             className="btn-search"
@@ -310,6 +308,50 @@ export const DeliveriesInformation = () => {
                         >
                             Buscar
                         </Button>
+                    </Col>
+                </Row>
+
+                {/* Filtro de estado (reemplazo de tabs) */}
+                <Row className="toolbar gy-2 align-items-center mt-3 mb-4">
+                    <Col xs={12} md={6} className="ms-auto">
+                        <Select
+                            classNamePrefix="status-select"
+                            options={STATUS_ARRAY.map((st) => ({
+                                value: st.key,
+                                label: st.label,
+                            }))}
+                            value={
+                                STATUS_ARRAY
+                                    .map((st) => ({ value: st.key, label: st.label }))
+                                    .find((opt) => opt.value === activeStatusKey) || null
+                            }
+                            onChange={(opt) => handleChangeStatus(opt?.value)}
+                            placeholder="Filtrar por estado"
+                            isClearable={false}
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                    boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                    "&:hover": { borderColor: "#40A581" },
+                                }),
+                                option: (base, { isFocused, isSelected }) => ({
+                                    ...base,
+                                    backgroundColor: isSelected
+                                        ? "#40A581"
+                                        : isFocused
+                                            ? "#E8F5E9"
+                                            : "white",
+                                    color: isSelected ? "white" : "#333",
+                                    cursor: "pointer",
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: "#2148C0",
+                                    fontWeight: "200",
+                                }),
+                            }}
+                        />
                     </Col>
 
                     {/* Selector de proveedor con datalist (bonito y buscable) */}
@@ -331,29 +373,34 @@ export const DeliveriesInformation = () => {
                                         option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
                                     );
                                 }}
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                        boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                        "&:hover": { borderColor: "#40A581" },
+                                    }),
+                                    option: (base, { isFocused, isSelected }) => ({
+                                        ...base,
+                                        backgroundColor: isSelected
+                                            ? "#40A581"
+                                            : isFocused
+                                                ? "#E8F5E9"
+                                                : "white",
+                                        color: isSelected ? "white" : "#333",
+                                        cursor: "pointer",
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: "#2148C0",
+                                        fontWeight: "200",
+                                    }),
+                                }}
                             />
                         </Col>
                     )}
                 </Row>
 
-                {/* Tabs en fila aparte, extendidos y con estilo */}
-                <Row className="mt-4 mb-3">
-                    <Col xs={12}>
-                        <Nav
-                            variant="tabs"
-                            activeKey={activeStatusKey}
-                            onSelect={(k) => handleChangeStatus(k)}
-                            justify
-                            className="w-100 nav-tabs-stretch pretty-tabs"
-                        >
-                            {STATUS_ARRAY.map((st) => (
-                                <Nav.Item key={st.key}>
-                                    <Nav.Link eventKey={st.key}>{st.label}</Nav.Link>
-                                </Nav.Item>
-                            ))}
-                        </Nav>
-                    </Col>
-                </Row>
 
                 <div style={{ height: 600, width: "100%" }}>
                     <DataGrid
