@@ -1270,8 +1270,9 @@ export const Deliveries = () => {
                             </Col>
                         </Row>
                         <Row className="justify-content-end align-items-center mt-4">
-                            {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                                <Col xs={12} md={8} className="d-flex justify-content-end align-items-center gap-3">
+
+                            <Col xs={12} md={8} className="d-flex justify-content-end align-items-center gap-3">
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                     <Select
                                         value={selectedSupplier}
                                         onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
@@ -1280,20 +1281,20 @@ export const Deliveries = () => {
                                         classNamePrefix="custom-select"
                                         className="custom-select flex-grow-1"
                                     />
+                                )}
 
-                                    {(userAuth.rol_id === RolesEnum.ADMIN ||
-                                        userAuth.rol_id === RolesEnum.SUPPLIER ||
-                                        userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
-                                        <button
-                                            onClick={handleCreateDeliveries}
-                                            className="deliveries-button deliveries d-flex align-items-center"
-                                        >
-                                            <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                            CREAR ENTREGAS
-                                        </button>
-                                    )}
-                                </Col>
-                            )}
+                                {(userAuth.rol_id === RolesEnum.ADMIN ||
+                                    userAuth.rol_id === RolesEnum.SUPPLIER ||
+                                    userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
+                                    <button
+                                        onClick={handleCreateDeliveries}
+                                        className="deliveries-button deliveries d-flex align-items-center"
+                                    >
+                                        <img src={imgFrame2} alt="icono único" className="button-icon" />
+                                        CREAR ENTREGAS
+                                    </button>
+                                )}
+                            </Col>
                         </Row>
                     </Container>
                 </div>
