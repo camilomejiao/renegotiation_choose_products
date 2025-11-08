@@ -82,7 +82,7 @@ const isValidPdf = (file) => {
  */
 const hasFeNumber = (row) => row?.fe_number;
 /** Roles que pueden editar entregas. */
-const canEditRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+const canEditRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
 
 /** Roles que pueden eliminar entregas. */
 const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
