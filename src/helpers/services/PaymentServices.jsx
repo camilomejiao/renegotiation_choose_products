@@ -1,5 +1,6 @@
 import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
+import { ReportTypePaymentsEnum } from "../GlobalEnum";
 
 /**
  * Servicio para gestionar los pagos, entregas y cuentas de cobro.
@@ -138,7 +139,11 @@ class PaymentServices {
      *
      */
     getExcelAndPdfFile(SPId, reportType) {
-        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?numeros_cuentas=${SPId}`);
+        let numeros_cuentas = 'numero_cuenta_cobro';
+        if(reportType === ReportTypePaymentsEnum.EXCEL) {
+            numeros_cuentas = 'numeros_cuentas';
+        }
+        const url = this.buildUrl(`cuentas-cobro/reporte-${reportType}/?${numeros_cuentas}=${SPId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
