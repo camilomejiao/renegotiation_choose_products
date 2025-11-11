@@ -47,7 +47,6 @@ import {
     RolesEnum,
     UploadFileEnum
 } from "../../../../helpers/GlobalEnum";
-import glass from "../../../../assets/image/icons/magnifying_glass.png";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
