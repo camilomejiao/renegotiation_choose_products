@@ -19,7 +19,7 @@ const canShowRoles = [RolesEnum.ADMIN, RolesEnum.SUPERVISION];
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const { userAuth } = useOutletContext();
-    const canEdit = canShowRoles.includes(userAuth.rol_id);
+    const canShowButton = canShowRoles.includes(userAuth.rol_id);
 
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
@@ -166,7 +166,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                     </Button>
                 </Col>
 
-                {canEdit && (
+                {canShowButton && (
                     <Col xs={6} md="auto" className="payments-toolbar__btn payments-toolbar__btn--right">
                         <Button
                             variant="outline-success"
@@ -174,7 +174,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                             onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
                             title="Generar excel"
                         >
-                            Generar Excel
+                            Generar Reporte
                         </Button>
                     </Col>
                 )}
