@@ -19,7 +19,7 @@ const canShowRoles = [RolesEnum.ADMIN, RolesEnum.SUPERVISION];
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const { userAuth } = useOutletContext();
-    const canEdit = canShowRoles.includes(userAuth.rol_id);
+    const canShowButton = canShowRoles.includes(userAuth.rol_id);
 
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
@@ -33,6 +33,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const columns = [
         { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "approval_date", headerName: "Fecha Aprobación", width: 80 },
         { field: "cub_id", headerName: "CUB", width: 80 },
         { field: "name", headerName: "Beneficiario", width: 350 },
         { field: "identification", headerName: "Identificación", width: 100 },
@@ -57,14 +58,18 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     };
 
     const normalizeRows = async (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            cub_id: row?.beneficiario?.cub_id,
-            name: `${row?.beneficiario?.nombre_completo ?? ''}`,
-            identification: row?.beneficiario?.identificacion,
-            supplier_name: row?.proveedor?.nombre,
-            supplier_nit: row?.proveedor?.nit,
-        }));
+        return data.map((row) => {
+            const approvalDate = userAuth.rol_id === RolesEnum.SUPERVISION ? row?.fecha_aprobacion_tecnica.split('T')[0] : row?.fecha_aprobado_pago.split('T')[0];
+            return {
+                id: row?.id,
+                cub_id: row?.beneficiario?.cub_id,
+                approval_date: approvalDate,
+                name: `${row?.beneficiario?.nombre_completo ?? ''}`,
+                identification: row?.beneficiario?.identificacion,
+                supplier_name: row?.proveedor?.nombre,
+                supplier_nit: row?.proveedor?.nit,
+            }
+        });
     }
 
     const handleRowClick = (params) => {
@@ -166,7 +171,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                     </Button>
                 </Col>
 
-                {canEdit && (
+                {canShowButton && (
                     <Col xs={6} md="auto" className="payments-toolbar__btn payments-toolbar__btn--right">
                         <Button
                             variant="outline-success"
@@ -174,7 +179,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                             onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
                             title="Generar excel"
                         >
-                            Generar Excel
+                            Generar Reporte
                         </Button>
                     </Col>
                 )}

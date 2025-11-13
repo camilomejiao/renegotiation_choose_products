@@ -1,11 +1,12 @@
 /* ========== CONTENEDOR PRINCIPAL ========== */
 .content-review-documents {
-    max-width: 1200px;
+    /*max-width: 1200px;
     margin: 50px auto;
     padding: 25px;
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(147, 53, 53, 0.1);
+    box-shadow: 0 4px 10px rgba(147, 53, 53, 0.1);*/
+    padding: 47px;
 }
 
 /* ========== TITULOS DE SECCIÓN ========== */
@@ -308,7 +309,7 @@
 @media screen and (max-width: 768px) {
     .content-review-documents {
         margin: auto;
-        padding: 20px;
+        padding: 8px;
     }
 
     .review-section {

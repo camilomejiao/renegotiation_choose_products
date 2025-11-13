@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Row } from "react-bootstrap";
@@ -14,10 +14,17 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 //services
 import { deliveriesInformationServices } from "../../../../../helpers/services/DeliveriesInformationServices";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import { deliveriesServices } from "../../../../../helpers/services/DeliveriesServices";
 
 //Enum
-import { DeliveryStatusEnum, ResponseStatusEnum, RolesEnum } from "../../../../../helpers/GlobalEnum";
+import {
+    DeliveryStatusEnum,
+    ReportTypePaymentsEnum,
+    ResponseStatusEnum,
+    RolesEnum
+} from "../../../../../helpers/GlobalEnum";
 import Select from "react-select";
+import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 const canShowSuppliers = [RolesEnum.SUPPLIER];
 const canShowOtherRol = [
@@ -33,12 +40,15 @@ const canShowOtherRol = [
 //Status
 const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
 
+/** Roles que pueden ver el boton descargra. */
+const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL];
 export const DeliveriesInformation = () => {
 
     const { userAuth } = useOutletContext();
 
     const canShowSupplier = canShowSuppliers.includes(userAuth.rol_id);
     const canShowOtherRoles = canShowOtherRol.includes(userAuth.rol_id);
+    const canShowButton = canShowRoles.includes(userAuth.rol_id);
 
     const navigate = useNavigate();
 
@@ -50,6 +60,7 @@ export const DeliveriesInformation = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [committedSearch, setCommittedSearch] = useState("");
     const [loading, setLoading] = useState(false);
+    const [informationLoadingText, setInformationLoadingText] = useState("");
 
     const [selectedSupplierId, setSelectedSupplierId] = useState("");
 
@@ -163,7 +174,7 @@ export const DeliveriesInformation = () => {
         return data.map((row) => ({
             id: row?.id,
             status: row?.estado,
-            send_date: row?.fecha_envio_proveedor,
+            send_date: row?.fecha_envio_proveedor.split('T')[0],
             cub_id: row?.beneficiario?.cub_id,
             name: `${row?.beneficiario?.nombre_completo ?? ''}`,
             identification: row?.beneficiario?.identificacion,
@@ -244,6 +255,42 @@ export const DeliveriesInformation = () => {
     }
 
     //
+    const handleGenerateDocument = async (reportType) => {
+        try {
+            setLoading(true);
+            setInformationLoadingText("Generando documento, espere un momento por favor...");
+
+            const { status, blob, type, filename, data } = await deliveriesServices.getExcelDeliveriesDetailToSupervision();
+            console.log(blob, status);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const fileURL = URL.createObjectURL(blob);
+                // Si es PDF y quieres abrir en otra pestaña:
+                if ((type).includes('pdf')) {
+                    window.open(fileURL, '_blank');
+                } else {
+                    // Descarga (Excel u otros binarios)
+                    const a = document.createElement('a');
+                    a.href = fileURL;
+                    a.download = filename || 'reporte.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+
+                // Limpia el ObjectURL
+                setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
+            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+        } catch (error) {
+            console.error("Error al Generar documento PDF para cuenta:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //
     useEffect(() => {
         if(canShowOtherRoles) {
             loadSuppliersOnce();
@@ -280,7 +327,7 @@ export const DeliveriesInformation = () => {
 
             <div className="container mt-lg-5">
                 {/* Toolbar */}
-                <Row className="toolbar gy-2 align-items-center mt-3">
+                <Row className="gy-2 align-items-center mt-3">
                     {/* Buscador + botón pegado */}
                     <Col xs={12} md={6}>
                         <input
@@ -309,10 +356,23 @@ export const DeliveriesInformation = () => {
                             Buscar
                         </Button>
                     </Col>
+                    {/* Descargar reporte */}
+                    {canShowButton && (
+                        <Col xs={12} md={4} className="ms-auto d-flex justify-content-end">
+                            <Button
+                                variant="outline-success"
+                                className="btn-responsive"
+                                onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
+                                title="Generar excel"
+                            >
+                                Generar Reporte
+                            </Button>
+                        </Col>
+                    )}
                 </Row>
 
                 {/* Filtro de estado (reemplazo de tabs) */}
-                <Row className="toolbar gy-2 align-items-center mt-3 mb-4">
+                <Row className="gy-2 align-items-center mt-3 mb-4">
                     <Col xs={12} md={6} className="ms-auto">
                         <Select
                             classNamePrefix="status-select"
@@ -401,6 +461,11 @@ export const DeliveriesInformation = () => {
                     )}
                 </Row>
 
+                {loading && (
+                    <div className="overlay">
+                        <div className="loader">{informationLoadingText}</div>
+                    </div>
+                )}
 
                 <div style={{ height: 600, width: "100%" }}>
                     <DataGrid
