@@ -44,7 +44,9 @@ export const BeneficiaryDeliveryReview = () => {
     }
 
     const handleRowSelect = (id) => {
-        navigate(`/admin/payments-beneficiary/${id}/${params.role}`);
+        //navigate(`/admin/payments-beneficiary/${id}/${params.role}`);
+        const url = `/admin/payments-beneficiary/${id}/${params.role}`;
+        window.open(url, "_blank");
     }
 
     useEffect(() => {

@@ -320,7 +320,7 @@ export const ReviewDocuments = () => {
                     </div>
                 )}
 
-                <div className="content-review-documents">
+                <div className="content-review-documents" >
                     <Row className="mb-4">
                         <Col md={6}>
                             <h5 className="section-title">Proveedor</h5>

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
-import { FormControlLabel, Switch, TextField } from "@mui/material";
+import {Autocomplete, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
 import { Button } from "react-bootstrap";
 import { useFormik } from "formik";
 
@@ -13,17 +13,8 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-import {supplierServices} from "../../../../../helpers/services/SupplierServices";
-
-const validationSchema = yup.object().shape({
-    company_name: yup.string().required("El nombre de la compañia es requerido"),
-    nit: yup.string().required("El nit o cedula es requerido"),
-    legal_representative: yup.string().required("El nombre del representante es requerido"),
-    cellphone: yup.number().required("El telefono es requerido"),
-    email: yup.string().email().required("El email es requerido"),
-    active: yup.boolean().required("Activo o Inactivo"),
-    resolution: yup.string().optional("El número de resolución es opcional"),
-});
+import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import {locationServices} from "../../../../../helpers/services/LocationServices";
 
 const initialValues = {
     company_name: "",
@@ -33,12 +24,103 @@ const initialValues = {
     email: "",
     active: true,
     resolution: "",
+    depto: null,
+    muni:  null,
 };
+
+const validationSchema = yup.object().shape({
+    company_name: yup.string().required("El nombre de la compañia es requerido"),
+    nit: yup.string().required("El nit o cedula es requerido"),
+    legal_representative: yup.string().required("El nombre del representante es requerido"),
+    cellphone: yup.number().required("El telefono es requerido"),
+    email: yup.string().email().required("El email es requerido"),
+    active: yup.boolean().required("Activo o Inactivo"),
+    resolution: yup.string().optional("El número de resolución es opcional"),
+    depto: yup
+        .object({ id: yup.number().required(), nombre: yup.string().required() })
+        .nullable()
+        .required("Selecciona un departamento"),
+    muni: yup
+        .object({ id: yup.number().required(), nombre: yup.string().required() })
+        .nullable()
+        .required("Selecciona un municipio"),
+});
 
 export const CreateSuppliers = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
+    const [deptOptions, setDeptOptions] = useState([]);
+    const [muniOptions, setMuniOptions] = useState([]);
+    const [loadingDepts, setLoadingDepts] = useState(false);
+    const [loadingMunis, setLoadingMunis] = useState(false);
+
+    //cache para no repetir requests por depto
+    const deptsLoadedRef = useRef(false);
+    const muniCacheRef = useRef(new Map());
+
+    //
+    const loadDepartmentsOnce = async () => {
+        if (deptsLoadedRef.current) {
+            return;
+        }
+
+        try {
+            setLoadingDepts(true);
+            const {data, status} = await locationServices.getDeptos();
+            if(status === ResponseStatusEnum.OK) {
+                setDeptOptions(data);
+                setLoadingDepts(false);
+                deptsLoadedRef.current = true;
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        }
+    };
+
+    //
+    const refreshMunicipalities = async (selectedDept) => {
+        if (!selectedDept) {
+            setMuniOptions([]);
+            formik.setFieldValue("muni", null);
+            return;
+        }
+
+        try {
+            setLoadingMunis(true);
+            const { data, status } = await locationServices.getMunis(selectedDept.id);
+            if (status === ResponseStatusEnum.OK) {
+                muniCacheRef.current.set(selectedDept.id, data);
+            } else {
+                muniCacheRef.current.set(selectedDept.id, []);
+            }
+
+            const list = muniCacheRef.current.get(selectedDept.id) || [];
+            setMuniOptions(list);
+
+            // si el municipio seleccionado ya no pertenece al nuevo depto, límpialo
+            const current = formik.values.muni;
+            if (!current || !list.some(m => m.id === current.id)) {
+                formik.setFieldValue("muni", null);
+            }
+        } catch (error) {
+            console.log(error);
+        }  finally {
+            setLoadingMunis(false);
+        }
+    };
+
+    //
+    const handleDeptChange = async (_evt, value) => {
+        formik.setFieldValue("depto", value);
+        await refreshMunicipalities(value);
+    };
+
+    //
+    const handleMuniChange = (_evt, value) => {
+        formik.setFieldValue("muni", value);
+    };
 
     //
     const formik = useFormik({
@@ -53,6 +135,8 @@ export const CreateSuppliers = () => {
                     aprobado: values.active,
                     resolucion_aprobacion: values.resolution,
                     fecha_registro: new Date().toISOString().slice(0, 10),
+                    depto_id: formik.values.depto?.id ?? null,
+                    muni_id: formik.values.muni?.id ?? null,
                 };
                 console.log('formattedValues: ', formattedValues);
                 const response = id
@@ -95,6 +179,7 @@ export const CreateSuppliers = () => {
     }
 
     useEffect(() => {
+        loadDepartmentsOnce();
         if (id) {
             fetchSupplierData(id)
         }
@@ -179,6 +264,70 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("resolution")}
                                 error={formik.touched.resolution && Boolean(formik.errors.resolution)}
                                 helperText={formik.touched.resolution && formik.errors.resolution}
+                            />
+                        </div>
+
+                        {/* Departamentos (único) */}
+                        <div className="col-md-6">
+                            <Autocomplete
+                                options={deptOptions}
+                                value={formik.values.depto}
+                                onOpen={loadDepartmentsOnce}
+                                onChange={handleDeptChange}
+                                onBlur={() => formik.setFieldTouched("depto", true)}
+                                getOptionLabel={(o) => o?.nombre ?? ""}
+                                isOptionEqualToValue={(o, v) => o.id === v?.id}
+                                loading={loadingDepts}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Departamento"
+                                        placeholder="Selecciona un departamento"
+                                        error={formik.touched.depto && Boolean(formik.errors.depto)}
+                                        helperText={formik.touched.depto && formik.errors.depto}
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <>
+                                                    {loadingDepts ? <CircularProgress size={18} /> : null}
+                                                    {params.InputProps.endAdornment}
+                                                </>
+                                            ),
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+
+                        {/* Municipios (único) */}
+                        <div className="col-md-6">
+                            <Autocomplete
+                                options={muniOptions}
+                                value={formik.values.muni}
+                                onChange={handleMuniChange}
+                                onBlur={() => formik.setFieldTouched("muni", true)}
+                                getOptionLabel={(o) => o?.nombre ?? ""}
+                                isOptionEqualToValue={(o, v) => o.id === v?.id}
+                                loading={loadingMunis}
+                                disabled={!formik.values.depto}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Municipio"
+                                        placeholder={formik.values.depto ? "Selecciona un municipio" : "Primero elige un departamento"}
+                                        error={formik.touched.muni && Boolean(formik.errors.muni)}
+                                        helperText={formik.touched.muni && formik.errors.muni}
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <>
+                                                    {loadingMunis ? <CircularProgress size={18} /> : null}
+                                                    {params.InputProps.endAdornment}
+                                                </>
+                                            ),
+                                        }}
+                                    />
+                                )}
                             />
                         </div>
 
