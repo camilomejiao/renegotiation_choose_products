@@ -79,6 +79,7 @@ export const ReviewDocuments = () => {
             const {data, status} = await paymentServices.getReviewApprovedDeliveriesById(deliberyId);
             if(status === ResponseStatusEnum.OK) {
                 setBeneficiaryInformation(data);
+                setValorFactura(data?.valor)
             }
         } catch (error) {
             console.error("Error obteniendo el detalle de la entrega:", error);
@@ -454,7 +455,7 @@ export const ReviewDocuments = () => {
                                                     value={valorFactura}
                                                     onChange={(e) => setValorFactura(e.target.value)}
                                                     onBlur={handleValorFacturaBlur}
-                                                    placeholder={`Debe ser ${valorEntrega.toLocaleString('es-CO')}`}
+                                                    //placeholder={`Debe ser ${valorEntrega.toLocaleString('es-CO')}`}
                                                     disabled={loading}
                                                 />
                                                 <div className="field-hint">
