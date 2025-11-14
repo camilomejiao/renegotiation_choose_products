@@ -15,7 +15,7 @@ import { deliveriesServices } from "../../../../../../helpers/services/Deliverie
 import { ReportTypePaymentsEnum, ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 /** Roles que pueden ver el boton descargra. */
-const canShowRoles = [RolesEnum.ADMIN, RolesEnum.SUPERVISION];
+const canShowRoles = [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS];
 export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const { userAuth } = useOutletContext();
