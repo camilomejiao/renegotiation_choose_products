@@ -272,10 +272,10 @@ export const ReviewDocuments = () => {
     };
 
     //Feedback entre fechas
-    const handleFechaFacturaChange = (v) => {
-        setFechaFactura(v);
-        if (isValidDate(v) && isValidDate(fechaEntrega)) {
-            if (new Date(v) < new Date(fechaEntrega)) {
+    const handleFechaFacturaChange = (value) => {
+        setFechaFactura(value);
+        if (isValidDate(value) && isValidDate(fechaEntrega)) {
+            if (new Date(value) < new Date(fechaEntrega)) {
                 AlertComponent.warning("La 'Fecha de factura' no puede ser menor que la 'Fecha de entrega'.");
             }
         }
@@ -426,6 +426,7 @@ export const ReviewDocuments = () => {
                                                         value={fechaEntrega}
                                                         onChange={(e) => setFechaEntrega(e.target.value)}
                                                         disabled={loading}
+                                                        onKeyDown={(e) => e.preventDefault()}
                                                     />
                                                 </Col>
 
@@ -437,6 +438,7 @@ export const ReviewDocuments = () => {
                                                         value={fechaFactura}
                                                         onChange={(e) => handleFechaFacturaChange(e.target.value)}
                                                         disabled={loading}
+                                                        onKeyDown={(e) => e.preventDefault()}
                                                         //min={fechaEntrega}
                                                     />
                                                 </Col>
