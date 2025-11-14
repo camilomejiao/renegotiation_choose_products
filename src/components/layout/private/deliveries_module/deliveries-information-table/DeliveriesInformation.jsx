@@ -181,7 +181,7 @@ export const DeliveriesInformation = () => {
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
             beneficiario_id: row?.beneficiario?.id,
-            pay: parseFloat(row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
+            pay: parseFloat(row?.valor_factura_electronica ?? row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
             observation: row?.observacion,
         }));
     }
@@ -373,7 +373,7 @@ export const DeliveriesInformation = () => {
 
                 {/* Filtro de estado (reemplazo de tabs) */}
                 <Row className="gy-2 align-items-center mt-3 mb-4">
-                    <Col xs={12} md={6} className="ms-auto">
+                    <Col xs={12} md={6}>
                         <Select
                             classNamePrefix="status-select"
                             options={STATUS_ARRAY.map((st) => ({

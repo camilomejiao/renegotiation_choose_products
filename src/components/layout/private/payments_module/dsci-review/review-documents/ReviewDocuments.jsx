@@ -35,6 +35,7 @@ import {
 } from "../../../../../../helpers/GlobalEnum";
 
 import { renegotiationServices } from "../../../../../../helpers/services/RenegociationServices";
+import {number} from "yup";
 
 //Helpers
 const isValidDate = (v) => !!v && !Number.isNaN(new Date(v).getTime());
@@ -199,6 +200,8 @@ export const ReviewDocuments = () => {
             orden_compra_correcta: canShowSupervision ? okOrden : null,
         };
 
+        console.log('payload: ', payload);
+
         try {
             setLoading(true);
             setInformationLoadingText("Guardando");
@@ -206,6 +209,10 @@ export const ReviewDocuments = () => {
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success('', `${accion} exitosamente!`);
                 navigate(`/admin/payments/${params.role}`);
+            }
+
+            if(status === ResponseStatusEnum.BAD_REQUEST) {
+                AlertComponent.warning('', `${data.detail}`);
             }
         } catch (error) {
             console.error("Error al aprobar o denegar:", error);
@@ -285,7 +292,9 @@ export const ReviewDocuments = () => {
     //Feedback valor de la factura
     const handleValorFacturaBlur = () => {
         const vFactura = Number(String(valorFactura).replace(/[^\d.-]/g, "")) || 0;
-        if (vFactura && valorEntrega && vFactura !== valorEntrega) {
+
+        let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
+        if (vFactura && valorEntrega && (vFactura > valorEntrega || vFactura < newValorEntrega)) {
             AlertComponent.warning('Ojo!',
                 `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
@@ -332,7 +341,8 @@ export const ReviewDocuments = () => {
 
                         <Col md={6}>
                             <div className="total_">
-                                <strong>Valor Entrega: $ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')}</strong>
+                                <strong>Numero Entrega: {beneficiaryInformation?.id} </strong> <br/>
+                                <strong>Valor Entrega: ${parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')} </strong>
                             </div>
                         </Col>
                     </Row>
@@ -455,7 +465,6 @@ export const ReviewDocuments = () => {
                                                     value={valorFactura}
                                                     onChange={(e) => setValorFactura(e.target.value)}
                                                     onBlur={handleValorFacturaBlur}
-                                                    //placeholder={`Debe ser ${valorEntrega.toLocaleString('es-CO')}`}
                                                     disabled={loading}
                                                 />
                                                 <div className="field-hint">
@@ -525,7 +534,6 @@ export const ReviewDocuments = () => {
                                                     value={valorFactura}
                                                     onChange={(e) => setValorFactura(e.target.value)}
                                                     onBlur={handleValorFacturaBlur}
-                                                    placeholder={`Debe ser ${valorEntrega.toLocaleString('es-CO')}`}
                                                     disabled={loading}
                                                 />
                                                 <div className="field-hint">
