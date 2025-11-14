@@ -59,7 +59,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
     const normalizeRows = async (data) => {
         return data.map((row) => {
-            const approvalDate = userAuth.rol_id === RolesEnum.SUPERVISION ? row?.fecha_aprobacion_tecnica.split('T')[0] : row?.fecha_aprobado_pago.split('T')[0];
+            const approvalDate = userAuth.rol_id === RolesEnum.SUPERVISION ? row?.fecha_aprobacion_tecnica.split('T')[0] : row?.fecha_aprobado_supervision.split('T')[0];
             return {
                 id: row?.id,
                 cub_id: row?.beneficiario?.cub_id,

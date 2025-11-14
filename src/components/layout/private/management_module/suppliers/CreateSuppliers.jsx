@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
-import {Autocomplete, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
+import { Autocomplete, CircularProgress, FormControlLabel, Switch, TextField } from "@mui/material";
 import { Button } from "react-bootstrap";
 import { useFormik } from "formik";
 
@@ -13,8 +13,9 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+//Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
-import {locationServices} from "../../../../../helpers/services/LocationServices";
+import { locationServices } from "../../../../../helpers/services/LocationServices";
 
 const initialValues = {
     company_name: "",
@@ -26,6 +27,15 @@ const initialValues = {
     resolution: "",
     depto: null,
     muni:  null,
+
+    account_type: "",
+    account_number: "",
+    bank: "",
+
+    rutFile: null,
+    idFile: null,
+    bankCertFile: null,
+    otherFile: null,
 };
 
 const validationSchema = yup.object().shape({
@@ -44,12 +54,17 @@ const validationSchema = yup.object().shape({
         .object({ id: yup.number().required(), nombre: yup.string().required() })
         .nullable()
         .required("Selecciona un municipio"),
+
+    account_type: yup.string().nullable(),
+    account_number: yup.string().nullable(),
+    bank: yup.string().nullable(),
 });
 
 export const CreateSuppliers = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
+    const isEdit = Boolean(id);
     const [deptOptions, setDeptOptions] = useState([]);
     const [muniOptions, setMuniOptions] = useState([]);
     const [loadingDepts, setLoadingDepts] = useState(false);
@@ -81,6 +96,7 @@ export const CreateSuppliers = () => {
 
     //
     const refreshMunicipalities = async (selectedDept) => {
+        console.log(selectedDept);
         if (!selectedDept) {
             setMuniOptions([]);
             formik.setFieldValue("muni", null);
@@ -135,13 +151,32 @@ export const CreateSuppliers = () => {
                     aprobado: values.active,
                     resolucion_aprobacion: values.resolution,
                     fecha_registro: new Date().toISOString().slice(0, 10),
-                    depto_id: formik.values.depto?.id ?? null,
-                    muni_id: formik.values.muni?.id ?? null,
+                    depto_id: values.depto?.id ?? null,
+                    muni_id: values.muni?.id ?? null,
+                    tipo_cuenta: values.account_type || null,
+                    numero_cuenta: values.account_number || null,
+                    banco: values.bank || null,
                 };
-                console.log('formattedValues: ', formattedValues);
-                const response = id
-                ? await supplierServices.updateSupplier(id, formattedValues)
-                : await supplierServices.createSupplier(formattedValues);
+
+                let response;
+                if (isEdit) {
+                    // 🔥 si en edición quieres enviar archivos, usamos FormData
+                    const formData = new FormData();
+                    Object.entries(formattedValues).forEach(([key, val]) => {
+                        if (val !== null && val !== undefined) {
+                            formData.append(key, val);
+                        }
+                    });
+
+                    if (values.rutFile)       formData.append("rut_file", values.rutFile);
+                    if (values.idFile)        formData.append("id_file", values.idFile);
+                    if (values.bankCertFile)  formData.append("bank_cert_file", values.bankCertFile);
+                    if (values.otherFile)     formData.append("other_file", values.otherFile);
+
+                    response = await supplierServices.updateSupplier(id, formData);
+                } else {
+                    response = await supplierServices.createSupplier(formattedValues);
+                }
 
                 if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
                     AlertComponent.success("Operación realizada correctamente");
@@ -159,9 +194,13 @@ export const CreateSuppliers = () => {
     const fetchSupplierData = async (id) => {
         try {
             const {data, status} = await supplierServices.getSupplierById(id);
-            console.log(data);
             if(status === ResponseStatusEnum.OK) {
                 const resp = data?.data?.proveedor;
+
+                // si backend trae depto/muni como objetos con id/nombre
+                const deptoObj = resp?.depto ?? null;
+                const muniObj  = resp?.muni ?? null;
+
                 await formik.setValues({
                     company_name: resp?.nombre,
                     nit: resp?.nit,
@@ -170,13 +209,28 @@ export const CreateSuppliers = () => {
                     resolution: resp?.resolucion_aprobacion,
                     active: resp?.aprobado,
                     legal_representative: resp?.representante ?? "",
+                    depto: deptoObj,
+                    muni: muniObj,
+
+                    account_type: resp?.tipo_cuenta ?? "",
+                    account_number: resp?.numero_cuenta ?? "",
+                    bank: resp?.banco ?? "",
+                    rutFile: null,
+                    idFile: null,
+                    bankCertFile: null,
+                    otherFile: null,
                 });
+
+                // si tienes depto, puedes precargar municipios:
+                if (deptoObj) {
+                    await refreshMunicipalities(deptoObj);
+                }
             }
         } catch (error) {
             console.error("Error al enviar el formulario:", error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
         }
-    }
+    };
 
     useEffect(() => {
         loadDepartmentsOnce();
@@ -274,7 +328,6 @@ export const CreateSuppliers = () => {
                                 value={formik.values.depto}
                                 onOpen={loadDepartmentsOnce}
                                 onChange={handleDeptChange}
-                                onBlur={() => formik.setFieldTouched("depto", true)}
                                 getOptionLabel={(o) => o?.nombre ?? ""}
                                 isOptionEqualToValue={(o, v) => o.id === v?.id}
                                 loading={loadingDepts}
@@ -305,7 +358,6 @@ export const CreateSuppliers = () => {
                                 options={muniOptions}
                                 value={formik.values.muni}
                                 onChange={handleMuniChange}
-                                onBlur={() => formik.setFieldTouched("muni", true)}
                                 getOptionLabel={(o) => o?.nombre ?? ""}
                                 isOptionEqualToValue={(o, v) => o.id === v?.id}
                                 loading={loadingMunis}
@@ -345,6 +397,95 @@ export const CreateSuppliers = () => {
                                 }
                             />
                         </div>
+
+                        {/* Campos nuevos SOLO en edición */}
+                        {isEdit && (
+                            <>
+                                {/* Datos bancarios */}
+                                <div className="col-md-6">
+                                    <TextField
+                                        fullWidth
+                                        select
+                                        SelectProps={{ native: true }}
+                                        label="Tipo de cuenta"
+                                        value={formik.values.account_type}
+                                        onChange={(e) => formik.setFieldValue("account_type", e.target.value)}
+                                        helperText="Selecciona el tipo de cuenta"
+                                    >
+                                        <option value=""></option>
+                                        <option value="AHORROS">Ahorros</option>
+                                        <option value="CORRIENTE">Corriente</option>
+                                    </TextField>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <TextField
+                                        fullWidth
+                                        label="Número de cuenta"
+                                        value={formik.values.account_number}
+                                        onChange={(e) => formik.setFieldValue("account_number", e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="col-md-6">
+                                    <TextField
+                                        fullWidth
+                                        select
+                                        SelectProps={{ native: true }}
+                                        label="Entidad bancaria"
+                                        value={formik.values.bank}
+                                        onChange={(e) => formik.setFieldValue("bank", e.target.value)}
+                                    >
+                                        <option value=""></option>
+                                        <option value="BANCOLOMBIA">Bancolombia</option>
+                                        <option value="BANCO_CAJA_SOCIAL">Banco Caja Social</option>
+                                        <option value="DAVIVIENDA">Davivienda</option>
+                                        {/* aquí luego metes el catálogo real */}
+                                    </TextField>
+                                </div>
+
+                                {/* Archivos adjuntos */}
+                                <div className="col-md-6 mt-3">
+                                    <label className="form-label d-block">RUT (PDF)</label>
+                                    <input
+                                        type="file"
+                                        accept="application/pdf,image/*"
+                                        className="form-control"
+                                        onChange={(e) => formik.setFieldValue("rutFile", e.currentTarget.files[0])}
+                                    />
+                                </div>
+
+                                <div className="col-md-6 mt-3">
+                                    <label className="form-label d-block">Cédula representante (PDF/imagen)</label>
+                                    <input
+                                        type="file"
+                                        accept="application/pdf,image/*"
+                                        className="form-control"
+                                        onChange={(e) => formik.setFieldValue("idFile", e.currentTarget.files[0])}
+                                    />
+                                </div>
+
+                                <div className="col-md-6 mt-3">
+                                    <label className="form-label d-block">Certificado bancario</label>
+                                    <input
+                                        type="file"
+                                        accept="application/pdf,image/*"
+                                        className="form-control"
+                                        onChange={(e) => formik.setFieldValue("bankCertFile", e.currentTarget.files[0])}
+                                    />
+                                </div>
+
+                                <div className="col-md-6 mt-3">
+                                    <label className="form-label d-block">Otro documento</label>
+                                    <input
+                                        type="file"
+                                        accept="application/pdf,image/*"
+                                        className="form-control"
+                                        onChange={(e) => formik.setFieldValue("otherFile", e.currentTarget.files[0])}
+                                    />
+                                </div>
+                            </>
+                        )}
 
                     </div>
                     <div className="text-end mt-4 d-flex gap-2 justify-content-end">
