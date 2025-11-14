@@ -181,7 +181,7 @@ export const DeliveriesInformation = () => {
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
             beneficiario_id: row?.beneficiario?.id,
-            pay: parseFloat(row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
+            pay: parseFloat(row?.valor_factura_electronica ?? row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
             observation: row?.observacion,
         }));
     }
