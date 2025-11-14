@@ -66,16 +66,24 @@ export const CreateCollectionAccount = () => {
     };
 
     const normalizeRows = (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            cub_id: row?.beneficiario?.id,
-            name: `${row?.beneficiario?.nombre ?? ''} ${row?.beneficiario?.apellido ?? ''}`,
-            identification: row?.beneficiario?.identificacion,
-            date: row?.fecha_creacion.split('T')[0],
-            unid: row?.cantidad_productos,
-            amount: row?.total_cantidad_productos,
-            amount_of_money: parseFloat(row?.valor).toLocaleString('es-CO')
-        }));
+        return data.map((row) => {
+            const beneficiario = row?.beneficiario ?? {};
+            const valorFactura =
+                row?.valor_factura_electronica ??
+                row?.valor ??
+                0;
+
+            return {
+                id: row?.id,
+                cub_id: beneficiario.id,
+                name: `${beneficiario.nombre ?? ""} ${beneficiario.apellido ?? ""}`.trim(),
+                identification: beneficiario.identificacion ?? "",
+                date: row.fecha_creacion.split("T")[0],
+                unid: row?.cantidad_productos ?? 0,
+                amount: row?.total_cantidad_productos ?? 0,
+                amount_of_money: parseFloat(valorFactura).toLocaleString("es-CO"),
+            };
+        });
     };
 
     const handleSelectionChange = (newSelection) => {

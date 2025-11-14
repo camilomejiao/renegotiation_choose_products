@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row, Spinner } from "react-bootstrap";
 import printJS from "print-js";
@@ -27,11 +27,10 @@ import { filesServices } from "../../../../helpers/services/FilesServices";
 import './BeneficiariesManagement.css';
 
 //Enum
-import { BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+import {BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 const pickLatest = (arr = []) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null);
-
 export const BeneficiariesManagement = () => {
     const params = useParams();
     const navigate = useNavigate();

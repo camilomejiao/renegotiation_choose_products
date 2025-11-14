@@ -66,15 +66,22 @@ export const ListAccountOfSuppliers = () => {
     }
 
     const normalizeRows = async (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            collection_account: row?.numero,
-            status: row?.estado_nombre,
-            date: row?.fecha_cuenta_cobro.split("T")[0],
-            supplier_name: row?.nombre_proveedor,
-            supplier_nit: row?.nit_proveedor,
-            total: `$ ${parseFloat(row?.valor_total).toLocaleString()}`,
-        }));
+        return data.map((row) => {
+            const valorSP =
+                row?.valor_total_factura_electronica ??
+                row?.valor_total ??
+                0;
+
+            return {
+                id: row?.id,
+                collection_account: row?.numero,
+                status: row?.estado_nombre,
+                date: row?.fecha_cuenta_cobro.split("T")[0],
+                supplier_name: row?.nombre_proveedor,
+                supplier_nit: row?.nit_proveedor,
+                total: `$ ${parseFloat(valorSP).toLocaleString()}`,
+            };
+        });
     }
 
     //Manejar selección de filas

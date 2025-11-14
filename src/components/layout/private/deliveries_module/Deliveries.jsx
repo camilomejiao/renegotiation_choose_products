@@ -47,7 +47,6 @@ import {
     RolesEnum,
     UploadFileEnum
 } from "../../../../helpers/GlobalEnum";
-import glass from "../../../../assets/image/icons/magnifying_glass.png";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -1148,6 +1147,7 @@ export const Deliveries = () => {
     /** Maneja cambio de estado de producto (entregado, no entregado, parcial). */
     const handleSaveProduct = async () => {
         try {
+            setLoading(true);
             //
             const dataSaveProducts = deliveryProducts.map(prod => ({
                 producto: prod?.id,
@@ -1168,6 +1168,8 @@ export const Deliveries = () => {
             }
         } catch (error) {
             showError('Error al guardar los productos', `${error}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -1220,7 +1222,7 @@ export const Deliveries = () => {
     const refreshPage = () => {
         setTimeout(() => {
             window.location.reload();
-        }, 2000);
+        }, 1000);
     }
 
     useEffect(() => {
@@ -1284,8 +1286,8 @@ export const Deliveries = () => {
                                 )}
 
                                 {(userAuth.rol_id === RolesEnum.ADMIN ||
-                                    userAuth.rol_id === RolesEnum.SUPPLIER ||
-                                    userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
+                                  userAuth.rol_id === RolesEnum.SUPPLIER ||
+                                  userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                     <button
                                         onClick={handleCreateDeliveries}
                                         className="deliveries-button deliveries d-flex align-items-center"
@@ -1435,6 +1437,7 @@ export const Deliveries = () => {
                                         variant="outline-success"
                                         onClick={handleSaveProduct}
                                         className="responsive-button"
+                                        disabled={loading}
                                     >
                                         <FaSave /> GUARDAR ENTREGA
                                     </Button>

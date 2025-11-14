@@ -150,7 +150,7 @@ export const ListCollectionAccount = () => {
                                                     <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
                                                 </Col>
                                                 <Col md={6}>
-                                                    <strong>💰 Valor total:</strong> ${parseFloat(account?.valor_total).toLocaleString()}
+                                                    <strong>💰 Valor total:</strong> $ {Number(detailCollectionAccounts[account.id]?.valor_total_factura_electronica ?? detailCollectionAccounts[account.id]?.valor_total).toLocaleString('es-CO')}
                                                 </Col>
                                             </Row>
 
@@ -164,7 +164,7 @@ export const ListCollectionAccount = () => {
                                                             <li key={idx}>
                                                                 <strong>Beneficiario: </strong> {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido + ' - ' }
                                                                 <strong>Identificación: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
-                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_prod} – 💰 Valor: ${parseFloat(item?.valor).toLocaleString()}
+                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} – 💰 Valor: $ {parseFloat(item?.valor_factura_electronica ?? item?.valor).toLocaleString()}
                                                             </li>
                                                         ))
                                                     ) : (

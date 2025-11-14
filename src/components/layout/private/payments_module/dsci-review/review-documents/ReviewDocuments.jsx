@@ -27,9 +27,15 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 import { filesServices } from "../../../../../../helpers/services/FilesServices";
 
 //Enum
-import {DeliveryDocumentReviewAction, ResponseStatusEnum, RolesEnum} from "../../../../../../helpers/GlobalEnum";
+import {
+    DeliveryDocumentReviewAction,
+    InvoiceValueRange,
+    ResponseStatusEnum,
+    RolesEnum
+} from "../../../../../../helpers/GlobalEnum";
 
 import { renegotiationServices } from "../../../../../../helpers/services/RenegociationServices";
+import {number} from "yup";
 
 //Helpers
 const isValidDate = (v) => !!v && !Number.isNaN(new Date(v).getTime());
@@ -74,6 +80,7 @@ export const ReviewDocuments = () => {
             const {data, status} = await paymentServices.getReviewApprovedDeliveriesById(deliberyId);
             if(status === ResponseStatusEnum.OK) {
                 setBeneficiaryInformation(data);
+                setValorFactura(data?.valor)
             }
         } catch (error) {
             console.error("Error obteniendo el detalle de la entrega:", error);
@@ -176,10 +183,8 @@ export const ReviewDocuments = () => {
             return;
         }
 
-        if(canShowSupervision) {
-            const ok = validateSupervisionFields();
-            if (!ok) return;
-        }
+        const ok = validateSupervisionFields(userAuth.rol_id);
+        if (!ok) return;
 
         const payload = {
             aprobado: accion === DeliveryDocumentReviewAction.APPROVE ? 1 : 0,
@@ -190,10 +195,12 @@ export const ReviewDocuments = () => {
                 : { }),
             fecha_entrega: canShowSupervision ? fechaEntrega : null,
             fecha_factura: canShowSupervision ? fechaFactura : null,
-            valor_factura: canShowSupervision ? valorFactura : null,
+            valor_factura: valorFactura,
             acta_entrega_correcta: canShowSupervision ? okActa : null,
             orden_compra_correcta: canShowSupervision ? okOrden : null,
         };
+
+        console.log('payload: ', payload);
 
         try {
             setLoading(true);
@@ -202,6 +209,10 @@ export const ReviewDocuments = () => {
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success('', `${accion} exitosamente!`);
                 navigate(`/admin/payments/${params.role}`);
+            }
+
+            if(status === ResponseStatusEnum.BAD_REQUEST) {
+                AlertComponent.warning('', `${data.detail}`);
             }
         } catch (error) {
             console.error("Error al aprobar o denegar:", error);
@@ -239,14 +250,14 @@ export const ReviewDocuments = () => {
     );
 
     //
-    const validateSupervisionFields = () => {
+    const validateSupervisionFields = (role) => {
         // Checks obligatorios
-        if (!okOrden || !okActa) {
+        if ((!okOrden || !okActa) && role === RolesEnum.SUPERVISION) {
             AlertComponent.warning("Debes marcar 'Orden de compra' y 'Acta de entrega' para aprobar.");
             return false;
         }
         // Fechas obligatorias
-        if (!isValidDate(fechaEntrega) || !isValidDate(fechaFactura)) {
+        if ((!isValidDate(fechaEntrega) || !isValidDate(fechaFactura)) && role === RolesEnum.SUPERVISION) {
             AlertComponent.warning("Debes seleccionar 'Fecha de entrega' y 'Fecha de factura'.");
             return false;
         }
@@ -257,9 +268,10 @@ export const ReviewDocuments = () => {
             return false;
         }
         //
-        if (vFactura !== valorEntrega) {
-            AlertComponent.warning(
-                `El 'Valor de factura' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}).`
+        let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
+        if (vFactura > valorEntrega || vFactura < newValorEntrega) {
+            AlertComponent.warning('Ojo!',
+                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
             return false;
         }
@@ -268,10 +280,10 @@ export const ReviewDocuments = () => {
     };
 
     //Feedback entre fechas
-    const handleFechaFacturaChange = (v) => {
-        setFechaFactura(v);
-        if (isValidDate(v) && isValidDate(fechaEntrega)) {
-            if (new Date(v) < new Date(fechaEntrega)) {
+    const handleFechaFacturaChange = (value) => {
+        setFechaFactura(value);
+        if (isValidDate(value) && isValidDate(fechaEntrega)) {
+            if (new Date(value) < new Date(fechaEntrega)) {
                 AlertComponent.warning("La 'Fecha de factura' no puede ser menor que la 'Fecha de entrega'.");
             }
         }
@@ -280,9 +292,11 @@ export const ReviewDocuments = () => {
     //Feedback valor de la factura
     const handleValorFacturaBlur = () => {
         const vFactura = Number(String(valorFactura).replace(/[^\d.-]/g, "")) || 0;
-        if (vFactura && valorEntrega && vFactura !== valorEntrega) {
-            AlertComponent.warning(
-                `El 'Valor de factura' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}).`
+
+        let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
+        if (vFactura && valorEntrega && (vFactura > valorEntrega || vFactura < newValorEntrega)) {
+            AlertComponent.warning('Ojo!',
+                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
         }
     };
@@ -316,7 +330,7 @@ export const ReviewDocuments = () => {
                     </div>
                 )}
 
-                <div className="content-review-documents">
+                <div className="content-review-documents" >
                     <Row className="mb-4">
                         <Col md={6}>
                             <h5 className="section-title">Proveedor</h5>
@@ -327,7 +341,8 @@ export const ReviewDocuments = () => {
 
                         <Col md={6}>
                             <div className="total_">
-                                <strong>Valor Entrega: $ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')}</strong>
+                                <strong>Numero Entrega: {beneficiaryInformation?.id} </strong> <br/>
+                                <strong>Valor Entrega: ${parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')} </strong>
                             </div>
                         </Col>
                     </Row>
@@ -339,7 +354,7 @@ export const ReviewDocuments = () => {
                     )}
 
                     <Row className="mb-4">
-                        <Col md={canShowSupervision ? 4 : 6} xs={12} className="observations-history mt-4">
+                        <Col md={4} xs={12} className="observations-history mt-4">
                             <h5 className="section-title">Historial de revisiones</h5>
                             {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
                                 <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
@@ -422,6 +437,7 @@ export const ReviewDocuments = () => {
                                                         value={fechaEntrega}
                                                         onChange={(e) => setFechaEntrega(e.target.value)}
                                                         disabled={loading}
+                                                        onKeyDown={(e) => e.preventDefault()}
                                                     />
                                                 </Col>
 
@@ -433,6 +449,7 @@ export const ReviewDocuments = () => {
                                                         value={fechaFactura}
                                                         onChange={(e) => handleFechaFacturaChange(e.target.value)}
                                                         disabled={loading}
+                                                        onKeyDown={(e) => e.preventDefault()}
                                                         //min={fechaEntrega}
                                                     />
                                                 </Col>
@@ -448,7 +465,6 @@ export const ReviewDocuments = () => {
                                                     value={valorFactura}
                                                     onChange={(e) => setValorFactura(e.target.value)}
                                                     onBlur={handleValorFacturaBlur}
-                                                    placeholder={`Debe ser ${valorEntrega.toLocaleString('es-CO')}`}
                                                     disabled={loading}
                                                 />
                                                 <div className="field-hint">
@@ -483,9 +499,10 @@ export const ReviewDocuments = () => {
                                 </Col>
                             </>
                         )}
+
                         {canShowPayments && (
                             <>
-                                <Col md={6} xs={12} className="documents-download mt-4">
+                                <Col md={4} xs={12} className="documents-download mt-4">
                                     <h5 className="section-title">Documentos adjuntos</h5>
                                     {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
                                         <button className="button-download"
@@ -499,6 +516,33 @@ export const ReviewDocuments = () => {
                                             <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
                                         </button>
                                     )}
+                                </Col>
+
+                                <Col md={4} xs={12} className="documents-download mt-4">
+                                    <h5 className="section-title">Validaciones Pagos</h5>
+
+                                    {/* Card visual de la sección */}
+                                    <div className="supervision-card">
+                                        <Form>
+                                            {/* Valor */}
+                                            <div className="supervision-field">
+                                                <Form.Label>Valor de factura</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    inputMode="numeric"
+                                                    className="rb-input"
+                                                    value={valorFactura}
+                                                    onChange={(e) => setValorFactura(e.target.value)}
+                                                    onBlur={handleValorFacturaBlur}
+                                                    disabled={loading}
+                                                />
+                                                <div className="field-hint">
+                                                    Valor de la entrega: <strong>$ {valorEntrega.toLocaleString('es-CO')}</strong>
+                                                </div>
+                                            </div>
+                                        </Form>
+                                    </div>
+
                                 </Col>
                             </>
                         )}

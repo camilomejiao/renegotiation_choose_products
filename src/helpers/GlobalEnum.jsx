@@ -75,5 +75,8 @@ export const CollectionAccountStatusEnum = {
 export const DeliveryDocumentReviewAction = {
     DENY: "denegar",
     APPROVE: "aprobar"
+}
 
+export const InvoiceValueRange = {
+    INVOICEVALUERANGE: 1000
 }

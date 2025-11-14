@@ -37,7 +37,6 @@ const validationSchema = yup.object({
     ).min(1, "Selecciona al menos un municipio").required(),
 });
 
-
 export const Location = ({ id, onBack, refreshPage }) => {
     const [deptOptions, setDeptOptions] = useState([]);
     const [muniOptions, setMuniOptions] = useState([]);
