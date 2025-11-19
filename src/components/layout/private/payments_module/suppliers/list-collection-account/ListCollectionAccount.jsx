@@ -164,7 +164,13 @@ export const ListCollectionAccount = () => {
                                                             <li key={idx}>
                                                                 <strong>Beneficiario: </strong> {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido + ' - ' }
                                                                 <strong>Identificación: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
-                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} – 💰 Valor: $ {parseFloat(item?.valor_factura_electronica ?? item?.valor).toLocaleString()}
+                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} –
+                                                                💰 Valor: $
+                                                                {(() => {
+                                                                    const valorFE = Number(item?.valor_factura_electronica || 0);
+                                                                    const valor = Number(item?.valor || 0);
+                                                                    return (valorFE > 0 ? valorFE : valor).toLocaleString('es-CO');
+                                                                })()}
                                                             </li>
                                                         ))
                                                     ) : (
