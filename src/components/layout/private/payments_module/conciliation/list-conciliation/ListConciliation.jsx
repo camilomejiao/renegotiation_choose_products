@@ -55,15 +55,22 @@ export const ListConciliation = () => {
     }
 
     const normalizeRows = async (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            collection_account: row?.numero,
-            status: row?.estado_nombre,
-            date: row?.fecha_cuenta_cobro.split("T")[0],
-            supplier_name: row?.nombre_proveedor,
-            supplier_nit: row?.nit_proveedor,
-            total: `$ ${parseFloat(row?.valor_total).toLocaleString()}`,
-        }));
+        return data.map((row) => {
+            const valorFE = Number(row?.valor_factura_electronica ?? 0);
+            const valorBase = Number(row?.valor_total ?? 0);
+
+            const valorSP = valorFE > 0 ? valorFE : valorBase;
+
+            return {
+                id: row?.id,
+                collection_account: row?.numero,
+                status: row?.estado_nombre,
+                date: row?.fecha_cuenta_cobro.split("T")[0],
+                supplier_name: row?.nombre_proveedor,
+                supplier_nit: row?.nit_proveedor,
+                total: `$ ${valorSP.toLocaleString("es-CO")}`,
+            };
+        });
     }
 
     const handleSearchChange = (e) => {

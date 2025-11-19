@@ -35,7 +35,6 @@ import {
 } from "../../../../../../helpers/GlobalEnum";
 
 import { renegotiationServices } from "../../../../../../helpers/services/RenegociationServices";
-import {number} from "yup";
 
 //Helpers
 const isValidDate = (v) => !!v && !Number.isNaN(new Date(v).getTime());
