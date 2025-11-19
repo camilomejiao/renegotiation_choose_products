@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Spinner } from "react-bootstrap";
 import { BsArrowLeft } from "react-icons/bs";
 
 // Img
@@ -9,7 +9,7 @@ import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import downloadImg from "../../../../../../assets/image/payments/download.png";
 
 // Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../../shared/ModernBanner";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Services
@@ -37,6 +37,7 @@ export const CollectionAccountDetails = () => {
             }
         } catch (error) {
             console.error("Error obteniendo las entregas:", error);
+            AlertComponent.error("Error cargando información");
         } finally {
             setLoading(false);
         }
@@ -62,6 +63,7 @@ export const CollectionAccountDetails = () => {
             }
         } catch (error) {
             console.error("Error al descargar archivo:", error);
+            AlertComponent.error("Error descargando archivo");
         } finally {
             setLoading(false);
         }
@@ -71,8 +73,11 @@ export const CollectionAccountDetails = () => {
         setLoading(true);
         try {
             setInformationLoadingText("Generando documento");
+            // Add actual document generation logic here
+            AlertComponent.info("Funcionalidad en desarrollo");
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
+            AlertComponent.error("Error generando documento");
         } finally {
             setLoading(false);
         }
@@ -86,82 +91,135 @@ export const CollectionAccountDetails = () => {
 
     return (
         <>
-            <HeaderImage
+            <ModernBanner
                 imageHeader={imgPayments}
-                titleHeader={'Detalle cuenta de cobro'}
+                titleHeader="Detalle cuenta de cobro"
                 bannerIcon={imgAdd}
-                backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás revisar el detalle de la cuenta de cobro enviada por el proveedor.'}
-                backgroundInformationColor={'#40A581'}
+                backgroundIconColor="#2148C0"
+                bannerInformation="Aquí podrás revisar el detalle de la cuenta de cobro enviada por el proveedor."
+                backgroundInformationColor="#40A581"
             />
 
             {loading && (
                 <div className="overlay">
-                    <div className="loader">{informationLoadingText}</div>
+                    <div className="loader">
+                        <Spinner animation="border" variant="success" />
+                        <div className="spinner-text">{informationLoadingText}</div>
+                    </div>
                 </div>
             )}
 
-            {accountInformation && (
-                <div className="content-collection-details">
-                    <Row className="mb-4">
-                        <Col md={5}>
-                            <h5 className="section-title">Proveedor</h5>
-                            <div><strong>Nombre:</strong> {accountInformation?.proveedor.nombre}</div>
-                            <div><strong>NIT:</strong> {accountInformation?.proveedor.nit}</div>
-                            <div><strong>Cuenta N°:</strong> {accountInformation?.cuenta_cobro.numero}</div>
-                        </Col>
-
-                        <Col md={3}>
-                            <h5 className="section-title">Cuenta bancaria</h5>
-                            <div><strong>Entidad:</strong> {accountInformation?.banco?.entidad_bancaria}</div>
-                            <div><strong>Número:</strong> {accountInformation?.banco?.numero_cuenta}</div>
-                        </Col>
-
-                        <Col md={4}>
-                            <div className="total">
-                                Total: <strong>$ {parseFloat(accountInformation?.cuenta_cobro.valor_total).toLocaleString('es-CO')}</strong>
-                            </div>
-                        </Col>
-                    </Row>
-
-                    <Row className="mb-4">
-                        <Col md={6}>
-                            <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.solicitud_cuenta)}>
-                                <img src={downloadImg} alt="" /> Solicitud cuenta
-                            </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
-                                <img src={downloadImg} alt="" /> Certificado bancario
-                            </button>
-                            <button className="button-download" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
-                                <img src={downloadImg} alt="" /> RUT
-                            </button>
-                        </Col>
-
-                        <Col md={6}>
-                            <h5 className="section-title">Entregas</h5>
-                            {accountInformation?.detalles.map((item, idx) => (
-                                <div key={idx} className="revision-box">
-                                    <div><strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} <strong>CUB:</strong> {item?.entrega?.cub} <strong>Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}</div>
+            <div className="page-content">
+                {accountInformation && (
+                    <div className="form-container">
+                        <Row className="mb-4">
+                            <Col md={5}>
+                                <div className="info-section">
+                                    <h5 className="section-title">Proveedor</h5>
+                                    <div className="info-item">
+                                        <strong>Nombre:</strong> {accountInformation?.proveedor.nombre}
+                                    </div>
+                                    <div className="info-item">
+                                        <strong>NIT:</strong> {accountInformation?.proveedor.nit}
+                                    </div>
+                                    <div className="info-item">
+                                        <strong>Cuenta N°:</strong> {accountInformation?.cuenta_cobro.numero}
+                                    </div>
                                 </div>
-                            ))}
-                        </Col>
-                    </Row>
+                            </Col>
 
-                    <Row className="justify-content-center mt-4">
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
-                            <button className="button-back" onClick={() => navigate(-1)}>
-                                <BsArrowLeft size={18} /> Cuentas de cobro
-                            </button>
-                        </Col>
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-danger" onClick={handleGenerateDocument}>
-                                📝 Generar documento
-                            </Button>
-                        </Col>
-                    </Row>
-                </div>
-            )}
+                            <Col md={3}>
+                                <div className="info-section">
+                                    <h5 className="section-title">Cuenta bancaria</h5>
+                                    <div className="info-item">
+                                        <strong>Entidad:</strong> {accountInformation?.banco?.entidad_bancaria}
+                                    </div>
+                                    <div className="info-item">
+                                        <strong>Número:</strong> {accountInformation?.banco?.numero_cuenta}
+                                    </div>
+                                </div>
+                            </Col>
+
+                            <Col md={4}>
+                                <div className="total-section">
+                                    <div className="total-amount">
+                                        Total: <strong>$ {parseFloat(accountInformation?.cuenta_cobro.valor_total).toLocaleString('es-CO')}</strong>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row className="mb-4">
+                            <Col md={6}>
+                                <div className="documents-section">
+                                    <h5 className="section-title">Documentos adjuntos</h5>
+                                    <div className="documents-list">
+                                        <button 
+                                            className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                            onClick={() => handleViewFile(accountInformation?.archivos.solicitud_cuenta)}
+                                        >
+                                            <img src={downloadImg} alt="" width="16" height="16" /> 
+                                            Solicitud cuenta
+                                        </button>
+                                        <button 
+                                            className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                            onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}
+                                        >
+                                            <img src={downloadImg} alt="" width="16" height="16" /> 
+                                            Certificado bancario
+                                        </button>
+                                        <button 
+                                            className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                            onClick={() => handleViewFile(accountInformation?.archivos.rut)}
+                                        >
+                                            <img src={downloadImg} alt="" width="16" height="16" /> 
+                                            RUT
+                                        </button>
+                                    </div>
+                                </div>
+                            </Col>
+
+                            <Col md={6}>
+                                <div className="deliveries-section">
+                                    <h5 className="section-title">Entregas</h5>
+                                    <div className="deliveries-list">
+                                        {accountInformation?.detalles.map((item, idx) => (
+                                            <div key={idx} className="delivery-item">
+                                                <div className="delivery-info">
+                                                    <strong>Fecha:</strong> {new Date(item.fcrea).toLocaleDateString()} 
+                                                    <strong className="ms-3">CUB:</strong> {item?.entrega?.cub} 
+                                                    <strong className="ms-3">Valor:</strong> $ {parseFloat(item.valor).toLocaleString('es-CO')}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row className="justify-content-center mt-4">
+                            <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
+                                <Button 
+                                    variant="outline-secondary" 
+                                    className="d-flex align-items-center gap-2"
+                                    onClick={() => navigate(-1)}
+                                >
+                                    <BsArrowLeft size={18} /> Cuentas de cobro
+                                </Button>
+                            </Col>
+                            <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
+                                <Button 
+                                    variant="outline-danger" 
+                                    onClick={handleGenerateDocument}
+                                    disabled={loading}
+                                >
+                                    📝 Generar documento
+                                </Button>
+                            </Col>
+                        </Row>
+                    </div>
+                )}
+            </div>
         </>
     );
 };

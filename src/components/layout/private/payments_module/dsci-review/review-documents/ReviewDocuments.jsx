@@ -1,11 +1,11 @@
 import {useEffect, useMemo, useState} from "react";
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
-import { Form, Col, Row } from "react-bootstrap";
+import { Form, Col, Row, Spinner } from "react-bootstrap";
 import { FaStepBackward } from "react-icons/fa";
 
 //Components
 import { UserInformation } from "../../../../shared/user_information/UserInformation";
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../../shared/ModernBanner";
 import { PaymentsConfirmationModal } from "../../../../shared/Modals/PaymentsConfirmationModal";
 
 //helper
@@ -50,6 +50,7 @@ export const ReviewDocuments = () => {
             }
         } catch (error) {
             console.error("Error obteniendo el detalle de la entrega:", error);
+            AlertComponent.error("Error cargando información");
         } finally {
             setLoading(false);
         }
@@ -82,6 +83,7 @@ export const ReviewDocuments = () => {
             }
         } catch (error) {
             console.error("Error al descargar archivo:", error);
+            AlertComponent.error("Error descargando archivo");
         } finally {
             setLoading(false);
         }
@@ -146,6 +148,7 @@ export const ReviewDocuments = () => {
             }
         } catch (error) {
             console.error("Error al aprobar o denegar:", error);
+            AlertComponent.error("Error procesando solicitud");
         } finally {
             setLoading(false);
         }
@@ -178,122 +181,190 @@ export const ReviewDocuments = () => {
 
     return (
         <>
-            <HeaderImage
+            <ModernBanner
                 imageHeader={imgPayments}
-                titleHeader={'Proceso de pago'}
+                titleHeader="Proceso de pago"
                 bannerIcon={imgAdd}
-                backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás revisar el detalle de cada entrega para orden de pago.'}
-                backgroundInformationColor={'#F66D1F'}
+                backgroundIconColor="#2148C0"
+                bannerInformation="Aquí podrás revisar el detalle de cada entrega para orden de pago."
+                backgroundInformationColor="#F66D1F"
             />
 
-            <div className="content-review-documents">
+            {loading && (
+                <div className="overlay">
+                    <div className="loader">
+                        <Spinner animation="border" variant="success" />
+                        <div className="spinner-text">{informationLoadingText}</div>
+                    </div>
+                </div>
+            )}
 
+            <div className="page-content">
                 {!loading && beneficiaryInformation?.beneficiario && (
                     <UserInformation userData={beneficiaryInformation.beneficiario} />
                 )}
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
-                )}
-
-                <Row className="review-section">
-                    <Col md={6} xs={12} className="observations-history">
-                        <h5 className="section-title">Historial de revisiones</h5>
-                        {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
-                            <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
-                                <div><strong>Usuario:</strong> {rev.correo}</div>
-                                <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
-                                <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
-                                <div><strong>Observación:</strong> {rev.observacion}</div>
+                <div className="form-container">
+                    <Row className="mb-4">
+                        <Col md={6} xs={12}>
+                            <div className="review-history-section">
+                                <h5 className="section-title">Historial de revisiones</h5>
+                                <div className="reviews-list">
+                                    {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
+                                        <div key={idx} className={`review-item ${rev.aprobado ? 'approved' : 'denied'}`}>
+                                            <div className="review-header">
+                                                <strong>Usuario:</strong> {rev.correo}
+                                                <span className={`status-badge ${rev.aprobado ? 'approved' : 'denied'}`}>
+                                                    {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}
+                                                </span>
+                                            </div>
+                                            <div className="review-date">
+                                                <strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}
+                                            </div>
+                                            <div className="review-observation">
+                                                <strong>Observación:</strong> {rev.observacion}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        ))}
-                    </Col>
+                        </Col>
 
-                    <Col md={5} xs={12} className="documents-download">
-                        <h5 className="section-title mb-4">Documentos adjuntos</h5>
-                        {
-                            [RolesEnum.ADMIN, RolesEnum.SUPERVISION].includes(userAuth.rol_id) && (
-                                <>
-                                    {beneficiaryInformation?.archivos?.orden_compra?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.orden_compra)}>
-                                            <img src={downloadImg} alt="" /> Plan de inversión
-                                        </button>
+                        <Col md={6} xs={12}>
+                            <div className="documents-section">
+                                <h5 className="section-title">Documentos adjuntos</h5>
+                                <div className="documents-list">
+                                    {[RolesEnum.ADMIN, RolesEnum.SUPERVISION].includes(userAuth.rol_id) && (
+                                        <>
+                                            {beneficiaryInformation?.archivos?.orden_compra?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.orden_compra)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    Plan de inversión
+                                                </button>
+                                            )}
+                                            {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    Acta de entrega
+                                                </button>
+                                            )}
+                                            {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    FE Ó Documento Equivalente
+                                                </button>
+                                            )}
+                                            {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    Evidencia 1
+                                                </button>
+                                            )}
+                                            {beneficiaryInformation?.archivos?.evidencia2?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia2)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    Evidencia 2
+                                                </button>
+                                            )}
+                                        </>
                                     )}
-                                    {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
-                                            <img src={downloadImg} alt="" /> Acta de entrega
-                                        </button>
+                                    {[RolesEnum.ADMIN, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS].includes(userAuth.rol_id) && (
+                                        <>
+                                            {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    Acta de entrega
+                                                </button>
+                                            )}
+                                            {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
+                                                <button 
+                                                    className="btn btn-outline-primary d-flex align-items-center gap-2 mb-2" 
+                                                    onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}
+                                                >
+                                                    <img src={downloadImg} alt="" width="16" height="16" /> 
+                                                    FE Ó Documento Equivalente
+                                                </button>
+                                            )}
+                                        </>
                                     )}
-                                    {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
-                                            <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
-                                        </button>
-                                    )}
-                                    {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}>
-                                            <img src={downloadImg} alt="" /> Evidencia 1
-                                        </button>
-                                    )}
-                                    {beneficiaryInformation?.archivos?.evidencia2?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia2)}>
-                                            <img src={downloadImg} alt="" /> Evidencia 2
-                                        </button>
-                                    )}
-                                </>
-                            )
-                        }
-                        {
-                            [RolesEnum.ADMIN, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS].includes(userAuth.rol_id) && (
-                                <>
-                                    {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
-                                            <img src={downloadImg} alt="" /> Acta de entrega
-                                        </button>
-                                    )}
-                                    {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
-                                        <button className="button-download" onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
-                                            <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
-                                        </button>
-                                    )}
-                                </>
-                            )
-                        }
-                        <div className="total">
-                            Total: <strong>$ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO', {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                        })}</strong>
-                        </div>
-                    </Col>
-                </Row>
+                                </div>
+                                
+                                <div className="payment-total">
+                                    <div className="total-amount">
+                                        Total: <strong>$ {parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    })}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
 
-                <Row className="observations my-3 mt-3">
-                    <Col>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={comments}
-                            placeholder="Observaciones"
-                            onChange={(e) => setComments(e.target.value)}  />
-                    </Col>
-                </Row>
+                    <Row className="mb-4">
+                        <Col>
+                            <div className="observations-section">
+                                <h5 className="section-title">Observaciones</h5>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={comments}
+                                    placeholder="Escriba sus observaciones aquí..."
+                                    onChange={(e) => setComments(e.target.value)}
+                                    className="form-textarea"
+                                />
+                            </div>
+                        </Col>
+                    </Row>
 
-                <Row className="text-center my-3">
-                    <Col>
-                        <button onClick={() => openModal("aprobar")} className="btn-approve me-3">
-                            <img src={checkImg} alt="" /> Aprobar
-                        </button>
-                        <button onClick={() => openModal("denegar")} className="btn-deny me-3">
-                            <img src={closeImg} alt="" /> Denegar
-                        </button>
-                        <button onClick={() => onBack()} className="btn-back">
-                            <FaStepBackward/> Atrás
-                        </button>
-                    </Col>
-                </Row>
+                    <Row className="justify-content-center">
+                        <Col className="text-center">
+                            <div className="action-buttons">
+                                <button 
+                                    onClick={() => openModal("aprobar")} 
+                                    className="btn btn-success me-3 d-inline-flex align-items-center gap-2"
+                                    disabled={loading}
+                                >
+                                    <img src={checkImg} alt="" width="16" height="16" /> 
+                                    Aprobar
+                                </button>
+                                <button 
+                                    onClick={() => openModal("denegar")} 
+                                    className="btn btn-danger me-3 d-inline-flex align-items-center gap-2"
+                                    disabled={loading}
+                                >
+                                    <img src={closeImg} alt="" width="16" height="16" /> 
+                                    Denegar
+                                </button>
+                                <button 
+                                    onClick={() => onBack()} 
+                                    className="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
+                                >
+                                    <FaStepBackward/> 
+                                    Atrás
+                                </button>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
             </div>
 
             {/* MODAL */}
