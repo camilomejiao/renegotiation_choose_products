@@ -9,8 +9,8 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import supervisionIcon from "../../../../../assets/image/payments/supervision.png";
 
 // Components
-import { ModernBanner } from "../../../../shared/ModernBanner";
 import { Breadcrumb } from "../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../shared/ModernBanner";
 import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
@@ -435,9 +435,11 @@ export const ValidationSupervision = () => {
               isClearable
               classNamePrefix="custom-select"
               className="custom-select w-100"
+              menuPortalTarget={document.body}
               styles={{
                 placeholder: (base) => ({ ...base, color: "#6c757d" }),
                 singleValue: (base) => ({ ...base, color: "#212529" }),
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
               }}
               noOptionsMessage={() => "Sin opciones"}
             />
@@ -459,6 +461,10 @@ export const ValidationSupervision = () => {
               isLoading={loading}
               classNamePrefix="custom-select"
               className="custom-select w-100"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
               noOptionsMessage={() =>
                 selectedConvocation ? "Sin planes" : "Selecciona una jornada"
               }
@@ -481,6 +487,10 @@ export const ValidationSupervision = () => {
               isLoading={loading}
               classNamePrefix="custom-select"
               className="custom-select w-100"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
               noOptionsMessage={() =>
                 selectedConvocation
                   ? "Sin proveedores"

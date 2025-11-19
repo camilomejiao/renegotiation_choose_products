@@ -16,9 +16,9 @@ import Select from "react-select";
 import StandardTable from "../../../shared/StandardTable";
 
 //Components
+import { Breadcrumb } from "../../../shared/Breadcrumb";
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
-import { Breadcrumb } from "../../../shared/Breadcrumb";
 import { FEModal } from "../../shared/Modals/FEModal";
 import { UserInformation } from "../../shared/user_information/UserInformation";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
@@ -1185,6 +1185,10 @@ export const Deliveries = () => {
                       placeholder="Selecciona una compañía"
                       classNamePrefix="custom-select"
                       className="custom-select w-100"
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
                     />
                   </Col>
                 )}

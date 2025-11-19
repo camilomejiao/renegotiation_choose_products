@@ -121,53 +121,51 @@ export const SupplierList = () => {
 
   return (
     <>
-      <div className="container mt-lg-3">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex gap-2">
           <input
             type="text"
-            placeholder="Buscar..."
+            placeholder="Buscar proveedores..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="input-responsive me-2"
+            className="form-control"
+            style={{ width: '300px' }}
           />
-          <div className="text-end">
-            <Button
-              variant="outline-success"
-              size="md"
-              onClick={() => navigate("/admin/create-suppliers")}
-              className="button-order-responsive"
-            >
-              <FaPlus /> Crear Proveedor
-            </Button>
-          </div>
         </div>
-
-        {loading && (
-          <div className="overlay">
-            <div className="loader">Cargando Datos...</div>
-          </div>
-        )}
-
-        <div className="data-grid-card" style={{ height: 600 }}>
-          <StandardTable
-            className="data-grid"
-            rows={filteredSuppliers}
-            columns={columns}
-            loading={apiLoading} // ← Usa el loading del hook
-            customProps={{
-              paginationMode: "server",
-              rowCount: rowCount,
-              pageSizeOptions: [10, 25, 50, 100],
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-            }}
-            enableDynamicHeight={true}
-          />
+        
+        <div className="d-flex gap-2">
+          <Button
+            variant="outline-success"
+            onClick={() => navigate("/admin/create-suppliers")}
+          >
+            <FaPlus className="me-2" />
+            Crear Proveedor
+          </Button>
         </div>
       </div>
+
+      {loading && (
+        <div className="overlay">
+          <div className="loader">Cargando Datos...</div>
+        </div>
+      )}
+
+      <StandardTable
+        rows={filteredSuppliers}
+        columns={columns}
+        loading={apiLoading}
+        customProps={{
+          paginationMode: "server",
+          rowCount: rowCount,
+          pageSizeOptions: [10, 25, 50, 100],
+          paginationModel: { page, pageSize },
+          onPaginationModelChange: ({ page, pageSize }) => {
+            setPage(page);
+            setPageSize(pageSize);
+          },
+        }}
+        enableDynamicHeight={true}
+      />
     </>
   );
 };

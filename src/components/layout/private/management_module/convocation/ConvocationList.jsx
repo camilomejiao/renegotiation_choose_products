@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import StandardTable from "../../../../shared/StandardTable";
 
 //Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
+import convocationIcon from "../../../../../assets/image/icons/frame.png";
+
+//Components
+import { ModernBanner } from "../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //Utils
 import {
@@ -130,63 +135,69 @@ export const ConvocationList = () => {
 
   return (
     <>
-      <div className="main-container">
-        <div className="header-image position-relative">
-          <img
-            src={imgDCSIPeople}
-            alt="Fondo"
-            className="background-image w-100"
-          />
-          <div className="overlay-text position-absolute w-100 text-center">
-            <h1>¡Gestión de Jornadas!</h1>
-          </div>
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={imgDCSIPeople}
+          titleHeader="​"
+          bannerIcon={convocationIcon}
+          bannerInformation="Gestión de Jornadas"
+          backgroundInformationColor="#2148C0"
+          infoText="Administra las jornadas de convocatoria, crea nuevas jornadas y gestiona su estado y configuración."
+        />
+
+        <div className="mb-4">
+          <h3 className="text-primary fw-bold mb-3">
+            <FaCalendarAlt className="me-2" />
+            Lista de Jornadas
+          </h3>
         </div>
 
-        <div className="container mt-lg-3">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div className="d-flex gap-2">
             <input
               type="text"
-              placeholder="Buscar..."
+              placeholder="Buscar jornadas..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="input-responsive me-2"
+              className="form-control"
+              style={{ width: '300px' }}
             />
-            <div className="text-end">
-              <Button
-                variant="outline-success"
-                onClick={() => navigate("/admin/create-convocation")}
-                className="button-order-responsive"
-              >
-                <FaPlus /> Crear Jornada
-              </Button>
-            </div>
           </div>
-
-          {loading && (
-            <div className="overlay">
-              <div className="loader">Cargando Datos...</div>
-            </div>
-          )}
-
-          <div style={{ height: 600, width: "100%" }}>
-            <StandardTable
-              rows={filteredConvocations}
-              columns={columns}
-              loading={loadingTable}
-              customProps={{
-                editMode: "row",
-                pagination: true,
-                initialState: {
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 25 },
-                  },
-                },
-                pageSizeOptions: [10, 25, 50, 100],
-              }}
-              enableDynamicHeight={true}
-            />
+          
+          <div className="d-flex gap-2">
+            <Button
+              variant="outline-success"
+              onClick={() => navigate("/admin/create-convocation")}
+            >
+              <FaPlus className="me-2" />
+              Crear Jornada
+            </Button>
           </div>
         </div>
+
+        {loading && (
+          <div className="overlay">
+            <div className="loader">Cargando Datos...</div>
+          </div>
+        )}
+
+        <StandardTable
+          rows={filteredConvocations}
+          columns={columns}
+          loading={loadingTable}
+          customProps={{
+            editMode: "row",
+            pagination: true,
+            initialState: {
+              pagination: {
+                paginationModel: { page: 0, pageSize: 25 },
+              },
+            },
+            pageSizeOptions: [10, 25, 50, 100],
+          }}
+          enableDynamicHeight={true}
+        />
       </div>
     </>
   );

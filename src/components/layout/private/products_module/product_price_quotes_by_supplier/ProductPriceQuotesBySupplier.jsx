@@ -6,10 +6,10 @@ import { useOutletContext } from "react-router-dom";
 import StandardTable from "../../../../shared/StandardTable";
 
 //
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import productIcon from "../../../../../assets/image/addProducts/imgAdd.png";
-import { ModernBanner } from "../../../../shared/ModernBanner";
+import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import { Breadcrumb } from "../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../shared/ModernBanner";
 
 //
 import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
@@ -354,6 +354,10 @@ export const ProductPriceQuotesBySupplier = () => {
               isLoading={loading}
               classNamePrefix="gov-select"
               className="gov-select w-100"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
             />
           </Col>
 

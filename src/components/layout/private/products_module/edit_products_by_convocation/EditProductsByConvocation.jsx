@@ -18,8 +18,10 @@ import {
 import { handleError, showAlert } from "../../../../../helpers/utils/utils";
 
 //Components
+import productIcon from "../../../../../assets/image/addProducts/imgAdd.png";
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../shared/ModernBanner";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -305,14 +307,15 @@ export const EditProductsByConvocation = () => {
 
   return (
     <>
-      <div className="main-container">
-        <HeaderImage
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
           imageHeader={imgPeople}
-          titleHeader={"¡Empieza a agregar tus productos!"}
-          bannerIcon={""}
-          backgroundIconColor={""}
-          bannerInformation={""}
-          backgroundInformationColor={""}
+          titleHeader="​"
+          bannerIcon={productIcon}
+          bannerInformation="Editar Productos por Convocatoria"
+          backgroundInformationColor="#2148C0"
+          infoText="Modifica los productos de la convocatoria, ajusta precios, categorías y especificaciones técnicas."
         />
 
         {loading && (
@@ -322,91 +325,83 @@ export const EditProductsByConvocation = () => {
           </div>
         )}
 
-        <div className="container mt-lg-3">
-          <div className="row align-items-center g-2">
-            <div className="col-12 col-md-6">
-              <Select
-                value={selectedPlan}
-                options={planRaw.map((opt) => ({
-                  value: opt.id,
-                  label: opt.plan_nombre,
-                }))}
-                placeholder="Selecciona un Plan"
-                onChange={handleSelectedPlan}
-                isClearable
-                isLoading={loading}
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-              />
-            </div>
-
-            <div className="col-12 col-md-6 d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-              <Button
-                variant="outline-success"
-                size="md"
-                onClick={handleCreateProducts}
-                className="button-order-responsive"
-              >
-                <FaPlus /> Crear Jornada
-              </Button>
-
-              <Button
-                variant="outline-primary"
-                size="md"
-                onClick={handleBack}
-                className="button-order-responsive"
-              >
-                <FaFastBackward /> Volver al listado
-              </Button>
-            </div>
+        <div className="row align-items-center g-2 mb-4">
+          <div className="col-12 col-md-4">
+            <label className="form-label">Plan</label>
+            <Select
+              value={selectedPlan}
+              options={planRaw.map((opt) => ({
+                value: opt.id,
+                label: opt.plan_nombre,
+              }))}
+              placeholder="Selecciona un Plan"
+              onChange={handleSelectedPlan}
+              isClearable
+              isLoading={loading}
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
+            />
           </div>
 
-          <hr />
-
-          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="input-responsive me-2"
-              />
-            </div>
+          <div className="col-12 col-md-4">
+            <label className="form-label">Buscar</label>
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="form-control"
+            />
           </div>
 
-          <StandardTable
-            columns={columns}
-            rows={filteredData}
-            loading={loading}
-            customProps={{
-              processRowUpdate: handleRowUpdate,
-              editMode: "row",
-              paginationMode: "server",
-              rowCount: rowCount,
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-              pageSizeOptions: [10, 25, 50, 100],
-              getRowClassName: (params) =>
-                params.row.status === "Abierto" ? "row-open" : "row-closed",
-            }}
-            enableDynamicHeight={true}
-          />
+          <div className="col-12 col-md-4 d-flex align-items-end gap-2">
+            <Button variant="outline-success" onClick={handleCreateProducts}>
+              <FaPlus className="me-2" />
+              Crear Jornada
+            </Button>
 
-          {/* Botón Guardar */}
-          <div className="d-flex align-items-end mt-3">
-            <Button
-              variant="success"
-              onClick={handleSaveProducts}
-              className="ms-auto"
-              disabled={loading}
-            >
-              <FaSave /> {loading ? "Guardando..." : "Guardar Productos"}
+            <Button variant="outline-primary" onClick={handleBack}>
+              <FaFastBackward className="me-2" />
+              Volver
             </Button>
           </div>
+        </div>
+
+        <StandardTable
+          columns={columns}
+          rows={filteredData}
+          loading={loading}
+          customProps={{
+            processRowUpdate: handleRowUpdate,
+            editMode: "row",
+            paginationMode: "server",
+            rowCount: rowCount,
+            paginationModel: { page, pageSize },
+            onPaginationModelChange: ({ page, pageSize }) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+            pageSizeOptions: [10, 25, 50, 100],
+            getRowClassName: (params) =>
+              params.row.status === "Abierto" ? "row-open" : "row-closed",
+          }}
+          enableDynamicHeight={true}
+        />
+
+        {/* Botón Guardar */}
+        <div className="d-flex justify-content-end mt-3">
+          <Button
+            variant="success"
+            onClick={handleSaveProducts}
+            disabled={loading}
+          >
+            <FaSave className="me-2" />
+            {loading ? "Guardando..." : "Guardar Productos"}
+          </Button>
         </div>
 
         {/* Modal de confirmación */}

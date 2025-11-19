@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import StandardTable from "../../../../shared/StandardTable";
 
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import productIcon from "../../../../../assets/image/addProducts/imgAdd.png";
+import { ModernBanner } from "../../../../shared/ModernBanner";
 import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //
@@ -111,47 +112,45 @@ export const ListProductsByConvocation = () => {
   return (
     <>
       <Breadcrumb />
-      <div className="main-container">
-      <HeaderImage
-        imageHeader={imgPeople}
-        titleHeader={"¡Empieza a agregar tus productos!"}
-        bannerIcon={""}
-        backgroundIconColor={""}
-        bannerInformation={""}
-        backgroundInformationColor={""}
-      />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={imgPeople}
+          titleHeader="​"
+          bannerIcon={productIcon}
+          bannerInformation="Productos por Convocatoria"
+          backgroundInformationColor="#2148C0"
+          infoText="Gestiona y visualiza los productos organizados por convocatoria, revisa proveedores y genera reportes."
+        />
 
-      <div className="container mt-lg-3">
-        <div className="text-end">
-          <Button
-            variant="outline-primary"
-            size="md"
-            onClick={handleCreateProducts}
-            className="button-order-responsive"
-          >
-            <FaPlus /> Crear
-          </Button>
-
-          <Button
-            variant="outline-success"
-            onClick={handleReport}
-            title="Generar reporte (Excel)"
-          >
-            <FaFileExcel /> Reporte
-          </Button>
-        </div>
-
-        <hr />
-
-        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
-          <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="d-flex gap-2">
             <input
               type="text"
-              placeholder="Buscar..."
+              placeholder="Buscar convocatorias..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="input-responsive me-2"
+              className="form-control"
+              style={{ width: '300px' }}
             />
+          </div>
+          
+          <div className="d-flex gap-2">
+            <Button
+              variant="outline-primary"
+              onClick={handleCreateProducts}
+            >
+              <FaPlus className="me-2" />
+              Crear
+            </Button>
+
+            <Button
+              variant="outline-success"
+              onClick={handleReport}
+              title="Generar reporte (Excel)"
+            >
+              <FaFileExcel className="me-2" />
+              Reporte
+            </Button>
           </div>
         </div>
 
@@ -168,52 +167,51 @@ export const ListProductsByConvocation = () => {
           }}
           enableDynamicHeight={true}
         />
-      </div>
 
-      <Modal show={showSuppliersModal} onHide={closeSuppliersModal} centered>
-        <Modal.Header
-          closeButton
-          style={{ backgroundColor: "#40A581", color: "#fff" }}
-        >
-          <Modal.Title>Proveedores</Modal.Title>
-        </Modal.Header>
+        <Modal show={showSuppliersModal} onHide={closeSuppliersModal} centered>
+          <Modal.Header
+            closeButton
+            style={{ backgroundColor: "#40A581", color: "#fff" }}
+          >
+            <Modal.Title>Proveedores</Modal.Title>
+          </Modal.Header>
 
-        <Modal.Body>
-          {suppliersForModal.length === 0 ? (
-            <div className="text-center text-muted">
-              No hay proveedores registrados.
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Proveedor</th>
-                    <th>NIT</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {suppliersForModal.map((s, idx) => (
-                    <tr key={s.id ?? idx}>
-                      <td>{idx + 1}</td>
-                      <td>{s.nombre}</td>
-                      <td>{s.nit}</td>
+          <Modal.Body>
+            {suppliersForModal.length === 0 ? (
+              <div className="text-center text-muted">
+                No hay proveedores registrados.
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Proveedor</th>
+                      <th>NIT</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Modal.Body>
+                  </thead>
+                  <tbody>
+                    {suppliersForModal.map((s, idx) => (
+                      <tr key={s.id ?? idx}>
+                        <td>{idx + 1}</td>
+                        <td>{s.nombre}</td>
+                        <td>{s.nit}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="outline-danger" onClick={closeSuppliersModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+          <Modal.Footer>
+            <Button variant="outline-danger" onClick={closeSuppliersModal}>
+              Cerrar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </>
   );
 };

@@ -308,9 +308,11 @@ export const ReportByConvocation = () => {
                 isClearable
                 classNamePrefix="custom-select"
                 className="custom-select w-100"
+                menuPortalTarget={document.body}
                 styles={{
                   placeholder: (base) => ({ ...base, color: "#6c757d" }),
                   singleValue: (base) => ({ ...base, color: "#212529" }),
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 }}
                 noOptionsMessage={() => "Sin opciones"}
               />
@@ -331,6 +333,10 @@ export const ReportByConvocation = () => {
                 isLoading={loading}
                 classNamePrefix="custom-select"
                 className="custom-select w-100"
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                }}
                 noOptionsMessage={() =>
                   selectedConvocation ? "Sin planes" : "Selecciona una jornada"
                 }
@@ -352,6 +358,10 @@ export const ReportByConvocation = () => {
                 isLoading={loading}
                 classNamePrefix="custom-select"
                 className="custom-select w-100"
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                }}
                 noOptionsMessage={() =>
                   selectedConvocation
                     ? "Sin proveedores"

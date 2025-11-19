@@ -5,11 +5,11 @@ import { formatPrice } from "./ValidateProductColumns";
 export const getConvocationColumns = (handleModalSuppliers) => [
   { field: "id", headerName: "ID", width: 70 },
   { field: "date", headerName: "FECHA", width: 150 },
-  { field: "name", headerName: "NOMBRE CONVOCATORIA", width: 250 },
+  { field: "name", headerName: "NOMBRE CONVOCATORIA", width: "auto" },
   {
     field: "plans",
     headerName: "PLANES PRODUCTIVOS",
-    width: 310,
+    width: "auto",
     sortable: false,
     renderCell: ({ row }) =>
       row.plans?.length ? row.plans.map((p) => p.name).join(", ") : "—",
@@ -47,7 +47,7 @@ export const getNewCatalogBaseColumns = (
   {
     field: "category",
     headerName: "Categoría",
-    width: 200,
+    width: "auto",
     renderCell: (params) => {
       const handleChange = (e) => {
         const newValue = e.target.value;

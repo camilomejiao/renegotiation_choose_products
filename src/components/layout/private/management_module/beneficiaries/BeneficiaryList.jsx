@@ -106,40 +106,41 @@ export const BeneficiaryList = () => {
 
   return (
     <>
-      <div className="container mt-lg-3">
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex gap-2">
           <input
             type="text"
-            placeholder="Buscar..."
+            placeholder="Buscar beneficiarios..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="input-responsive me-2"
+            className="form-control"
+            style={{ width: '300px' }}
           />
         </div>
-
-        {loading && (
-          <div className="overlay">
-            <div className="loader">Cargando Datos...</div>
-          </div>
-        )}
-
-        <StandardTable
-          rows={filteredBeneficiaries}
-          columns={columns}
-          loading={loadingTable}
-          noRowsText="No hay beneficiarios disponibles"
-          customProps={{
-            editMode: "row",
-            pageSizeOptions: [10, 25, 50, 100],
-            initialState: {
-              pagination: {
-                paginationModel: { page: 0, pageSize: 25 },
-              },
-            },
-          }}
-          enableDynamicHeight={true}
-        />
       </div>
+
+      {loading && (
+        <div className="overlay">
+          <div className="loader">Cargando Datos...</div>
+        </div>
+      )}
+
+      <StandardTable
+        rows={filteredBeneficiaries}
+        columns={columns}
+        loading={loadingTable}
+        noRowsText="No hay beneficiarios disponibles"
+        customProps={{
+          editMode: "row",
+          pageSizeOptions: [10, 25, 50, 100],
+          initialState: {
+            pagination: {
+              paginationModel: { page: 0, pageSize: 25 },
+            },
+          },
+        }}
+        enableDynamicHeight={true}
+      />
     </>
   );
 };

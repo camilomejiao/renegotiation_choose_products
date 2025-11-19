@@ -6,14 +6,14 @@ export const getSystemUsersColumns = () => [
   { field: "name", headerName: "NOMBRE", width: 200 },
   { field: "last_name", headerName: "APELLIDO", width: 200 },
   { field: "identification_number", headerName: "CC Ó NIT", width: 200 },
-  { field: "email", headerName: "EMAIL", width: 200 },
-  { field: "rol", headerName: "ROL", width: 200 },
+  { field: "email", headerName: "EMAIL", width: "auto" },
+  { field: "rol", headerName: "ROL", width: "auto" },
 ];
 
 export const getSuppliersColumns = () => [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "NOMBRE REPRESNETATE LEGAL", width: 300 },
-  { field: "company_name", headerName: "RAZÓN SOCIAL", width: 300 },
+  { field: "name", headerName: "NOMBRE REPRESNETATE LEGAL", width: "auto" },
+  { field: "company_name", headerName: "RAZÓN SOCIAL", width: "auto" },
   { field: "nit", headerName: "NIT", width: 200 },
   { field: "email", headerName: "EMAIL", width: 200 },
   { field: "dept", headerName: "DEPARTAMENTO", width: 200 },
@@ -27,22 +27,22 @@ export const getBeneficiaryColumn = () => [
   { field: "name", headerName: "NOMBRE", width: 200 },
   { field: "last_name", headerName: "APELLIDO", width: 200 },
   { field: "cub", headerName: "CUB", width: 200 },
-  { field: "identification_number", headerName: "CEDULA", width: 200 },
+  { field: "identification_number", headerName: "CEDULA", width: "auto" },
   { field: "email", headerName: "EMAIL", width: 200 },
   { field: "cellphone", headerName: "TELEFONO", width: 200 },
   { field: "dept", headerName: "DEPARTAMENTO", width: 200 },
-  { field: "muni", headerName: "MUNICIPIO", width: 200 },
+  { field: "muni", headerName: "MUNICIPIO", width: "auto" },
   { field: "status", headerName: "ESTADO", width: 200 },
   { field: "resolution", headerName: "RESOLUCIÓN", width: 200 },
 ];
 
 export const getConvocationColumn = () => [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "name", headerName: "NOMBRE", width: 200 },
+  { field: "name", headerName: "NOMBRE", width: "auto" },
   { field: "start_date", headerName: "FECHA INICIAL", width: 200 },
   { field: "end_date", headerName: "FECHA FINAL", width: 200 },
   { field: "remaining_days", headerName: "DIAS RESTANTES", width: 200 },
-  { field: "description", headerName: "DESCRIPCIÓN", width: 200 },
+  { field: "description", headerName: "DESCRIPCIÓN", width: "auto" },
 ];
 
 export const getAccionColumns = (

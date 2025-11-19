@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Col, Container, Row } from "react-bootstrap";
+import { FaSearch } from "react-icons/fa";
 
 //Components
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
@@ -18,23 +18,40 @@ export const SearchUserForRenegociation = () => {
     return (
         <>
             <Breadcrumb />
-            <Container fluid className="dashboard-container">
-                <Row className="text-center mt-5">
-                    <Col>
-                        <h1 className="dashboard-title">
-                            Bienvenido al <span className="highlight-text">banco de <br/>Proveedores</span> de la DSCI
+            <div className="container-fluid px-4">
+                {/* Hero Section */}
+                <div className="card mb-5">
+                    <div className="card-body text-center py-5">
+                        <h1 className="display-4 fw-bold text-primary mb-3">
+                            Bienvenido al Portal de <span className="text-success">Renegociación</span>
                         </h1>
-                        <p className="green-box">
-                            Da el siguiente paso en tus <span className="highlight-text2">entregas</span> ahora.
+                        <p className="lead text-muted mb-4">
+                            Sistema de gestión para proveedores de la DSCI - PNIS
                         </p>
-                    </Col>
-                </Row>
+                        <div className="badge badge-primary fs-sm px-4 py-2">
+                            Da el siguiente paso en tus <strong>renegociaciones</strong> ahora
+                        </div>
+                    </div>
+                </div>
 
-                <Row className="justify-content-center mt-4">
-                    <SearchUserForm component={ComponentEnum.RENEGOTIATION} onSearchSuccess={handleSearchSuccess} />
-                </Row>
+                {/* Search Form */}
+                <div className="form-container">
+                    <div className="form-header">
+                        <h2 className="form-title">
+                            <FaSearch className="me-2" />
+                            Búsqueda de Usuario
+                        </h2>
+                        <p className="form-subtitle">
+                            Ingrese el documento de identidad para buscar un beneficiario y gestionar renegociaciones
+                        </p>
+                    </div>
 
-            </Container>
+                    <SearchUserForm 
+                        component={ComponentEnum.RENEGOTIATION} 
+                        onSearchSuccess={handleSearchSuccess} 
+                    />
+                </div>
+            </div>
         </>
     );
 }
