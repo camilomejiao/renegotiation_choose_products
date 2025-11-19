@@ -150,7 +150,12 @@ export const ListCollectionAccount = () => {
                                                     <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
                                                 </Col>
                                                 <Col md={6}>
-                                                    <strong>💰 Valor total:</strong> $ {Number(detailCollectionAccounts[account.id]?.valor_total_factura_electronica ?? detailCollectionAccounts[account.id]?.valor_total).toLocaleString('es-CO')}
+                                                    <strong>💰 Valor total:</strong> $
+                                                    {(() => {
+                                                        const valorFETotal = Number(detailCollectionAccounts[account.id]?.valor_total_factura_electronica || 0);
+                                                        const valorTotal = Number(detailCollectionAccounts[account.id]?.valor_total || 0);
+                                                        return (valorFETotal > 0 ? valorFETotal : valorTotal).toLocaleString('es-CO');
+                                                    })()}
                                                 </Col>
                                             </Row>
 
@@ -164,7 +169,13 @@ export const ListCollectionAccount = () => {
                                                             <li key={idx}>
                                                                 <strong>Beneficiario: </strong> {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido + ' - ' }
                                                                 <strong>Identificación: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
-                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} – 💰 Valor: $ {parseFloat(item?.valor_factura_electronica ?? item?.valor).toLocaleString()}
+                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} –
+                                                                💰 Valor: $
+                                                                {(() => {
+                                                                    const valorFE = Number(item?.valor_factura_electronica || 0);
+                                                                    const valor = Number(item?.valor || 0);
+                                                                    return (valorFE > 0 ? valorFE : valor).toLocaleString('es-CO');
+                                                                })()}
                                                             </li>
                                                         ))
                                                     ) : (

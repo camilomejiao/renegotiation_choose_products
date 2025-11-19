@@ -68,10 +68,10 @@ export const CreateCollectionAccount = () => {
     const normalizeRows = (data) => {
         return data.map((row) => {
             const beneficiario = row?.beneficiario ?? {};
-            const valorFactura =
-                row?.valor_factura_electronica ??
-                row?.valor ??
-                0;
+            const valorFE = Number(row?.valor_factura_electronica ?? 0);
+            const valorBase = Number(row?.valor ?? 0);
+
+            const valorFactura = valorFE > 0 ? valorFE : valorBase;
 
             return {
                 id: row?.id,
@@ -81,7 +81,7 @@ export const CreateCollectionAccount = () => {
                 date: row.fecha_creacion.split("T")[0],
                 unid: row?.cantidad_productos ?? 0,
                 amount: row?.total_cantidad_productos ?? 0,
-                amount_of_money: parseFloat(valorFactura).toLocaleString("es-CO"),
+                amount_of_money: valorFactura.toLocaleString("es-CO"),
             };
         });
     };
