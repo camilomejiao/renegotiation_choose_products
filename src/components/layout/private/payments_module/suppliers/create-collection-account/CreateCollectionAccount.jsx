@@ -12,8 +12,9 @@ import imgPayments from "../../../../../../assets/image/payments/pay-supplier.pn
 import imgWorker from "../../../../../../assets/image/payments/worker.png";
 import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import { Breadcrumb } from "../../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../../shared/ModernBanner";
 import StandardTable from "../../../../../shared/StandardTable";
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 
 export const CreateCollectionAccount = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const CreateCollectionAccount = () => {
     {
       field: "id",
       headerName: "ID",
-      width: 80,
+      width: 85,
       align: "right",
       headerAlign: "left",
     },
@@ -52,14 +53,14 @@ export const CreateCollectionAccount = () => {
     {
       field: "name",
       headerName: "BENEFICIARIO",
-      width: 300,
+      width: "auto",
       align: "left",
       headerAlign: "left",
     },
     {
       field: "identification",
       headerName: "IDENTIFICACIÓN",
-      width: 200,
+      width: "auto",
       align: "left",
       headerAlign: "left",
     },
@@ -80,8 +81,8 @@ export const CreateCollectionAccount = () => {
     {
       field: "amount_of_money",
       headerName: "VALOR",
-      width: 150,
-      align: "right",
+      width: "auto",
+      align: "left",
       headerAlign: "left",
     },
   ];
@@ -201,25 +202,17 @@ export const CreateCollectionAccount = () => {
 
   return (
     <>
-      <HeaderImage
-        imageHeader={imgPayments}
-        titleHeader={"Proceso de pago"}
-        bannerIcon={imgAdd}
-        backgroundIconColor={"#2148C0"}
-        bannerInformation={
-          "Aquí podrás revisar el estado de tus órdenes de pago."
-        }
-        backgroundInformationColor={"#F66D1F"}
-      />
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={imgPayments}
+          titleHeader="​"
+          bannerIcon={imgAdd}
+          bannerInformation="Crear Cuenta de Cobro"
+          backgroundInformationColor="#2148C0"
+          infoText="Complete la información bancaria y seleccione las entregas aprobadas para crear su cuenta de cobro."
+        />
 
-      <div className="supplier-header">
-        <div className="supplier-content">
-          <h2>Proveedor</h2>
-          <img src={imgWorker} alt="Proveedor" className="supplier-img" />
-        </div>
-      </div>
-
-      <div className="container mt-lg-5">
         {sendingData && (
           <div className="overlay">
             <div className="loader">Enviando informacion...</div>
@@ -227,111 +220,124 @@ export const CreateCollectionAccount = () => {
         )}
 
         <Card className="p-3 p-md-4 shadow-sm mb-4">
-          <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-            Información para Cuenta de Cobro
-          </h4>
-
-          {/* Inputs de texto */}
-          <Row className="gy-3">
-            <Col xs={12} sm={6} md={4}>
-              <label className="form-label fw-semibold">
-                Tipo de cuenta <span className="text-danger">*</span>
-              </label>
-              <select
-                className="form-select"
-                name="tipoCuenta"
-                value={formFields.tipoCuenta}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Seleccione...</option>
-                <option value="AHO">Ahorros</option>
-                <option value="COR">Corriente</option>
-              </select>
-            </Col>
-            <Col xs={12} sm={6} md={4}>
-              <label className="form-label fw-semibold">
-                Número de cuenta <span className="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="numeroCuenta"
-                value={formFields.numeroCuenta}
-                onChange={handleInputChange}
-                placeholder="Ej: 1234567890"
+          <div className="card-header">
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <img
+                src={imgWorker}
+                alt="Proveedor"
+                style={{ width: "32px", height: "32px" }}
               />
-            </Col>
-            <Col xs={12} md={4}>
-              <label className="form-label fw-semibold">
-                Entidad bancaria <span className="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="entidadBancaria"
-                value={formFields.entidadBancaria}
-                onChange={handleInputChange}
-                placeholder="Ej: Banco Agrario"
-              />
-            </Col>
-          </Row>
+              <h3 className="card-title">Panel de Proveedor</h3>
+            </div>
+          </div>
+          <div className="card-body">
+            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
+              Información para Cuenta de Cobro
+            </h4>
 
-          {/* Archivos PDF */}
-          <Row className="gy-3 mt-3 mb-4">
-            <Col xs={12} sm={6} md={4}>
-              <label className="form-label fw-semibold">
-                Certificado de cuenta bancaria (PDF){" "}
-                <span className="text-danger">*</span>
-              </label>
-              <input
-                type="file"
-                className="form-control"
-                name="certificadoBancario"
-                onChange={handleFileChange}
-                accept="application/pdf"
-              />
-            </Col>
-            <Col xs={12} sm={6} md={4}>
-              <label className="form-label fw-semibold">
-                RUT (PDF) <span className="text-danger">*</span>
-              </label>
-              <input
-                type="file"
-                className="form-control"
-                name="rut"
-                onChange={handleFileChange}
-                accept="application/pdf"
-              />
-            </Col>
-          </Row>
+            {/* Inputs de texto */}
+            <Row className="gy-3">
+              <Col xs={12} sm={6} md={4}>
+                <label className="form-label fw-semibold">
+                  Tipo de cuenta <span className="text-danger">*</span>
+                </label>
+                <select
+                  className="form-select"
+                  name="tipoCuenta"
+                  value={formFields.tipoCuenta}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Seleccione...</option>
+                  <option value="AHO">Ahorros</option>
+                  <option value="COR">Corriente</option>
+                </select>
+              </Col>
+              <Col xs={12} sm={6} md={4}>
+                <label className="form-label fw-semibold">
+                  Número de cuenta <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="numeroCuenta"
+                  value={formFields.numeroCuenta}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 1234567890"
+                />
+              </Col>
+              <Col xs={12} md={4}>
+                <label className="form-label fw-semibold">
+                  Entidad bancaria <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="entidadBancaria"
+                  value={formFields.entidadBancaria}
+                  onChange={handleInputChange}
+                  placeholder="Ej: Banco Agrario"
+                />
+              </Col>
+            </Row>
 
-          <StandardTable
-            rows={dataTable}
-            columns={statusCollectionAccountColumns}
-            loading={loading}
-            customProps={{
-              checkboxSelection: true,
-              paginationMode: "server",
-              rowCount: rowCount,
-              pageSizeOptions: [10, 25, 50, 100],
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-              onRowSelectionModelChange: handleSelectionChange,
-            }}
-            enableDynamicHeight={true}
-          />
+            {/* Archivos PDF */}
+            <Row className="gy-3 mt-3 mb-4">
+              <Col xs={12} sm={6} md={4}>
+                <label className="form-label fw-semibold">
+                  Certificado de cuenta bancaria (PDF){" "}
+                  <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="file"
+                  className="form-control"
+                  name="certificadoBancario"
+                  onChange={handleFileChange}
+                  accept="application/pdf"
+                />
+              </Col>
+              <Col xs={12} sm={6} md={4}>
+                <label className="form-label fw-semibold">
+                  RUT (PDF) <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="file"
+                  className="form-control"
+                  name="rut"
+                  onChange={handleFileChange}
+                  accept="application/pdf"
+                />
+              </Col>
+            </Row>
 
-          <div className="d-flex justify-content-end gap-2 mt-3">
-            <Button variant="outline-secondary" onClick={onBack}>
-              <FaStepBackward /> Atras
-            </Button>
-            <Button variant="outline-success" onClick={handleSaveUsers}>
-              <FaSave /> Crear cuenta de cobro
-            </Button>
+            <StandardTable
+              rows={dataTable}
+              columns={statusCollectionAccountColumns}
+              loading={loading}
+              customProps={{
+                checkboxSelection: true,
+                paginationMode: "server",
+                rowCount: rowCount,
+                pageSizeOptions: [10, 25, 50, 100],
+                paginationModel: { page, pageSize },
+                onPaginationModelChange: ({ page, pageSize }) => {
+                  setPage(page);
+                  setPageSize(pageSize);
+                },
+                rowSelectionModel: selectedIds,
+                onRowSelectionModelChange: handleSelectionChange,
+              }}
+              enableDynamicHeight={true}
+            />
+
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <Button variant="outline-secondary" onClick={onBack}>
+                <FaStepBackward /> Atras
+              </Button>
+              <Button variant="outline-success" onClick={handleSaveUsers}>
+                <FaSave /> Crear cuenta de cobro
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

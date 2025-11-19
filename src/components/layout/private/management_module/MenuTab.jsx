@@ -7,11 +7,13 @@ import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.pn
 import { UserList } from "./user/UserList";
 import { SupplierList } from "./suppliers/SupplierList";
 import { BeneficiaryList } from "./beneficiaries/BeneficiaryList";
+import { Breadcrumb } from "../../../shared/Breadcrumb";
 
 export const MenuTab = () => {
 
     return (
         <>
+            <Breadcrumb />
             <div className="main-container">
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />

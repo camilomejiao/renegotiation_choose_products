@@ -3,6 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 
 //Components
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
+import { Breadcrumb } from "../../../shared/Breadcrumb";
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 export const SearchUserForRenegociation = () => {
@@ -16,6 +17,7 @@ export const SearchUserForRenegociation = () => {
 
     return (
         <>
+            <Breadcrumb />
             <Container fluid className="dashboard-container">
                 <Row className="text-center mt-5">
                     <Col>

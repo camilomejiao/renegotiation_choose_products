@@ -1,0 +1,176 @@
+/* Estilos modernos para SweetAlert2 */
+
+/* Importar Animate.css para animaciones */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+/* Popup principal */
+.modern-alert-popup {
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border: none !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Título */
+.modern-alert-title {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin-bottom: 8px !important;
+}
+
+/* Contenido */
+.modern-alert-content {
+    font-size: 14px !important;
+    color: #6b7280 !important;
+    line-height: 1.5 !important;
+}
+
+/* Botones base */
+.modern-alert-button {
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Botón success */
+.modern-alert-success {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+    color: white !important;
+}
+
+.modern-alert-success:hover {
+    background: linear-gradient(135deg, #15803d 0%, #16a34a 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4) !important;
+}
+
+/* Botón error */
+.modern-alert-error {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+    color: white !important;
+}
+
+.modern-alert-error:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Botón warning */
+.modern-alert-warning {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%) !important;
+    color: white !important;
+}
+
+.modern-alert-warning:hover {
+    background: linear-gradient(135deg, #c2410c 0%, #d97706 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* Botón info */
+.modern-alert-info {
+    background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%) !important;
+    color: white !important;
+}
+
+.modern-alert-info:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4) !important;
+}
+
+/* Toast notifications */
+.modern-toast-popup {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+    border: 2px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.modern-toast-title {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    margin: 0 !important;
+}
+
+.modern-toast-content {
+    font-size: 13px !important;
+    color: #64748b !important;
+}
+
+/* Iconos personalizados */
+.swal2-icon.swal2-success {
+    border-color: #16a34a !important;
+    color: #16a34a !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: #d97706 !important;
+    color: #d97706 !important;
+}
+
+.swal2-icon.swal2-info {
+    border-color: #0284c7 !important;
+    color: #0284c7 !important;
+}
+
+/* Progress bar para toast */
+.swal2-timer-progress-bar {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
+    height: 3px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modern-alert-popup {
+        width: 90% !important;
+        margin: 0 5% !important;
+    }
+    
+    .modern-toast-popup {
+        width: 90% !important;
+        right: 5% !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .modern-alert-popup {
+        background: #1f2937 !important;
+    }
+    
+    .modern-alert-title {
+        color: #f9fafb !important;
+    }
+    
+    .modern-alert-content {
+        color: #d1d5db !important;
+    }
+    
+    .modern-toast-popup {
+        background: #374151 !important;
+        border-color: #4b5563 !important;
+    }
+    
+    .modern-toast-title {
+        color: #f9fafb !important;
+    }
+    
+    .modern-toast-content {
+        color: #d1d5db !important;
+    }
+}

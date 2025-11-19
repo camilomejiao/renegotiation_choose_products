@@ -7,7 +7,9 @@ import StandardTable from "../../../../shared/StandardTable";
 
 //
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import productIcon from "../../../../../assets/image/addProducts/imgAdd.png";
+import { ModernBanner } from "../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //
 import { getProductsPriceQuotesColumns } from "../../../../../helpers/utils/ConvocationProductColumns";
@@ -316,94 +318,93 @@ export const ProductPriceQuotesBySupplier = () => {
 
   return (
     <>
-      <div className="main-container">
-        <HeaderImage
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
           imageHeader={imgPeople}
-          titleHeader={"¡Empieza a agregar tus productos!"}
-          bannerIcon={""}
-          backgroundIconColor={""}
-          bannerInformation={""}
-          backgroundInformationColor={""}
+          titleHeader="​"
+          bannerIcon={productIcon}
+          bannerInformation="Cotización de Productos"
+          backgroundInformationColor="#2148C0"
+          infoText="Selecciona un plan, busca productos y actualiza precios, marcas y descripciones."
         />
 
-        <div className="container mt-lg-3">
-          <Row className="gy-2 align-items-center mt-3 mb-3">
-            <Col xs={12} md={4}>
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="form-control"
-              />
-            </Col>
+        <Row className="gy-2 align-items-center mt-3 mb-3">
+          <Col xs={12} md={4}>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="form-control"
+            />
+          </Col>
 
-            {/* Select Plan */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedPlan}
-                options={planRaw.map((opt) => ({
-                  value: opt.id,
-                  label: opt.plan_nombre,
-                }))}
-                placeholder="Selecciona un Plan"
-                onChange={handleSelectedPlan}
-                isClearable
-                isLoading={loading}
-                classNamePrefix="gov-select"
-                className="gov-select w-100"
-              />
-            </Col>
+          {/* Select Plan */}
+          <Col xs={12} md={4}>
+            <Select
+              value={selectedPlan}
+              options={planRaw.map((opt) => ({
+                value: opt.id,
+                label: opt.plan_nombre,
+              }))}
+              placeholder="Selecciona un Plan"
+              onChange={handleSelectedPlan}
+              isClearable
+              isLoading={loading}
+              classNamePrefix="gov-select"
+              className="gov-select w-100"
+            />
+          </Col>
 
-            <Col xs={12} md={4} className="d-flex justify-content-md-start">
-              <Form.Check
-                type="switch"
-                id="only-mine-switch"
-                label={`Ver solo mis productos (${onlyMine ? "SI" : "NO"})`}
-                checked={onlyMine}
-                onChange={handleToggleOnlyMine}
-                reverse
-                className="form-switch-lg switch-compact"
-                disabled={!selectedPlan}
-              />
-            </Col>
-          </Row>
+          <Col xs={12} md={4} className="d-flex justify-content-md-start">
+            <Form.Check
+              type="switch"
+              id="only-mine-switch"
+              label={`Ver solo mis productos (${onlyMine ? "SI" : "NO"})`}
+              checked={onlyMine}
+              onChange={handleToggleOnlyMine}
+              reverse
+              className="form-switch-lg switch-compact"
+              disabled={!selectedPlan}
+            />
+          </Col>
+        </Row>
 
-          {loading && (
-            <div className="overlay">
-              <div className="loader">Guardando Productos...</div>
-            </div>
-          )}
-
-          <StandardTable
-            rows={filteredRows}
-            columns={columns}
-            loading={loadingTable}
-            noRowsText="No hay productos disponibles para cotizar"
-            customProps={{
-              processRowUpdate: handleRowUpdate,
-              editMode: "row",
-              pageSizeOptions: [10, 25, 50, 100],
-              initialState: {
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 25 },
-                },
-              },
-            }}
-            enableDynamicHeight={true}
-          />
-
-          {/* Botón Guardar */}
-          <div className="d-flex align-items-end mt-3">
-            <Button
-              variant="outline-success"
-              onClick={handleSaveProducts}
-              className="ms-auto"
-              disabled={loading}
-            >
-              <FaSave /> {loading ? "Guardando..." : "Guardar Productos"}
-            </Button>
+        {loading && (
+          <div className="overlay">
+            <div className="loader">Guardando Productos...</div>
           </div>
+        )}
+
+        <StandardTable
+          rows={filteredRows}
+          columns={columns}
+          loading={loadingTable}
+          noRowsText="No hay productos disponibles para cotizar"
+          customProps={{
+            processRowUpdate: handleRowUpdate,
+            editMode: "row",
+            pageSizeOptions: [10, 25, 50, 100],
+            initialState: {
+              pagination: {
+                paginationModel: { page: 0, pageSize: 25 },
+              },
+            },
+          }}
+          enableDynamicHeight={true}
+        />
+
+        {/* Botón Guardar */}
+        <div className="d-flex align-items-end mt-3">
+          <Button
+            variant="outline-success"
+            onClick={handleSaveProducts}
+            className="ms-auto"
+            disabled={loading}
+          >
+            <FaSave /> {loading ? "Guardando..." : "Guardar Productos"}
+          </Button>
         </div>
       </div>
     </>

@@ -1,29 +1,24 @@
 import printJS from "print-js";
 import { useEffect, useRef, useState } from "react";
+import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
 import {
-  Button,
-  ButtonGroup,
-  Col,
-  Container,
-  Row,
-  Spinner,
-} from "react-bootstrap";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendarAlt } from "react-icons/fa";
+  FaBook,
+  FaDownload,
+  FaFileAlt,
+  FaFileExcel,
+  FaFilePdf,
+} from "react-icons/fa";
 import * as XLSX from "xlsx";
 
 //Components
-import { format } from "date-fns";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../shared/ModernBanner";
 import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
 
 //Img
 import imgAdd from "../../../../../assets/image/addProducts/imgAdd.png";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
-import imgFrame1 from "../../../../../assets/image/icons/frame.png";
-import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
 
 //Services
 import { reportServices } from "../../../../../helpers/services/ReportServices";
@@ -35,17 +30,17 @@ export const CompanyReport = () => {
   const companyReportRef = useRef();
 
   const [companyInformation, setCompanyInformation] = useState({});
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isReadyToPrint, setIsReadyToPrint] = useState(false);
 
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
   };
 
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
   };
 
   const validateDates = async (startDate, endDate) => {
@@ -54,7 +49,7 @@ export const CompanyReport = () => {
       return false;
     }
 
-    if (endDate < startDate) {
+    if (new Date(endDate) < new Date(startDate)) {
       AlertComponent.error(
         "Oops...",
         "La fecha final no puede ser anterior a la fecha inicial."
@@ -72,13 +67,10 @@ export const CompanyReport = () => {
 
     setIsLoading(true);
 
-    const formattedStartDate = format(startDate, "yyyy-MM-dd");
-    const formattedEndDate = format(endDate, "yyyy-MM-dd");
-
     try {
       const { data, status } = await reportServices.companyReport(
-        formattedStartDate,
-        formattedEndDate
+        startDate,
+        endDate
       );
       if (status === ResponseStatusEnum.OK) {
         if (reportType === "pdf") {
@@ -121,18 +113,14 @@ export const CompanyReport = () => {
     });
   };
 
-  //
   const handleExportToExcel = (reportData) => {
-    const transformedData = transformDataForExcel(reportData); // Transformamos los datos
-    exportToExcel(transformedData); // Exportamos a Excel
+    const transformedData = transformDataForExcel(reportData);
+    exportToExcel(transformedData);
   };
 
-  //
   const transformDataForExcel = (data) => {
-    //Validamos la data
     const distributors = Array.isArray(data) ? data : [data];
 
-    //.flatMap combina los pasos de iterar y aplanar la estructura de datos. Es útil cuando cada iteración genera múltiples filas
     return distributors.flatMap((distributor) => {
       const { nombre: distributorName, nit, cubs } = distributor;
 
@@ -168,14 +156,11 @@ export const CompanyReport = () => {
     });
   };
 
-  //
   const exportToExcel = (data) => {
-    //Formateamos los datos
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte");
 
-    //Descargar el archivo
     XLSX.writeFile(workbook, "Reporte_Consolidado_De_Ventas.xlsx");
   };
 
@@ -214,154 +199,176 @@ export const CompanyReport = () => {
     }
   }, [companyInformation, isReadyToPrint]);
 
+  if (isLoading) {
+    return (
+      <div className="overlay">
+        <div className="loader">
+          <div className="spinner-border"></div>
+          <div className="spinner-text">Generando reporte...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="main-container">
-        <HeaderImage
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        {/* Header */}
+        <ModernBanner
           imageHeader={imgDCSIPeople}
-          titleHeader={"¡Explora el banco de proveedores!"}
+          titleHeader="¡Explora el banco de proveedores!"
           bannerIcon={imgAdd}
-          backgroundIconColor={"#f66d1f"}
-          bannerInformation={
-            "Conoce los proyectos, compras y proveedores en un solo lugar."
-          }
-          backgroundInformationColor={"#2148C0"}
+          backgroundIconColor="#f66d1f"
+          bannerInformation="Conoce los proyectos, compras y proveedores en un solo lugar."
+          backgroundInformationColor="#2148C0"
+          infoText="Genere reportes y acceda a documentos necesarios para la gestión de pagos."
         />
 
-        {isLoading && (
-          <div className="spinner-container">
-            <Spinner animation="border" variant="success" />
-            <span>Cargando...</span>
+        {/* Report Generation Section */}
+        <div className="form-container">
+          <div className="form-header">
+            <h2 className="form-title">
+              <FaFileAlt className="me-2" />
+              Generar Reportes
+            </h2>
+            <p className="form-subtitle">
+              Seleccione el rango de fechas y genere reportes en Excel o PDF
+            </p>
           </div>
-        )}
 
-        <div className="banner-reports">
-          <Container>
-            <Row className="justify-content-start align-items-center">
-              {/* Selectores de Fecha */}
-              <Col md={4} className="d-flex flex-column">
-                <div className="date-picker-wrapper w-100">
-                  <FaCalendarAlt className="calendar-icon" />
-                  <DatePicker
-                    selected={startDate}
-                    onChange={handleStartDateChange}
-                    className="form-control custom-date-picker"
-                    placeholderText="Seleccione una fecha inicial"
-                  />
-                </div>
-              </Col>
+          <div className="card">
+            <div className="card-body">
+              <Row className="align-items-end">
+                <Col md={4}>
+                  <label className="form-label">Fecha Inicial</label>
+                  <div className="date-picker-wrapper">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={handleStartDateChange}
+                      className="form-control custom-date-picker"
+                    />
+                  </div>
+                </Col>
 
-              <Col md={4} className="d-flex flex-column">
-                <div className="date-picker-wrapper w-100">
-                  <FaCalendarAlt className="calendar-icon" />
-                  <DatePicker
-                    selected={endDate}
-                    onChange={handleEndDateChange}
-                    className="form-control custom-date-picker"
-                    placeholderText="Seleccione una fecha final"
-                  />
-                </div>
-              </Col>
+                <Col md={4}>
+                  <label className="form-label">Fecha Final</label>
+                  <div className="date-picker-wrapper">
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={handleEndDateChange}
+                      className="form-control custom-date-picker"
+                    />
+                  </div>
+                </Col>
 
-              {/* ButtonGroup Reporte General */}
-              <Col md={4} className="d-flex flex-column justify-content-center">
-                <ButtonGroup className="report-button-group">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => handlePrintCompanyReport("excel")}
-                    className="report-group-button"
-                  >
-                    Excel
-                  </Button>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => handlePrintCompanyReport("pdf")}
-                    className="report-group-button"
-                  >
-                    PDF
-                  </Button>
-                </ButtonGroup>
-              </Col>
-            </Row>
-          </Container>
+                <Col md={4}>
+                  <ButtonGroup className="w-100">
+                    <Button
+                      variant="outline-success"
+                      onClick={() => handlePrintCompanyReport("excel")}
+                      className="d-flex align-items-center justify-content-center"
+                    >
+                      <FaFileExcel className="me-2" />
+                      Excel
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      onClick={() => handlePrintCompanyReport("pdf")}
+                      className="d-flex align-items-center justify-content-center"
+                    >
+                      <FaFilePdf className="me-2" />
+                      PDF
+                    </Button>
+                  </ButtonGroup>
+                </Col>
+              </Row>
+            </div>
+          </div>
         </div>
 
-        <div className="banner-reports">
-          <Container>
-            <Row className="justify-content-around">
-              <Col
-                xs={12}
-                md={3}
-                className="d-flex flex-column justify-content-center"
+        {/* Documents Section */}
+        <div className="form-container">
+          <div className="form-header">
+            <h2 className="form-title">
+              <FaBook className="me-2" />
+              Documentos y Formatos
+            </h2>
+            <p className="form-subtitle">
+              Acceda a instructivos, formatos y documentos necesarios para la gestión de pagos
+            </p>
+          </div>
+
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-card-header">
+                <span className="stat-card-title">Instructivos</span>
+                <div className="stat-card-icon">
+                  <FaBook />
+                </div>
+              </div>
+              <button
+                onClick={handleDownloadInstructions}
+                className="btn btn-primary w-100 mt-3"
               >
-                <button
-                  onClick={handleDownloadInstructions}
-                  className="reporting-system-button"
-                >
-                  <img
-                    src={imgFrame1}
-                    alt="icono general"
-                    className="button-icon"
-                  />
-                  INSTRUCTIVO PARA PAGOS
-                </button>
-              </Col>
-              <Col
-                xs={12}
-                md={3}
-                className="d-flex flex-column justify-content-center"
+                <FaDownload className="me-2" />
+                Instructivo para Pagos
+              </button>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-header">
+                <span className="stat-card-title">Documentos</span>
+                <div className="stat-card-icon">
+                  <FaFilePdf />
+                </div>
+              </div>
+              <button
+                onClick={handleDocumentsForPaymentRequest}
+                className="btn btn-success w-100 mt-3"
               >
-                <button
-                  onClick={handleDocumentsForPaymentRequest}
-                  className="reporting-system-button"
-                >
-                  <img
-                    src={imgFrame2}
-                    alt="icono documentos"
-                    className="button-icon"
-                  />
-                  DOCUMENTOS PARA SOLICITUD DE PAGO
-                </button>
-              </Col>
-              <Col
-                xs={12}
-                md={3}
-                className="d-flex flex-column justify-content-center"
+                <FaDownload className="me-2" />
+                Documentos para Solicitud
+              </button>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-header">
+                <span className="stat-card-title">Formatos</span>
+                <div className="stat-card-icon">
+                  <FaFileExcel />
+                </div>
+              </div>
+              <button
+                onClick={handleCollectionAccountFormat}
+                className="btn btn-warning w-100 mt-3"
               >
-                <button
-                  onClick={handleCollectionAccountFormat}
-                  className="reporting-system-button"
-                >
-                  <img
-                    src={imgFrame2}
-                    alt="icono formato"
-                    className="button-icon"
-                  />
-                  FORMATO DE CUENTA DE COBRO
-                </button>
-              </Col>
-              <Col
-                xs={12}
-                md={3}
-                className="d-flex flex-column justify-content-center"
+                <FaDownload className="me-2" />
+                Formato Cuenta de Cobro
+              </button>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card-header">
+                <span className="stat-card-title">Solicitudes</span>
+                <div className="stat-card-icon">
+                  <FaFileAlt />
+                </div>
+              </div>
+              <button
+                onClick={handleAccountList}
+                className="btn btn-info w-100 mt-3"
               >
-                <button
-                  onClick={handleAccountList}
-                  className="reporting-system-button"
-                >
-                  <img
-                    src={imgFrame2}
-                    alt="icono solicitud"
-                    className="button-icon"
-                  />
-                  SOLICITUD DE PAGO
-                </button>
-              </Col>
-            </Row>
-          </Container>
+                <FaDownload className="me-2" />
+                Solicitud de Pago
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Aquí renderizas el componente pero lo ocultas */}
+        {/* Hidden Report Component */}
         <div style={{ display: "none" }}>
           {companyInformation && (
             <div ref={companyReportRef}>

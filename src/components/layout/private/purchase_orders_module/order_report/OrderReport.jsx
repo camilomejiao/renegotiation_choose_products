@@ -5,6 +5,7 @@ import StandardTable from "../../../../shared/StandardTable";
 
 // Image
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
+import orderIcon from "../../../../../assets/image/icons/frame.png";
 
 // Services
 import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseOrderServices";
@@ -16,7 +17,8 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Components
 import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 const PAGE_SIZE = 25;
 
@@ -217,65 +219,69 @@ export const OrderReport = () => {
 
   return (
     <>
-      <div className="main-container">
-        <HeaderImage
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
           imageHeader={imgDCSIPeople}
-          titleHeader={"¡Órdenes de Compra!"}
-          bannerIcon={""}
-          backgroundIconColor={""}
-          bannerInformation={""}
-          backgroundInformationColor={""}
+          titleHeader="​"
+          bannerIcon={orderIcon}
+          bannerInformation="Órdenes de Compra"
+          backgroundInformationColor="#2148C0"
+          infoText="Busca órdenes por documento, consulta detalles y gestiona el estado de las compras."
         />
 
-        <div className="container mt-lg-3">
-          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+        <div className="row align-items-center mb-4">
+          <div className="col-md-6">
             <input
               type="text"
-              placeholder="Buscar..."
-              size="md"
+              placeholder="Buscar por documento..."
               value={searchQuery}
               onChange={handleSearchQueryChange}
-              className="input-responsive"
+              className="form-control"
             />
-            <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+          </div>
+          <div className="col-md-6">
+            <div className="d-flex gap-2">
               <Button
-                variant="outline-primary"
+                variant="primary"
                 onClick={handleSearch}
-                className="button-order-responsive"
+                className="d-flex align-items-center"
               >
-                <FaSearch /> Buscar
+                <FaSearch className="me-2" />
+                Buscar
               </Button>
               <Button
                 variant="outline-secondary"
                 onClick={handleClearSearch}
-                className="button-order-responsive"
+                className="d-flex align-items-center"
               >
-                <FaBroom /> Limpiar
+                <FaBroom className="me-2" />
+                Limpiar
               </Button>
             </div>
           </div>
-
-          {isLoading && (
-            <div className="overlay">
-              <div className="loader">{informationLoadingText}</div>
-            </div>
-          )}
-
-          <StandardTable
-            columns={columns}
-            rows={purcharseOrder}
-            loading={isLoading}
-            noRowsText="No hay órdenes de compra disponibles"
-            customProps={{
-              rowCount: rowCountState,
-              paginationModel: paginationModel,
-              onPaginationModelChange: setPaginationModel,
-              paginationMode: "server",
-              pageSizeOptions: [10, 25, 50, 100],
-            }}
-            enableDynamicHeight={true}
-          />
         </div>
+
+        {isLoading && (
+          <div className="overlay">
+            <div className="loader">{informationLoadingText}</div>
+          </div>
+        )}
+
+        <StandardTable
+          columns={columns}
+          rows={purcharseOrder}
+          loading={isLoading}
+          noRowsText="No hay órdenes de compra disponibles"
+          customProps={{
+            rowCount: rowCountState,
+            paginationModel: paginationModel,
+            onPaginationModelChange: setPaginationModel,
+            paginationMode: "server",
+            pageSizeOptions: [10, 25, 50, 100],
+          }}
+          enableDynamicHeight={true}
+        />
 
         <ConfirmationModal
           show={showModal}

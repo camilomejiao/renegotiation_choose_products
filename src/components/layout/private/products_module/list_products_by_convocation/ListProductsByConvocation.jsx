@@ -6,6 +6,7 @@ import StandardTable from "../../../../shared/StandardTable";
 
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //
 import {
@@ -108,7 +109,9 @@ export const ListProductsByConvocation = () => {
   }, [getProductsByConvocation]);
 
   return (
-    <div className="main-container">
+    <>
+      <Breadcrumb />
+      <div className="main-container">
       <HeaderImage
         imageHeader={imgPeople}
         titleHeader={"¡Empieza a agregar tus productos!"}
@@ -211,5 +214,6 @@ export const ListProductsByConvocation = () => {
         </Modal.Footer>
       </Modal>
     </div>
+    </>
   );
 };

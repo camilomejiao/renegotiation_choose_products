@@ -17,6 +17,7 @@ import { handleError, showAlert } from "../../../../helpers/utils/utils";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
 import { BalanceInFavorReport } from "./balance_in_favor_report/BalanceInFavorReport";
+import { Breadcrumb } from "../../../shared/Breadcrumb";
 
 //Services
 import { userServices } from "../../../../helpers/services/UserServices";
@@ -229,6 +230,7 @@ export const BeneficiariesManagement = () => {
 
     return (
         <>
+            <Breadcrumb />
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgDCSIPeople}

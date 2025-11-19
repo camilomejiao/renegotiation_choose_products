@@ -232,16 +232,16 @@ export const getDeleteActionsColumns = (handleDeleteClick) => [
 
 export const getProductsPriceQuotesColumns = () => [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "category", headerName: "CATEGORIA", width: 500 },
-  { field: "name", headerName: "NOMBRE PRODUCTO", width: 500 },
+  { field: "category", headerName: "CATEGORIA", width: 200 },
+  { field: "name", headerName: "NOMBRE PRODUCTO", width: 200 },
   { field: "unit", headerName: "UNIDAD", width: 150 },
   {
     field: "description",
     headerName: "DESCRIPCION",
-    width: 500,
+    width: 300,
     editable: true,
   },
-  { field: "brand", headerName: "MARCA", width: 250, editable: true },
+  { field: "brand", headerName: "MARCA", width: 170, editable: true },
   {
     field: "price",
     headerName: "VALOR",

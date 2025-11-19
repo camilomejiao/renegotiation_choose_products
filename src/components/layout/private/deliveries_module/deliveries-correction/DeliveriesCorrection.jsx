@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Col, Nav, Row } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
-import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import imgPayments from "../../../../../assets/image/payments/payments.png";
+import correctionIcon from "../../../../../assets/image/icons/frame.png";
 import StandardTable from "../../../../shared/StandardTable";
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //Columns
 import { beneficiaryColumns } from "../../../../../helpers/utils/PaymentsColumns";
@@ -148,18 +149,17 @@ export const DeliveriesCorrection = () => {
 
   return (
     <>
-      <HeaderImage
-        imageHeader={imgPayments}
-        titleHeader={"Subsanación De Entregas"}
-        bannerIcon={imgAdd}
-        backgroundIconColor={"#2148C0"}
-        bannerInformation={
-          "Aquí podrás revisar tus entregas que estan en estado de subsanación."
-        }
-        backgroundInformationColor={"#F66D1F"}
-      />
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={imgPayments}
+          titleHeader="​"
+          bannerIcon={correctionIcon}
+          bannerInformation="Subsanación de Entregas"
+          backgroundInformationColor="#2148C0"
+          infoText="Aquí podrás revisar tus entregas que están en estado de subsanación."
+        />
 
-      <div className="container mt-lg-5">
         <Row className="gy-2 align-items-center mt-3 mb-3">
           {/* Buscador con botón */}
           <Col xs={12} md={4}>

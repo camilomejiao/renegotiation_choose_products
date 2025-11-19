@@ -3,38 +3,42 @@ import useAuth from "../../../hooks/useAuth";
 import { Footer } from "../shared/footer/Footer";
 import { Header } from "../shared/header/Header";
 import { Sidebar } from "../shared/sidebar/Sidebar";
+import { useState } from "react";
 
-const LoadingIndicator = () => <div>Cargando...</div>;
+const LoadingIndicator = () => (
+  <div className="overlay">
+    <div className="loader">
+      <div className="spinner-border"></div>
+      <div className="spinner-text">Cargando...</div>
+    </div>
+  </div>
+);
 
 export const PrivateLayout = () => {
   const { auth, loading, logout } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleUnauthorizedAccess = () => {
-    logout(); // Limpiar datos residuales
+    logout();
     return <Navigate to="/login" replace />;
   };
 
-  // Mostrar un indicador de carga mientras se obtiene la autenticación
   if (loading) {
     return <LoadingIndicator />;
   }
 
-  //Si no está autenticado, redirigir al login
   if (!auth?.id) {
     return handleUnauthorizedAccess();
   }
 
-  // Renderizar el layout privado si el usuario está autenticado
   return (
-    <div className="app-shell">
+    <div className="app">
       <Header />
-      <div className="app-layout">
-        <Sidebar userAuth={auth} />
-        <main className="app-content">
-          <div className="app-content__inner">
-            <Outlet context={{ userAuth: auth }} />
-            <Footer />
-          </div>
+      <div className="layout-container d-flex">
+        <Sidebar userAuth={auth} onToggle={setSidebarOpen} />
+        <main className={`content ${!sidebarOpen ? 'sidebar-collapsed' : ''}`}>
+          <Outlet context={{ userAuth: auth }} />
+          <Footer />
         </main>
       </div>
     </div>

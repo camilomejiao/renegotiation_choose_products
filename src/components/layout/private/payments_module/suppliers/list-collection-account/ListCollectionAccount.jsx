@@ -11,7 +11,6 @@ import { supplierServices } from "../../../../../../helpers/services/SupplierSer
 import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 export const ListCollectionAccount = () => {
-
     const { userAuth } = useOutletContext();
 
     const [loading, setLoading] = useState(false);
@@ -31,7 +30,6 @@ export const ListCollectionAccount = () => {
         if (userAuth.rol_id === RolesEnum.SUPPLIER) {
             supplierId = supplierServices.getSupplierId();
         }
-
         return supplierId;
     }, [userAuth?.rol_id]);
 
@@ -81,34 +79,42 @@ export const ListCollectionAccount = () => {
     };
 
     const renderEstadoIcon = (estado) => {
+        const styles = {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontWeight: 500,
+            fontSize: '14px'
+        };
+
         switch (estado) {
             case "APROBADO":
                 return (
-                    <>
-                        <FaCheckCircle style={{ color: "green", marginRight: "8px" }} />
+                    <span style={{ ...styles, color: 'var(--success-color)' }}>
+                        <FaCheckCircle />
                         APROBADO
-                    </>
+                    </span>
                 );
             case "ACTIVO":
                 return (
-                    <>
-                        <FaHourglassHalf style={{ color: "orange", marginRight: "8px" }} />
+                    <span style={{ ...styles, color: 'var(--warning-color)' }}>
+                        <FaHourglassHalf />
                         PENDIENTE
-                    </>
+                    </span>
                 );
             case "RECHAZADO":
                 return (
-                    <>
-                        <FaTimesCircle style={{ color: "red", marginRight: "8px" }} />
+                    <span style={{ ...styles, color: 'var(--danger-color)' }}>
+                        <FaTimesCircle />
                         RECHAZADO
-                    </>
+                    </span>
                 );
             default:
                 return (
-                    <>
-                        <FaInfoCircle style={{ color: "gray", marginRight: "8px" }} />
+                    <span style={{ ...styles, color: 'var(--gray-500)' }}>
+                        <FaInfoCircle />
                         DESCONOCIDO
-                    </>
+                    </span>
                 );
         }
     };
@@ -121,80 +127,252 @@ export const ListCollectionAccount = () => {
         <>
             {loading && (
                 <div className="overlay">
-                    <div className="loader">{informationLoadingText}</div>
+                    <div className="loader">
+                        <div className="spinner-border"></div>
+                        <div className="spinner-text">{informationLoadingText}</div>
+                    </div>
                 </div>
             )}
 
-            <div className="d-flex justify-content-between align-items-center my-3">
-                <span><strong>Total cuentas de cobro:</strong> {pagination.count}</span>
-                <span><strong>Página:</strong> {pagination.currentPage} de {pagination.totalPages}</span>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '24px',
+                padding: '16px',
+                background: 'var(--gray-50)',
+                borderRadius: 'var(--border-radius)',
+                border: '1px solid var(--gray-200)'
+            }}>
+                <span style={{ fontWeight: 500, color: 'var(--gray-700)' }}>
+                    <strong>Total cuentas de cobro:</strong> {pagination.count}
+                </span>
+                <span style={{ fontWeight: 500, color: 'var(--gray-700)' }}>
+                    <strong>Página:</strong> {pagination.currentPage} de {pagination.totalPages}
+                </span>
             </div>
-            <div className="accordion-outer-scroll">
-                <Accordion className="custom-accordion" onSelect={handleAccordionSelect}>
+
+            <div style={{ marginBottom: '24px' }}>
+                <Accordion onSelect={handleAccordionSelect}>
                     {collectionAccounts.map((account, index) => (
-                        <Accordion.Item eventKey={index.toString()} key={account?.id}>
-                            <Accordion.Header>
-                                📌 {account?.numero} -
-                                Estado: { renderEstadoIcon(account?.estado_nombre) }
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                <div className="accordion-scroll-body">
-                                    {detailCollectionAccounts[account.id] ? (
-                                        <>
-                                            <Row className="mb-3">
-                                                <Col md={6}>
-                                                    <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
-                                                </Col>
-                                                <Col md={6}>
-                                                    <strong>💰 Valor total:</strong> ${parseFloat(account?.valor_total).toLocaleString()}
-                                                </Col>
-                                            </Row>
-
-                                            <hr />
-
-                                            <div>
-                                                <strong>📄 Entregas asociadas:</strong>
-                                                <ul className="mt-2">
-                                                    {detailCollectionAccounts[account.id].entregas_asociadas?.length > 0 ? (
-                                                        detailCollectionAccounts[account.id].entregas_asociadas.map((item, idx) => (
-                                                            <li key={idx}>
-                                                                <strong>Beneficiario: </strong> {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido + ' - ' }
-                                                                <strong>Identificación: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
-                                                                📦 <strong>Productos: </strong> {item?.entrega?.cantidad_prod} – 💰 Valor: ${parseFloat(item?.valor).toLocaleString()}
-                                                            </li>
-                                                        ))
-                                                    ) : (
-                                                        <li>Sin entregas disponibles.</li>
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <p>Cargando detalles...</p>
-                                    )}
+                        <Accordion.Item 
+                            eventKey={index.toString()} 
+                            key={account?.id}
+                            style={{
+                                border: '1px solid var(--gray-200)',
+                                borderRadius: 'var(--border-radius)',
+                                marginBottom: '12px',
+                                overflow: 'hidden',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}
+                        >
+                            <Accordion.Header style={{
+                                background: 'var(--white)',
+                                borderBottom: '1px solid var(--gray-200)'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    width: '100%',
+                                    paddingRight: '16px'
+                                }}>
+                                    <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                                        📌 {account?.numero}
+                                    </span>
+                                    <div>
+                                        {renderEstadoIcon(account?.estado_nombre)}
+                                    </div>
                                 </div>
+                            </Accordion.Header>
+                            <Accordion.Body style={{
+                                background: 'var(--white)',
+                                padding: '24px'
+                            }}>
+                                {detailCollectionAccounts[account.id] ? (
+                                    <>
+                                        <Row className="mb-3">
+                                            <Col md={6}>
+                                                <div style={{
+                                                    padding: '12px',
+                                                    background: 'var(--gray-50)',
+                                                    borderRadius: 'var(--border-radius)',
+                                                    marginBottom: '12px'
+                                                }}>
+                                                    <strong style={{ color: 'var(--gray-700)' }}>📅 Fecha de creación:</strong>
+                                                    <div style={{ color: 'var(--gray-600)', marginTop: '4px' }}>
+                                                        {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md={6}>
+                                                <div style={{
+                                                    padding: '12px',
+                                                    background: 'var(--gray-50)',
+                                                    borderRadius: 'var(--border-radius)',
+                                                    marginBottom: '12px'
+                                                }}>
+                                                    <strong style={{ color: 'var(--gray-700)' }}>💰 Valor total:</strong>
+                                                    <div style={{ 
+                                                        color: 'var(--success-color)', 
+                                                        marginTop: '4px',
+                                                        fontSize: '16px',
+                                                        fontWeight: 600
+                                                    }}>
+                                                        ${parseFloat(account?.valor_total).toLocaleString()}
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        <hr style={{ margin: '20px 0', borderColor: 'var(--gray-200)' }} />
+
+                                        <div>
+                                            <h6 style={{ 
+                                                color: 'var(--primary-color)', 
+                                                fontWeight: 600,
+                                                marginBottom: '16px'
+                                            }}>
+                                                📄 Entregas asociadas:
+                                            </h6>
+                                            <div style={{
+                                                maxHeight: '300px',
+                                                overflowY: 'auto',
+                                                border: '1px solid var(--gray-200)',
+                                                borderRadius: 'var(--border-radius)',
+                                                padding: '16px'
+                                            }}>
+                                                {detailCollectionAccounts[account.id].entregas_asociadas?.length > 0 ? (
+                                                    detailCollectionAccounts[account.id].entregas_asociadas.map((item, idx) => (
+                                                        <div key={idx} style={{
+                                                            padding: '12px',
+                                                            background: 'var(--gray-50)',
+                                                            borderRadius: 'var(--border-radius)',
+                                                            marginBottom: '12px',
+                                                            border: '1px solid var(--gray-200)'
+                                                        }}>
+                                                            <div style={{ marginBottom: '8px' }}>
+                                                                <strong style={{ color: 'var(--gray-700)' }}>Beneficiario: </strong>
+                                                                <span style={{ color: 'var(--gray-600)' }}>
+                                                                    {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ marginBottom: '8px' }}>
+                                                                <strong style={{ color: 'var(--gray-700)' }}>Identificación: </strong>
+                                                                <span style={{ color: 'var(--gray-600)' }}>
+                                                                    {item?.entrega?.beneficiario?.identificacion}
+                                                                </span>
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                                                                <span>
+                                                                    📦 <strong style={{ color: 'var(--gray-700)' }}>Productos: </strong>
+                                                                    <span style={{ color: 'var(--gray-600)' }}>{item?.entrega?.cantidad_prod}</span>
+                                                                </span>
+                                                                <span>
+                                                                    💰 <strong style={{ color: 'var(--gray-700)' }}>Valor: </strong>
+                                                                    <span style={{ color: 'var(--success-color)', fontWeight: 600 }}>
+                                                                        ${parseFloat(item?.valor).toLocaleString()}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div style={{
+                                                        textAlign: 'center',
+                                                        padding: '20px',
+                                                        color: 'var(--gray-500)'
+                                                    }}>
+                                                        Sin entregas disponibles.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '40px',
+                                        color: 'var(--gray-500)'
+                                    }}>
+                                        <div className="spinner-border" style={{ 
+                                            width: '24px', 
+                                            height: '24px',
+                                            borderWidth: '2px',
+                                            marginBottom: '12px'
+                                        }}></div>
+                                        <p>Cargando detalles...</p>
+                                    </div>
+                                )}
                             </Accordion.Body>
                         </Accordion.Item>
                     ))}
                 </Accordion>
             </div>
-            <div className="d-flex justify-content-end align-items-center my-3">
-                <div>
-                    <button
-                        className="btn btn-outline-secondary btn-sm me-2"
-                        disabled={!pagination.previous}
-                        onClick={() => getListCollectionAccount(pagination.currentPage - 1)}
-                    >
-                        ⬅ Anterior
-                    </button>
-                    <button
-                        className="btn btn-outline-secondary btn-sm"
-                        disabled={!pagination.next}
-                        onClick={() => getListCollectionAccount(pagination.currentPage + 1)}
-                    >
-                        Siguiente ➡
-                    </button>
-                </div>
+
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '12px',
+                marginTop: '24px'
+            }}>
+                <button
+                    disabled={!pagination.previous}
+                    onClick={() => getListCollectionAccount(pagination.currentPage - 1)}
+                    style={{
+                        padding: '8px 16px',
+                        border: '1px solid var(--primary-color)',
+                        borderRadius: 'var(--border-radius)',
+                        background: pagination.previous ? 'var(--white)' : 'var(--gray-100)',
+                        color: pagination.previous ? 'var(--primary-color)' : 'var(--gray-400)',
+                        cursor: pagination.previous ? 'pointer' : 'not-allowed',
+                        fontWeight: 500,
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (pagination.previous) {
+                            e.target.style.background = 'var(--primary-color)';
+                            e.target.style.color = 'white';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (pagination.previous) {
+                            e.target.style.background = 'var(--white)';
+                            e.target.style.color = 'var(--primary-color)';
+                        }
+                    }}
+                >
+                    ⬅ Anterior
+                </button>
+                <button
+                    disabled={!pagination.next}
+                    onClick={() => getListCollectionAccount(pagination.currentPage + 1)}
+                    style={{
+                        padding: '8px 16px',
+                        border: '1px solid var(--primary-color)',
+                        borderRadius: 'var(--border-radius)',
+                        background: pagination.next ? 'var(--white)' : 'var(--gray-100)',
+                        color: pagination.next ? 'var(--primary-color)' : 'var(--gray-400)',
+                        cursor: pagination.next ? 'pointer' : 'not-allowed',
+                        fontWeight: 500,
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (pagination.next) {
+                            e.target.style.background = 'var(--primary-color)';
+                            e.target.style.color = 'white';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (pagination.next) {
+                            e.target.style.background = 'var(--white)';
+                            e.target.style.color = 'var(--primary-color)';
+                        }
+                    }}
+                >
+                    Siguiente ➡
+                </button>
             </div>
         </>
     );

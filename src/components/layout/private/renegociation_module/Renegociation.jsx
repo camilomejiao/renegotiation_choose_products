@@ -13,6 +13,7 @@ import { renegotiationServices } from "../../../../helpers/services/Renegociatio
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import { UserInformation } from "../../shared/user_information/UserInformation";
 import { PlanInversion } from "./plan/PlanInversion";
+import { Breadcrumb } from "../../../shared/Breadcrumb";
 import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 
 //Enum
@@ -364,6 +365,7 @@ export const Renegociation = () => {
 
     return (
         <>
+            <Breadcrumb />
             <div className="main-container">
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />

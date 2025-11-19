@@ -1,41 +1,53 @@
+import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Col, Container, Row } from "react-bootstrap";
 
-//Components
+import { ComponentEnum } from "../../../../helpers/GlobalEnum";
+import { Breadcrumb } from "../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../shared/ModernBanner";
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
 
-//Enums
-import { ComponentEnum } from "../../../../helpers/GlobalEnum";
-
+// Imágenes
+import deliveriesImg from "../../../../assets/image/icons/deliveries-img.png";
 
 export const SearchUserForDeliveries = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleSearchSuccess = (userData) => {
+    const { id } = userData;
+    navigate(`/admin/deliveries/${id}`);
+  };
 
-    const handleSearchSuccess = (userData) => {
-        const { id } = userData;
-        navigate(`/admin/deliveries/${id}`)
-    }
+  return (
+    <>
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={deliveriesImg}
+          titleHeader="​"
+          bannerIcon={deliveriesImg}
+          bannerInformation="Entregas de Productos"
+          backgroundInformationColor="#2148C0"
+          infoText="Busque el beneficiario por su documento de identidad para proceder con la entrega de productos."
+        />
 
-    return (
-        <>
-            <Container fluid className="dashboard-container">
-                <Row className="text-center mt-5">
-                    <Col>
-                        <h1 className="dashboard-title">
-                            Bienvenido al <span className="highlight-text">banco de <br/>Proveedores</span> de la DSCI
-                        </h1>
-                        <p className="green-box">
-                            Da el siguiente paso en tus <span className="highlight-text2">entregas</span> ahora.
-                        </p>
-                    </Col>
-                </Row>
+        <div className="form-container">
+          <div className="form-header">
+            <h2 className="form-title">
+              <FaSearch className="me-2" />
+              Búsqueda de Beneficiario
+            </h2>
+            <p className="form-subtitle">
+              Ingrese el documento de identidad para buscar un beneficiario y
+              realizar entregas
+            </p>
+          </div>
 
-                <Row className="justify-content-center mt-4">
-                    <SearchUserForm component={ComponentEnum.USER} onSearchSuccess={handleSearchSuccess} />
-                </Row>
-
-            </Container>
-        </>
-    );
-}
+          <SearchUserForm
+            component={ComponentEnum.USER}
+            onSearchSuccess={handleSearchSuccess}
+          />
+        </div>
+      </div>
+    </>
+  );
+};

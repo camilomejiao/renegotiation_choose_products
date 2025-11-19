@@ -24,6 +24,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 
 //Services
 import { productForPurchaseOrderServices } from "../../../../../helpers/services/ProductForPurchaseOrderServices";
@@ -304,7 +305,7 @@ export const CreateOrder = () => {
     setSubtotal(subtotal);
     setTotal(total);
     setSaldoRestante(nuevoSaldo);
-  }, [items]);
+  }, [items, userData?.monto_proveedores]);
 
   useEffect(() => {
     if (isReportLoading) {
@@ -313,15 +314,15 @@ export const CreateOrder = () => {
     }
   }, [isReportLoading]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (params.id) {
       getUserInformation(params.id);
     }
-  }, []);
+  }, [getUserInformation, params.id]);
 
   return (
     <>
+      <Breadcrumb />
       <div className="main-container">
         <HeaderImage
           imageHeader={imgPeople}
