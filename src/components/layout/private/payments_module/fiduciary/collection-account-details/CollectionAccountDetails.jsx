@@ -168,7 +168,13 @@ export const CollectionAccountDetails = () => {
 
                         <Col md={4}>
                             <div className="total">
-                                Total: <strong>$ {parseFloat(accountInformation?.cuenta_cobro.valor_total_factura_electronica ?? accountInformation?.cuenta_cobro.valor_total).toLocaleString('es-CO')}</strong>
+                                Total: <strong>$
+                                        {(() => {
+                                            const valorFETotal = Number(accountInformation?.cuenta_cobro.valor_total_factura_electronica || 0);
+                                            const valorTotal = Number(accountInformation?.cuenta_cobro.valor_total || 0);
+                                            return (valorFETotal > 0 ? valorFETotal : valorTotal).toLocaleString('es-CO');
+                                        })()}
+                                    </strong>
                             </div>
                         </Col>
                     </Row>
@@ -198,7 +204,7 @@ export const CollectionAccountDetails = () => {
                                         <strong>N°:</strong> {item?.entrega?.id} &nbsp;
                                         <strong>CUB:</strong> {item?.entrega?.cub} &nbsp;
                                         <strong>Identificación:</strong> {item?.entrega?.numero_documento_beneficiario} &nbsp;
-                                        <strong>Valor:</strong> $ {parseFloat(item.valor_factura_electronica ?? item.valor).toLocaleString('es-CO')}
+                                        <strong>Valor:</strong> $ {parseFloat(item.valor_factura_electronica > 0 ? item.valor_factura_electronica : item.valor).toLocaleString('es-CO')}
                                     </div>
                                 </div>
                             ))}

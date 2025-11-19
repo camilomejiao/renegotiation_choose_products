@@ -67,10 +67,10 @@ export const ListAccountOfSuppliers = () => {
 
     const normalizeRows = async (data) => {
         return data.map((row) => {
-            const valorSP =
-                row?.valor_total_factura_electronica ??
-                row?.valor_total ??
-                0;
+            const valorFE = Number(row?.valor_factura_electronica ?? 0);
+            const valorBase = Number(row?.valor_total ?? 0);
+
+            const valorSP = valorFE > 0 ? valorFE : valorBase;
 
             return {
                 id: row?.id,
@@ -79,7 +79,7 @@ export const ListAccountOfSuppliers = () => {
                 date: row?.fecha_cuenta_cobro.split("T")[0],
                 supplier_name: row?.nombre_proveedor,
                 supplier_nit: row?.nit_proveedor,
-                total: `$ ${parseFloat(valorSP).toLocaleString()}`,
+                total: `$ ${valorSP.toLocaleString("es-CO")}`,
             };
         });
     }

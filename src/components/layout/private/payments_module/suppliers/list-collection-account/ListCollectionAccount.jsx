@@ -150,7 +150,12 @@ export const ListCollectionAccount = () => {
                                                     <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
                                                 </Col>
                                                 <Col md={6}>
-                                                    <strong>💰 Valor total:</strong> $ {Number(detailCollectionAccounts[account.id]?.valor_total_factura_electronica ?? detailCollectionAccounts[account.id]?.valor_total).toLocaleString('es-CO')}
+                                                    <strong>💰 Valor total:</strong> $
+                                                    {(() => {
+                                                        const valorFETotal = Number(detailCollectionAccounts[account.id]?.valor_total_factura_electronica || 0);
+                                                        const valorTotal = Number(detailCollectionAccounts[account.id]?.valor_total || 0);
+                                                        return (valorFETotal > 0 ? valorFETotal : valorTotal).toLocaleString('es-CO');
+                                                    })()}
                                                 </Col>
                                             </Row>
 
