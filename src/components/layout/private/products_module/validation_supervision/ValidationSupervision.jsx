@@ -6,9 +6,11 @@ import StandardTable from "../../../../shared/StandardTable";
 
 // Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import supervisionIcon from "../../../../../assets/image/payments/supervision.png";
 
 // Components
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../shared/Breadcrumb";
 import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
@@ -407,141 +409,146 @@ export const ValidationSupervision = () => {
 
   return (
     <>
-      <div className="main-container">
-        <HeaderImage
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
           imageHeader={imgPeople}
-          titleHeader="¡Listado de productos!"
+          titleHeader="​"
+          bannerIcon={supervisionIcon}
+          bannerInformation="Supervisión de Productos"
+          backgroundInformationColor="#2148C0"
+          infoText="Revise y apruebe los productos cotizados por los proveedores según los criterios de supervisión."
         />
 
-        <div className="container mt-lg-3">
-          <Row className="gy-2 align-items-center mt-3 mb-3">
-            {/* Select Jornada */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedConvocation ?? null}
-                options={convocations?.map((opt) => ({
-                  value: opt.id,
-                  label: opt.nombre,
-                }))}
-                placeholder="Selecciona una Jornada"
-                onChange={handleSelectedConvocation}
-                isClearable
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                styles={{
-                  placeholder: (base) => ({ ...base, color: "#6c757d" }),
-                  singleValue: (base) => ({ ...base, color: "#212529" }),
-                }}
-                noOptionsMessage={() => "Sin opciones"}
-              />
-            </Col>
+        <Row className="gy-2 align-items-center mt-3 mb-3">
+          {/* Select Jornada */}
+          <Col xs={12} md={4}>
+            <label className="form-label">Jornada</label>
+            <Select
+              value={selectedConvocation ?? null}
+              options={convocations?.map((opt) => ({
+                value: opt.id,
+                label: opt.nombre,
+              }))}
+              placeholder="Selecciona una Jornada"
+              onChange={handleSelectedConvocation}
+              isClearable
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              styles={{
+                placeholder: (base) => ({ ...base, color: "#6c757d" }),
+                singleValue: (base) => ({ ...base, color: "#212529" }),
+              }}
+              noOptionsMessage={() => "Sin opciones"}
+            />
+          </Col>
 
-            {/* Select Plan */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedPlan ?? null}
-                options={planRaw.map((opt) => ({
-                  value: opt.id,
-                  label: opt.plan_nombre,
-                }))}
-                placeholder="Selecciona un Plan"
-                onChange={handleSelectedPlan}
-                isClearable
-                isDisabled={!selectedConvocation || loading}
-                isLoading={loading}
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                noOptionsMessage={() =>
-                  selectedConvocation ? "Sin planes" : "Selecciona una jornada"
-                }
-              />
-            </Col>
+          {/* Select Plan */}
+          <Col xs={12} md={4}>
+            <label className="form-label">Plan</label>
+            <Select
+              value={selectedPlan ?? null}
+              options={planRaw.map((opt) => ({
+                value: opt.id,
+                label: opt.plan_nombre,
+              }))}
+              placeholder="Selecciona un Plan"
+              onChange={handleSelectedPlan}
+              isClearable
+              isDisabled={!selectedConvocation || loading}
+              isLoading={loading}
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              noOptionsMessage={() =>
+                selectedConvocation ? "Sin planes" : "Selecciona una jornada"
+              }
+            />
+          </Col>
 
-            {/* Select Supplier */}
-            <Col xs={12} md={4}>
-              <Select
-                value={selectedSupplier}
-                options={suppliers.map((opt) => ({
-                  value: opt.id,
-                  label: opt.nombre,
-                }))}
-                placeholder="Selecciona un Proveedor"
-                onChange={handleSelectedSupplier}
-                isClearable
-                isDisabled={!selectedConvocation || loading}
-                isLoading={loading}
-                classNamePrefix="custom-select"
-                className="custom-select w-100"
-                noOptionsMessage={() =>
-                  selectedConvocation
-                    ? "Sin proveedores"
-                    : "Selecciona una jornada"
-                }
-              />
-            </Col>
-          </Row>
+          {/* Select Supplier */}
+          <Col xs={12} md={4}>
+            <label className="form-label">Proveedor</label>
+            <Select
+              value={selectedSupplier}
+              options={suppliers.map((opt) => ({
+                value: opt.id,
+                label: opt.nombre,
+              }))}
+              placeholder="Selecciona un Proveedor"
+              onChange={handleSelectedSupplier}
+              isClearable
+              isDisabled={!selectedConvocation || loading}
+              isLoading={loading}
+              classNamePrefix="custom-select"
+              className="custom-select w-100"
+              noOptionsMessage={() =>
+                selectedConvocation
+                  ? "Sin proveedores"
+                  : "Selecciona una jornada"
+              }
+            />
+          </Col>
+        </Row>
 
-          <Row className="gy-2 align-items-center mt-3 mb-3">
-            <Col xs={12} md={4}>
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={handleSearchQueryChange}
-                className="form-control"
-              />
-            </Col>
-          </Row>
+        <Row className="gy-2 align-items-center mt-3 mb-3">
+          <Col xs={12} md={4}>
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={handleSearchQueryChange}
+              className="form-control"
+            />
+          </Col>
+        </Row>
 
-          {loading && (
-            <div className="overlay">
-              <div className="loader">Cargando...</div>
-            </div>
-          )}
-
-          <StandardTable
-            loading={loadingTable}
-            columns={columns}
-            rows={filteredData}
-            customProps={{
-              checkboxSelection: true,
-              onRowSelectionModelChange: handleSelectionChange,
-              paginationMode: "server",
-              rowCount: rowCount,
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-              pageSizeOptions: [10, 25, 50, 100],
-            }}
-            enableDynamicHeight={true}
-          />
-
-          {/* Modal de aprobación/denegación */}
-          <ApprovedDeniedModal
-            open={openModal}
-            onClose={handleCloseModalApproved}
-            action={action}
-            setAction={setAction}
-            comment={comment}
-            setComment={setComment}
-            onSubmit={handleApproveDenySubmit}
-          />
-
-          {/* Botón Guardar */}
-          <div className="d-flex justify-content-end gap-2 mt-3">
-            <>
-              <Button
-                variant="outline-warning"
-                color="primary"
-                onClick={handleOpenModal}
-                disabled={loading}
-              >
-                <FaThumbsUp /> Aprobar / <FaThumbsDown /> Denegar
-              </Button>
-            </>
+        {loading && (
+          <div className="overlay">
+            <div className="loader">Cargando...</div>
           </div>
+        )}
+
+        <StandardTable
+          loading={loadingTable}
+          columns={columns}
+          rows={filteredData}
+          customProps={{
+            checkboxSelection: true,
+            rowSelectionModel: selectedIds,
+            onRowSelectionModelChange: handleSelectionChange,
+            paginationMode: "server",
+            rowCount: rowCount,
+            paginationModel: { page, pageSize },
+            onPaginationModelChange: ({ page, pageSize }) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+            pageSizeOptions: [10, 25, 50, 100],
+          }}
+          enableDynamicHeight={true}
+        />
+
+        {/* Modal de aprobación/denegación */}
+        <ApprovedDeniedModal
+          open={openModal}
+          onClose={handleCloseModalApproved}
+          action={action}
+          setAction={setAction}
+          comment={comment}
+          setComment={setComment}
+          onSubmit={handleApproveDenySubmit}
+        />
+
+        {/* Botón Guardar */}
+        <div className="d-flex justify-content-end gap-2 mt-3">
+          <Button
+            variant="outline-warning"
+            color="primary"
+            onClick={handleOpenModal}
+            disabled={loading}
+          >
+            <FaThumbsUp /> Aprobar / <FaThumbsDown /> Denegar
+          </Button>
         </div>
       </div>
     </>

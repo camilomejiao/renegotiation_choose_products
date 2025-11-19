@@ -14,9 +14,9 @@ import {
 //
 export const getBaseColumns = () => [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "category", headerName: "Categoría", width: 200 },
-  { field: "name", headerName: "Nombre", width: 300 },
-  { field: "description", headerName: "Descripción", width: 250 },
+  { field: "category", headerName: "Categoría", width: 150 },
+  { field: "name", headerName: "Nombre", width: 200 },
+  { field: "description", headerName: "Descripción", width: 350 },
   { field: "brand", headerName: "Marca", width: 150 },
   { field: "unit", headerName: "Unidad", width: 100 },
   { field: "price_min", headerName: "Precio Min", width: 100 },

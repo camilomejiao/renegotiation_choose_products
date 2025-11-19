@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Card } from "react-bootstrap";
+import { FaMoneyBillWave, FaEye } from "react-icons/fa";
 
 //Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { ModernBanner } from "../../../../../shared/ModernBanner";
+import { Breadcrumb } from "../../../../../shared/Breadcrumb";
 import { BeneficiaryDeliveryList } from "../beneficiary-delivery-list/BeneficiaryDeliveryList";
 
 //Img
@@ -17,7 +20,8 @@ export const BeneficiaryDeliveryReview = () => {
     const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
-    const [img, setImg] = useState('');
+    const [iconType, setIconType] = useState('');
+    const [color, setColor] = useState('');
 
     const capitalizeFirstLetter = useCallback((text = "") => {
         return text
@@ -31,15 +35,18 @@ export const BeneficiaryDeliveryReview = () => {
         switch(role) {
             case 'pagos':
                 setTitle(capitalizeFirstLetter(role));
-                setImg(pagos);
+                setIconType('pagos');
+                setColor('#28a745');
                 break;
             case 'supervision':
                 setTitle(capitalizeFirstLetter(role));
-                setImg(supervision);
+                setIconType('supervision');
+                setColor('#007bff');
                 break;
             default:
                 setTitle('');
-                setImg('');
+                setIconType('');
+                setColor('');
                 break;
         }
     }, [capitalizeFirstLetter]);
@@ -56,27 +63,50 @@ export const BeneficiaryDeliveryReview = () => {
 
     return (
         <>
-            <HeaderImage
-                imageHeader={imgPayments}
-                titleHeader={'Proceso de pago'}
-                bannerIcon={imgAdd}
-                backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás revisar la documentación de las órdenes de pago.'}
-                backgroundInformationColor={'#40A581'}
-            />
+            <Breadcrumb />
+            <div className="container-fluid px-4">
+                <ModernBanner
+                    imageHeader={imgPayments}
+                    titleHeader="​"
+                    bannerIcon={imgAdd}
+                    bannerInformation="Proceso de Pago"
+                    backgroundInformationColor="#2148C0"
+                    infoText="Aquí podrás revisar la documentación de las órdenes de pago."
+                />
 
-            <div className="beneficiary-review-header">
-                <div className="beneficiary-review-content">
-                    <h4>Revision</h4>
-                    <h2>{title}</h2>
-                </div>
-                <img className="beneficiary-review-img" src={img} alt="Proveedor"/>
-            </div>
+                {/* Review Header Card */}
+                <Card className="mb-4">
+                    <Card.Header className="bg-light">
+                        <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center">
+                                <h4 className="mb-0 me-3">Revisión</h4>
+                                <div className="d-flex align-items-center">
+                                    {iconType && (
+                                        <div 
+                                            className="icon-wrapper me-2"
+                                            style={{ 
+                                                backgroundColor: color,
+                                                borderRadius: '50%',
+                                                width: '40px',
+                                                height: '40px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            {iconType === 'pagos' && <FaMoneyBillWave size={20} color="white" />}
+                                            {iconType === 'supervision' && <FaEye size={20} color="white" />}
+                                        </div>
+                                    )}
+                                    <h2 className="mb-0 text-primary">{title}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </Card.Header>
+                </Card>
 
-            <div className="container mt-lg-5">
                 <BeneficiaryDeliveryList onRowSelect={handleRowSelect} />
             </div>
-
         </>
     )
 }

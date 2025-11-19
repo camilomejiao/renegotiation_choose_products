@@ -22,6 +22,8 @@ const routeNames = {
   "/admin/products-enviromental": "Validación de Catálogo",
   "/admin/payments-suppliers/create-collection-account":
     "Crear Cuenta de Cobro",
+  "/admin/fiduciary": "Fiduciaria",
+  "/admin/fiduciary/list-account-suppliers": "Detalles de Cuenta de Cobro",
 };
 
 export const Breadcrumb = ({ customItems = [] }) => {

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { FaUniversity } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import StandardTable from "../../../../../shared/StandardTable";
 
 //Components
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { Breadcrumb } from "../../../../../shared/Breadcrumb";
+import { ModernBanner } from "../../../../../shared/ModernBanner";
 
 //img
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
@@ -21,16 +23,22 @@ export const ListAccountOfSuppliers = () => {
   const [rowCount, setRowCount] = useState(0);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 50 },
+    { field: "id", headerName: "ID", width: 80 },
     {
       field: "collection_account",
       headerName: "N° Cuenta de Cobro",
       width: 180,
     },
     { field: "date", headerName: "Fecha Creación", width: 180 },
-    { field: "supplier_nit", headerName: "Nit", width: 180 },
-    { field: "supplier_name", headerName: "Proveedor", width: 380 },
-    { field: "total", headerName: "Valor Total", width: 200 },
+    { field: "supplier_nit", headerName: "Nit", width: "auto" },
+    { field: "supplier_name", headerName: "Proveedor", width: "auto" },
+    {
+      field: "total",
+      headerName: "Valor Total",
+      width: "auto",
+      align: "left",
+      headerAlign: "left",
+    },
   ];
 
   const normalizeRows = useCallback(async (data) => {
@@ -76,36 +84,41 @@ export const ListAccountOfSuppliers = () => {
 
   return (
     <>
-      <HeaderImage
-        imageHeader={imgPayments}
-        titleHeader={"Fiduciara"}
-        bannerIcon={imgAdd}
-        backgroundIconColor={"#2148C0"}
-        bannerInformation={"Aquí podrás ver el lisatdo de cuentas de cobro."}
-        backgroundInformationColor={"#40A581"}
-      />
+      <Breadcrumb />
+      <div className="container-fluid px-4">
+        <ModernBanner
+          imageHeader={imgPayments}
+          titleHeader="​"
+          bannerIcon={imgAdd}
+          bannerInformation="Fiduciaria"
+          backgroundInformationColor="#2148C0"
+          infoText="Aquí podrás ver el listado de cuentas de cobro y gestionar los procesos fiduciarios."
+        />
 
-      <div className="container mt-lg-5">
-        <div className="data-grid-card" style={{ height: 500 }}>
-          <StandardTable
-            className="data-grid"
-            rows={dataTable}
-            columns={columns}
-            loading={loading}
-            customProps={{
-              paginationMode: "server",
-              rowCount: rowCount,
-              pageSizeOptions: [10, 25, 50, 100],
-              paginationModel: { page, pageSize },
-              onPaginationModelChange: ({ page, pageSize }) => {
-                setPage(page);
-                setPageSize(pageSize);
-              },
-              onRowClick: handleRowClick,
-            }}
-            enableDynamicHeight={true}
-          />
+        <div className="mb-4 ml-4 pl-3">
+          <h3 className="text-primary fw-bold mb-3">
+            <FaUniversity className="me-2" />
+            Cuentas de Cobro
+          </h3>
         </div>
+
+        <StandardTable
+          rows={dataTable}
+          columns={columns}
+          loading={loading}
+          customProps={{
+            paginationMode: "server",
+            rowCount: rowCount,
+            pageSizeOptions: [10, 25, 50, 100],
+            paginationModel: { page, pageSize },
+            onPaginationModelChange: ({ page, pageSize }) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+            onRowClick: handleRowClick,
+          }}
+          enableDynamicHeight={true}
+        />
       </div>
     </>
   );
