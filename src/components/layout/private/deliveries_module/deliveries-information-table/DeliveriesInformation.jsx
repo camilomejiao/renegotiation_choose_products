@@ -118,8 +118,8 @@ export const DeliveriesInformation = () => {
             ),
         },
         { field: "supplier_nit", headerName: "Nit", width: 110 },
-        { field: "dept", headerName: "Departamento", width: 110 },
-        { field: "muni", headerName: "Municipio", width: 110 },
+        { field: "department_name", headerName: "Departamento", width: 110 },
+        { field: "municipality_name", headerName: "Municipio", width: 110 },
         { field: "pay", headerName: "Valor", width: 110 },
         {
             field: "observation",
