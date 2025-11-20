@@ -190,6 +190,8 @@ export const DeliveriesInformation = () => {
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
+            department_name: row?.proveedor?.departamento?.nombre,
+            municipality_name: row?.proveedor?.municipio?.nombre,
             beneficiario_id: row?.beneficiario?.id,
             pay: parseFloat(row?.valor_factura_electronica ?? row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
             observation: row?.observacion,
