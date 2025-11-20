@@ -152,45 +152,61 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
+                // 1. Construir array de cuentas bancarias SOLO si es edición
+                let cuentas_bancarias = [];
+
+                if (isEdit && Array.isArray(values.accounts)) {
+                    cuentas_bancarias = values.accounts.map((acc) => ({
+                        tipo_cuenta: acc.account_type || null,
+                        numero_cuenta: acc.account_number || null,
+                        banco: acc.bank || null,
+                    }));
+                }
+
+                // 2. Datos base
                 const formattedValues = {
                     nombre: values.company_name,
                     nit: values.nit,
                     correo: values.email,
+                    cellphone: values.cellphone,
                     aprobado: values.active,
                     resolucion_aprobacion: values.resolution,
                     fecha_registro: new Date().toISOString().slice(0, 10),
                     depto_id: values.depto?.id ?? null,
                     muni_id: values.muni?.id ?? null,
-                    cuentas_bancarias: values.accounts.map((acc) => ({
-                        tipo_cuenta: acc.account_type || null,
-                        numero_cuenta: acc.account_number || null,
-                        banco: acc.bank || null,
-                        bank_cert_file: acc.bankCertFile || null
-                    })),
+                    // si quieres que en creación NO se envíe, podrías condicionar esto
+                    ...(isEdit && { cuentas_bancarias }),
                 };
 
                 let response;
+
                 if (isEdit) {
-                    // 🔥 si en edición quieres enviar archivos, usamos FormData
                     const formData = new FormData();
-                    // data básica
+
+                    // 3. Datos simples
                     Object.entries(formattedValues).forEach(([key, val]) => {
                         if (key === "cuentas_bancarias") {
-                            formData.append(key, JSON.stringify(val)); // backend debe esperar JSON
+                            formData.append(key, JSON.stringify(val)); // backend la parsea como JSON
                         } else if (val !== null && val !== undefined) {
                             formData.append(key, val);
                         }
                     });
 
-                    // archivos por cuenta
-                    values.accounts.forEach((acc, index) => {
-                        if (acc.bankCertFile) {
-                            formData.append(`cuentas_bancarias[${index}][certificado_bancario]`, acc.bankCertFile);
-                        }
-                    });
+                    // 4. Adjuntar archivos por cuenta (si aplica)
+                    if (Array.isArray(values.accounts)) {
+                        values.accounts.forEach((acc, index) => {
+                            if (acc.bankCertFile) {
+                                formData.append(
+                                    `cuentas_bancarias[${index}][certificado_bancario]`,
+                                    acc.bankCertFile
+                                );
+                            }
+                        });
+                    }
 
                     response = await supplierServices.updateSupplier(id, formData);
                 } else {
+                    // En creación: JSON normal
                     response = await supplierServices.createSupplier(formattedValues);
                 }
 
@@ -206,6 +222,7 @@ export const CreateSuppliers = () => {
             }
         },
     });
+
 
     const fetchSupplierData = async (id) => {
         try {
