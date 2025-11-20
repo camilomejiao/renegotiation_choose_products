@@ -15,6 +15,7 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { deliveriesInformationServices } from "../../../../../helpers/services/DeliveriesInformationServices";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { deliveriesServices } from "../../../../../helpers/services/DeliveriesServices";
+import { locationServices } from "../../../../../helpers/services/LocationServices";
 
 //Enum
 import {
@@ -53,6 +54,8 @@ export const DeliveriesInformation = () => {
     const navigate = useNavigate();
 
     const [dataSuppliers, setDataDataSuppliers] = useState([]);
+    const [dataDepts, setDataDepts] = useState([]);
+    const [dataMunis, setDataMunis] = useState([]);
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(100);
@@ -63,11 +66,14 @@ export const DeliveriesInformation = () => {
     const [informationLoadingText, setInformationLoadingText] = useState("");
 
     const [selectedSupplierId, setSelectedSupplierId] = useState("");
+    const [selectedDeptId, setSelectedDeptId] = useState("");
+    const [selectedMuniId, setSelectedMuniId] = useState("");
 
     const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTERED.key);
 
     //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
+    const loadedDeptsRef = useRef(false);
 
     const columns = [
         { field: "id", headerName: "N° Entrega", width: 100 },
@@ -112,6 +118,8 @@ export const DeliveriesInformation = () => {
             ),
         },
         { field: "supplier_nit", headerName: "Nit", width: 110 },
+        { field: "department_name", headerName: "Departamento", width: 110 },
+        { field: "municipality_name", headerName: "Municipio", width: 110 },
         { field: "pay", headerName: "Valor", width: 110 },
         {
             field: "observation",
@@ -138,10 +146,12 @@ export const DeliveriesInformation = () => {
     const getStatusValueFromKey = (key) => STATUS_ARRAY.find(s => s.key === key)?.value ?? null;
 
     //
-    const getDeliveriesInformation = async (pageToFetch = 1, sizeToFetch = 100, search = "", statusDeliveryKey = "", supplierIdParam = "") => {
+    const getDeliveriesInformation = async (pageToFetch = 1, sizeToFetch = 100, search = "", statusDeliveryKey = "", supplierIdParam = "", deptIdParam = "", muniIdParam = "") => {
         try {
             setLoading(true);
             let singleSupplier = supplierIdParam;
+            let singleDept = deptIdParam;
+            let singleMuni = muniIdParam;
 
             //Si es proveedor, forzar su propio id (regla de negocio)
             if (canShowSupplier) {
@@ -154,7 +164,7 @@ export const DeliveriesInformation = () => {
                 onlySended = true;
             }
             const { data, status } = await deliveriesInformationServices.getDeliveriesInformation(
-                pageToFetch, sizeToFetch, search, statusValue, singleSupplier, onlySended
+                pageToFetch, sizeToFetch, search, statusValue, singleSupplier, onlySended, singleDept, singleMuni
             );
 
             if (status === ResponseStatusEnum.OK) {
@@ -180,6 +190,8 @@ export const DeliveriesInformation = () => {
             identification: row?.beneficiario?.identificacion,
             supplier_name: row?.proveedor?.nombre,
             supplier_nit: row?.proveedor?.nit,
+            department_name: row?.proveedor?.departamento?.nombre,
+            municipality_name: row?.proveedor?.municipio?.nombre,
             beneficiario_id: row?.beneficiario?.id,
             pay: parseFloat(row?.valor_factura_electronica ?? row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
             observation: row?.observacion,
@@ -206,6 +218,43 @@ export const DeliveriesInformation = () => {
         }
     };
 
+    const loadDepartmentsOnce = async () => {
+        if (loadedDeptsRef.current) return;
+        try {
+            setLoading(true);
+            const {data, status} = await locationServices.getDeptos();
+            if(status === ResponseStatusEnum.OK) {
+                setDataDepts(normalizeCatalogDepts(data));
+                loadedDeptsRef.current = true;
+            } else {
+                setDataDepts([]);
+            }
+        } catch (e) {
+            console.error("Error cargando departamentos:", e);
+            setDataDepts([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // make the same for municipalities
+    const loadMunicipalitiesForDepartment = async (deptId) => {
+        try {
+            setLoading(true);
+            const {data, status} = await locationServices.getMunis(deptId);
+            if(status === ResponseStatusEnum.OK) {
+                setDataMunis(normalizeCatalogMunis(data));
+            } else {
+                setDataMunis([]);
+            }
+        } catch (e) {
+            console.error("Error cargando municipios:", e);
+            setDataMunis([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     //
     const normalizeCatalogSuppliers = (data) => {
         const rows =  data?.data?.proveedores;
@@ -213,6 +262,22 @@ export const DeliveriesInformation = () => {
             id: Number(row?.id),
             name: row?.nombre,
             nit: row?.nit,
+        }));
+    }
+
+    const normalizeCatalogDepts = (data) => {
+        const rows =  data;
+        return rows.map((row) => ({
+            id: Number(row?.id),
+            name: row?.nombre ?? row?.name ?? "",
+        }));
+    }
+
+    const normalizeCatalogMunis = (data) => {
+        const rows =  data;
+        return rows.map((row) => ({
+            id: Number(row?.id),
+            name: row?.nombre ?? row?.name ?? "",
         }));
     }
 
@@ -237,6 +302,16 @@ export const DeliveriesInformation = () => {
         label: `${s.name} — ${s.nit}`,
     }));
 
+    const deptOptions = dataDepts.map(d => ({
+        value: String(d.id),
+        label: d.name,
+    }));
+
+    const muniOptions = dataMunis.map(m => ({
+        value: String(m.id),
+        label: m.name,
+    }));
+
     // tabs mantienen proveedor seleccionado
     const handleChangeStatus = (newKey) => {
         if (newKey === activeStatusKey) return;
@@ -249,6 +324,21 @@ export const DeliveriesInformation = () => {
     //
     const searchSupplier = (opt) => {
         setSelectedSupplierId(opt?.value ?? "");
+        setCommittedSearch("");
+        setSearchQuery("");
+        setPage(0);
+    }
+
+    const searchDept = (opt) => {
+        setSelectedDeptId(opt?.value ?? "");
+        loadMunicipalitiesForDepartment(opt?.value ?? "");
+        setCommittedSearch("");
+        setSearchQuery("");
+        setPage(0);
+    }
+
+    const searchMuni = (opt) => {
+        setSelectedMuniId(opt?.value ?? "");
         setCommittedSearch("");
         setSearchQuery("");
         setPage(0);
@@ -304,15 +394,19 @@ export const DeliveriesInformation = () => {
         // Si hay search => ignora tab y proveedor
         const effectiveStatusKey  = hasSearch ? "" : activeStatusKey;
         const effectiveSupplierId = hasSearch ? "" : (selectedSupplierId || "");
+        const effectiveDeptId = hasSearch ? "" : (selectedDeptId || "");
+        const effectiveMuniId = hasSearch ? "" : (selectedMuniId || "");
 
         getDeliveriesInformation(
             page + 1,
             pageSize,
             hasSearch ? committedSearch : "",
             effectiveStatusKey,
-            effectiveSupplierId
+            effectiveSupplierId,
+            effectiveDeptId,
+            effectiveMuniId
         );
-    }, [page, pageSize, activeStatusKey, selectedSupplierId, committedSearch]);
+    }, [page, pageSize, activeStatusKey, selectedSupplierId, committedSearch, selectedDeptId, selectedMuniId]);
 
     return (
         <>
@@ -459,6 +553,86 @@ export const DeliveriesInformation = () => {
                             />
                         </Col>
                     )}
+
+                    {/* Selector de departamento */}
+                    <Col xs={12} md={6}>
+                        <Select
+                            classNamePrefix="rb"
+                            options={deptOptions}
+                            placeholder="Departamento"
+                            isSearchable
+                            isClearable
+                            value={deptOptions.find(o => o.value === selectedDeptId) ?? null}
+                            onChange={(opt) => searchDept(opt)}
+                            onMenuOpen={loadDepartmentsOnce}
+                            filterOption={(option, input) => {
+                                const q = input.toLowerCase();
+                                return option.label.toLowerCase().includes(q);
+                            }}
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                    boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                    "&:hover": { borderColor: "#40A581" },
+                                }),
+                                option: (base, { isFocused, isSelected }) => ({
+                                    ...base,
+                                    backgroundColor: isSelected
+                                        ? "#40A581"
+                                        : isFocused
+                                            ? "#E8F5E9"
+                                            : "white",
+                                    color: isSelected ? "white" : "#333",
+                                    cursor: "pointer",
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: "#2148C0",
+                                    fontWeight: "200",
+                                }),
+                            }}
+                        />
+                    </Col>
+                    {/* Selector de municipio */}
+                    <Col xs={12} md={6}>
+                        <Select
+                            classNamePrefix="rb"
+                            options={muniOptions}
+                            placeholder="Municipio"
+                            isSearchable
+                            isClearable
+                            value={muniOptions.find(o => o.value === selectedMuniId) ?? null}
+                            onChange={(opt) => searchMuni(opt)}
+                            filterOption={(option, input) => {
+                                const q = input.toLowerCase();
+                                return option.label.toLowerCase().includes(q);
+                            }}
+                            styles={{
+                                control: (base, state) => ({
+                                    ...base,
+                                    borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                    boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                    "&:hover": { borderColor: "#40A581" },
+                                }),
+                                option: (base, { isFocused, isSelected }) => ({
+                                    ...base,
+                                    backgroundColor: isSelected
+                                        ? "#40A581"
+                                        : isFocused
+                                            ? "#E8F5E9"
+                                            : "white",
+                                    color: isSelected ? "white" : "#333",
+                                    cursor: "pointer",
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: "#2148C0",
+                                    fontWeight: "200",
+                                }),
+                            }}
+                        />
+                    </Col>
                 </Row>
 
                 {loading && (
