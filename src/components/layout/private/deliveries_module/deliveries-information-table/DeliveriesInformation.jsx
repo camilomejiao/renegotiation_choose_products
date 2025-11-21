@@ -77,14 +77,14 @@ export const DeliveriesInformation = () => {
 
     const columns = [
         { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "send_date", headerName: "Fecha de envio", width: 100 },
         { field: "department_name", headerName: "Departamento", width: 110 },
         { field: "municipality_name", headerName: "Municipio", width: 110 },
-        { field: "send_date", headerName: "Fecha de envio", width: 100 },
         { field: "status", headerName: "Estado", width: 110 },
         { field: "cub_id", headerName: "CUB", width: 80 },
         {
             field: "name",
-            headerName: "Beneficiario",
+            headerName: "Nombre del Beneficiario",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
