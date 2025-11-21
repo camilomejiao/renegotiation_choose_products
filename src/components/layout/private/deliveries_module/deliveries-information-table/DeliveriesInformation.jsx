@@ -510,130 +510,134 @@ export const DeliveriesInformation = () => {
 
                     {/* Selector de proveedor con datalist (bonito y buscable) */}
                     {canShowOtherRoles && (
-                        <Col xs={12} md={6}>
-                            <Select
-                                classNamePrefix="rb"
-                                options={supplierOptions}
-                                placeholder="Proveedor (nombre o NIT)"
-                                isSearchable
-                                isClearable
-                                value={supplierOptions.find(o => o.value === selectedSupplierId) ?? null}
-                                onChange={(opt) => searchSupplier(opt)}
-                                onMenuOpen={loadSuppliersOnce}
-                                filterOption={(option, input) => {
-                                    const q = input.toLowerCase();
-                                    return (
-                                        option.label.toLowerCase().includes(q) || // nombre
-                                        option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
-                                    );
-                                }}
-                                styles={{
-                                    control: (base, state) => ({
-                                        ...base,
-                                        borderColor: state.isFocused ? "#40A581" : "#ccc",
-                                        boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
-                                        "&:hover": { borderColor: "#40A581" },
-                                    }),
-                                    option: (base, { isFocused, isSelected }) => ({
-                                        ...base,
-                                        backgroundColor: isSelected
-                                            ? "#40A581"
-                                            : isFocused
-                                                ? "#E8F5E9"
-                                                : "white",
-                                        color: isSelected ? "white" : "#333",
-                                        cursor: "pointer",
-                                    }),
-                                    singleValue: (base) => ({
-                                        ...base,
-                                        color: "#2148C0",
-                                        fontWeight: "200",
-                                    }),
-                                }}
-                            />
-                        </Col>
-                    )}
+                        <>
+                            <Col xs={12} md={6}>
+                                <Select
+                                    classNamePrefix="rb"
+                                    options={supplierOptions}
+                                    placeholder="Proveedor (nombre o NIT)"
+                                    isSearchable
+                                    isClearable
+                                    value={supplierOptions.find(o => o.value === selectedSupplierId) ?? null}
+                                    onChange={(opt) => searchSupplier(opt)}
+                                    onMenuOpen={loadSuppliersOnce}
+                                    filterOption={(option, input) => {
+                                        const q = input.toLowerCase();
+                                        return (
+                                            option.label.toLowerCase().includes(q) || // nombre
+                                            option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
+                                        );
+                                    }}
+                                    styles={{
+                                        control: (base, state) => ({
+                                            ...base,
+                                            borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                            boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                            "&:hover": { borderColor: "#40A581" },
+                                        }),
+                                        option: (base, { isFocused, isSelected }) => ({
+                                            ...base,
+                                            backgroundColor: isSelected
+                                                ? "#40A581"
+                                                : isFocused
+                                                    ? "#E8F5E9"
+                                                    : "white",
+                                            color: isSelected ? "white" : "#333",
+                                            cursor: "pointer",
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: "#2148C0",
+                                            fontWeight: "200",
+                                        }),
+                                    }}
+                                />
+                            </Col>
 
-                    {/* Selector de departamento */}
-                    <Col xs={12} md={6}>
-                        <Select
-                            classNamePrefix="rb"
-                            options={deptOptions}
-                            placeholder="Departamento"
-                            isSearchable
-                            isClearable
-                            value={deptOptions.find(o => o.value === selectedDeptId) ?? null}
-                            onChange={(opt) => searchDept(opt)}
-                            onMenuOpen={loadDepartmentsOnce}
-                            filterOption={(option, input) => {
-                                const q = input.toLowerCase();
-                                return option.label.toLowerCase().includes(q);
-                            }}
-                            styles={{
-                                control: (base, state) => ({
-                                    ...base,
-                                    borderColor: state.isFocused ? "#40A581" : "#ccc",
-                                    boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
-                                    "&:hover": { borderColor: "#40A581" },
-                                }),
-                                option: (base, { isFocused, isSelected }) => ({
-                                    ...base,
-                                    backgroundColor: isSelected
-                                        ? "#40A581"
-                                        : isFocused
-                                            ? "#E8F5E9"
-                                            : "white",
-                                    color: isSelected ? "white" : "#333",
-                                    cursor: "pointer",
-                                }),
-                                singleValue: (base) => ({
-                                    ...base,
-                                    color: "#2148C0",
-                                    fontWeight: "200",
-                                }),
-                            }}
-                        />
-                    </Col>
-                    {/* Selector de municipio */}
-                    <Col xs={12} md={6}>
-                        <Select
-                            classNamePrefix="rb"
-                            options={muniOptions}
-                            placeholder="Municipio"
-                            isSearchable
-                            isClearable
-                            value={muniOptions.find(o => o.value === selectedMuniId) ?? null}
-                            onChange={(opt) => searchMuni(opt)}
-                            filterOption={(option, input) => {
-                                const q = input.toLowerCase();
-                                return option.label.toLowerCase().includes(q);
-                            }}
-                            styles={{
-                                control: (base, state) => ({
-                                    ...base,
-                                    borderColor: state.isFocused ? "#40A581" : "#ccc",
-                                    boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
-                                    "&:hover": { borderColor: "#40A581" },
-                                }),
-                                option: (base, { isFocused, isSelected }) => ({
-                                    ...base,
-                                    backgroundColor: isSelected
-                                        ? "#40A581"
-                                        : isFocused
-                                            ? "#E8F5E9"
-                                            : "white",
-                                    color: isSelected ? "white" : "#333",
-                                    cursor: "pointer",
-                                }),
-                                singleValue: (base) => ({
-                                    ...base,
-                                    color: "#2148C0",
-                                    fontWeight: "200",
-                                }),
-                            }}
-                        />
-                    </Col>
+                            {/* Selector de Depto */}
+                            <Col xs={12} md={6}>
+                                <Select
+                                    classNamePrefix="rb"
+                                    options={deptOptions}
+                                    placeholder="Departamento"
+                                    isSearchable
+                                    isClearable
+                                    value={deptOptions.find(o => o.value === selectedDeptId) ?? null}
+                                    onChange={(opt) => searchDept(opt)}
+                                    onMenuOpen={loadDepartmentsOnce}
+                                    filterOption={(option, input) => {
+                                        const q = input.toLowerCase();
+                                        return option.label.toLowerCase().includes(q);
+                                    }}
+                                    styles={{
+                                        control: (base, state) => ({
+                                            ...base,
+                                            borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                            boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                            "&:hover": { borderColor: "#40A581" },
+                                        }),
+                                        option: (base, { isFocused, isSelected }) => ({
+                                            ...base,
+                                            backgroundColor: isSelected
+                                                ? "#40A581"
+                                                : isFocused
+                                                    ? "#E8F5E9"
+                                                    : "white",
+                                            color: isSelected ? "white" : "#333",
+                                            cursor: "pointer",
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: "#2148C0",
+                                            fontWeight: "200",
+                                        }),
+                                    }}
+                                />
+                            </Col>
+
+                            {/* Selector de Muni */}
+                            <Col xs={12} md={6}>
+                                <Select
+                                    classNamePrefix="rb"
+                                    options={muniOptions}
+                                    placeholder="Municipio"
+                                    isSearchable
+                                    isClearable
+                                    value={muniOptions.find(o => o.value === selectedMuniId) ?? null}
+                                    onChange={(opt) => searchMuni(opt)}
+                                    filterOption={(option, input) => {
+                                        const q = input.toLowerCase();
+                                        return option.label.toLowerCase().includes(q);
+                                    }}
+                                    styles={{
+                                        control: (base, state) => ({
+                                            ...base,
+                                            borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                            boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                            "&:hover": { borderColor: "#40A581" },
+                                        }),
+                                        option: (base, { isFocused, isSelected }) => ({
+                                            ...base,
+                                            backgroundColor: isSelected
+                                                ? "#40A581"
+                                                : isFocused
+                                                    ? "#E8F5E9"
+                                                    : "white",
+                                            color: isSelected ? "white" : "#333",
+                                            cursor: "pointer",
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: "#2148C0",
+                                            fontWeight: "200",
+                                        }),
+                                    }}
+                                />
+                            </Col>
+                        </>
+                    )}
                 </Row>
+
 
                 {loading && (
                     <div className="overlay">

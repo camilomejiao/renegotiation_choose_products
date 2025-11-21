@@ -152,11 +152,10 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                // 1. Construir array de cuentas bancarias SOLO si es edición
+                //1. Cuentas bancarias (solo en edición)
                 let cuentas_bancarias = [];
-
                 if (isEdit && Array.isArray(values.accounts)) {
-                    cuentas_bancarias = values.accounts.map((acc) => ({
+                    cuentas_bancarias = values.accounts.map(acc => ({
                         tipo_cuenta: acc.account_type || null,
                         numero_cuenta: acc.account_number || null,
                         banco: acc.bank || null,
@@ -165,7 +164,7 @@ export const CreateSuppliers = () => {
 
                 // 2. Datos base
                 const formattedValues = {
-                    nombre: values.company_name,
+                    company_name: values.company_name,
                     nit: values.nit,
                     correo: values.email,
                     cellphone: values.cellphone,
@@ -174,25 +173,27 @@ export const CreateSuppliers = () => {
                     fecha_registro: new Date().toISOString().slice(0, 10),
                     depto_id: values.depto?.id ?? null,
                     muni_id: values.muni?.id ?? null,
-                    // si quieres que en creación NO se envíe, podrías condicionar esto
                     ...(isEdit && { cuentas_bancarias }),
                 };
 
                 let response;
 
+                console.log('formattedValues: ', formattedValues);
+
+                // =========  EDICIÓN   ======
                 if (isEdit) {
                     const formData = new FormData();
 
-                    // 3. Datos simples
+                    // Datos simples + cuentas bancarias
                     Object.entries(formattedValues).forEach(([key, val]) => {
                         if (key === "cuentas_bancarias") {
-                            formData.append(key, JSON.stringify(val)); // backend la parsea como JSON
+                            formData.append(key, JSON.stringify(val)); // backend espera JSON
                         } else if (val !== null && val !== undefined) {
                             formData.append(key, val);
                         }
                     });
 
-                    // 4. Adjuntar archivos por cuenta (si aplica)
+                    // Archivos por cuenta
                     if (Array.isArray(values.accounts)) {
                         values.accounts.forEach((acc, index) => {
                             if (acc.bankCertFile) {
@@ -204,9 +205,17 @@ export const CreateSuppliers = () => {
                         });
                     }
 
+                    // Si tienes archivos adicionales:
+                    if (values.rutFile) formData.append("rut_file", values.rutFile);
+                    if (values.idFile) formData.append("id_file", values.idFile);
+
+                    for (let [key, value] of formData.entries()) {
+                        console.log("KEY:", key, "VALUE:", value);
+                    }
+
                     response = await supplierServices.updateSupplier(id, formData);
-                } else {
-                    // En creación: JSON normal
+                }
+                else {
                     response = await supplierServices.createSupplier(formattedValues);
                 }
 
@@ -216,13 +225,13 @@ export const CreateSuppliers = () => {
                 } else {
                     AlertComponent.warning("Error", response?.data?.errors?.[0]?.title);
                 }
+
             } catch (error) {
                 console.error("Error al enviar el formulario:", error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
             }
         },
     });
-
 
     const fetchSupplierData = async (id) => {
         try {
@@ -250,7 +259,7 @@ export const CreateSuppliers = () => {
                         account_type: c.tipo_cuenta ?? "",
                         account_number: c.numero_cuenta ?? "",
                         bank: c.banco ?? "",
-                        bankCertFile: null, // los archivos NO se pueden precargar
+                        bankCertFile: null,
                     })),
                 });
 
@@ -274,7 +283,6 @@ export const CreateSuppliers = () => {
 
     return(
         <>
-
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgPeople}
