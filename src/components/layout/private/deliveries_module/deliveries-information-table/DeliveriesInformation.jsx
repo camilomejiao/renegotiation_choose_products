@@ -77,6 +77,8 @@ export const DeliveriesInformation = () => {
 
     const columns = [
         { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "department_name", headerName: "Departamento", width: 110 },
+        { field: "municipality_name", headerName: "Municipio", width: 110 },
         { field: "send_date", headerName: "Fecha de envio", width: 100 },
         { field: "status", headerName: "Estado", width: 110 },
         { field: "cub_id", headerName: "CUB", width: 80 },
@@ -118,8 +120,6 @@ export const DeliveriesInformation = () => {
             ),
         },
         { field: "supplier_nit", headerName: "Nit", width: 110 },
-        { field: "department_name", headerName: "Departamento", width: 110 },
-        { field: "municipality_name", headerName: "Municipio", width: 110 },
         { field: "pay", headerName: "Valor", width: 110 },
         {
             field: "observation",
