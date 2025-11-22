@@ -19,7 +19,7 @@ class DeliveriesInformationServices {
      *
      *
      */
-     getDeliveriesInformation(page = 1, pageSize = 100, search, statusDelivery, supplierId, onlySended = false) {
+     getDeliveriesInformation(page = 1, pageSize = 100, search, statusDelivery, supplierId, onlySended = false, deptId = "", muniId = "") {
         let url = `?page=${page}&page_size=${pageSize}`;
         if(statusDelivery) {
             url += `&state=${statusDelivery}&only_sended=${onlySended}`;
@@ -29,6 +29,12 @@ class DeliveriesInformationServices {
         }
         if(supplierId) {
             url += `&provider_id=${supplierId}`;
+        }
+        if(deptId) {
+            url += `&department_id=${deptId}`;
+        }
+        if(muniId) {
+            url += `&municipality_id=${muniId}`;
         }
         const urlOpt = this.buildUrl(`entrega-reporte/${url}`);
         return authTokenService.fetchWithAuth(urlOpt, { method: "GET" });
