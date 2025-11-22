@@ -3,7 +3,6 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Row } from "react-bootstrap";
 
-
 //img
 import imgPayments from "../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
@@ -181,21 +180,29 @@ export const DeliveriesInformation = () => {
 
     //
     const normalizeRows = async (data) => {
-        return data.map((row) => ({
-            id: row?.id,
-            status: row?.estado,
-            send_date: row?.fecha_envio_proveedor.split('T')[0],
-            cub_id: row?.beneficiario?.cub_id,
-            name: `${row?.beneficiario?.nombre_completo ?? ''}`,
-            identification: row?.beneficiario?.identificacion,
-            supplier_name: row?.proveedor?.nombre,
-            supplier_nit: row?.proveedor?.nit,
-            department_name: row?.proveedor?.departamento?.nombre,
-            municipality_name: row?.proveedor?.municipio?.nombre,
-            beneficiario_id: row?.beneficiario?.id,
-            pay: parseFloat(row?.valor_factura_electronica ?? row?.valor).toLocaleString("es-CO", { style: "currency",currency: "COP" }),
-            observation: row?.observacion,
-        }));
+        return data.map((row) => {
+
+            const valorFE = Number(row?.valor_factura_electronica ?? 0);
+            const valorBase = Number(row?.valor ?? 0);
+
+            const valorSP = valorFE > 0 ? valorFE : valorBase;
+
+            return {
+                id: row?.id,
+                status: row?.estado,
+                send_date: row?.fecha_envio_proveedor.split('T')[0],
+                cub_id: row?.beneficiario?.cub_id,
+                name: `${row?.beneficiario?.nombre_completo ?? ''}`,
+                identification: row?.beneficiario?.identificacion,
+                supplier_name: row?.proveedor?.nombre,
+                supplier_nit: row?.proveedor?.nit,
+                department_name: row?.proveedor?.departamento?.nombre,
+                municipality_name: row?.proveedor?.municipio?.nombre,
+                beneficiario_id: row?.beneficiario?.id,
+                pay: `$ ${valorSP.toLocaleString("es-CO")}`,
+                observation: row?.observacion,
+            }
+        });
     }
 
     // Carga catálogo (activos) una sola vez
