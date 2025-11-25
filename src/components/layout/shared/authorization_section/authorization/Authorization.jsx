@@ -1,6 +1,7 @@
-import {ComponentEnum} from "../../../../../helpers/GlobalEnum";
+import {ComponentEnum, TypeActorEnum} from "../../../../../helpers/GlobalEnum";
 
 export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
+    console.log(userData);
 
     // Obtener la fecha actual
     const currentDate = new Date();
@@ -23,7 +24,16 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                                 <img src={img1} alt="" style={{height:'60px'}} />
                             </th>
                             <th style={{width:'30%', borderTop: '1px solid black', textAlign:'center'}}>
-                                <h6>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN ACTUALIZADO</h6>
+                                <h6>
+
+                                    {
+                                        userData?.actividad === TypeActorEnum.COLLECTOR
+                                            ?
+                                            'AUTORIZACIÓN PARA ACTUALIZACIÓN DE LINEA PRODUCTIVA ACTUALIZADA'
+                                            :
+                                            'AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN ACTUALIZADO'
+                                    }
+                                </h6>
                             </th>
                             <th style={{width:'20%', borderTop: '1px solid black', borderLeft: '1px solid black', }}>
                                 <img src={img2} alt="" style={{height:'60px'}} />
@@ -70,7 +80,16 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                     <thead>
                         <tr>
                             <th style={{textAlign: 'center', borderBottom: '1px solid black', borderRight: '1px solid black', borderLeft: '1px solid black'}}>
-                                <h4>AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN</h4>
+                                <h4>
+
+                                    {
+                                        userData?.actividad === TypeActorEnum.COLLECTOR
+                                            ?
+                                            'AUTORIZACIÓN PARA ACTUALIZACIÓN DE LINEA PRODUCTIVA EN EL MARCO DE ATENCIÓN A RECOLECTORES '
+                                            :
+                                            'AUTORIZACIÓN PARA ACTUALIZACIÓN DE PLAN DE INVERSIÓN'
+                                    }
+                                </h4>
                             </th>
                         </tr>
                         <tr>

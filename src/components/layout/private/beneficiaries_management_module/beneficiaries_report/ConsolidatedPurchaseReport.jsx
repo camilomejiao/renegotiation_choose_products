@@ -1,3 +1,4 @@
+import {TypeActorEnum} from "../../../../../helpers/GlobalEnum";
 
 
 export const ConsolidatedPurchaseReport = ({dataReport}) => {
@@ -19,198 +20,251 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
             <div id="report-section">
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ width: '15%', textAlign: 'center', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
-                                <img src={img1} alt="" style={{ height: '60px' }} />
-                            </td>
-                            <td style={{ width: '70%', borderTop: '1px solid black', textAlign: 'center' }}>
-                                <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>PLAN DE INVERSIÓN ACTUALIZADO - ORDEN DE COMPRA</td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                            <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
-                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
-                                            <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td style={{ width: '30%', textAlign: 'center', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
-                                <img src={img2} alt="" style={{ height: '60px' }} />
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style={{ width: '15%', textAlign: 'center', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
+                            <img src={img1} alt="" style={{ height: '60px' }} />
+                        </td>
+                        <td style={{ width: '70%', borderTop: '1px solid black', textAlign: 'center' }}>
+                            <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+                                <tbody>
+                                <tr>
+                                    <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>
+                                        {
+                                            dataReport?.actividad === TypeActorEnum.COLLECTOR
+                                                ?
+                                                'IMPLEMENTACIÓN COMPONENTE  RECOLECTORES PLAN DE ASISTENCIA CONDICIONADA PARA EMPRENDIMIENTO/COMPONENTE EMPLEABILIDAD'
+                                                :
+                                                'PLAN DE INVERSIÓN ACTUALIZADO - ORDEN DE COMPRA'
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
+                                </tr>
+                                <tr>
+                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
+                                    <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
+                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
+                                    <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style={{ width: '30%', textAlign: 'center', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
+                            <img src={img2} alt="" style={{ height: '60px' }} />
+                        </td>
+                    </tr>
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ border: '1px solid black' }}><strong>CUB</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cub_id}</td>
-                            <td style={{ border: '1px solid black' }}><strong>NOMBRE TITULAR:</strong></td>
-                            <td style={{ width: '20%', border: '1px solid black', textAlign: 'center' }}>{dataReport?.nombre}</td>
-                            <td style={{ border: '1px solid black' }}><strong>No. CÉDULA:</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cedula}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ border: '1px solid black' }}><strong>Departamento</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.departamento}</td>
-                            <td style={{ border: '1px solid black' }}><strong>Municipio</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.municipio}</td>
-                            <td style={{ border: '1px solid black' }}><strong>VEREDA / TERRITORIO COLECTIVO ÉTNICO:</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.vereda}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ border: '1px solid black' }}><strong>Línea Productiva Seleccionada</strong></td>
-                            <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport?.linea}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ width: '18%', border: '1px solid black' }}><strong>SALDO TOTAL PLAN DE INVERSIÓN:</strong></td>
-                            <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}>
-                                $ {parseFloat(dataReport?.saldo).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                            </td>
-                            <td style={{ width: '15%', border: '1px solid black' }}><strong>VALOR TOTAL INVERTIDO</strong></td>
-                            <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport?.invertido).toLocaleString()}</td>
-                            <td style={{ width: '25%', border: '1px solid black' }}><strong>SALDO FINAL DESPUES DE INVERSIÓN :</strong></td>
-                            <td style={{ width: '12%', border: '1px solid black', textAlign: 'center' }}>
-                                $ {parseFloat(dataReport?.saldo - dataReport?.invertido).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style={{ border: '1px solid black' }}><strong>CUB</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cub_id}</td>
+                        <td style={{ border: '1px solid black' }}><strong>NOMBRE TITULAR:</strong></td>
+                        <td style={{ width: '20%', border: '1px solid black', textAlign: 'center' }}>{dataReport?.nombre}</td>
+                        <td style={{ border: '1px solid black' }}><strong>No. CÉDULA:</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.cedula}</td>
+                    </tr>
+                    <tr>
+                        <td style={{ border: '1px solid black' }}><strong>Departamento</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.departamento}</td>
+                        <td style={{ border: '1px solid black' }}><strong>Municipio</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.municipio}</td>
+                        <td style={{ border: '1px solid black' }}><strong>VEREDA / TERRITORIO COLECTIVO ÉTNICO:</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.vereda}</td>
+                    </tr>
+                    <tr>
+                        <td style={{ border: '1px solid black' }}><strong>Línea Productiva Seleccionada</strong></td>
+                        <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport?.linea}</td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '18%', border: '1px solid black' }}><strong>SALDO TOTAL PLAN DE INVERSIÓN:</strong></td>
+                        <td style={{ width: '10%', border: '1px solid black', textAlign: 'center' }}>
+                            $ {parseFloat(dataReport?.saldo).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </td>
+                        <td style={{ width: '15%', border: '1px solid black' }}><strong>VALOR TOTAL INVERTIDO</strong></td>
+                        <td style={{ width: '15%', border: '1px solid black', textAlign: 'center' }}> $ {parseFloat(dataReport?.invertido).toLocaleString()}</td>
+                        <td style={{ width: '25%', border: '1px solid black' }}><strong>SALDO FINAL DESPUES DE INVERSIÓN :</strong></td>
+                        <td style={{ width: '12%', border: '1px solid black', textAlign: 'center' }}>
+                            $ {parseFloat(dataReport?.saldo - dataReport?.invertido).toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </td>
+                    </tr>
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ textAlign: 'center', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
-                                <h4>PLAN DE INVERSIÓN ACTUALIZADO</h4>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style={{ textAlign: 'center', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
+                            <h4>PLAN DE INVERSIÓN ACTUALIZADO</h4>
+                        </td>
+                    </tr>
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DE PRODUCTO</td>
-                            <td style={{ width: '30%', textAlign: 'center', border: '1px solid black' }}>DESCRIPCIÓN TÉCNICA DEL PRODUCTO</td>
-                            <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>MARCA DEL PRODUCTO</td>
-                            <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DEL PROVEEDOR</td>
-                            <td style={{ width: '9%',  textAlign: 'center', border: '1px solid black' }}>NIT DEL PROVEEDOR</td>
-                            <td style={{ width: '5%',  textAlign: 'center', border: '1px solid black' }}>U. DE MEDIDA</td>
-                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLUÍDO IVA</td>
-                            <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>CANT</td>
-                            <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>DTO</td>
-                            <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>VALOR TOTAL</td>
-                        </tr>
+                    <tr>
+                        <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DE PRODUCTO</td>
+                        <td style={{ width: '30%', textAlign: 'center', border: '1px solid black' }}>DESCRIPCIÓN TÉCNICA DEL PRODUCTO</td>
+                        <td style={{ width: '11%', textAlign: 'center', border: '1px solid black' }}>MARCA DEL PRODUCTO</td>
+                        <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DEL PROVEEDOR</td>
+                        <td style={{ width: '9%',  textAlign: 'center', border: '1px solid black' }}>NIT DEL PROVEEDOR</td>
+                        <td style={{ width: '5%',  textAlign: 'center', border: '1px solid black' }}>U. DE MEDIDA</td>
+                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLUÍDO IVA</td>
+                        <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>CANT</td>
+                        <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>DTO</td>
+                        <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>VALOR TOTAL</td>
+                    </tr>
                     </thead>
                     <tbody>
-                        {Object.keys(dataReport?.proveedores || {}).map((key, index) => {
+                    {Object.keys(dataReport?.proveedores || {}).map((key, index) => {
                         const proveedor = dataReport?.proveedores[key];
-                            return Object.keys(proveedor.productos).map((productoKey, productoIndex) => {
-                                const producto = proveedor.productos[productoKey];
-                                return (
-                                    <tr key={`${key}-${productoIndex}`}>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.nombre}</td>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.descripcion}</td>
-                                        <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.marca}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nombre}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nit}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.unidad}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.precio.toLocaleString()}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.cantidad}</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.descuento}%</td>
-                                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.total.toLocaleString()}</td>
-                                    </tr>
-                                );
-                            });
-                        })}
-                        <tr>
-                            <td colSpan="9" style={{ width: '40px', textAlign: 'right', border: '1px solid black' }}>Total</td>
-                            <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${totalSum.toLocaleString()}</td>
-                        </tr>
+                        return Object.keys(proveedor.productos).map((productoKey, productoIndex) => {
+                            const producto = proveedor.productos[productoKey];
+                            return (
+                                <tr key={`${key}-${productoIndex}`}>
+                                    <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.nombre}</td>
+                                    <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.descripcion}</td>
+                                    <td style={{ width: '40px', textAlign: 'left',   border: '1px solid black' }}>{producto?.marca}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nombre}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{proveedor?.nit}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.unidad}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.precio.toLocaleString()}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.cantidad}</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>{producto?.descuento}%</td>
+                                    <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${producto?.total.toLocaleString()}</td>
+                                </tr>
+                            );
+                        });
+                    })}
+                    <tr>
+                        <td colSpan="9" style={{ width: '40px', textAlign: 'right', border: '1px solid black' }}>Total</td>
+                        <td style={{ width: '40px', textAlign: 'center', border: '1px solid black' }}>${totalSum.toLocaleString()}</td>
+                    </tr>
                     </tbody>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ textAlign: 'center', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
-                                <h4>&nbsp;</h4>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style={{ textAlign: 'center', borderLeft: '1px solid black', borderRight: '1px solid black' }}>
+                            <h4>&nbsp;</h4>
+                        </td>
+                    </tr>
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
+                    <tr>
+                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>
+                            TÉCNICAS
+                        </td>
+                        <td style={{ padding: '10px', border: '1px solid black', textAlign: "justify", }}>
+                            {
+                                dataReport?.actividad === TypeActorEnum.COLLECTOR
+                                    ?
+                                    '1. Los proveedores y precios aquí registrados corresponden a la selección realizada por cada titular. 2. Los precios tienen vigencia definida por cada proveedor. 3. El plan de asistencia condicionada para emprendimiento detalla los activos productivos a adquirir para la implementación del proyecto productivo.\n' +
+                                    'NOTA 1: Obligación general sobre bienes muebles sujetos a registro. En el marco de la implementación del programa, y particularmente para los bienes muebles sujetos a registro (motocicletas, motocargueros y en general automotores), el beneficiario–recolector asume la obligación general de conservar y destinar dichos bienes exclusivamente a las actividades productivas aprobadas dentro de su plan de emprendimiento, garantizando su uso adecuado y mantenimiento durante toda la vigencia del programa. En consecuencia, el beneficiario no podrá transferir, ceder, enajenar, arrendar, ni entregar a ningún título (propiedad, posesión o tenencia)  el bien asignado a ningún tercero que no pertenezca al grupo familiar beneficiario registrado en el programa, so pena de incurrir en causal de incumplimiento del programa y de las obligaciones administrativas que se deriven de su vinculación. El bien deberá permanecer a nombre del beneficiario durante al menos cinco (5) años contados a partir de su entrega. Dicha obligación estará sujeta a seguimiento y verificación periódica por parte de la DSCI, conforme a los lineamientos técnicos, jurídicos y administrativos vigentes.\n' +
+                                    'Los beneficiarios–recolectores que presenten un plan de asistencia condicionada enmarcado en la línea productiva del servicio de transporte mediante vehículo automotor, deberán cumplir previo a la aprobación del respectivo plan de emprendimiento, con los siguientes requisitos mínimos: \n' +
+                                    'REQUISITOS: i) Estar inscrito en el Registro Único Nacional de Tránsito (RUNT); ii) Presentar copia del documento de identidad vigente; iii) Acreditar paz y salvo por concepto de multas e infracciones de tránsito, así como de impuestos sobre vehículos automotores de su propiedad; iv) Contar con licencia de conducción vigente correspondiente al tipo de vehículo; v) Suscribir los formularios y documentos exigidos por el organismo de tránsito competente, de acuerdo con la normatividad aplicable.\n' +
+                                    'NOTA 2: El incumplimiento de uno o varios de los requisitos anteriores impedirá que el proveedor del bien mueble sujeto a registro pueda realizar la legalización del vehículo a nombre del beneficiario–recolector, circunstancia que obligará a este último a modificar su plan de asistencia condicionada o de emprendimiento, en coordinación con la entidad responsable del programa.\n'
+                                    :
+                                    '1. Los proveedores y precios aquí registrados corresponden a la selección realizada por cada titular en el Banco de Proveedores Locales.\n' +
+                                    '2. Los precios tienen vigencia definida por cada proveedor.\n' +
+                                    '3. El plan de inversión actualizado detalla los activos productivos a adquirir para la implementación del proyecto productivo.\n' +
+                                    '4. Se ha incluido la totalidad de los saldos por titular (Auto sostenimiento y Seguridad Alimentaria + Proyecto productivo de Ciclo Corto + Proyecto Productivo de Ciclo largo).\n' +
+                                    '5. El material vegetal debe provenir de viveros registrados según resolución ICA.\n' +
+                                    '6. La adquisición de aves y semovientes debe provenir de explotaciones agropecuarias registradas en el ICA.\n' +
+                                    '7. El plan de inversión planteado se encuentra soportado por el análisis de uso y aptitud de suelo, realizado por la asistencia técnica implementada en el programa.'
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>
+                            ADMINISTRATIVAS
+                        </td>
+                        <td style={{ padding: '10px', border: '1px solid black', textAlign: "justify", }}>
+                            {
+                                dataReport?.actividad === TypeActorEnum.COLLECTOR
+                                    ?
+                                    `Se aclara que la atención brindada a los recolectores mediante la entrega de activos productivos de la línea no agropecuaria, 
+                                          alrededor de opciones de auto empleabilidad que también impactan positivamente a la comunidad, encaminadas a mejorar sus ingresos 
+                                          económicos, está alineada con los compromisos que constan en el Formulario de Vinculación y, consecuentemente, con los objetivos del numeral 4.1.3.6.a 
+                                          del Acuerdo Final para la Terminación del Conflicto y la Construcción de una Paz Estable y Duradera.
+                                          
+                                          Por su parte, una vez realizada la entrega de los insumos señalados, se dará por terminada la ruta de atención para el/la recolector/a identificado/a con el CUB señalado 
+                                          en este documento dentro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS); toda vez que la atención de recolectores no contempla el 
+                                          componente de asistencia técnica integral por parte de la DSCI. Esto, sin perjuicio de las eventuales verificaciones posteriores que, en cualquier tiempo, 
+                                          pueda hacer esta dependencia respecto del adecuado uso de los bienes e insumos entregados.`
+                                    :
+                                    `1. Una vez se reciban los activos productivos se firmará el acta de entrega en donde constará la satisfacción con la calidad y cantidades allí registradas.
+                                         2. Se podrán firmar actas de entrega parciales en aquellos casos en los que el proveedor requiera mayor tiempo para completar la entrega.`
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>
+                            JURÍDICAS
+                        </td>
+                        <td style={{ padding: '10px', border: '1px solid black', textAlign: "justify", }}>
+                            {
+                                dataReport?.actividad === TypeActorEnum.COLLECTOR
+                                    ?
+                                    `Responsabilidades de los beneficiarios – uso y destinación de bienes:
+                                         1. Responsabilidad general. Será responsabilidad exclusiva del beneficiario–recolector garantizar el buen uso, manejo, conservación y destinación lícita de los insumos, materiales, herramientas, equipos y demás bienes entregados o adquiridos en el marco del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito – PNIS, de conformidad con las condiciones, objetivos y finalidades definidas en su Plan de Asistencia Condicionada de Emprendimiento.
+                                         2. Uso exclusivo de los bienes entregados. El beneficiario se obliga a utilizar los bienes entregados única y exclusivamente para el desarrollo de las actividades previstas en el proyecto de emprendimiento aprobado. 
+                                         3. Prohibición de cesión o enajenación . El beneficiario deberá garantizar que los bienes se mantengan a su nombre y bajo su tenencia por un período mínimo de tres (3) años contados a partir de la fecha de entrega (salvo el término establecido para bienes muebles sujetos a registro -vehículos automotores- (que es de cinco (5) años) durante el cual no podrá transferirlos, enajenarlos ni cederlos a ningún título, y deberá destinarlos al beneficio propio y de su núcleo familiar. En consecuencia, el beneficiario se abstendrá, como parte de sus obligaciones, de realizar cualquier forma de venta, transferencia, permuta, arrendamiento, cesión o uso para fines distintos a los establecidos por el Programa. El incumplimiento de esta obligación constituye causal de incumplimiento grave del Programa, y podrá dar lugar al retiro de este y a la recuperación del bien o del valor equivalente, y  a las demás acciones administrativas o judiciales a que haya lugar.
+                                         4. Seguimiento y control. La Dirección de Sustitución de Cultivos de Uso Ilícito (DSCI), directamente o a través del Fondo Colombia en Paz (FCP) o de las entidades que hagan sus veces, podrá efectuar en cualquier tiempo visitas de verificación, controles aleatorios y/o periódicos, con el fin de constatar la existencia, estado, conservación y uso adecuado de los bienes entregados, durante el término mínimo de tres (3) años o mientras dure la obligación de destinación.
+                                         5. Responsabilidad penal. En caso de identificarse hechos que puedan constituir infracción o delito derivados del uso indebido de los bienes o recursos públicos, la DSCI y el Fondo Colombia en Paz informarán a la Fiscalía General de la Nación, conforme a lo previsto en el artículo 403-A del Código Penal Colombiano – Fraude de Subvenciones, para que adelante las acciones que estime pertinentes, sin las sanciones administrativas o fiscales a las que haya lugar.`
+                                    :
+                                    `La inadecuada utilización de los activos productivos entregados para la implementación del proyecto productivo podrá generar, entre otras, 
+                                         consecuencias jurídicas por dicho incumplimiento.
+                                         
+                                         Adicionalmente, dicho incumplimiento podrá conllevar el retiro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS), 
+                                         la terminación de los beneficios otorgados y la imposibilidad de participar en futuros programas de sustitución promovidos por el Gobierno Nacional.`
+                            }
+                        </td>
+                    </tr>
+                    {dataReport?.observacion && (
                         <tr>
-                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>TÉCNICAS</td>
+                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>
+                                OBSERVACIONES
+                            </td>
                             <td style={{ textAlign: 'left', padding: '10px', border: '1px solid black' }}>
-                                1. Los proveedores y precios aquí registrados corresponden a la selección realizada por cada titular en el Banco de Proveedores Locales.
-                                2. Los precios tienen vigencia definida por cada proveedor.
-                                3. El plan de inversión actualizado detalla los activos productivos a adquirir para la implementación del proyecto productivo.
-                                4. Se ha incluido la totalidad de los saldos por titular (Auto sostenimiento y Seguridad Alimentaria + Proyecto productivo de Ciclo Corto + Proyecto Productivo de Ciclo largo).
-                                5. El material vegetal debe provenir de viveros registrados según resolución ICA.
-                                6. La adquisición de aves y semovientes debe provenir de explotaciones agropecuarias registradas en el ICA.
-                                7. El plan de inversión planteado se encuentra soportado por el análisis de uso y aptitud de suelo, realizado por la asistencia técnica implementada en el programa.
+                                {dataReport?.observacion}
+                                ({dataReport?.fecha_observacion.split('T')[0]})
                             </td>
                         </tr>
-                        <tr>
-                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>ADMINISTRATIVAS</td>
-                            <td style={{ textAlign: 'left', padding: '10px', border: '1px solid black' }}>
-                                1. Una vez se reciban los activos productivos se firmará el acta de entrega en donde constará la satisfacción con la calidad y cantidades allí registradas.
-                                2. Se podrán firmar actas de entrega parciales en aquellos casos en los que el proveedor requiera mayor tiempo para completar la entrega.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>JURÍDICAS</td>
-                            <td style={{ textAlign: 'left', padding: '10px', border: '1px solid black' }}>
-                                La inadecuada utilización de los activos productivos entregados para la implementación del proyecto productivo podrá generar, entre otras, consecuencias jurídicas por dicho incumplimiento.
-                                Adicionalmente, dicho incumplimiento podrá conllevar el retiro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS), la terminación de los beneficios otorgados y la imposibilidad de participar en futuros programas de sustitución promovidos por el Gobierno Nacional.
-                            </td>
-                        </tr>
-                        {dataReport?.observacion && (
-                            <tr>
-                                <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>OBSERVACIONES</td>
-                                <td style={{ textAlign: 'left', padding: '10px', border: '1px solid black' }}>
-                                    {dataReport?.observacion}
-                                    ({dataReport?.fecha_observacion.split('T')[0]})
-                                </td>
-                            </tr>
-                        )}
-
+                    )}
                     </thead>
                 </table>
 
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
-                        <tr>
-                            <td style={{ width: '10%', height: '100px', textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={3}>Firma del titular:</td>
-                            <td style={{ width: '8%', textAlign: 'left', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={2}>Huella del titular:</td>
-                            <td style={{ width: '10%', textAlign: 'left', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={3}>Firma del tecnico:</td>
-                        </tr>
-                        <tr>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del titular:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>{dataReport?.nombre}</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>C.C: {dataReport?.cedula}</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del técnico:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={3}>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Lugar y fecha de las firmas:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={2}>&nbsp;</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Tarjeta profesional:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Cédula del técnico:</td>
-                            <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
-                        </tr>
+                    <tr>
+                        <td style={{ width: '10%', height: '100px', textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={3}>Firma del titular:</td>
+                        <td style={{ width: '8%', textAlign: 'left', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={2}>Huella del titular:</td>
+                        <td style={{ width: '10%', textAlign: 'left', borderRight: '1px solid black', verticalAlign: 'bottom' }} colSpan={3}>Firma del tecnico:</td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del titular:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>{dataReport?.nombre}</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>C.C: {dataReport?.cedula}</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del técnico:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={3}>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Lugar y fecha de las firmas:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={2}>&nbsp;</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Tarjeta profesional:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Cédula del técnico:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
+                    </tr>
                     </thead>
                 </table>
             </div>
