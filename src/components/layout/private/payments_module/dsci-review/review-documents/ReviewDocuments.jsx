@@ -182,7 +182,7 @@ export const ReviewDocuments = () => {
             return;
         }
 
-        const ok = validateSupervisionFields(userAuth.rol_id);
+        const ok = validateSupervisionFields(userAuth.rol_id, accion);
         if (!ok) return;
 
         const payload = {
@@ -249,7 +249,7 @@ export const ReviewDocuments = () => {
     );
 
     //
-    const validateSupervisionFields = (role) => {
+    const validateSupervisionFields = (role, accion) => {
         // Checks obligatorios
         if ((!okOrden || !okActa) && role === RolesEnum.SUPERVISION) {
             AlertComponent.warning("Debes marcar 'Orden de compra' y 'Acta de entrega' para aprobar.");
@@ -268,7 +268,7 @@ export const ReviewDocuments = () => {
         }
         //
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
-        if (vFactura > valorEntrega || vFactura < newValorEntrega) {
+        if ((vFactura > valorEntrega || vFactura < newValorEntrega) && (accion === DeliveryDocumentReviewAction.APPROVE)) {
             AlertComponent.warning('Ojo!',
                 `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );

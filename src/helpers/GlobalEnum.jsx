@@ -80,3 +80,10 @@ export const DeliveryDocumentReviewAction = {
 export const InvoiceValueRange = {
     INVOICEVALUERANGE: 1000
 }
+
+export const TypeActorEnum = {
+    CULTIVATOR: 'CULTIVADOR',
+    NO_GROWER: 'NO CULTIVADOR',
+    COLLECTOR: 'RECOLECTOR',
+    NOT_DEFINED: 'NO DEFINIDO'
+}

@@ -165,6 +165,7 @@ export const CreateSuppliers = () => {
                 // 2. Datos base
                 const formattedValues = {
                     company_name: values.company_name,
+                    legal_representative: values.legal_representative,
                     nit: values.nit,
                     correo: values.email,
                     cellphone: values.cellphone,
