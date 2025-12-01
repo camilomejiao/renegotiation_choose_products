@@ -1,5 +1,5 @@
 import { GlobalConnex } from "../GlobalConnex";
-import {authTokenService} from "./AuthTokenService";
+import { authTokenService } from "./AuthTokenService";
 
 
 class ConvocationServices {
