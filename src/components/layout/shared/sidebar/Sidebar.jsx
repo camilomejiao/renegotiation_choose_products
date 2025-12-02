@@ -54,7 +54,7 @@ const menuConfig = {
     ],
     [RolesEnum.SUPERVISION]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/products-supervision", icon: FaUserCheck, label: "Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
@@ -64,19 +64,19 @@ const menuConfig = {
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.PAYMENTS]: [
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.TRUST_PAYMENTS]: [
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
         { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
         { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.ENVIRONMENTAL]: [
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Catálogo de productos" },
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
@@ -85,7 +85,7 @@ const menuConfig = {
     [RolesEnum.TECHNICAL]: [
         { path: "/", icon: FaHouseUser, label: "Inicio" },
         { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo" },
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
         { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
@@ -95,7 +95,7 @@ const menuConfig = {
         { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
         { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
         { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
-        { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+        //{ path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
         { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
     ],
     [RolesEnum.SUPPLIER]: [
