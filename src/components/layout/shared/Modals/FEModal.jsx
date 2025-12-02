@@ -36,6 +36,7 @@ export const FEModal = ({ show, onClose, onSave, loading, defaultNumber = "" }) 
                             type="text"
                             placeholder="Ej: FV235"
                             value={feNumber}
+                            required={true}
                             onChange={(e) => setFeNumber(e.target.value)}
                         />
                     </Form.Group>
