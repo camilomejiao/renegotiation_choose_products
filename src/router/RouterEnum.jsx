@@ -1,3 +1,7 @@
+import {
+    SearchBeneficiaryInformation
+} from "../components/layout/private/beneficiaries_management_module/search_beneficiary_information/SearchBeneficiaryInformation";
+
 export const RouterEnum = {
 
     //Public
@@ -14,6 +18,9 @@ export const RouterEnum = {
     //Ordenes de compra
     SearchUser: 'search-user',
     CreateOrder: 'create-order/:id',
+
+    //Search Beneficiary Information
+    SearchBeneficiaryInformation: 'search-beneficiary-information',
 
     //Entregas
     SearchUserForDeliveries: 'search-user-for-deliveries',
@@ -35,10 +42,13 @@ export const RouterEnum = {
 
     //Managment
     Management: 'management',
+    //Managment Users
     CreateUsers: 'create-users',
     EditUsers: 'edit-users/:id',
+    //Managment Suppliers
     CreateSuppliers: 'create-suppliers',
     EditSuppliers: 'edit-suppliers/:id',
+    //Managment Convocation
     ConvocationList: 'list-convocation',
     CreateConvocation: 'create-convocation',
     CreateConvocationEdit: "create-convocation/:id",

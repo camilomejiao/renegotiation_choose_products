@@ -1190,6 +1190,11 @@ export const Deliveries = () => {
         try {
             setFeLoading(true);
 
+            if(!feNumber) {
+                showError("Error", "Debe agregar el número de Factura ó Documento Equivalente.");
+                return;
+            }
+
             // Guardas FE (archivo + número)
             await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
 
@@ -1203,7 +1208,6 @@ export const Deliveries = () => {
             setFeLoading(false);
         }
     };
-
 
     //
     const showAlert = (title, message) => {

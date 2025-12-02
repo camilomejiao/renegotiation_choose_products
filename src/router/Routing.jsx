@@ -72,6 +72,9 @@ import {
 import {
     SearchPaymentRequests
 } from "../components/layout/private/payments_module/fiduciary/search_payment_requests/SearchPaymentRequests";
+import {
+    SearchBeneficiaryInformation
+} from "../components/layout/private/beneficiaries_management_module/search_beneficiary_information/SearchBeneficiaryInformation";
 
 export const Routing = () => {
     return (
@@ -93,6 +96,7 @@ export const Routing = () => {
 
                         {/* Buscar usuario */}
                         <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
+                        <Route path={ RouterEnum.SearchBeneficiaryInformation }  element={ <SearchBeneficiaryInformation /> }  />
 
                         {/* Renegociacion */}
                         <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
