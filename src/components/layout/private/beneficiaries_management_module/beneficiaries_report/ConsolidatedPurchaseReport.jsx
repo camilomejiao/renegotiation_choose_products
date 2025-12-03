@@ -1,3 +1,4 @@
+import { TypeActorEnum } from "../../../../../helpers/GlobalEnum";
 
 
 export const ConsolidatedPurchaseReport = ({dataReport}) => {
