@@ -1,6 +1,3 @@
-import {
-    SearchBeneficiaryInformation
-} from "../components/layout/private/beneficiaries_management_module/search_beneficiary_information/SearchBeneficiaryInformation";
 
 export const RouterEnum = {
 
