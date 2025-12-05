@@ -80,11 +80,11 @@ class SupplierServices {
     }
 
 
-    updateSupplier(id, payload) {
+    updateSupplier(id, formData) {
         const url = this.buildUrl(`${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
             method: "PUT",
-            body: JSON.stringify(payload),
+            body: formData,
         });
     }
 

@@ -17,6 +17,8 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 
+
+//
 const initialValues = {
     company_name: "",
     nit: "",
@@ -39,6 +41,7 @@ const initialValues = {
     ],
 };
 
+//
 const validationSchema = yup.object().shape({
     company_name: yup.string().required("El nombre de la compañia es requerido"),
     nit: yup.string().required("El nit o cedula es requerido"),
@@ -152,81 +155,87 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                //1. Cuentas bancarias (solo en edición)
-                let cuentas_bancarias = [];
-                if (isEdit && Array.isArray(values.accounts)) {
-                    cuentas_bancarias = values.accounts.map(acc => ({
-                        tipo_cuenta: acc.account_type || null,
-                        numero_cuenta: acc.account_number || null,
-                        banco: acc.bank || null,
-                    }));
-                }
-
-                // 2. Datos base
-                const formattedValues = {
-                    company_name: values.company_name,
-                    legal_representative: values.legal_representative,
-                    nit: values.nit,
-                    correo: values.email,
-                    cellphone: values.cellphone,
-                    aprobado: values.active,
-                    resolucion_aprobacion: values.resolution,
-                    fecha_registro: new Date().toISOString().slice(0, 10),
-                    depto_id: values.depto?.id ?? null,
-                    muni_id: values.muni?.id ?? null,
-                    ...(isEdit && { cuentas_bancarias }),
-                };
-
                 let response;
 
-                console.log('formattedValues: ', formattedValues);
+                // ==========================
+                //     CASO CREAR (JSON)
+                // ==========================
+                if (!isEdit) {
+                    const payload = {
+                        company_name: values.company_name,
+                        legal_representative: values.legal_representative,
+                        nit: values.nit,
+                        correo: values.email,
+                        cellphone: values.cellphone,
+                        aprobado: values.active,
+                        resolucion_aprobacion: values.resolution,
+                        fecha_registro: new Date().toISOString().slice(0, 10),
+                        depto_id: values.depto?.id ?? null,
+                        muni_id: values.muni?.id ?? null,
+                    };
 
-                // =========  EDICIÓN   ======
+                    console.log("payload:", payload);
+                    response = await supplierServices.createSupplier(payload);
+                }
+
+                // ==========================
+                //     CASO EDITAR (FORMDATA)
+                // ==========================
                 if (isEdit) {
                     const formData = new FormData();
 
-                    // Datos simples + cuentas bancarias
-                    Object.entries(formattedValues).forEach(([key, val]) => {
-                        if (key === "cuentas_bancarias") {
-                            formData.append(key, JSON.stringify(val)); // backend espera JSON
-                        } else if (val !== null && val !== undefined) {
-                            formData.append(key, val);
+                    // 1.
+                    formData.append("nombre", values.company_name);
+                    formData.append("correo", values.email);
+                    formData.append("nit", values.nit);
+                    formData.append("nombre_representante",values.legal_representative || "");
+                    formData.append("telefono_representante",values.cellphone || "");
+                    formData.append("cedula_representante", values.nit || "");
+                    formData.append("aprobado", values.active ? "true" : "false");
+                    formData.append("resolucion_aprobacion",values.resolution || "");
+
+                    if (values.muni?.id) {
+                        formData.append("ubicacion_id", String(values.muni.id));
+                    }
+
+                    // 2. Bancos
+                    const bancos = (values.accounts || []).map((acc) => ({
+                        tipo_cuenta: acc.account_type,
+                        numero_cuenta: acc.account_number || "",
+                        entidad_bancaria: acc.bank || "",
+                    }));
+
+                    formData.append("bancos", JSON.stringify(bancos));
+
+                    // 3. Archivos por cuenta
+                    (values.accounts || []).forEach((acc, index) => {
+                        if (acc.bankCertFile) {
+                            formData.append(`certificado_bancario_pdf_${index}`,acc.bankCertFile);
                         }
                     });
 
-                    // Archivos por cuenta
-                    if (Array.isArray(values.accounts)) {
-                        values.accounts.forEach((acc, index) => {
-                            if (acc.bankCertFile) {
-                                formData.append(
-                                    `cuentas_bancarias[${index}][certificado_bancario]`,
-                                    acc.bankCertFile
-                                );
-                            }
-                        });
+                    if (values.rutFile) {
+                        formData.append("rut_pdf_0", values.rutFile);
                     }
 
-                    // Si tienes archivos adicionales:
-                    if (values.rutFile) formData.append("rut_file", values.rutFile);
-                    if (values.idFile) formData.append("id_file", values.idFile);
+                    if (values.idFile) {
+                        formData.append("cedula_representante_pdf", values.idFile);
+                    }
 
-                    for (let [key, value] of formData.entries()) {
-                        console.log("KEY:", key, "VALUE:", value);
+                    //Debug
+                    for (let [key, val] of formData.entries()) {
+                        console.log("FORMDATA:", key, val);
                     }
 
                     response = await supplierServices.updateSupplier(id, formData);
                 }
-                else {
-                    response = await supplierServices.createSupplier(formattedValues);
-                }
 
-                if ([ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
+                if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
                     AlertComponent.success("Operación realizada correctamente");
                     navigate("/admin/management");
                 } else {
-                    AlertComponent.warning("Error", response?.data?.errors?.[0]?.title);
+                    AlertComponent.warning("Error",response?.data?.errors?.[0]?.title);
                 }
-
             } catch (error) {
                 console.error("Error al enviar el formulario:", error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
@@ -234,6 +243,7 @@ export const CreateSuppliers = () => {
         },
     });
 
+    //
     const fetchSupplierData = async (id) => {
         try {
             const {data, status} = await supplierServices.getSupplierById(id);
@@ -475,7 +485,7 @@ export const CreateSuppliers = () => {
                                 {formik.values.accounts.map((account, index) => (
                                     <Card key={index} className="p-3 p-md-4 shadow-sm mb-3">
                                         <div className="d-flex justify-content-between align-items-center mb-2">
-                                            <h5 className="mb-0">Cuenta bancaria #{index + 1}</h5>
+                                            <h3 className="mb-0 fw-semibold">Cuenta bancaria #{index + 1}</h3>
                                             {formik.values.accounts.length > 1 && (
                                                 <Button
                                                     variant="outline-danger"
@@ -494,6 +504,7 @@ export const CreateSuppliers = () => {
                                         <div className="row g-3 mt-2">
                                             {/* Tipo de cuenta */}
                                             <div className="col-md-6">
+                                                <label className="form-label fw-semibold">Tipo de cuenta <span className="text-danger">*</span></label>
                                                 <TextField
                                                     fullWidth
                                                     select
@@ -506,13 +517,14 @@ export const CreateSuppliers = () => {
                                                     helperText="Selecciona el tipo de cuenta"
                                                 >
                                                     <option value=""></option>
-                                                    <option value="AHORROS">Ahorros</option>
-                                                    <option value="CORRIENTE">Corriente</option>
+                                                    <option value="AHO">Ahorros</option>
+                                                    <option value="COR">Corriente</option>
                                                 </TextField>
                                             </div>
 
                                             {/* Número de cuenta */}
                                             <div className="col-md-6">
+                                                <label className="form-label fw-semibold">Número de cuenta <span className="text-danger">*</span></label>
                                                 <TextField
                                                     fullWidth
                                                     label="Número de cuenta"
@@ -525,26 +537,22 @@ export const CreateSuppliers = () => {
 
                                             {/* Banco */}
                                             <div className="col-md-6">
-                                                <TextField
-                                                    fullWidth
-                                                    select
-                                                    SelectProps={{ native: true }}
-                                                    label="Entidad bancaria"
+                                                <label className="form-label fw-semibold">Entidad bancaria <span className="text-danger">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="entidadBancaria"
                                                     value={account.bank}
                                                     onChange={(e) =>
                                                         formik.setFieldValue(`accounts[${index}].bank`, e.target.value)
                                                     }
-                                                >
-                                                    <option value=""></option>
-                                                    <option value="BANCOLOMBIA">Bancolombia</option>
-                                                    <option value="BANCO_CAJA_SOCIAL">Banco Caja Social</option>
-                                                    <option value="DAVIVIENDA">Davivienda</option>
-                                                </TextField>
+                                                    placeholder="Ej: Banco Agrario"
+                                                />
                                             </div>
 
                                             {/* Certificado bancario */}
                                             <div className="col-md-6 mt-3">
-                                                <label className="form-label d-block">Certificado bancario</label>
+                                                <label className="form-label fw-semibold">Certificado bancario <span className="text-danger">*</span></label>
                                                 <input
                                                     type="file"
                                                     accept="application/pdf,image/*"
