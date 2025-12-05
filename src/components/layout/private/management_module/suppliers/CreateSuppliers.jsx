@@ -156,7 +156,7 @@ export const CreateSuppliers = () => {
 
     //
     const handleRemoveAccount = async (index, account) => {
-        //Si es una cuenta nueva (sin id), se puede borrar directo
+        //Si no teine id quiere decir q es nueva
         console.log(index, account);
         if (!account.id) {
             const next = [...formik.values.accounts];
@@ -166,14 +166,11 @@ export const CreateSuppliers = () => {
         }
 
         try {
-            // Si quieres, también puedes poner un confirm
             if (!window.confirm("¿Seguro que deseas eliminar esta cuenta bancaria?")) return;
 
             setLoading(true);
             setInformationLoadingText("Validando eliminación de la cuenta bancaria...");
 
-            // 👇 Aquí asumo un servicio de validación / eliminación
-            // AJUSTA esto al endpoint real:
             const { status, data } = await supplierServices.validateOrDeleteBankAccount(account.id);
 
             if (status === ResponseStatusEnum.OK) {
@@ -205,9 +202,7 @@ export const CreateSuppliers = () => {
             try {
                 let response;
 
-                // ==========================
-                //     CASO CREAR (JSON)
-                // ==========================
+                //CREAR (JSON)
                 if (!isEdit) {
                     const payload = {
                         company_name: values.company_name,
@@ -226,13 +221,12 @@ export const CreateSuppliers = () => {
                     response = await supplierServices.createSupplier(payload);
                 }
 
-                // ==========================
-                //     CASO EDITAR (FORMDATA)
-                // ==========================
+                //EDITAR (FORMDATA)
+
                 if (isEdit) {
                     const formData = new FormData();
 
-                    // 1.
+                    // 1. Datos generales
                     formData.append("nombre", values.company_name);
                     formData.append("correo", values.email);
                     formData.append("nit", values.nit);
@@ -325,11 +319,6 @@ export const CreateSuppliers = () => {
                         bankCertFile: c?.ruta_certificado_bancario,
                     })),
                 });
-
-                // si tienes depto, puedes precargar municipios:
-                if (deptoObj) {
-                    await refreshMunicipalities(deptoObj);
-                }
             }
         } catch (error) {
             console.error("Error al enviar el formulario:", error);
