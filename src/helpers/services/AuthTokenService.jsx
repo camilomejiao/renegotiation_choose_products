@@ -10,16 +10,35 @@ class AuthTokenService {
             return {status: 401, message: "No token available" };
         }
 
+        // Crear headers base
         const headers = {
             'Authorization': `Bearer ${token}`,
         };
 
-        // Detectar si el body es FormData o si el método es GET
-        if (options.method !== 'GET' && !(options.body instanceof FormData)) {
-            headers['Content-Type'] = 'application/json'; // Solo agregar Content-Type si no es FormData
+        // Fusionar headers existentes de options (si los hay)
+        if (options.headers) {
+            Object.assign(headers, options.headers);
         }
 
-        const response = await fetch(url, { ...options, headers });
+        // Detectar si el body es FormData
+        const isFormData = options.body instanceof FormData;
+        
+        // Solo agregar Content-Type si NO es FormData y NO está ya definido
+        if (options.method !== 'GET' && !isFormData && !headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        // IMPORTANTE: Si es FormData, NO establecer Content-Type
+        // El navegador lo establecerá automáticamente con el boundary correcto
+        if (isFormData) {
+            // Eliminar Content-Type si existe para que el navegador lo establezca
+            delete headers['Content-Type'];
+        }
+
+        const response = await fetch(url, { 
+            ...options, 
+            headers 
+        });
 
         if (response.status === 401) {
             // Limpiar el token y redirigir al login si hay un error de autenticación
