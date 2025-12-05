@@ -94,6 +94,12 @@ class SupplierServices {
     }
 
 
+    validateOrDeleteBankAccount(accountId) {
+        const url = this.buildUrl(`${accountId}/eliminar`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
+
     // =============================
     // GESTIÓN DE LOCALSTORAGE
     // =============================

@@ -16,6 +16,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 //Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
+import {filesServices} from "../../../../../helpers/services/FilesServices";
 
 
 //
@@ -33,6 +34,7 @@ const initialValues = {
     idFile: null,
     accounts: [
         {
+            id: null,
             account_type: "",
             account_number: "",
             bank: "",
@@ -62,6 +64,7 @@ const validationSchema = yup.object().shape({
         .array()
         .of(
             yup.object().shape({
+                id: yup.mixed().nullable(),
                 account_type: yup.string().nullable(),
                 account_number: yup.string().nullable(),
                 bank: yup.string().nullable(),
@@ -76,6 +79,8 @@ export const CreateSuppliers = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEdit = Boolean(id);
+    const [loading, setLoading] = useState(false);
+    const [informationLoadingText, setInformationLoadingText] = useState("");
     const [deptOptions, setDeptOptions] = useState([]);
     const [muniOptions, setMuniOptions] = useState([]);
     const [loadingDepts, setLoadingDepts] = useState(false);
@@ -150,6 +155,49 @@ export const CreateSuppliers = () => {
     };
 
     //
+    const handleRemoveAccount = async (index, account) => {
+        //Si es una cuenta nueva (sin id), se puede borrar directo
+        console.log(index, account);
+        if (!account.id) {
+            const next = [...formik.values.accounts];
+            next.splice(index, 1);
+            formik.setFieldValue("accounts", next);
+            return;
+        }
+
+        try {
+            // Si quieres, también puedes poner un confirm
+            if (!window.confirm("¿Seguro que deseas eliminar esta cuenta bancaria?")) return;
+
+            setLoading(true);
+            setInformationLoadingText("Validando eliminación de la cuenta bancaria...");
+
+            // 👇 Aquí asumo un servicio de validación / eliminación
+            // AJUSTA esto al endpoint real:
+            const { status, data } = await supplierServices.validateOrDeleteBankAccount(account.id);
+
+            if (status === ResponseStatusEnum.OK) {
+                const next = [...formik.values.accounts];
+                next.splice(index, 1);
+                formik.setFieldValue("accounts", next);
+                AlertComponent.success("Cuenta bancaria eliminada correctamente.");
+            } else {
+                AlertComponent.warning(
+                    "No se puede eliminar la cuenta bancaria.",
+                    data?.detail || "La cuenta está asociada a información de pagos."
+                );
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Error al validar la eliminación de la cuenta bancaria.");
+        } finally {
+            setLoading(false);
+            setInformationLoadingText("");
+        }
+    };
+
+
+    //
     const formik = useFormik({
         initialValues,
         validationSchema,
@@ -200,6 +248,7 @@ export const CreateSuppliers = () => {
 
                     // 2. Bancos
                     const bancos = (values.accounts || []).map((acc) => ({
+                        banco_id: acc.id,
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
                         entidad_bancaria: acc.bank || "",
@@ -215,7 +264,7 @@ export const CreateSuppliers = () => {
                     });
 
                     if (values.rutFile) {
-                        formData.append("rut_pdf_0", values.rutFile);
+                        formData.append("rut_pdf", values.rutFile);
                     }
 
                     if (values.idFile) {
@@ -246,6 +295,8 @@ export const CreateSuppliers = () => {
     //
     const fetchSupplierData = async (id) => {
         try {
+            setLoading(true);
+            setInformationLoadingText("Cargando Información...");
             const {data, status} = await supplierServices.getSupplierById(id);
             if(status === ResponseStatusEnum.OK) {
                 const resp = data?.data?.proveedor;
@@ -258,19 +309,20 @@ export const CreateSuppliers = () => {
                     company_name: resp?.nombre,
                     nit: resp?.nit,
                     email: resp?.correo,
-                    cellphone: resp?.telefono ?? "",
+                    cellphone: resp?.telefono_representante ?? "",
                     resolution: resp?.resolucion_aprobacion,
                     active: resp?.aprobado,
-                    legal_representative: resp?.representante ?? "",
+                    legal_representative: resp?.nombre_representante ?? "",
                     depto: deptoObj,
                     muni: muniObj,
-                    rutFile: null,
-                    idFile: null,
-                    accounts: (resp?.cuentas_bancarias || []).map((c) => ({
+                    rutFile: resp?.ruta_cedula_representante,
+                    idFile: resp?.ruta_cedula_representante,
+                    accounts: (resp?.bancos || []).map((c) => ({
+                        id: c.id,
                         account_type: c.tipo_cuenta ?? "",
                         account_number: c.numero_cuenta ?? "",
-                        bank: c.banco ?? "",
-                        bankCertFile: null,
+                        bank: c.entidad_bancaria ?? "",
+                        bankCertFile: c?.ruta_certificado_bancario,
                     })),
                 });
 
@@ -282,6 +334,41 @@ export const CreateSuppliers = () => {
         } catch (error) {
             console.error("Error al enviar el formulario:", error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
+        } finally {
+            setLoading(false);
+            setInformationLoadingText("");
+        }
+    };
+
+    //
+    const handleViewFile = async (pdfUrl) => {
+        if (!pdfUrl) {
+            AlertComponent.error('Error', 'No hay un archivo cargado para esta entrega.');
+            return;
+        }
+        setLoading(true);
+        try {
+            setInformationLoadingText("Obteniendo archivo");
+
+            const { blob, status, type } = await filesServices.downloadFile(pdfUrl);
+
+            if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
+                const mime = (type || blob.type || '').toLowerCase();
+
+                // Solo PDF o imágenes
+                if (mime.includes('pdf') || mime.startsWith('image/')) {
+                    const fileURL = URL.createObjectURL(blob);
+                    window.open(fileURL, '_blank');
+                }
+            }
+
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo, archivo no encontrado.');
+            }
+        } catch (error) {
+            console.error("Error al descargar archivo:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -303,6 +390,12 @@ export const CreateSuppliers = () => {
                     bannerInformation={''}
                     backgroundInformationColor={''}
                 />
+
+                {loading && (
+                    <div className="overlay">
+                        <div className="loader">{informationLoadingText}</div>
+                    </div>
+                )}
 
                 <form onSubmit={formik.handleSubmit} className="container">
                     <div className="row g-3 mt-5">
@@ -461,113 +554,184 @@ export const CreateSuppliers = () => {
                                         {/* Archivos adjuntos RUT */}
                                         <div className="col-md-6 mt-3">
                                             <label className="form-label d-block">RUT (PDF)</label>
+                                            <div className="d-flex gap-2 align-items-center">
                                             <input
                                                 type="file"
                                                 accept="application/pdf,image/*"
                                                 className="form-control"
                                                 onChange={(e) => formik.setFieldValue("rutFile", e.currentTarget.files[0])}
                                             />
+                                            {typeof formik.values.rutFile === "string" &&
+                                                formik.values.rutFile && (
+                                                    <Button
+                                                        variant="outline-primary"
+                                                        size="sm"
+                                                        type="button"
+                                                        onClick={() => handleViewFile(formik.values.rutFile)}
+                                                    >
+                                                        Ver documento
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Archivos adjuntos CEDULA */}
                                         <div className="col-md-6 mt-3">
                                             <label className="form-label d-block">Cédula representante (PDF/imagen)</label>
-                                            <input
-                                                type="file"
-                                                accept="application/pdf,image/*"
-                                                className="form-control"
-                                                onChange={(e) => formik.setFieldValue("idFile", e.currentTarget.files[0])}
-                                            />
-                                        </div>
-                                    </div>
-                                </Card>
-
-                                {formik.values.accounts.map((account, index) => (
-                                    <Card key={index} className="p-3 p-md-4 shadow-sm mb-3">
-                                        <div className="d-flex justify-content-between align-items-center mb-2">
-                                            <h3 className="mb-0 fw-semibold">Cuenta bancaria #{index + 1}</h3>
-                                            {formik.values.accounts.length > 1 && (
-                                                <Button
-                                                    variant="outline-danger"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        const next = [...formik.values.accounts];
-                                                        next.splice(index, 1);
-                                                        formik.setFieldValue("accounts", next);
-                                                    }}
-                                                >
-                                                    Eliminar
-                                                </Button>
-                                            )}
-                                        </div>
-
-                                        <div className="row g-3 mt-2">
-                                            {/* Tipo de cuenta */}
-                                            <div className="col-md-6">
-                                                <label className="form-label fw-semibold">Tipo de cuenta <span className="text-danger">*</span></label>
-                                                <TextField
-                                                    fullWidth
-                                                    select
-                                                    SelectProps={{ native: true }}
-                                                    label="Tipo de cuenta"
-                                                    value={account.account_type}
-                                                    onChange={(e) =>
-                                                        formik.setFieldValue(`accounts[${index}].account_type`, e.target.value)
-                                                    }
-                                                    helperText="Selecciona el tipo de cuenta"
-                                                >
-                                                    <option value=""></option>
-                                                    <option value="AHO">Ahorros</option>
-                                                    <option value="COR">Corriente</option>
-                                                </TextField>
-                                            </div>
-
-                                            {/* Número de cuenta */}
-                                            <div className="col-md-6">
-                                                <label className="form-label fw-semibold">Número de cuenta <span className="text-danger">*</span></label>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Número de cuenta"
-                                                    value={account.account_number}
-                                                    onChange={(e) =>
-                                                        formik.setFieldValue(`accounts[${index}].account_number`, e.target.value)
-                                                    }
-                                                />
-                                            </div>
-
-                                            {/* Banco */}
-                                            <div className="col-md-6">
-                                                <label className="form-label fw-semibold">Entidad bancaria <span className="text-danger">*</span></label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    name="entidadBancaria"
-                                                    value={account.bank}
-                                                    onChange={(e) =>
-                                                        formik.setFieldValue(`accounts[${index}].bank`, e.target.value)
-                                                    }
-                                                    placeholder="Ej: Banco Agrario"
-                                                />
-                                            </div>
-
-                                            {/* Certificado bancario */}
-                                            <div className="col-md-6 mt-3">
-                                                <label className="form-label fw-semibold">Certificado bancario <span className="text-danger">*</span></label>
+                                            <div className="d-flex gap-2 align-items-center">
                                                 <input
                                                     type="file"
                                                     accept="application/pdf,image/*"
                                                     className="form-control"
                                                     onChange={(e) =>
-                                                        formik.setFieldValue(
-                                                            `accounts[${index}].bankCertFile`,
-                                                            e.currentTarget.files?.[0] ?? null
-                                                        )
+                                                        formik.setFieldValue("idFile", e.currentTarget.files?.[0] ?? null)
                                                     }
                                                 />
+                                                {typeof formik.values.idFile === "string" &&
+                                                    formik.values.idFile && (
+                                                        <Button
+                                                            variant="outline-primary"
+                                                            size="sm"
+                                                            type="button"
+                                                            onClick={() => handleViewFile(formik.values.idFile)}
+                                                        >
+                                                            Ver documento
+                                                        </Button>
+                                                )}
                                             </div>
                                         </div>
-                                    </Card>
-                                ))}
+                                    </div>
+                                </Card>
+
+                                {formik.values.accounts.map((account, index) => {
+                                    const isEditable = !account.id;
+
+                                    return (
+                                        <Card key={index} className="p-3 p-md-4 shadow-sm mb-3">
+                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                <h3 className="mb-0 fw-semibold">
+                                                    Cuenta bancaria #{index + 1}
+                                                    {!isEditable && (
+                                                        <span className="ms-2 badge bg-secondary">
+                                                            Solo lectura
+                                                        </span>
+                                                    )}
+                                                </h3>
+
+                                                <Button
+                                                    variant="outline-danger"
+                                                    size="sm"
+                                                    type="button"
+                                                    onClick={() => handleRemoveAccount(index, account)}
+                                                >
+                                                    Eliminar
+                                                </Button>
+                                            </div>
+
+                                            <div className="row g-3 mt-2">
+                                                {/* Tipo de cuenta */}
+                                                <div className="col-md-6">
+                                                    <label className="form-label fw-semibold">
+                                                        Tipo de cuenta <span className="text-danger">*</span>
+                                                    </label>
+                                                    <TextField
+                                                        fullWidth
+                                                        select
+                                                        SelectProps={{ native: true }}
+                                                        label="Tipo de cuenta"
+                                                        value={account.account_type}
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue(
+                                                                `accounts[${index}].account_type`,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        helperText="Selecciona el tipo de cuenta"
+                                                        disabled={!isEditable}     // 🔒 bloquea edición si viene del backend
+                                                    >
+                                                        <option value=""></option>
+                                                        <option value="AHO">Ahorros</option>
+                                                        <option value="COR">Corriente</option>
+                                                    </TextField>
+                                                </div>
+
+                                                {/* Número de cuenta */}
+                                                <div className="col-md-6">
+                                                    <label className="form-label fw-semibold">
+                                                        Número de cuenta <span className="text-danger">*</span>
+                                                    </label>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Número de cuenta"
+                                                        value={account.account_number}
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue(
+                                                                `accounts[${index}].account_number`,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        disabled={!isEditable}     // 🔒 solo editable en cuentas nuevas
+                                                    />
+                                                </div>
+
+                                                {/* Banco */}
+                                                <div className="col-md-6">
+                                                    <label className="form-label fw-semibold">
+                                                        Entidad bancaria <span className="text-danger">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        name="entidadBancaria"
+                                                        value={account.bank}
+                                                        onChange={(e) =>
+                                                            formik.setFieldValue(
+                                                                `accounts[${index}].bank`,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Ej: Banco Agrario"
+                                                        disabled={!isEditable}     // 🔒 bloquear también aquí
+                                                    />
+                                                </div>
+
+                                                {/* Certificado bancario */}
+                                                <div className="col-md-6 mt-3">
+                                                    <label className="form-label fw-semibold">
+                                                        Certificado bancario <span className="text-danger">*</span>
+                                                    </label>
+                                                    <div className="d-flex gap-2 align-items-center">
+                                                        <input
+                                                            type="file"
+                                                            accept="application/pdf,image/*"
+                                                            className="form-control"
+                                                            onChange={(e) =>
+                                                                formik.setFieldValue(
+                                                                    `accounts[${index}].bankCertFile`,
+                                                                    e.currentTarget.files?.[0] ?? null
+                                                                )
+                                                            }
+                                                            disabled={!isEditable} // 🔒 solo subir archivo en la cuenta nueva
+                                                        />
+
+                                                        {/* Ver documento si existe ruta en cuentas viejas o nuevas guardadas */}
+                                                        {typeof account.bankCertFile === "string" &&
+                                                            account.bankCertFile && (
+                                                                <Button
+                                                                    variant="outline-primary"
+                                                                    size="sm"
+                                                                    type="button"
+                                                                    onClick={() => handleViewFile(account.bankCertFile)}
+                                                                >
+                                                                    Ver documento
+                                                                </Button>
+                                                            )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    );
+                                })}
 
                                 {/* Botón para agregar nueva cuenta */}
                                 <div className="d-flex justify-content-end">
@@ -578,6 +742,7 @@ export const CreateSuppliers = () => {
                                             formik.setFieldValue("accounts", [
                                                 ...formik.values.accounts,
                                                 {
+                                                    id: null,
                                                     account_type: "",
                                                     account_number: "",
                                                     bank: "",
@@ -586,7 +751,7 @@ export const CreateSuppliers = () => {
                                             ])
                                         }
                                     >
-                                        + Agregar otra cuenta
+                                        + Agregar cuenta
                                     </Button>
                                 </div>
                             </Card>
