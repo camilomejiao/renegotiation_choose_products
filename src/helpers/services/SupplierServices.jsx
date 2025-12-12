@@ -80,16 +80,27 @@ class SupplierServices {
     }
 
 
-    updateSupplier(id, payload) {
+    updateSupplier(id, formData) {
         const url = this.buildUrl(`${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
             method: "PUT",
-            body: JSON.stringify(payload),
+            body: formData,
         });
     }
 
     getSupplierById(supplierId) {
         const url = this.buildUrl(`${supplierId}/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+
+    validateOrDeleteBankAccount(accountId) {
+        const url = this.buildUrl(`${accountId}/eliminar`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
+    getBankAccountsBySupplierId(supplierId) {
+        const url = this.buildUrl(`${supplierId}/cuentas-bancarias/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
