@@ -63,12 +63,14 @@ const menuConfig = (role, id) => {
         ],
         [RolesEnum.PAYMENTS]: [
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TRUST_PAYMENTS]: [
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
