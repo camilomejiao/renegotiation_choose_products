@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { Autocomplete, CircularProgress, FormControlLabel, Switch, TextField } from "@mui/material";
@@ -7,16 +7,20 @@ import { useFormik } from "formik";
 
 //Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+
 //Enum
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import {ResponseStatusEnum, RolesEnum} from "../../../../../helpers/GlobalEnum";
+
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+
 //Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
-import {filesServices} from "../../../../../helpers/services/FilesServices";
+import { filesServices } from "../../../../../helpers/services/FilesServices";
 
 
 //
@@ -74,11 +78,15 @@ const validationSchema = yup.object().shape({
         .min(1, "Debe existir al menos una cuenta bancaria"),
 });
 
+const rolesAllow = RolesEnum.ADMIN;
+
 export const CreateSuppliers = () => {
 
+    const { userAuth } = useOutletContext();
     const navigate = useNavigate();
     const { id } = useParams();
     const isEdit = Boolean(id);
+
     const [loading, setLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [deptOptions, setDeptOptions] = useState([]);
@@ -92,8 +100,8 @@ export const CreateSuppliers = () => {
 
     //
     const loadDepartmentsOnce = async () => {
-        if (deptsLoadedRef.current) {
-            return;
+        if (deptsLoadedRef.current && deptOptions.length) {
+            return deptOptions;
         }
 
         try {
@@ -101,22 +109,24 @@ export const CreateSuppliers = () => {
             const {data, status} = await locationServices.getDeptos();
             if(status === ResponseStatusEnum.OK) {
                 setDeptOptions(data);
-                setLoadingDepts(false);
                 deptsLoadedRef.current = true;
+                return data;
             }
+            return [];
         } catch (error) {
             console.error(error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
+        } finally {
+            setLoadingDepts(false);
         }
     };
 
     //
     const refreshMunicipalities = async (selectedDept) => {
-        console.log(selectedDept);
         if (!selectedDept) {
             setMuniOptions([]);
             formik.setFieldValue("muni", null);
-            return;
+            return [];
         }
 
         try {
@@ -136,6 +146,8 @@ export const CreateSuppliers = () => {
             if (!current || !list.some(m => m.id === current.id)) {
                 formik.setFieldValue("muni", null);
             }
+
+            return list;
         } catch (error) {
             console.log(error);
         }  finally {
@@ -292,12 +304,19 @@ export const CreateSuppliers = () => {
             setLoading(true);
             setInformationLoadingText("Cargando Información...");
             const {data, status} = await supplierServices.getSupplierById(id);
+
             if(status === ResponseStatusEnum.OK) {
                 const resp = data?.data?.proveedor;
 
-                // si backend trae depto/muni como objetos con id/nombre
-                const deptoObj = resp?.depto ?? null;
-                const muniObj  = resp?.muni ?? null;
+                //Cargamos los deptos
+                const deptos = await loadDepartmentsOnce();
+
+                //Buscamos el apto
+                const deptoObj = deptos.find((d) => d.nombre === resp?.depto_name || null);
+                //Cargamos los munis
+                const munis  = await refreshMunicipalities(deptoObj);
+                //Buscamos el muni
+                const muniObj = munis.find((m) => m.nombre === resp?.municipio_name || null);
 
                 await formik.setValues({
                     company_name: resp?.nombre,
@@ -307,9 +326,9 @@ export const CreateSuppliers = () => {
                     resolution: resp?.resolucion_aprobacion,
                     active: resp?.aprobado,
                     legal_representative: resp?.nombre_representante ?? "",
-                    depto: deptoObj,
-                    muni: muniObj,
-                    rutFile: resp?.ruta_cedula_representante,
+                    depto: deptoObj, //Pasamos el objeto
+                    muni: muniObj, //Pasamos el objeto
+                    rutFile: resp?.ruta_rut,
                     idFile: resp?.ruta_cedula_representante,
                     accounts: (resp?.bancos || []).map((c) => ({
                         id: c.id,
@@ -361,8 +380,11 @@ export const CreateSuppliers = () => {
         }
     };
 
+    const disabledEdit = () => {
+        return userAuth?.rol_id === rolesAllow;
+    }
+
     useEffect(() => {
-        loadDepartmentsOnce();
         if (id) {
             fetchSupplierData(id)
         }
@@ -397,6 +419,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("company_name")}
                                 error={formik.touched.company_name && Boolean(formik.errors.company_name)}
                                 helperText={formik.touched.company_name && formik.errors.company_name}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -408,6 +431,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("nit")}
                                 error={formik.touched.nit && Boolean(formik.errors.nit)}
                                 helperText={formik.touched.nit && formik.errors.nit}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -419,6 +443,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("email")}
                                 error={formik.touched.email && Boolean(formik.errors.email)}
                                 helperText={formik.touched.email && formik.errors.email}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -430,6 +455,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("cellphone")}
                                 error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
                                 helperText={formik.touched.cellphone && formik.errors.cellphone}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -441,6 +467,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("legal_representative")}
                                 error={formik.touched.legal_representative && Boolean(formik.errors.legal_representative)}
                                 helperText={formik.touched.legal_representative && formik.errors.legal_representative}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -452,6 +479,7 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("resolution")}
                                 error={formik.touched.resolution && Boolean(formik.errors.resolution)}
                                 helperText={formik.touched.resolution && formik.errors.resolution}
+                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -636,7 +664,7 @@ export const CreateSuppliers = () => {
                                                             )
                                                         }
                                                         helperText="Selecciona el tipo de cuenta"
-                                                        disabled={!isEditable}     // 🔒 bloquea edición si viene del backend
+                                                        disabled={!isEditable}
                                                     >
                                                         <option value=""></option>
                                                         <option value="AHO">Ahorros</option>
@@ -659,7 +687,7 @@ export const CreateSuppliers = () => {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        disabled={!isEditable}     // 🔒 solo editable en cuentas nuevas
+                                                        disabled={!isEditable}
                                                     />
                                                 </div>
 

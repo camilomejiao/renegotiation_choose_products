@@ -99,6 +99,11 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
+    getBankAccountsBySupplierId(supplierId) {
+        const url = this.buildUrl(`${supplierId}/cuentas-bancarias/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
 
     // =============================
     // GESTIÓN DE LOCALSTORAGE
