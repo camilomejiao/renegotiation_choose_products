@@ -61,7 +61,7 @@ export const DeliveryStatusEnum = {
     },
     DELIVERED: {
         key: "entregadas",
-        label: "Entregadas",
+        label: "Entregadas con documentación",
         value: "ENTREGADO"
     },
     SENT_TO_SUPERVISION: {
