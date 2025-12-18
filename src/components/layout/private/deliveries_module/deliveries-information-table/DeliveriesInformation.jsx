@@ -69,7 +69,7 @@ export const DeliveriesInformation = () => {
     const [selectedDeptId, setSelectedDeptId] = useState("");
     const [selectedMuniId, setSelectedMuniId] = useState("");
 
-    const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTERED.key);
+    const [activeStatusKey, setActiveStatusKey] = useState("");
 
     //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
@@ -301,6 +301,7 @@ export const DeliveriesInformation = () => {
         if (!canSearch) return;
 
         setPage(0);
+        setActiveStatusKey("");
         setSelectedSupplierId("");
         setCommittedSearch(query);
     };
@@ -490,7 +491,8 @@ export const DeliveriesInformation = () => {
                             }
                             onChange={(opt) => handleChangeStatus(opt?.value)}
                             placeholder="Filtrar por estado"
-                            isClearable={false}
+                            isSearchable
+                            isClearable
                             styles={{
                                 control: (base, state) => ({
                                     ...base,
@@ -566,7 +568,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Depto */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbD"
                                     options={deptOptions}
                                     placeholder="Departamento"
                                     isSearchable
@@ -607,7 +609,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Muni */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbM"
                                     options={muniOptions}
                                     placeholder="Municipio"
                                     isSearchable

@@ -222,23 +222,17 @@ export const ReviewDocuments = () => {
     };
 
     //
-    const getDenyDestinationOptions = (userRole, RolesEnum) => {
-        if ([RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS].includes(userRole)) {
-            return [{ id: RolesEnum.SUPPLIER, label: "Proveedor" }];
-        }
-        if (userRole === RolesEnum.SUPERVISION) {
-            return [
-                { id: RolesEnum.TERRITORIAL_LINKS, label: "Territorial" },
-                { id: RolesEnum.TECHNICAL, label: "Técnica" },
-                { id: RolesEnum.SUPPLIER, label: "Proveedor" },
-            ];
-        }
-        return [];
+    const getDenyDestinationOptions = () => {
+        return [
+            { id: RolesEnum.TERRITORIAL_LINKS, label: "Territorial" },
+            { id: RolesEnum.TECHNICAL, label: "Técnica" },
+            { id: RolesEnum.SUPPLIER, label: "Proveedor" },
+        ];
     };
 
     //
     const denyDestinationOptions = useMemo(
-        () => getDenyDestinationOptions(userAuth?.rol_id, RolesEnum),
+        () => getDenyDestinationOptions(),
         [userAuth?.rol_id]
     );
 
