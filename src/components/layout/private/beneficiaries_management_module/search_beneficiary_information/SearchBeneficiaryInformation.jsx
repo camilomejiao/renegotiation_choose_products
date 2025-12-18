@@ -374,9 +374,9 @@ export const SearchBeneficiaryInformation = () => {
             plan: datos.plan || "",
             linea: datos.linea || "",
             restriccion: datos.restriccion || "",
-            nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "",
-            identificacion_beneficiario: datos.identificacion_beneficiario || "",
-            sexo_beneficiario: datos.sexo_beneficiario || "",
+            nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
+            identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
+            sexo_beneficiario: datos.sexo_beneficiario || "NO APLICA",
         };
     };
 
@@ -471,10 +471,10 @@ export const SearchBeneficiaryInformation = () => {
             searchParams.identification,
             searchParams.first_name,
             searchParams.last_name,
-            searchParams.state,
-            searchParams.activity,
-            searchParams.depto,
-            searchParams.muni
+            searchParams.state?.nombre,
+            searchParams.activity?.nombre,
+            searchParams.depto?.nombre,
+            searchParams.muni?.nombre
         );
     }, [page, pageSize, searchParams]);
 
@@ -623,7 +623,7 @@ export const SearchBeneficiaryInformation = () => {
                                             const selected =
                                                 stateOptions.find((s) => String(s.id) === val) ||
                                                 null;
-                                            formik.setFieldValue("status", selected);
+                                            formik.setFieldValue("state", selected);
                                         }}
                                     >
                                         <option value=""></option>
