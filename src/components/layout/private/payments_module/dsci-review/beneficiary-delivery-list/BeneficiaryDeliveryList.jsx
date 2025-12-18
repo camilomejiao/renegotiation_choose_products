@@ -144,7 +144,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
                 <Col xs={12} md={6} lg={5} className="payments-toolbar__search">
                     <input
                         type="text"
-                        placeholder="Buscar..."
+                        placeholder="Buscar por Nombre/CUB/NIT..."
                         value={searchQuery}
                         onChange={handleSearchChange}
                         onKeyDown={(e) => {

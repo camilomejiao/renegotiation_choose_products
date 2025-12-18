@@ -108,15 +108,16 @@ class PaymentServices {
     }
 
     /**
-     * Crea una nueva cuenta de cobro con la información de pago y documentos adjuntos.
-     * @param {FormData} formData - Formulario con los datos y archivos.
+     * Crea una nueva cuenta de cobro con la información de pago.
+     * @param {Object} payload - Formulario con los datos y archivos.
+     * @param {number} supplierId - Formulario con el id del porveedor.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    createCollectionAccounts(formData) {
-        const url = this.buildUrl(`informacion-pago/`);
+    createCollectionAccounts(payload, supplierId) {
+        const url = this.buildUrl(`informacion-pago/?proveedor_id=${supplierId}`);
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
-            body: formData,
+            body: JSON.stringify(payload),
         });
     }
 
@@ -130,8 +131,8 @@ class PaymentServices {
      * @param {number} [pageSize=100] - Tamaño de página.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
-    getAllApprovedDeliveriesBySupplier(page = 1, pageSize = 100) {
-        const url = this.buildUrl(`entregas-aprobadas/?page=${page}&page_size=${pageSize}`);
+    getAllApprovedDeliveriesBySupplier(page = 1, pageSize = 100, supplierId) {
+        const url = this.buildUrl(`entregas-aprobadas/?page=${page}&page_size=${pageSize}&proveedor_id=${supplierId}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 

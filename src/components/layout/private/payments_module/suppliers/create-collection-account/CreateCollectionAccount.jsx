@@ -1,15 +1,9 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {useNavigate, useOutletContext} from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FaSave, FaStepBackward } from "react-icons/fa";
-
-// Services
-import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
-
-// Enums
-import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
-import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import Select from "react-select";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -19,16 +13,33 @@ import imgPayments from "../../../../../../assets/image/payments/pay-supplier.pn
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 import imgWorker from "../../../../../../assets/image/payments/worker.png";
 
+// Services
+import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
+import {supplierServices} from "../../../../../../helpers/services/SupplierServices";
+
+// Enums
+import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
+import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+
+//
+const canShowSelect = [
+    RolesEnum.PAYMENTS,
+    RolesEnum.TRUST_PAYMENTS,
+    RolesEnum.SYSTEM_USER,
+    RolesEnum.ADMIN
+];
+
 export const CreateCollectionAccount = () => {
+
+    const { userAuth } = useOutletContext();
+    const isSupplier = userAuth.rol_id === RolesEnum.SUPPLIER;
+    const isCanShowSelect = canShowSelect.includes(userAuth.rol_id);
     const navigate = useNavigate();
 
-    const [formFields, setFormFields] = useState({
-        tipoCuenta: '',
-        numeroCuenta: '',
-        entidadBancaria: '',
-        certificadoBancario: null,
-        rut: null,
-    });
+    const [dataSuppliers, setDataDataSuppliers] = useState([]);
+    const [selectedSupplierId, setSelectedSupplierId] = useState("");
+    const [accountType, setAccountType] = useState([]);
+    const [selectedAccountTypeId, setSelectedAccountTypeId] = useState("");
 
     const [dataTable, setDataTable] = useState([]);
     const [page, setPage] = useState(0);
@@ -36,7 +47,12 @@ export const CreateCollectionAccount = () => {
     const [rowCount, setRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingDeliveries, setLoadingDeliveries] = useState(false);
+    const [informationLoadingText, setInformationLoadingText] = useState("");
     const [sendingData, setSendingData] = useState(false);
+
+    //Para no recargar el catálogo múltiples veces
+    const loadRef = useRef(false);
 
     const statusCollectionAccountColumns = [
         { field: "id", headerName: "N° Entrega", flex: 0.8 },
@@ -49,10 +65,88 @@ export const CreateCollectionAccount = () => {
         { field: "amount_of_money", headerName: "Valor", flex: 1 },
     ];
 
-    const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch) => {
-        setLoading(true);
+    // Carga catálogo (activos) una sola vez
+    const loadSuppliersOnce = async () => {
+        if (loadRef.current) return;
         try {
-            const { data, status } = await paymentServices.getAllApprovedDeliveriesBySupplier(pageToFetch, sizeToFetch);
+            setLoading(true);
+            setInformationLoadingText('Cargando proveedores...');
+            const { data, status } = await supplierServices.getSuppliers();
+            if (status === ResponseStatusEnum.OK) {
+                setDataDataSuppliers(normalizeCatalogSuppliers(data));
+                loadRef.current = true;
+            }
+        } catch (error) {
+            console.error("Error cargando proveedores (catálogo):", error);
+            setDataDataSuppliers([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //
+    const normalizeCatalogSuppliers = (data) => {
+        const rows =  data?.data?.proveedores;
+        return rows.map((row) => ({
+            value: String(row.id),
+            label: `${row.nombre} — ${row.nit}`,
+        }));
+    }
+
+    //
+    const selectedSupplier = async (opt) => {
+        if(!opt){
+            return;
+        }
+        setSelectedSupplierId(opt?.value ?? opt);
+        try {
+            setLoading(true);
+            setInformationLoadingText('Verificando cuentas bancarias del proveedor...');
+            const suppId = opt?.value ?? opt;
+            const {data, status} = await supplierServices.getBankAccountsBySupplierId(suppId);
+
+            if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.NOT_FOUND || data?.data?.bancos.length === 0) {
+                AlertComponent.warning('', 'Proveedor no tiene cuentras registradas');
+            }
+
+            if (status === ResponseStatusEnum.OK) {
+                console.log(data);
+                setAccountType(normalizeBanks(data));
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const selectedBank = async (optB) => {
+        setSelectedAccountTypeId(optB?.value);
+        if(!isSupplier) {
+            await getApprovedDeliveries(1, 100, selectedSupplierId);
+        }
+    }
+
+    //
+    const normalizeBanks = (data) => {
+        const rows =  data?.data?.bancos;
+        return rows.map((row) => ({
+            value: row?.banco_id,
+            label: row?.entidad_bancaria
+        }));
+
+    }
+
+    //
+    const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch, supplierId) => {
+        try {
+            setLoadingDeliveries(true);
+            setInformationLoadingText('Cargando entregas...');
+            let SP_ID = ""
+            if(supplierId){
+                SP_ID = supplierId ?? userAuth?.id;
+            }
+            const { data, status } = await paymentServices.getAllApprovedDeliveriesBySupplier(pageToFetch, sizeToFetch, SP_ID);
             if (status === ResponseStatusEnum.OK) {
                 const rows = normalizeRows(data.results);
                 setDataTable(rows);
@@ -61,7 +155,7 @@ export const CreateCollectionAccount = () => {
         } catch (error) {
             console.error("Error cargando entregas aprobadas:", error);
         } finally {
-            setLoading(false);
+            setLoadingDeliveries(false);
         }
     };
 
@@ -75,9 +169,9 @@ export const CreateCollectionAccount = () => {
 
             return {
                 id: row?.id,
-                cub_id: beneficiario.id,
-                name: `${beneficiario.nombre ?? ""} ${beneficiario.apellido ?? ""}`.trim(),
-                identification: beneficiario.identificacion ?? "",
+                cub_id: beneficiario?.cub_id,
+                name: `${beneficiario?.nombre ?? ""} ${beneficiario?.apellido ?? ""}`.trim(),
+                identification: beneficiario?.identificacion ?? "",
                 date: row.fecha_creacion.split("T")[0],
                 unid: row?.cantidad_productos ?? 0,
                 amount: row?.total_cantidad_productos ?? 0,
@@ -90,25 +184,9 @@ export const CreateCollectionAccount = () => {
         setSelectedIds(newSelection);
     };
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        setFormFields({ ...formFields, [name]: files[0] });
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormFields({ ...formFields, [name]: value });
-    };
-
-    const handleSaveUsers = async () => {
-        if (
-            !formFields.tipoCuenta ||
-            !formFields.numeroCuenta ||
-            !formFields.entidadBancaria ||
-            !formFields.certificadoBancario ||
-            !formFields.rut
-        ) {
-            AlertComponent.error("Error", "Todos los campos del formulario son obligatorios.");
+    const handleSaveDeliveries = async () => {
+        if (!selectedAccountTypeId) {
+            AlertComponent.error("Error", "Debe seleccionar una cuenta bancaria.");
             return;
         }
 
@@ -117,22 +195,22 @@ export const CreateCollectionAccount = () => {
             return;
         }
 
-        if (selectedIds.length > 25) {
-            AlertComponent.info("Error", "Solo puedes seleccionar 25 entregas por cuenta de cobro.");
+        if (selectedIds.length > 20) {
+            AlertComponent.info("Error", "Solo puedes seleccionar 20 entregas por cuenta de cobro.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("tipo_cuenta", formFields.tipoCuenta);
-        formData.append("numero_cuenta", formFields.numeroCuenta);
-        formData.append("entidad_bancaria", formFields.entidadBancaria);
-        formData.append("certificado_bancario_pdf", formFields.certificadoBancario);
-        formData.append("rut_pdf", formFields.rut);
-        formData.append("entregas_ids", selectedIds.join(","));
+        const payload = {
+            entregas_ids: selectedIds,
+            cuenta_id: selectedAccountTypeId
+        };
+
+        let supplier = selectedSupplierId ?? userAuth?.id;
 
         try {
             setSendingData(true);
-            const { status } = await paymentServices.createCollectionAccounts(formData);
+            setLoading(true);
+            const { status } = await paymentServices.createCollectionAccounts(payload, supplier);
             if (status === ResponseStatusEnum.CREATED) {
                 AlertComponent.success("Éxito", "Cuenta de cobro creada exitosamente.");
                 navigate('/admin/payments-suppliers');
@@ -141,14 +219,28 @@ export const CreateCollectionAccount = () => {
             console.error("Error al crear cuenta de cobro:", error);
             AlertComponent.error("Error", "Hubo un problema al crear la cuenta de cobro.");
         } finally {
+            setLoading(true);
             setSendingData(false);
         }
     };
 
     const onBack = () => navigate(`/admin/payments-suppliers`);
 
+    //
     useEffect(() => {
-        getApprovedDeliveries(page + 1, pageSize);
+        if(!isSupplier) {
+            loadSuppliersOnce();
+        }
+
+        if(isSupplier) {
+            selectedSupplier(userAuth.id);
+        }
+    }, []);
+
+    useEffect(() => {
+        if(isSupplier) {
+            getApprovedDeliveries(page + 1, pageSize, userAuth.id);
+        }
     }, [page, pageSize]);
 
     return (
@@ -170,78 +262,105 @@ export const CreateCollectionAccount = () => {
             </div>
 
             <div className="container mt-lg-5">
-                {sendingData && (
+                {(sendingData || loadingDeliveries) && (
                     <div className="overlay">
-                        <div className="loader">Enviando informacion...</div>
+                        <div className="loader">{informationLoadingText}</div>
                     </div>
                 )}
 
                 <Card className="p-3 p-md-4 shadow-sm mb-4">
                     <h4 className="mb-4 text-primary fw-bold text-center text-md-start">Información para Cuenta de Cobro</h4>
 
-                    {/* Inputs de texto */}
-                    <Row className="gy-3">
-                        <Col xs={12} sm={6} md={4}>
-                            <label className="form-label fw-semibold">Tipo de cuenta <span className="text-danger">*</span></label>
-                            <select
-                                className="form-select"
-                                name="tipoCuenta"
-                                value={formFields.tipoCuenta}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">Seleccione...</option>
-                                <option value="AHO">Ahorros</option>
-                                <option value="COR">Corriente</option>
-                            </select>
-                        </Col>
-                        <Col xs={12} sm={6} md={4}>
-                            <label className="form-label fw-semibold">Número de cuenta <span className="text-danger">*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="numeroCuenta"
-                                value={formFields.numeroCuenta}
-                                onChange={handleInputChange}
-                                placeholder="Ej: 1234567890"
-                            />
-                        </Col>
-                        <Col xs={12} md={4}>
-                            <label className="form-label fw-semibold">Entidad bancaria <span className="text-danger">*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                name="entidadBancaria"
-                                value={formFields.entidadBancaria}
-                                onChange={handleInputChange}
-                                placeholder="Ej: Banco Agrario"
+                    {/* Selects */}
+                    <Row className="gy-3 mb-4">
+                        {isCanShowSelect && (
+                            <>
+                                <Col xs={12} md={6}>
+                                    <Select
+                                        classNamePrefix="rb"
+                                        options={dataSuppliers}
+                                        placeholder="Selecciona un proveedor (nombre o NIT)"
+                                        isSearchable
+                                        isClearable
+                                        value={dataSuppliers.find(o => o.value === selectedSupplierId) ?? null}
+                                        onChange={(opt) => selectedSupplier(opt)}
+                                        onMenuOpen={loadSuppliersOnce}
+                                        filterOption={(option, input) => {
+                                            const q = input.toLowerCase();
+                                            return (
+                                                option.label.toLowerCase().includes(q) || // nombre
+                                                option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
+                                            );
+                                        }}
+                                        styles={{
+                                            control: (base, state) => ({
+                                                ...base,
+                                                borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                                boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                                "&:hover": { borderColor: "#40A581" },
+                                            }),
+                                            option: (base, { isFocused, isSelected }) => ({
+                                                ...base,
+                                                backgroundColor: isSelected
+                                                    ? "#40A581"
+                                                    : isFocused
+                                                        ? "#E8F5E9"
+                                                        : "white",
+                                                color: isSelected ? "white" : "#333",
+                                                cursor: "pointer",
+                                            }),
+                                            singleValue: (base) => ({
+                                                ...base,
+                                                color: "#2148C0",
+                                                fontWeight: "200",
+                                            }),
+                                        }}
+                                    />
+                                </Col>
+                            </>
+                        )}
+
+                        <Col xs={12} md={6}>
+                            <Select
+                                classNamePrefix="rb1"
+                                options={accountType}
+                                placeholder="Selecciona una cuenta bancaria"
+                                isSearchable
+                                isClearable
+                                value={accountType.find(o => o.value === selectedAccountTypeId) ?? null}
+                                onChange={(optB) => selectedBank(optB)}
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        borderColor: state.isFocused ? "#40A581" : "#ccc",
+                                        boxShadow: state.isFocused ? "0 0 0 1px #40A581" : "none",
+                                        "&:hover": { borderColor: "#40A581" },
+                                    }),
+                                    option: (base, { isFocused, isSelected }) => ({
+                                        ...base,
+                                        backgroundColor: isSelected
+                                            ? "#40A581"
+                                            : isFocused
+                                                ? "#E8F5E9"
+                                                : "white",
+                                        color: isSelected ? "white" : "#333",
+                                        cursor: "pointer",
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: "#2148C0",
+                                        fontWeight: "200",
+                                    }),
+                                }}
                             />
                         </Col>
                     </Row>
 
-                    {/* Archivos PDF */}
-                    <Row className="gy-3 mt-3 mb-4">
-                        <Col xs={12} sm={6} md={4}>
-                            <label className="form-label fw-semibold">Certificado de cuenta bancaria (PDF) <span className="text-danger">*</span></label>
-                            <input
-                                type="file"
-                                className="form-control"
-                                name="certificadoBancario"
-                                onChange={handleFileChange}
-                                accept="application/pdf"
-                            />
-                        </Col>
-                        <Col xs={12} sm={6} md={4}>
-                            <label className="form-label fw-semibold">RUT (PDF) <span className="text-danger">*</span></label>
-                            <input
-                                type="file"
-                                className="form-control"
-                                name="rut"
-                                onChange={handleFileChange}
-                                accept="application/pdf"
-                            />
-                        </Col>
-                    </Row>
+                    {loading && (
+                        <div className="overlay">
+                            <div className="loader">{informationLoadingText}</div>
+                        </div>
+                    )}
 
                     <div style={{ height: 500, width: "100%" }}>
                         <DataGrid
@@ -294,14 +413,12 @@ export const CreateCollectionAccount = () => {
                             <FaStepBackward /> Atras
                         </Button>
                         <Button variant="outline-success"
-                                onClick={handleSaveUsers}
+                                onClick={handleSaveDeliveries}
                         >
                             <FaSave /> Crear cuenta de cobro
                         </Button>
                     </div>
-
                 </Card>
-
             </div>
         </>
     );

@@ -190,7 +190,7 @@ export const DeliveriesInformation = () => {
             return {
                 id: row?.id,
                 status: row?.estado,
-                send_date: row?.fecha_envio_proveedor.split('T')[0],
+                send_date: row?.fecha_envio_proveedor ? row?.fecha_envio_proveedor.split('T')[0] : '',
                 cub_id: row?.beneficiario?.cub_id,
                 name: `${row?.beneficiario?.nombre_completo ?? ''}`,
                 identification: row?.beneficiario?.identificacion,
