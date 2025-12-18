@@ -691,14 +691,14 @@ export const SearchBeneficiaryInformation = () => {
                                 Limpiar búsqueda
                             </Button>
 
-                            <Button
-                                variant="outline-success"
-                                type="button"
-                                onClick={handleExport}
-                                disabled={loading || !beneficiaryInfo}
-                            >
-                                Exportar
-                            </Button>
+                            {/*<Button*/}
+                            {/*    variant="outline-success"*/}
+                            {/*    type="button"*/}
+                            {/*    onClick={handleExport}*/}
+                            {/*    disabled={loading || !beneficiaryInfo}*/}
+                            {/*>*/}
+                            {/*    Exportar*/}
+                            {/*</Button>*/}
                         </div>
                     </form>
                 </Card.Body>

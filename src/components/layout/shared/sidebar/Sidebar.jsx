@@ -52,10 +52,10 @@ const menuConfig = (role, id) => {
         ],
         [RolesEnum.SUPERVISION]: [
             //{ path: "/", icon: FaHouseUser, label: "Inicio" },
-            { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
             { path: "/admin/products-supervision", icon: FaUserCheck, label: "Catálogo de productos" },
             { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
             { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
@@ -119,6 +119,11 @@ const menuConfig = (role, id) => {
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
+            { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
+        ],
+        [RolesEnum.LEGAL]: [
+            { path: "/admin/management", icon: MdPeople, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Beneficiario" },            ,
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ]
     };
