@@ -275,7 +275,7 @@ export const CreateCollectionAccount = () => {
                     <Row className="gy-3 mb-4">
                         {isCanShowSelect && (
                             <>
-                                <Col xs={12} md={6}>
+                                <Col xs={12} md={5}>
                                     <Select
                                         classNamePrefix="rb"
                                         options={dataSuppliers}
@@ -320,7 +320,7 @@ export const CreateCollectionAccount = () => {
                             </>
                         )}
 
-                        <Col xs={12} md={6}>
+                        <Col xs={12} md={5}>
                             <Select
                                 classNamePrefix="rb1"
                                 options={accountType}
@@ -354,6 +354,20 @@ export const CreateCollectionAccount = () => {
                                 }}
                             />
                         </Col>
+
+                        {isCanShowSelect && (
+                            <Col xs={12} md={2}>
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    type="button"
+                                    //onClick={() => handleViewFile(formik.values.rutFile)}
+                                >
+                                    Ver Certificado
+                                </Button>
+                            </Col>
+                        )}
+
                     </Row>
 
                     {loading && (
