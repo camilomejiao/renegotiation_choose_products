@@ -724,6 +724,7 @@ export const SearchBeneficiaryInformation = () => {
                                 paginationMode="server"
                                 rowCount={rowCount}
                                 pageSizeOptions={[25, 50, 100]}
+                                rowHeight={40}
                                 paginationModel={{ page, pageSize }}
                                 onPaginationModelChange={({ page, pageSize }) => {
                                     setPage(page);
@@ -843,7 +844,7 @@ export const SearchBeneficiaryInformation = () => {
                                         rows={rows}
                                         columns={AccountStatementColumns}
                                         pageSize={25}
-                                        rowHeight={50}
+                                        rowHeight={35}
                                         rowsPerPageOptions={[5, 10, 20]}
                                         getRowClassName={(params) => (params.id === "TOTAL" ? "row-total" : "")}
                                         componentsProps={{
@@ -902,7 +903,7 @@ export const SearchBeneficiaryInformation = () => {
                                         columns={PaymentSummaryColumns}
                                         pageSize={10}
                                         rowsPerPageOptions={[5, 10, 20]}
-                                        rowHeight={50}
+                                        rowHeight={35}
                                         componentsProps={{
                                             columnHeader: {
                                                 style: {

@@ -168,6 +168,7 @@ export const DeliveriesInformation = () => {
             );
 
             if (status === ResponseStatusEnum.OK) {
+                console.log(data.results);
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
                 setRowCount(data.count);
@@ -191,7 +192,7 @@ export const DeliveriesInformation = () => {
             return {
                 id: row?.id,
                 status: row?.estado,
-                send_date: row?.fecha_envio_proveedor.split('T')[0],
+                send_date: row?.fecha_envio_proveedor ? row?.fecha_envio_proveedor.split('T')[0] : '',
                 cub_id: row?.beneficiario?.cub_id,
                 name: `${row?.beneficiario?.nombre_completo ?? ''}`,
                 identification: row?.beneficiario?.identificacion,
@@ -661,14 +662,14 @@ export const DeliveriesInformation = () => {
                         paginationMode="server"
                         rowCount={rowCount}
                         pageSizeOptions={[25, 50, 100]}
+                        rowHeight={50}
+                        headerHeight={48}
                         paginationModel={{ page, pageSize }}
                         onPaginationModelChange={({ page, pageSize }) => {
                             setPage(page);
                             setPageSize(pageSize);
                         }}
                         onRowClick={handleRowClick}
-                        rowHeight={64}
-                        headerHeight={48}
                         componentsProps={{
                             columnHeader: {
                                 style: {
