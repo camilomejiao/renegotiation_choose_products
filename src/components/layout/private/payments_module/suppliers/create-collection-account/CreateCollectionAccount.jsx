@@ -132,7 +132,7 @@ export const CreateCollectionAccount = () => {
         const rows =  data?.data?.bancos;
         return rows.map((row) => ({
             value: row?.banco_id,
-            label: row?.entidad_bancaria
+            label: `${row?.entidad_bancaria} - ${row?.numero_cuenta}`
         }));
 
     }

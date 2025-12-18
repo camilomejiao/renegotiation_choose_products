@@ -287,7 +287,14 @@ export const CreateSuppliers = () => {
 
                 if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
                     AlertComponent.success("Operación realizada correctamente");
-                    navigate("/admin/management");
+
+                    if(userAuth?.rol_id === RolesEnum.SUPPLIER) {
+                        navigate(`/admin/edit-suppliers/${id}`);
+                    }
+
+                    if(userAuth?.rol_id !== RolesEnum.SUPPLIER) {
+                        navigate("/admin/management");
+                    }
                 } else {
                     AlertComponent.warning("Error",response?.data?.errors?.[0]?.title);
                 }

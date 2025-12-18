@@ -308,13 +308,13 @@ export const SearchBeneficiaryInformation = () => {
     //
     const ColumnsInitialInformationTable  = [
         { field: "id", headerName: "N°", width: 80 },
-        { field: "cub", headerName: "CUB", width: 100 },
-        { field: "cub_state", headerName: "ESTADO CUB", width: 100 },
-        { field: "identification", headerName: "IDENTIFICACIÓN", width: 150 },
-        { field: "name", headerName: "NOMBRE COMPLETO", width: 270 },
-        { field: "depto", headerName: "DEPARTAMENTO", width: 130 },
-        { field: "muni", headerName: "MUNICIPIO", width: 110 },
-        { field: "village", headerName: "VEREDA", width: 150 },
+        { field: "cub", headerName: "Cub", width: 100 },
+        { field: "cub_state", headerName: "Estado Cub", width: 100 },
+        { field: "identification", headerName: "Identificación", width: 150 },
+        { field: "name", headerName: "Nombre completo", width: 270 },
+        { field: "depto", headerName: "Departamento", width: 130 },
+        { field: "muni", headerName: "Municipio", width: 110 },
+        { field: "village", headerName: "Vereda", width: 150 },
         {
             field: "actions",
             headerName: "Detalles",
@@ -340,22 +340,22 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     const AccountStatementColumns = [
-        { field: "id", headerName: "N°", width: 80 },
-        { field: "component", headerName: "componente", width: 250 },
-        { field: "pay", headerName: "Pago", width: 250 },
-        { field: "debt", headerName: "Saldo", width: 250 },
-        { field: "total", headerName: "Total", width: 250 },
+        { field: "id", headerName: "N°", width: 120 },
+        { field: "component", headerName: "Componente", width: 270 },
+        { field: "pay", headerName: "Pago", width: 270 },
+        { field: "debt", headerName: "Saldo", width: 270 },
+        { field: "total", headerName: "Total", width: 270 },
     ];
 
     const PaymentSummaryColumns = [
         { field: "id", headerName: "N°", width: 80 },
-        { field: "agreement", headerName: "contrato", width: 180 },
-        { field: "component", headerName: "componente", width: 250 },
-        { field: "secondary", headerName: "secundario", width: 200 },
-        { field: "payment_identification", headerName: "identificacion pago", width: 150 },
+        { field: "agreement", headerName: "Contrato", width: 180 },
+        { field: "component", headerName: "Componente", width: 250 },
+        { field: "secondary", headerName: "Secundario", width: 200 },
+        { field: "payment_identification", headerName: "Identificacion pago", width: 150 },
         { field: "paid_holder", headerName: "Titular pago", width: 300 },
         { field: "paid", headerName: "Pagado", width: 90 },
-        { field: "pay", headerName: "pago", width: 170 },
+        { field: "pay", headerName: "Pago", width: 170 },
     ];
 
     const normalizeDatosCub = (datos) => {
@@ -483,7 +483,7 @@ export const SearchBeneficiaryInformation = () => {
         <div className="main-container">
             <HeaderImage
                 imageHeader={imgDCSIPeople}
-                titleHeader={"Busqueda de beneficiarios"}
+                titleHeader={"Busqueda de Titulares"}
                 bannerIcon={imgAdd}
                 backgroundIconColor={"#2148C0"}
                 bannerInformation={""}
@@ -778,7 +778,7 @@ export const SearchBeneficiaryInformation = () => {
                     <Card className="mt-4 mb-4 shadow-sm">
                         <Card.Body>
                             <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                Detalle CUB
+                                Detalle nucleo familiar
                             </h4>
 
                             {movements?.datos_cub && Object.keys(movements.datos_cub).length > 0 && (
@@ -868,10 +868,10 @@ export const SearchBeneficiaryInformation = () => {
                                                 fontSize: "14px",
                                             },
                                             "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
+                                                textAlign: "left",
                                                 display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
+                                                justifyContent: "left",
+                                                alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                                                 backgroundColor: "#40A581 !important",
@@ -879,8 +879,8 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                             "& .MuiDataGrid-cell": {
                                                 fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
+                                                textAlign: "left",
+                                                justifyContent: "left",
                                                 display: "flex",
                                             },
                                             "& .MuiDataGrid-row:hover": {
@@ -921,10 +921,10 @@ export const SearchBeneficiaryInformation = () => {
                                                 fontSize: "14px",
                                             },
                                             "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
+                                                textAlign: "left",
                                                 display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
+                                                justifyContent: "left",
+                                                alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                                                 backgroundColor: "#40A581 !important",
@@ -932,8 +932,8 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                             "& .MuiDataGrid-cell": {
                                                 fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
+                                                textAlign: "left",
+                                                justifyContent: "left",
                                                 display: "flex",
                                             },
                                             "& .MuiDataGrid-row:hover": {
