@@ -60,6 +60,10 @@ const validationSchema = yup.object().shape({
     activity: yup.mixed().nullable(),
 });
 
+
+const money = (n) => Number(n || 0).toLocaleString("es-CO", { style: "currency", currency: "COP" });
+
+
 export const SearchBeneficiaryInformation = () => {
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState("");
@@ -339,18 +343,19 @@ export const SearchBeneficiaryInformation = () => {
         { field: "id", headerName: "N°", width: 80 },
         { field: "component", headerName: "componente", width: 250 },
         { field: "pay", headerName: "Pago", width: 250 },
-        { field: "debt", headerName: "Deuda", width: 250 },
+        { field: "debt", headerName: "Saldo", width: 250 },
         { field: "total", headerName: "Total", width: 250 },
     ];
 
     const PaymentSummaryColumns = [
         { field: "id", headerName: "N°", width: 80 },
-        { field: "agreement", headerName: "contrato", width: 70 },
+        { field: "agreement", headerName: "contrato", width: 180 },
         { field: "component", headerName: "componente", width: 250 },
         { field: "secondary", headerName: "secundario", width: 200 },
         { field: "payment_identification", headerName: "identificacion pago", width: 150 },
-        { field: "paid_holder", headerName: "Pago Titular", width: 300 },
-        { field: "pay", headerName: "pago", width: 180 },
+        { field: "paid_holder", headerName: "Titular pago", width: 300 },
+        { field: "paid", headerName: "Pagado", width: 90 },
+        { field: "pay", headerName: "pago", width: 170 },
     ];
 
     const normalizeDatosCub = (datos) => {
@@ -369,40 +374,76 @@ export const SearchBeneficiaryInformation = () => {
             plan: datos.plan || "",
             linea: datos.linea || "",
             restriccion: datos.restriccion || "",
+            nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "",
+            identificacion_beneficiario: datos.identificacion_beneficiario || "",
+            sexo_beneficiario: datos.sexo_beneficiario || "",
         };
     };
 
     const normalizeAccountStatementRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
-        return data.map((row, index) => ({
-            id: index + 1,
-            component: row?.componente || "",
-            pay: Number(row?.pago || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-            debt: Number(row?.deuda || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-            total: Number(row?.total || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-        }));
+        return data.map((row, index) => {
+            const payNum = Number(row?.pago || 0);
+            const debtNum = Number(row?.deuda || 0);
+            const totalNum = Number(row?.total || 0);
+
+            return {
+                id: index + 1,
+                component: row?.componente || "",
+
+                payNum,
+                debtNum,
+                totalNum,
+
+                pay: money(payNum),
+                debt: money(debtNum),
+                total: money(totalNum),
+            };
+        });
     };
+
+    const addTotalRow = (rows = []) => {
+        const totals = rows.reduce(
+            (acc, r) => {
+                acc.pay += Number(r.payNum || 0);
+                acc.debt += Number(r.debtNum || 0);
+                acc.total += Number(r.totalNum || 0);
+                return acc;
+            },
+            { pay: 0, debt: 0, total: 0 }
+        );
+
+        return [
+            ...rows,
+            {
+                id: "TOTAL",
+                component: "",
+                pay: money(totals.pay),
+                debt: money(totals.debt),
+                total: money(totals.total),
+                // (opcionales por si luego necesitas validar)
+                payNum: totals.pay,
+                debtNum: totals.debt,
+                totalNum: totals.total,
+            },
+        ];
+    };
+
+    const rows = addTotalRow(movements?.estado_cuenta || []);
+
 
     const normalizePaymentSummaryRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
         return data.map((row, index) => ({
             id: index + 1,
-            agreement: row?.contrato ?? "",
+            agreement: row?.nombre_contrato ?? "",
             component: row?.componente ?? "",
             secondary: row?.secundario ?? "",
             payment_identification: row?.identificacion_pago ?? "",
             paid_holder: row?.titular_pago ?? "",
+            paid: row?.es_pagado ?? "",
             pay: Number(row?.pago || 0).toLocaleString("es-CO", {
                 style: "currency",
                 currency: "COP",
@@ -454,7 +495,7 @@ export const SearchBeneficiaryInformation = () => {
                 <Card className="mt-4 shadow-sm">
                     <Card.Body>
                         <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Búsqueda de beneficiario
+                            Búsqueda de titulares
                         </h4>
 
                         <form onSubmit={formik.handleSubmit}>
@@ -671,129 +712,140 @@ export const SearchBeneficiaryInformation = () => {
 
             {/* Info básica */}
             {beneficiaryInfo && (
-                <Card className="mt-4">
-                    <Card.Body>
-                        <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Información básica del beneficiario
-                        </h4>
-                        <DataGrid
-                            rows={beneficiaryInfo}
-                            columns={ColumnsInitialInformationTable}
-                            paginationMode="server"
-                            rowCount={rowCount}
-                            pageSizeOptions={[25, 50, 100]}
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={({ page, pageSize }) => {
-                                setPage(page);
-                                setPageSize(pageSize);
-                            }}
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left",
-                                        fontWeight: "bold",
-                                        fontSize: "10px",
-                                        wordWrap: "break-word",
+                <>
+                    <Card className="mt-4">
+                        <Card.Body>
+                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
+                                Información básica del Titular
+                            </h4>
+                            <DataGrid
+                                rows={beneficiaryInfo}
+                                columns={ColumnsInitialInformationTable}
+                                paginationMode="server"
+                                rowCount={rowCount}
+                                pageSizeOptions={[25, 50, 100]}
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={({ page, pageSize }) => {
+                                    setPage(page);
+                                    setPageSize(pageSize);
+                                }}
+                                componentsProps={{
+                                    columnHeader: {
+                                        style: {
+                                            textAlign: "left",
+                                            fontWeight: "bold",
+                                            fontSize: "10px",
+                                            wordWrap: "break-word",
+                                        },
                                     },
-                                },
-                            }}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
-                        />
-                    </Card.Body>
-                </Card>
+                                }}
+                                sx={{
+                                    "& .MuiDataGrid-columnHeaders": {
+                                        backgroundColor: "#40A581",
+                                        color: "white",
+                                        fontSize: "14px",
+                                    },
+                                    "& .MuiDataGrid-columnHeader": {
+                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    },
+                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                        backgroundColor: "#40A581 !important",
+                                        color: "white !important",
+                                    },
+                                    "& .MuiDataGrid-cell": {
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                    },
+                                    "& .MuiDataGrid-row:hover": {
+                                        backgroundColor: "#E8F5E9",
+                                    },
+                                }}
+                            />
+                        </Card.Body>
+                    </Card>
+                </>
+            )}
+
+            {/* Movimientos */}
+            {movements?.datos_cub && (
+                <>
+                    <Card className="mt-4 mb-4 shadow-sm">
+                        <Card.Body>
+                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
+                                Detalle CUB
+                            </h4>
+
+                            {movements?.datos_cub && Object.keys(movements.datos_cub).length > 0 && (
+                                <div className="mt-3">
+                                    <Card className="mb-3">
+                                        <Card.Body>
+                                            <Row>
+                                                <Col md={4}>
+                                                    <strong>CUB:</strong> {movements.datos_cub.cub}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Nombre benficiario:</strong> {movements.datos_cub.nombre_completo_beneficiario}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Identificación benficiario:</strong> {movements.datos_cub.identificacion_beneficiario}
+                                                </Col>
+                                            </Row>
+
+                                            <Row className="mt-2">
+                                                <Col md={4}>
+                                                    <strong>Ubicación:</strong>{" "}
+                                                    {`${movements.datos_cub.departamento} - ${movements.datos_cub.municipio}`}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Actividad:</strong> {movements.datos_cub.actividad}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Plan:</strong> {movements.datos_cub.plan}
+                                                </Col>
+                                            </Row>
+
+                                            <Row className="mt-2">
+                                                <Col md={8}>
+                                                    <strong>Linea:</strong> {movements.datos_cub.linea}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Restricción:</strong> {movements.datos_cub.restriccion}
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
+                                </div>
+                            )}
+
+                        </Card.Body>
+                    </Card>
+                </>
             )}
 
             {/* Movimientos */}
             {movements?.datos_cub && (
                 <Card className="mt-4 mb-4 shadow-sm">
+
                     <Card.Body>
                         <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Movimientos financieros del beneficiario
+                            Estado de cuenta
                         </h4>
-
-                        {movements?.datos_cub && (
-                            <div className="mt-3">
-                                <Card className="mb-3">
-                                    <Card.Body>
-                                        <Row>
-                                            <Col md={4}>
-                                                <strong>CUB:</strong> {movements.datos_cub.cub}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Estado CUB:</strong> {movements.datos_cub.estado_cub}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Nombre:</strong> {movements.datos_cub.nombre_completo}
-                                            </Col>
-                                        </Row>
-                                        <Row className="mt-2">
-                                            <Col md={4}>
-                                                <strong>Identificación:</strong>{" "}
-                                                {movements.datos_cub.identificacion}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Ubicación:</strong>{" "}
-                                                {`${movements.datos_cub.departamento} - ${movements.datos_cub.municipio}`}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Actividad:</strong> {movements.datos_cub.actividad}
-                                            </Col>
-                                        </Row>
-                                        <Row className="mt-2">
-                                            <Col md={4}>
-                                                <strong>Plan:</strong>{" "}
-                                                {movements.datos_cub.plan}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Linea:</strong>{" "}
-                                                {movements.datos_cub.linea}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Restriccion:</strong> {movements.datos_cub.restriccion}
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Card>
-                            </div>
-                        )}
 
                         {movements?.estado_cuenta?.length > 0 && (
                             <div className="mt-3">
                                 <Card className="mb-2 border-0">
-                                    <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                        Estado de cuenta
-                                    </h4>
                                     <DataGrid
-                                        rows={movements.estado_cuenta}
+                                        rows={rows}
                                         columns={AccountStatementColumns}
-                                        pageSize={10}
-                                        rowsPerPageOptions={[5, 10, 20]}
+                                        pageSize={25}
                                         rowHeight={50}
+                                        rowsPerPageOptions={[5, 10, 20]}
+                                        getRowClassName={(params) => (params.id === "TOTAL" ? "row-total" : "")}
                                         componentsProps={{
                                             columnHeader: {
                                                 style: {
@@ -805,6 +857,10 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                         }}
                                         sx={{
+                                            "& .row-total": {
+                                                fontWeight: "bold",
+                                                backgroundColor: "#f5f5f5",
+                                            },
                                             "& .MuiDataGrid-columnHeaders": {
                                                 backgroundColor: "#40A581",
                                                 color: "white",
