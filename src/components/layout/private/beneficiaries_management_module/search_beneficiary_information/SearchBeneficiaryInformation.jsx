@@ -789,10 +789,10 @@ export const SearchBeneficiaryInformation = () => {
                                                     <strong>CUB:</strong> {movements.datos_cub.cub}
                                                 </Col>
                                                 <Col md={4}>
-                                                    <strong>Nombre benficiario:</strong> {movements.datos_cub.nombre_completo_beneficiario}
+                                                    <strong>Nombre beneficiario:</strong> {movements.datos_cub.nombre_completo_beneficiario}
                                                 </Col>
                                                 <Col md={4}>
-                                                    <strong>Identificación benficiario:</strong> {movements.datos_cub.identificacion_beneficiario}
+                                                    <strong>Identificación beneficiario:</strong> {movements.datos_cub.identificacion_beneficiario}
                                                 </Col>
                                             </Row>
 
