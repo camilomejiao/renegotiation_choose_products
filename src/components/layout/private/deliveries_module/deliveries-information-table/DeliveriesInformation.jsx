@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Row } from "react-bootstrap";
+import Select from "react-select";
 
 //img
 import imgPayments from "../../../../../assets/image/payments/payments.png";
@@ -23,7 +24,7 @@ import {
     ResponseStatusEnum,
     RolesEnum
 } from "../../../../../helpers/GlobalEnum";
-import Select from "react-select";
+
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 const canShowSuppliers = [RolesEnum.SUPPLIER];

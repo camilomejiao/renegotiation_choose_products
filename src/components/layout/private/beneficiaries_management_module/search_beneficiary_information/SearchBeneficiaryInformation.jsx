@@ -474,7 +474,7 @@ export const SearchBeneficiaryInformation = () => {
             searchParams.state?.nombre,
             searchParams.activity?.nombre,
             searchParams.depto?.nombre,
-            searchParams.muni?.nombre
+            searchParams.muni?.id
         );
     }, [page, pageSize, searchParams]);
 
