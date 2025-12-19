@@ -183,7 +183,7 @@ export const CreateSuppliers = () => {
             setLoading(true);
             setInformationLoadingText("Validando eliminación de la cuenta bancaria...");
 
-            const { status, data } = await supplierServices.validateOrDeleteBankAccount(account.id);
+            const { status, data } = await supplierServices.validateOrDeleteBankAccount(id, account.id);
 
             if (status === ResponseStatusEnum.OK) {
                 const next = [...formik.values.accounts];
@@ -193,7 +193,7 @@ export const CreateSuppliers = () => {
             } else {
                 AlertComponent.warning(
                     "No se puede eliminar la cuenta bancaria.",
-                    data?.detail || "La cuenta está asociada a información de pagos."
+                    data?.message || "La cuenta está asociada a información de pagos."
                 );
             }
         } catch (error) {

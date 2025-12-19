@@ -20,6 +20,7 @@ import {supplierServices} from "../../../../../../helpers/services/SupplierServi
 // Enums
 import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import {filesServices} from "../../../../../../helpers/services/FilesServices";
 
 //
 const canShowSelect = [
@@ -50,6 +51,7 @@ export const CreateCollectionAccount = () => {
     const [loadingDeliveries, setLoadingDeliveries] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [sendingData, setSendingData] = useState(false);
+    const [showCertificate, setShowCertificate] = useState("");
 
     //Para no recargar el catálogo múltiples veces
     const loadRef = useRef(false);
@@ -121,10 +123,12 @@ export const CreateCollectionAccount = () => {
     };
 
     const selectedBank = async (optB) => {
+        console.log(optB);
         setSelectedAccountTypeId(optB?.value);
         if(!isSupplier) {
             await getApprovedDeliveries(1, 100, selectedSupplierId);
         }
+        setShowCertificate(optB?.certificate);
     }
 
     //
@@ -132,7 +136,8 @@ export const CreateCollectionAccount = () => {
         const rows =  data?.data?.bancos;
         return rows.map((row) => ({
             value: row?.banco_id,
-            label: `${row?.entidad_bancaria} - ${row?.numero_cuenta}`
+            label: `${row?.entidad_bancaria} - ${row?.numero_cuenta}`,
+            certificate: row?.certificado_pdf
         }));
 
     }
@@ -221,6 +226,39 @@ export const CreateCollectionAccount = () => {
         } finally {
             setLoading(true);
             setSendingData(false);
+        }
+    };
+
+
+    //
+    const handleViewFile = async (pdfUrl) => {
+        if (!pdfUrl) {
+            AlertComponent.error('Error', 'No se ha seleccionado una cuenta bancaria.');
+            return;
+        }
+        setLoading(true);
+        try {
+            setInformationLoadingText("Obteniendo archivo");
+
+            const { blob, status, type } = await filesServices.downloadFile(pdfUrl);
+
+            if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
+                const mime = (type || blob.type || '').toLowerCase();
+
+                // Solo PDF o imágenes
+                if (mime.includes('pdf') || mime.startsWith('image/')) {
+                    const fileURL = URL.createObjectURL(blob);
+                    window.open(fileURL, '_blank');
+                }
+            }
+
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo, archivo no encontrado.');
+            }
+        } catch (error) {
+            console.error("Error al descargar archivo:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -361,7 +399,7 @@ export const CreateCollectionAccount = () => {
                                     variant="outline-primary"
                                     size="sm"
                                     type="button"
-                                    //onClick={() => handleViewFile(formik.values.rutFile)}
+                                    onClick={() => handleViewFile(showCertificate)}
                                 >
                                     Ver Certificado
                                 </Button>

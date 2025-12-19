@@ -94,8 +94,8 @@ class SupplierServices {
     }
 
 
-    validateOrDeleteBankAccount(accountId) {
-        const url = this.buildUrl(`${accountId}/eliminar`);
+    validateOrDeleteBankAccount(supplierId, accountId) {
+        const url = this.buildUrl(`${supplierId}/cuentas-bancarias/${accountId}`);
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
