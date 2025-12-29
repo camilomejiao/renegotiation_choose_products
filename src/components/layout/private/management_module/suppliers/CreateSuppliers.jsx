@@ -302,8 +302,7 @@ export const CreateSuppliers = () => {
                         console.log("FORMDATA:", key, val);
                     }
 
-                    //response = await supplierServices.updateSupplier(id, formData);
-                    response = {}
+                    response = await supplierServices.updateSupplier(id, formData);
                 }
 
                 if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
