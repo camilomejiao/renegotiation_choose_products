@@ -47,7 +47,7 @@ export const ListAccountOfSuppliers = () => {
         { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
         { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
         { field: "total", headerName: "Valor Total", flex: 0.5 },
-        //{ field: "user", headerName: "Registrado", flex: 0.5 },
+        { field: "user", headerName: "Registró", flex: 0.5 },
     ];
 
     const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -81,7 +81,7 @@ export const ListAccountOfSuppliers = () => {
                 supplier_name: row?.nombre_proveedor,
                 supplier_nit: row?.nit_proveedor,
                 total: `$ ${valorSP.toLocaleString("es-CO")}`,
-                //user: row?.user
+                user: row?.usuario_creacion
             };
         });
     }

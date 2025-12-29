@@ -104,6 +104,13 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    //
+    getAcountsType() {
+        const url = GlobalConnex.url+ `lista/parametros/?tipo_parametro_id=29`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+
 
     // =============================
     // GESTIÓN DE LOCALSTORAGE

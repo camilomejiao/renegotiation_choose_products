@@ -2,7 +2,7 @@ import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { Autocomplete, CircularProgress, FormControlLabel, Switch, TextField } from "@mui/material";
-import {Button, Card} from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { useFormik } from "formik";
 
 //Img
@@ -93,6 +93,7 @@ export const CreateSuppliers = () => {
     const [muniOptions, setMuniOptions] = useState([]);
     const [loadingDepts, setLoadingDepts] = useState(false);
     const [loadingMunis, setLoadingMunis] = useState(false);
+    const [acountsType, setAcountsType] = useState([]);
 
     //cache para no repetir requests por depto
     const deptsLoadedRef = useRef(false);
@@ -165,6 +166,25 @@ export const CreateSuppliers = () => {
     const handleMuniChange = (_evt, value) => {
         formik.setFieldValue("muni", value);
     };
+
+    //
+    const loadAcountsType = async () => {
+        try {
+            setLoading(true);
+            const {data, status} = await supplierServices.getAcountsType();
+            if(status === ResponseStatusEnum.OK) {
+                console.log(data);
+                setAcountsType(data);
+                return data;
+            }
+            return [];
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     //
     const handleRemoveAccount = async (index, account) => {
@@ -282,7 +302,8 @@ export const CreateSuppliers = () => {
                         console.log("FORMDATA:", key, val);
                     }
 
-                    response = await supplierServices.updateSupplier(id, formData);
+                    //response = await supplierServices.updateSupplier(id, formData);
+                    response = {}
                 }
 
                 if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
@@ -393,6 +414,7 @@ export const CreateSuppliers = () => {
 
     useEffect(() => {
         if (id) {
+            loadAcountsType()
             fetchSupplierData(id)
         }
     }, []);
@@ -674,8 +696,11 @@ export const CreateSuppliers = () => {
                                                         disabled={!isEditable}
                                                     >
                                                         <option value=""></option>
-                                                        <option value="AHO">Ahorros</option>
-                                                        <option value="COR">Corriente</option>
+                                                        {acountsType.map((as) => (
+                                                            <option key={as.id} value={as.id}>
+                                                                {as.nombre}
+                                                            </option>
+                                                        ))}
                                                     </TextField>
                                                 </div>
 
