@@ -39,9 +39,9 @@ const initialValues = {
     accounts: [
         {
             id: null,
-            account_type: "",
+            account_type: null,
             account_number: "",
-            bank: "",
+            bank: null,
             bankCertFile: null,
         },
     ],
@@ -94,6 +94,7 @@ export const CreateSuppliers = () => {
     const [loadingDepts, setLoadingDepts] = useState(false);
     const [loadingMunis, setLoadingMunis] = useState(false);
     const [acountsType, setAcountsType] = useState([]);
+    const [banksList, setBanksList] = useState([]);
 
     //cache para no repetir requests por depto
     const deptsLoadedRef = useRef(false);
@@ -181,6 +182,24 @@ export const CreateSuppliers = () => {
         } catch (error) {
             console.error(error);
             AlertComponent.error("Hubo un error al procesar la solicitud");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //
+    const loadBanks = async () => {
+        try {
+            setLoading(true);
+            const {data, status} = await supplierServices.getBanks();
+            if(status === ResponseStatusEnum.OK) {
+                setBanksList(data || []);
+                return data || [];
+            }
+            return [];
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al cargar la lista de bancos");
         } finally {
             setLoading(false);
         }
@@ -277,7 +296,7 @@ export const CreateSuppliers = () => {
                         banco_id: acc.id,
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
-                        entidad_bancaria: acc.bank || "",
+                        banco: acc.bank || null, // Ahora es el ID del banco, no texto
                     }));
 
                     formData.append("bancos", JSON.stringify(bancos));
@@ -359,9 +378,9 @@ export const CreateSuppliers = () => {
                     idFile: resp?.ruta_cedula_representante,
                     accounts: (resp?.bancos || []).map((c) => ({
                         id: c.id,
-                        account_type: c.tipo_cuenta ?? "",
+                        account_type: c.tipo_cuenta ? parseInt(c.tipo_cuenta) : null, // ID del parámetro
                         account_number: c.numero_cuenta ?? "",
-                        bank: c.entidad_bancaria ?? "",
+                        bank: c.banco ? parseInt(c.banco) : null, // ID del banco
                         bankCertFile: c?.ruta_certificado_bancario,
                     })),
                 });
@@ -413,8 +432,13 @@ export const CreateSuppliers = () => {
 
     useEffect(() => {
         if (id) {
-            loadAcountsType()
-            fetchSupplierData(id)
+            loadAcountsType();
+            loadBanks();
+            fetchSupplierData(id);
+        } else {
+            // Si es creación, también cargar bancos y tipos de cuenta
+            loadAcountsType();
+            loadBanks();
         }
     }, []);
 
@@ -684,11 +708,11 @@ export const CreateSuppliers = () => {
                                                         select
                                                         SelectProps={{ native: true }}
                                                         label="Tipo de cuenta"
-                                                        value={account.account_type}
+                                                        value={account.account_type || ""}
                                                         onChange={(e) =>
                                                             formik.setFieldValue(
                                                                 `accounts[${index}].account_type`,
-                                                                e.target.value
+                                                                e.target.value ? parseInt(e.target.value) : null
                                                             )
                                                         }
                                                         helperText="Selecciona el tipo de cuenta"
@@ -725,22 +749,30 @@ export const CreateSuppliers = () => {
                                                 {/* Banco */}
                                                 <div className="col-md-6">
                                                     <label className="form-label fw-semibold">
-                                                        Entidad bancaria <span className="text-danger">*</span>
+                                                        Banco <span className="text-danger">*</span>
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        name="entidadBancaria"
-                                                        value={account.bank}
+                                                    <TextField
+                                                        fullWidth
+                                                        select
+                                                        SelectProps={{ native: true }}
+                                                        label="Banco"
+                                                        value={account.bank || ""}
                                                         onChange={(e) =>
                                                             formik.setFieldValue(
                                                                 `accounts[${index}].bank`,
-                                                                e.target.value
+                                                                e.target.value ? parseInt(e.target.value) : null
                                                             )
                                                         }
-                                                        placeholder="Ej: Banco Agrario"
-                                                        disabled={!isEditable}     // 🔒 bloquear también aquí
-                                                    />
+                                                        helperText="Selecciona el banco"
+                                                        disabled={!isEditable}
+                                                    >
+                                                        <option value=""></option>
+                                                        {banksList.map((bank) => (
+                                                            <option key={bank.id} value={bank.id}>
+                                                                {bank.nombre}
+                                                            </option>
+                                                        ))}
+                                                    </TextField>
                                                 </div>
 
                                                 {/* Certificado bancario */}
@@ -791,9 +823,9 @@ export const CreateSuppliers = () => {
                                                 ...formik.values.accounts,
                                                 {
                                                     id: null,
-                                                    account_type: "",
+                                                    account_type: null,
                                                     account_number: "",
-                                                    bank: "",
+                                                    bank: null,
                                                     bankCertFile: null,
                                                 },
                                             ])

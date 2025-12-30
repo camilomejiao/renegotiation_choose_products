@@ -110,6 +110,12 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    //
+    getBanks() {
+        const url = GlobalConnex.url + `lista/bancos/`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
 
 
     // =============================
