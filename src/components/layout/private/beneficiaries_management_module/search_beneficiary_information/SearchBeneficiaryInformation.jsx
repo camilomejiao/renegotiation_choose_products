@@ -88,7 +88,17 @@ export const SearchBeneficiaryInformation = () => {
     // cache de municipios por depto
     const muniCacheRef = useRef(new Map());
 
-    //
+    /**
+     * Carga las opciones iniciales requeridas por los filtros:
+     * - Departamentos
+     * - Estados de CUB
+     * - Actividades CUB
+     *
+     * Internamente usa una función `load` para estandarizar:
+     * - activación/desactivación del loader general
+     * - manejo del texto informativo
+     * - asignación del resultado al estado correspondiente
+     */
     const fetchOptions = async () => {
         const load = async (fn, set) => {
             try {
@@ -110,7 +120,18 @@ export const SearchBeneficiaryInformation = () => {
         await load(() => beneficiaryInformationServices.getCubActivity(), setActivityOptions);
     };
 
-    //
+    /**
+     * Configuración de Formik:
+     * - initialValues: valores iniciales del formulario
+     * - validationSchema: validaciones con Yup
+     * - onSubmit:
+     *   1) Valida que exista al menos un filtro/campo diligenciado.
+     *   2) Si no hay filtros, muestra un warning y detiene el flujo.
+     *   3) Si hay filtros, construye `searchParams` para disparar la búsqueda.
+     *
+     * Nota: El efecto `useEffect([page, pageSize, searchParams])` es el que
+     * finalmente ejecuta la consulta cuando `searchParams` cambia.
+     */
     const formik = useFormik({
         initialValues,
         validationSchema,
@@ -144,6 +165,13 @@ export const SearchBeneficiaryInformation = () => {
                 return;
             }
 
+            setBeneficiaryInfo('');
+            setMovements({
+                datos_cub: null,
+                estado_cuenta: [],
+                resumen_pagos: [],
+            });
+
             setSearchParams({
                 cub,
                 identification,
@@ -157,7 +185,26 @@ export const SearchBeneficiaryInformation = () => {
         },
     });
 
-    //
+    /**
+     * Ejecuta la búsqueda de información básica del titular/beneficiario con paginación.
+     *
+     * @param {number} pageSize - Cantidad de registros por página.
+     * @param {number} page - Página (1-based) solicitada al backend.
+     * @param {string} cub - CUB (opcional).
+     * @param {string} identification - Identificación (opcional).
+     * @param {string} first_name - Nombres (opcional).
+     * @param {string} last_name - Apellidos (opcional).
+     * @param {string|null} state - Estado CUB (en este caso se envía el nombre).
+     * @param {string|null} activity - Actividad CUB (en este caso se envía el nombre).
+     * @param {string|null} depto - Departamento (en este caso se envía el nombre).
+     * @param {number|null} muni - Municipio (en este caso se envía el id).
+     *
+     * Flujo:
+     * - Activa loader general y texto "Buscando..."
+     * - Llama al servicio `searchForUserOrCubInformation`
+     * - Normaliza filas con `normalizeInitialInformationRows`
+     * - Actualiza `rowCount` para paginación server-side
+     */
     const getBeneficiaryInformation = async (
         pageSize = 100,
         page = 1,
@@ -200,7 +247,20 @@ export const SearchBeneficiaryInformation = () => {
         }
     }
 
-    //
+    /**
+     * Carga municipios de un departamento (por id) con cache en memoria.
+     *
+     * - Si no llega deptId:
+     *   - Limpia opciones de municipios
+     *   - Resetea el campo `muni` en Formik
+     *
+     * - Si llega deptId:
+     *   - Revisa si ya existe en `muniCacheRef`:
+     *     - Si NO existe, consulta al servicio `getMunis(deptId)` y guarda en cache.
+     *     - Si existe, reutiliza la lista cacheada.
+     *   - Actualiza `muniOptions` con la lista resultante.
+     *   - Si el municipio actualmente seleccionado no pertenece al nuevo depto, lo limpia.
+     */
     const loadMunicipalities = async (deptId) => {
         if (!deptId) {
             setMuniOptions([]);
@@ -234,25 +294,42 @@ export const SearchBeneficiaryInformation = () => {
         }
     };
 
-    //
+    /**
+     * Maneja el cambio de Departamento en el Autocomplete.
+     * - Actualiza el valor `depto` en Formik
+     * - Dispara la carga de municipios para ese depto
+     */
     const handleDeptChange = async (_evt, value) => {
         formik.setFieldValue("depto", value);
         await loadMunicipalities(value?.id || null);
     };
 
-    //
+    /**
+     * Maneja el cambio de Municipio en el Autocomplete.
+     * - Actualiza el valor `muni` en Formik
+     */
     const handleMuniChange = (_evt, value) => {
         formik.setFieldValue("muni", value);
     };
 
-    //
+    /**
+     * Limpia el formulario y los resultados.
+     * - Resetea Formik (valores y touched)
+     * - Limpia información básica (`beneficiaryInfo`)
+     * - Limpia movimientos/detalle (`movements`)
+     */
     const handleClear = () => {
         formik.resetForm();
         setBeneficiaryInfo(null);
         setMovements(null);
     };
 
-    //
+    /**
+     * Exportación (mock).
+     * - Valida que exista información cargada para exportar.
+     * - Actualmente solo imprime por consola y muestra alerta.
+     * Nota: El botón está comentado en el UI.
+     */
     const handleExport = () => {
         if (!beneficiaryInfo) {
             AlertComponent.warning("Primero realice una búsqueda para exportar la información.");
@@ -263,7 +340,12 @@ export const SearchBeneficiaryInformation = () => {
         AlertComponent.success("Exportación generada (mock).");
     };
 
-    //
+    /**
+     * Exportación (mock).
+     * - Valida que exista información cargada para exportar.
+     * - Actualmente solo imprime por consola y muestra alerta.
+     * Nota: El botón está comentado en el UI.
+     */
     const showDetails = async (params) => {
         try {
             setLoading(true);
@@ -285,7 +367,10 @@ export const SearchBeneficiaryInformation = () => {
 
     }
 
-    //
+    /**
+     * Renderiza la celda de acciones en la tabla principal (info básica).
+     * - Incluye botón "Detalles" que dispara `showDetails(row)`
+     */
     const renderActionsCell = (params) => {
         const row = params.row;
         return (
@@ -313,7 +398,7 @@ export const SearchBeneficiaryInformation = () => {
         { field: "identification", headerName: "Identificación", width: 150 },
         { field: "name", headerName: "Nombre completo", width: 270 },
         { field: "depto", headerName: "Departamento", width: 130 },
-        { field: "muni", headerName: "Municipio", width: 110 },
+        { field: "muni", headerName: "Municipio", width: 200 },
         { field: "village", headerName: "Vereda", width: 150 },
         {
             field: "actions",
@@ -325,7 +410,13 @@ export const SearchBeneficiaryInformation = () => {
         },
     ];
 
-    //
+    /**
+     * Normaliza la respuesta del backend para la tabla de información básica.
+     * Convierte `results` en filas compatibles con DataGrid y sus columnas.
+     *
+     * @param {Array} data - Lista cruda desde el backend.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizeInitialInformationRows = (data) => {
         return data.map((row) => ({
             id: row.id,
@@ -358,6 +449,13 @@ export const SearchBeneficiaryInformation = () => {
         { field: "pay", headerName: "Pago", width: 170 },
     ];
 
+    /**
+     * Normaliza el bloque `datos_cub` del detalle.
+     * Asegura estructura consistente, evita null/undefined y aplica valores por defecto.
+     *
+     * @param {Object|null} datos - Objeto crudo del backend.
+     * @returns {Object|null} Objeto normalizado o null si no existe.
+     */
     const normalizeDatosCub = (datos) => {
         if (!datos) return null;
 
@@ -380,6 +478,13 @@ export const SearchBeneficiaryInformation = () => {
         };
     };
 
+    /**
+     * Normaliza el arreglo `estado_cuenta` y convierte valores numéricos a moneda COP.
+     * Adicionalmente conserva versiones numéricas (payNum, debtNum, totalNum) para cálculos posteriores.
+     *
+     * @param {Array} data - Lista cruda de estado de cuenta.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizeAccountStatementRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
@@ -403,6 +508,13 @@ export const SearchBeneficiaryInformation = () => {
         });
     };
 
+    /**
+     * Agrega una fila adicional "TOTAL" al final del estado de cuenta.
+     * Suma los valores numéricos (payNum, debtNum, totalNum) de todas las filas.
+     *
+     * @param {Array} rows - Filas de estado de cuenta ya normalizadas.
+     * @returns {Array} Filas + fila total al final.
+     */
     const addTotalRow = (rows = []) => {
         const totals = rows.reduce(
             (acc, r) => {
@@ -433,6 +545,13 @@ export const SearchBeneficiaryInformation = () => {
     const rows = addTotalRow(movements?.estado_cuenta || []);
 
 
+    /**
+     * Normaliza el arreglo `resumen_pagos` del detalle.
+     * Convierte campos a string seguros y formatea `pago` a moneda COP.
+     *
+     * @param {Array} data - Lista cruda de resumen de pagos.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizePaymentSummaryRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
@@ -451,6 +570,16 @@ export const SearchBeneficiaryInformation = () => {
         }));
     };
 
+    /**
+     * Normaliza la respuesta completa del endpoint de detalle.
+     * Unifica en un solo objeto los tres bloques usados por la UI:
+     * - datos_cub
+     * - estado_cuenta
+     * - resumen_pagos
+     *
+     * @param {Object} data - Respuesta cruda del backend.
+     * @returns {Object} Objeto normalizado para setear en `movements`.
+     */
     const normalizeDetailData = (data) => ({
         datos_cub: normalizeDatosCub(data?.datos_cub),
         estado_cuenta: normalizeAccountStatementRows(data?.estado_cuenta),
