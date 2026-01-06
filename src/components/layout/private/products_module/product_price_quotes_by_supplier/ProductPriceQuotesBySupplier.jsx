@@ -78,7 +78,7 @@ export const ProductPriceQuotesBySupplier = () => {
             field: "name",
             headerName: "Nombre Producto",
             flex: 1,
-            minWidth: 200,
+            minWidth: 400,
             renderCell: (params) => (
                 <div
                     style={{
@@ -92,12 +92,29 @@ export const ProductPriceQuotesBySupplier = () => {
                 </div>
             ),
         },
-        { field: "unit", headerName: "Unidad", width: 150 },
+        {
+            field: "unit",
+            headerName: "Unidad",
+            flex: 1,
+            minWidth: 80,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
         {
             field: "description",
             headerName: "Descripción",
             flex: 1,
-            minWidth: 200,
+            minWidth: 300,
             editable: true,
             renderCell: (params) => (
                 <div
@@ -116,8 +133,7 @@ export const ProductPriceQuotesBySupplier = () => {
             field: "brand",
             headerName: "Marca",
             flex: 1,
-            minWidth: 200,
-            editable: true,
+            minWidth: 100,
             renderCell: (params) => (
                 <div
                     style={{
@@ -134,7 +150,7 @@ export const ProductPriceQuotesBySupplier = () => {
         {
             field: "price",
             headerName: "Valor",
-            width: 250,
+            width: 160,
             editable: true,
             renderCell: (params) => {
                 const min = Number(params.row.precio_min ?? 0);
@@ -154,6 +170,9 @@ export const ProductPriceQuotesBySupplier = () => {
                             const newRow = { ...params.row, price: value };
                             // esto re-renderiza la celda; el commit real se hace al salir de la fila
                             params.api.updateRows([newRow]);
+                        }}
+                        style={{
+                            fontSize: "10px"
                         }}
                     />
                 );
@@ -471,8 +490,8 @@ export const ProductPriceQuotesBySupplier = () => {
                             loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
-                            rowHeight={72} // ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
-                            headerHeight={48}
+                            rowHeight={100}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                            headerHeight={88}
                             componentsProps={{
                                 columnHeader: {
                                     style: {
