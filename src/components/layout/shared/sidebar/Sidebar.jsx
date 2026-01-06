@@ -142,7 +142,21 @@ export const Sidebar = ({ userAuth }) => {
 
     const role = userAuth?.rol_id;
     const items = menuConfig(role, userAuth?.id);
-    const title = role === RolesEnum.SUPPLIER ? 'Proveedor' : role === RolesEnum.TERRITORIAL_LINKS ? 'Tecnico Territorio' : role === RolesEnum.TECHNICAL ? 'Implementación' : 'Perfil';
+    const title = role === RolesEnum.SUPPLIER
+                            ? 'Proveedor'
+                            : role === RolesEnum.TERRITORIAL_LINKS
+                                ? 'Tecnico Territorio'
+                                : role === RolesEnum.TECHNICAL
+                                    ? 'Implementación'
+                                    : role === RolesEnum.PAYMENTS
+                                        ? 'Pagos'
+                                        : role === RolesEnum.TRUST_PAYMENTS
+                                            ? 'Fiduciaria'
+                                            : role === RolesEnum.ENVIRONMENTAL
+                                                ? 'Ambiental'
+                                                : role === RolesEnum.LEGAL
+                                                    ? 'Juridica'
+                                                    : 'Perfil';
     const titleIcon = role === RolesEnum.SUPPLIER ? FaRegBuilding : role === RolesEnum.TERRITORIAL_LINKS ? FaHardHat : FaUser;
 
     return (

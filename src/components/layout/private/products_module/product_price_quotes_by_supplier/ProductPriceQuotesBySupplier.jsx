@@ -134,6 +134,7 @@ export const ProductPriceQuotesBySupplier = () => {
             headerName: "Marca",
             flex: 1,
             minWidth: 100,
+            editable: true,
             renderCell: (params) => (
                 <div
                     style={{

@@ -17,6 +17,8 @@ import { SearchUser } from "../components/layout/private/search_user_module/Sear
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
+//import { _Dashboard } from "../components/layout/private/dashboard/_Dashboard";
+import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
@@ -44,7 +46,6 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments_modu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
-import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
 import { ProductUploadTechnical } from "../components/layout/private/products_module/product_upload_technical/ProductUploadTechnical";
 import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {

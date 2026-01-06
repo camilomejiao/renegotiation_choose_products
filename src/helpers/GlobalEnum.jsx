@@ -77,7 +77,7 @@ export const DeliveryStatusEnum = {
     },
     CORRECTION: {
         key: "subsanacion",
-        label: "En Subsanación",
+        label: "En Subsanación Proveedor",
         value: "SUBSANACION"
     },
     CORRECTION_IMPLEMENTATION: {
@@ -85,6 +85,7 @@ export const DeliveryStatusEnum = {
         label: "En Subsanación Implementación",
         value: "SUBSANACION_IMPLEMENTACION"
     },
+
     PENDING_FOR_INVOICE: {
         key: "pendiente_para_cuenta_de_cobro",
         label: "Pendiente para cuenta de cobro",

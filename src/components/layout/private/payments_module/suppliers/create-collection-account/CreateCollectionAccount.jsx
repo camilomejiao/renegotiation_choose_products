@@ -135,8 +135,8 @@ export const CreateCollectionAccount = () => {
         const rows = data?.data?.bancos;
         const fav = rows.find((row) => Boolean(row?.favorita));
         if (!fav) {
-          AlertComponent.warning('', 'El proveedor no ha registrado cuentas como favoritas!');
-          return;
+          AlertComponent.warning('', 'El proveedor no ha registrado cuentas bancarias!');
+          return [];
         }
 
         return [
