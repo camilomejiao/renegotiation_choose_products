@@ -129,6 +129,20 @@ const menuConfig = (role, id) => {
     return config[role] || [];
 };
 
+const getRoleTitle = (role) => {
+    const titles = {
+        [RolesEnum.SUPPLIER]: 'Proveedor',
+        [RolesEnum.TERRITORIAL_LINKS]: 'Técnico Territorio',
+        [RolesEnum.TECHNICAL]: 'Implementación',
+        [RolesEnum.PAYMENTS]: 'Pagos',
+        [RolesEnum.TRUST_PAYMENTS]: 'Fiduciaria',
+        [RolesEnum.ENVIRONMENTAL]: 'Ambiental',
+        [RolesEnum.LEGAL]: 'Jurídica',
+    };
+
+    return titles[role] ?? 'Perfil';
+};
+
 export const Sidebar = ({ userAuth }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
@@ -142,21 +156,7 @@ export const Sidebar = ({ userAuth }) => {
 
     const role = userAuth?.rol_id;
     const items = menuConfig(role, userAuth?.id);
-    const title = role === RolesEnum.SUPPLIER
-                            ? 'Proveedor'
-                            : role === RolesEnum.TERRITORIAL_LINKS
-                                ? 'Tecnico Territorio'
-                                : role === RolesEnum.TECHNICAL
-                                    ? 'Implementación'
-                                    : role === RolesEnum.PAYMENTS
-                                        ? 'Pagos'
-                                        : role === RolesEnum.TRUST_PAYMENTS
-                                            ? 'Fiduciaria'
-                                            : role === RolesEnum.ENVIRONMENTAL
-                                                ? 'Ambiental'
-                                                : role === RolesEnum.LEGAL
-                                                    ? 'Juridica'
-                                                    : 'Perfil';
+    const title = getRoleTitle(role);
     const titleIcon = role === RolesEnum.SUPPLIER ? FaRegBuilding : role === RolesEnum.TERRITORIAL_LINKS ? FaHardHat : FaUser;
 
     return (

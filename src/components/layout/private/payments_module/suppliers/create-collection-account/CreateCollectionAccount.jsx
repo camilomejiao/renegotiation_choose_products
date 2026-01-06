@@ -112,7 +112,7 @@ export const CreateCollectionAccount = () => {
             }
 
             if (status === ResponseStatusEnum.OK) {
-                console.log(data);
+                //console.log(data);
                 setAccountType(normalizeBanks(data));
             }
         } catch (error) {
@@ -123,7 +123,7 @@ export const CreateCollectionAccount = () => {
     };
 
     const selectedBank = async (optB) => {
-        console.log(optB);
+        //console.log(optB);
         setSelectedAccountTypeId(optB?.value);
         if(!isSupplier) {
             await getApprovedDeliveries(1, 100, selectedSupplierId);
