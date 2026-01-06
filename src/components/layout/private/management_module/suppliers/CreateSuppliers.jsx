@@ -298,8 +298,16 @@ export const CreateSuppliers = () => {
                         formData.append("ubicacion_id", String(values.muni.id));
                     }
 
+                    //VALIDACIÓN: al menos una cuenta favorita
+                    const hasFavoriteAccount = (values.accounts).some((acc) => acc.default_favorite === true);
+
+                    if (!hasFavoriteAccount) {
+                        AlertComponent.warning("Debe marcar al menos una cuenta bancaria como cuenta favorita por defecto.");
+                        return;
+                    }
+
                     // 2. Bancos
-                    const bancos = (values.accounts || []).map((acc) => ({
+                    const bancos = (values.accounts).map((acc) => ({
                         banco_id: acc.id,
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
@@ -478,7 +486,7 @@ export const CreateSuppliers = () => {
             setOnlyOneFavorite(index);
 
             if (!account?.id) {
-                AlertComponent.success("Cuenta marcada como favorita, dale guardar para confirmar la selección.");
+                AlertComponent.success("", "Cuenta marcada como favorita, dale guardar para confirmar la selección.");
 
             }
         } catch (error) {

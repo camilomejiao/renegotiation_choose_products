@@ -131,16 +131,22 @@ export const CreateCollectionAccount = () => {
         setShowCertificate(optB?.certificate);
     }
 
-    //
     const normalizeBanks = (data) => {
-        const rows =  data?.data?.bancos;
-        return rows.map((row) => ({
-            value: row?.banco_id,
-            label: `${row?.banco_nombre || ''} - ${row?.numero_cuenta || ''}`,
-            certificate: row?.certificado_pdf
-        }));
+        const rows = data?.data?.bancos;
+        const fav = rows.find((row) => Boolean(row?.favorita));
+        if (!fav) {
+          AlertComponent.warning('', 'El proveedor no ha registrado cuentas como favoritas!');
+          return;
+        }
 
-    }
+        return [
+            {
+                value: fav?.banco_id ?? null,
+                label: `${fav?.banco_nombre || ""} - ${fav?.numero_cuenta || ""}`,
+                certificate: fav?.certificado_pdf ?? null,
+            }
+        ];
+    };
 
     //
     const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch, supplierId) => {
