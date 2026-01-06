@@ -67,10 +67,11 @@ export const ValidationSupervision = () => {
 
     //
     const getBaseColumns = [
-        { field: "id", headerName: "ID", width: 70 },
+        { field: "id", headerName: "Id", width: 70 },
+        { field: "cod_id", headerName: "Código Producto", width: 110 },
         {
             field: "category",
-            headerName: "CATEGORIA",
+            headerName: "Categoria",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -90,7 +91,7 @@ export const ValidationSupervision = () => {
             field: "name",
             headerName: "Nombre",
             flex: 1,
-            minWidth: 200,
+            minWidth: 400,
             renderCell: (params) => (
                 <div
                     style={{
@@ -108,7 +109,7 @@ export const ValidationSupervision = () => {
             field: "description",
             headerName: "Descripción",
             flex: 1,
-            minWidth: 200,
+            minWidth: 300,
             renderCell: (params) => (
                 <div
                     style={{
@@ -126,7 +127,7 @@ export const ValidationSupervision = () => {
             field: "brand",
             headerName: "Marca",
             flex: 1,
-            minWidth: 200,
+            minWidth: 100,
             renderCell: (params) => (
                 <div
                     style={{
@@ -144,7 +145,7 @@ export const ValidationSupervision = () => {
             field: "unit",
             headerName: "Unidad",
             flex: 1,
-            minWidth: 100,
+            minWidth: 80,
             renderCell: (params) => (
                 <div
                     style={{
@@ -160,7 +161,7 @@ export const ValidationSupervision = () => {
         },
         { field: "price_min", headerName: "Precio Min", width: 100},
         { field: "price_max", headerName: "Precio Max", width: 100},
-        { field: "price", headerName: "VALOR", width: 100},
+        { field: "price", headerName: "Precio Proveedor", width: 100},
     ];
 
     const baseColumns = getBaseColumns;
@@ -293,19 +294,37 @@ export const ValidationSupervision = () => {
     //
     const normalizeRows = async (data) => {
         try {
-            return data.map((row) => ({
-                id: row?.id,
-                name: row?.nombre,
-                description: row?.especificacion_tecnicas,
-                brand: row?.marca_comercial,
-                unit: row?.unidad_medida,
-                category: row?.categoria_producto,
-                price_min: `$ ${row?.precio_min.toLocaleString()}`,
-                price_max: `$ ${row?.precio_max.toLocaleString()}`,
-                price: `$ ${row?.precio.toLocaleString()}`,
-                state: getProductState(row?.fecha_aprobado, row?.aprobados),
-                ...extractObservations(row?.aprobados),
-            }));
+            return data.map((row) => {
+                const priceMinValue = Number(row?.precio_min ?? 0);
+                const priceMaxValue = Number(row?.precio_max ?? 0);
+                const priceValue    = Number(row?.precio ?? 0);
+
+                const isOutOfRange = priceValue < priceMinValue || priceValue > priceMaxValue;
+
+                return {
+                    id: row?.id,
+                    cod_id: row?.jornada_producto_id,
+                    name: row?.nombre,
+                    description: row?.especificacion_tecnicas,
+                    brand: row?.marca_comercial,
+                    unit: row?.unidad_medida,
+                    category: row?.categoria_producto,
+
+                    // para mostrar
+                    price_min: `$ ${priceMinValue.toLocaleString()}`,
+                    price_max: `$ ${priceMaxValue.toLocaleString()}`,
+                    price: `$ ${priceValue.toLocaleString()}`,
+
+                    // para validar
+                    priceMinValue,
+                    priceMaxValue,
+                    priceValue,
+                    isOutOfRange,
+
+                    state: getProductState(row?.fecha_aprobado, row?.aprobados),
+                    ...extractObservations(row?.aprobados),
+                };
+            });
         } catch (error) {
             console.error('Error al normalizar filas:', error);
             return [];
@@ -379,6 +398,7 @@ export const ValidationSupervision = () => {
     // Cerrar modal aprobacion
     const handleCloseModalApproved = () => {
         setOpenModal(false);
+        setSelectedIds([]);
         setComment('');
         setAction('approve');
     };
@@ -551,6 +571,7 @@ export const ValidationSupervision = () => {
                                 columns={columns}
                                 rows={filteredData}
                                 checkboxSelection
+                                rowSelectionModel={selectedIds}
                                 onRowSelectionModelChange={handleSelectionChange}
                                 paginationMode="server"
                                 rowCount={rowCount}
@@ -560,8 +581,9 @@ export const ValidationSupervision = () => {
                                     setPageSize(pageSize);
                                 }}
                                 rowsPerPageOptions={[10, 50, 100]}
-                                rowHeight={64}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
-                                headerHeight={48}
+                                rowHeight={100}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                                headerHeight={88}
+                                getRowClassName={(params) => (params.row.isOutOfRange ? "row-out-range" : "")}
                                 componentsProps={{
                                     columnHeader: {
                                         style: {
@@ -607,6 +629,12 @@ export const ValidationSupervision = () => {
                                     },
                                     "& .MuiDataGrid-row:hover": {
                                         backgroundColor: "#E8F5E9",
+                                    },
+                                    "& .row-out-range": {
+                                        backgroundColor: "rgba(244, 67, 54, 0.15)",
+                                    },
+                                    "& .row-out-range:hover": {
+                                        backgroundColor: "rgba(244, 67, 54, 0.25)",
                                     },
                                 }}
                             />

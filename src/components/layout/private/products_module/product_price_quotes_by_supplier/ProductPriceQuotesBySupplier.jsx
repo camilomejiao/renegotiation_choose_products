@@ -58,7 +58,7 @@ export const ProductPriceQuotesBySupplier = () => {
         { field: "id", headerName: "ID", width: 70 },
         {
             field: "category",
-            headerName: "CATEGORIA",
+            headerName: "Categoria",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -76,7 +76,7 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "name",
-            headerName: "NOMBRE PRODUCTO",
+            headerName: "Nombre Producto",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -92,10 +92,10 @@ export const ProductPriceQuotesBySupplier = () => {
                 </div>
             ),
         },
-        { field: "unit", headerName: "UNIDAD", width: 150 },
+        { field: "unit", headerName: "Unidad", width: 150 },
         {
             field: "description",
-            headerName: "DESCRIPCION",
+            headerName: "Descripción",
             flex: 1,
             minWidth: 200,
             editable: true,
@@ -114,7 +114,7 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "brand",
-            headerName: "MARCA",
+            headerName: "Marca",
             flex: 1,
             minWidth: 200,
             editable: true,
@@ -133,7 +133,7 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "price",
-            headerName: "VALOR",
+            headerName: "Valor",
             width: 250,
             editable: true,
             renderCell: (params) => {
@@ -371,6 +371,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
             if(status === ResponseStatusEnum.CREATED) {
                 showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+                getProductList(selectedPlan.value, onlyMine);
             }
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
@@ -470,7 +471,7 @@ export const ProductPriceQuotesBySupplier = () => {
                             loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
-                            rowHeight={64} // ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                            rowHeight={72} // ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
                             headerHeight={48}
                             componentsProps={{
                                 columnHeader: {

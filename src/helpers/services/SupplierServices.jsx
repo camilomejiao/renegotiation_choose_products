@@ -116,8 +116,6 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-
-
     // =============================
     // GESTIÓN DE LOCALSTORAGE
     // =============================

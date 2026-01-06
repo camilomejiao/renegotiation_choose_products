@@ -1,7 +1,7 @@
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
-import { Autocomplete, CircularProgress, FormControlLabel, Switch, TextField } from "@mui/material";
+import {Autocomplete, Checkbox, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
 import { Button, Card } from "react-bootstrap";
 import { useFormik } from "formik";
 
@@ -21,6 +21,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { filesServices } from "../../../../../helpers/services/FilesServices";
+import {ConfirmationModal} from "../../../shared/Modals/ConfirmationModal";
 
 
 //
@@ -43,6 +44,7 @@ const initialValues = {
             account_number: "",
             bank: null,
             bankCertFile: null,
+            default_favorite: null
         },
     ],
 };
@@ -73,6 +75,7 @@ const validationSchema = yup.object().shape({
                 account_number: yup.string().nullable(),
                 bank: yup.string().nullable(),
                 bankCertFile: yup.mixed().nullable(),
+                default_favorite: yup.boolean().nullable(),
             })
         )
         .min(1, "Debe existir al menos una cuenta bancaria"),
@@ -95,6 +98,10 @@ export const CreateSuppliers = () => {
     const [loadingMunis, setLoadingMunis] = useState(false);
     const [acountsType, setAcountsType] = useState([]);
     const [banksList, setBanksList] = useState([]);
+
+    //check
+    const [showAccountDefaultModal, setShowAccountDefaultModal] = useState(false);
+    const [pendingDefault, setPendingDefault] = useState(null);
 
     //cache para no repetir requests por depto
     const deptsLoadedRef = useRef(false);
@@ -174,7 +181,6 @@ export const CreateSuppliers = () => {
             setLoading(true);
             const {data, status} = await supplierServices.getAcountsType();
             if(status === ResponseStatusEnum.OK) {
-                console.log(data);
                 setAcountsType(data);
                 return data;
             }
@@ -251,6 +257,8 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
+                setLoading(true);
+                setInformationLoadingText('Validando datos');
                 let response;
 
                 //CREAR (JSON)
@@ -273,7 +281,6 @@ export const CreateSuppliers = () => {
                 }
 
                 //EDITAR (FORMDATA)
-
                 if (isEdit) {
                     const formData = new FormData();
 
@@ -296,7 +303,8 @@ export const CreateSuppliers = () => {
                         banco_id: acc.id,
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
-                        banco: acc.bank || null, // Ahora es el ID del banco, no texto
+                        banco: acc.bank || null,
+                        favorita: acc.default_favorite || null
                     }));
 
                     formData.append("bancos", JSON.stringify(bancos));
@@ -321,6 +329,8 @@ export const CreateSuppliers = () => {
                         console.log("FORMDATA:", key, val);
                     }
 
+                    setInformationLoadingText('Enviando información');
+
                     response = await supplierServices.updateSupplier(id, formData);
                 }
 
@@ -328,7 +338,7 @@ export const CreateSuppliers = () => {
                     AlertComponent.success("Operación realizada correctamente");
 
                     if(userAuth?.rol_id === RolesEnum.SUPPLIER) {
-                        navigate(`/admin/edit-suppliers/${id}`);
+                        window.location.reload()
                     }
 
                     if(userAuth?.rol_id !== RolesEnum.SUPPLIER) {
@@ -340,6 +350,9 @@ export const CreateSuppliers = () => {
             } catch (error) {
                 console.error("Error al enviar el formulario:", error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
+            } finally {
+                setLoading(false);
+                setInformationLoadingText('Información enviada');
             }
         },
     });
@@ -378,10 +391,11 @@ export const CreateSuppliers = () => {
                     idFile: resp?.ruta_cedula_representante,
                     accounts: (resp?.bancos || []).map((c) => ({
                         id: c.id,
-                        account_type: c.tipo_cuenta ? parseInt(c.tipo_cuenta) : null, // ID del parámetro
+                        account_type: c.tipo_cuenta ? parseInt(c.tipo_cuenta) : null,
                         account_number: c.numero_cuenta ?? "",
-                        bank: c.banco ? parseInt(c.banco) : null, // ID del banco
+                        bank: c.banco ? parseInt(c.banco) : null,
                         bankCertFile: c?.ruta_certificado_bancario,
+                        default_favorite: c?.favorita,
                     })),
                 });
             }
@@ -430,15 +444,59 @@ export const CreateSuppliers = () => {
         return userAuth?.rol_id === rolesAllow;
     }
 
+    //check
+    const handleAskSetDefaultAccount = (index, account) => {
+        //console.log('index: ', index, 'account: ',account);
+        if (formik.values.accounts?.[index]?.default_favorite) return;
+
+        setPendingDefault({ index, account });
+        setShowAccountDefaultModal(true);
+    };
+
+    const handleCancelSetDefault = () => {
+        setShowAccountDefaultModal(false);
+        setPendingDefault(null);
+    };
+
+    const setOnlyOneFavorite = (selectedIndex) => {
+        const next = (formik.values.accounts || []).map((acc, idx) => ({
+            ...acc,
+            default_favorite: idx === selectedIndex,
+        }));
+        formik.setFieldValue("accounts", next);
+    };
+
+    const handleConfirmSetDefault = async () => {
+        if (!pendingDefault) return;
+
+        const { index, account } = pendingDefault;
+
+        try {
+            setLoading(true);
+            setInformationLoadingText("Actualizando cuenta por defecto...");
+
+            setOnlyOneFavorite(index);
+
+            if (!account?.id) {
+                AlertComponent.success("Cuenta marcada como favorita, dale guardar para confirmar la selección.");
+
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Error al actualizar la cuenta por defecto.");
+        } finally {
+            setLoading(false);
+            setInformationLoadingText("");
+            setShowAccountDefaultModal(false);
+            setPendingDefault(null);
+        }
+    };
+
     useEffect(() => {
+        loadAcountsType();
+        loadBanks();
         if (id) {
-            loadAcountsType();
-            loadBanks();
             fetchSupplierData(id);
-        } else {
-            // Si es creación, también cargar bancos y tipos de cuenta
-            loadAcountsType();
-            loadBanks();
         }
     }, []);
 
@@ -687,6 +745,16 @@ export const CreateSuppliers = () => {
                                                     )}
                                                 </h3>
 
+                                                <FormControlLabel
+                                                    label="Cuenta por defecto"
+                                                    control={
+                                                        <Checkbox
+                                                            checked={Boolean(account.default_favorite)}
+                                                            onChange={() => handleAskSetDefaultAccount(index, account)}
+                                                        />
+                                                    }
+                                                />
+
                                                 <Button
                                                     variant="outline-danger"
                                                     size="sm"
@@ -791,7 +859,7 @@ export const CreateSuppliers = () => {
                                                                     e.currentTarget.files?.[0] ?? null
                                                                 )
                                                             }
-                                                            disabled={!isEditable} // 🔒 solo subir archivo en la cuenta nueva
+                                                            disabled={!isEditable}
                                                         />
 
                                                         {/* Ver documento si existe ruta en cuentas viejas o nuevas guardadas */}
@@ -857,6 +925,16 @@ export const CreateSuppliers = () => {
                 </form>
 
             </div>
+
+            <ConfirmationModal
+                show={showAccountDefaultModal}
+                title={"Confirmar cuenta por defecto"}
+                message={"¿Estás seguro de que deseas dejar esta cuenta como cuenta por defecto?"}
+                onConfirm={handleConfirmSetDefault}
+                onClose={handleCancelSetDefault}
+                cancelLabel={"Cancelar"}
+                confirmLabel={"Sí, dejar por defecto"}
+            />
         </>
     )
 }

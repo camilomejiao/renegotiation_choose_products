@@ -224,8 +224,7 @@ export const ReviewDocuments = () => {
     //
     const getDenyDestinationOptions = () => {
         return [
-            { id: RolesEnum.TERRITORIAL_LINKS, label: "Territorial" },
-            { id: RolesEnum.TECHNICAL, label: "Técnica" },
+            { id: RolesEnum.TECHNICAL, label: "Técnica / Implementación" },
             { id: RolesEnum.SUPPLIER, label: "Proveedor" },
         ];
     };

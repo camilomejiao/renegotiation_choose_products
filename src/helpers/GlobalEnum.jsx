@@ -85,11 +85,6 @@ export const DeliveryStatusEnum = {
         label: "En Subsanación Implementación",
         value: "SUBSANACION_IMPLEMENTACION"
     },
-    CORRECTION_TERRITORIAL: {
-        key: "subsanacion_territorial",
-        label: "En Subsanación Territorial",
-        value: "SUBSANACION_TERRITORIAL"
-    },
     PENDING_FOR_INVOICE: {
         key: "pendiente_para_cuenta_de_cobro",
         label: "Pendiente para cuenta de cobro",
