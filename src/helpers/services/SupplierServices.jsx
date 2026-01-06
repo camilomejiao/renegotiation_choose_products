@@ -94,8 +94,8 @@ class SupplierServices {
     }
 
 
-    validateOrDeleteBankAccount(accountId) {
-        const url = this.buildUrl(`${accountId}/eliminar`);
+    validateOrDeleteBankAccount(supplierId, accountId) {
+        const url = this.buildUrl(`${supplierId}/cuentas-bancarias/${accountId}`);
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
@@ -104,6 +104,17 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    //
+    getAcountsType() {
+        const url = GlobalConnex.url+ `lista/parametros/?tipo_parametro_id=29`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
+    getBanks() {
+        const url = GlobalConnex.url + `lista/bancos/`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 
     // =============================
     // GESTIÓN DE LOCALSTORAGE

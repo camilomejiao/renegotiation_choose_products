@@ -52,7 +52,7 @@ export const getCategoryOptions = async () => {
 
 //
 export const getStatusProduct = () => [
-    { field: "state", headerName: "ESTADO", width: 100, },
+    { field: "state", headerName: "Estado", width: 100, },
 ];
 
 //Obtener restricciones ambientales
@@ -235,14 +235,14 @@ export const getObservationsSupervisionColumns = () => {
         {
             field: "observations_supervision",
             headerName: "Observación supervision",
-            width: 150,
+            width: 300,
             editable: false,
             renderCell: (params) => renderObservationCell(params, "Observación supervision..."),
         },
         {
             field: "status_supervision",
             headerName: "Estado supervision",
-            width: 150,
+            width: 100,
             editable: false,
             renderCell: renderStatusCell,
         },

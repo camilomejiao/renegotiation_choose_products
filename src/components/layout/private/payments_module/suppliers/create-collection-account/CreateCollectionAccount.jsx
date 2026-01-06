@@ -20,6 +20,7 @@ import {supplierServices} from "../../../../../../helpers/services/SupplierServi
 // Enums
 import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import {filesServices} from "../../../../../../helpers/services/FilesServices";
 
 //
 const canShowSelect = [
@@ -50,6 +51,7 @@ export const CreateCollectionAccount = () => {
     const [loadingDeliveries, setLoadingDeliveries] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [sendingData, setSendingData] = useState(false);
+    const [showCertificate, setShowCertificate] = useState("");
 
     //Para no recargar el catálogo múltiples veces
     const loadRef = useRef(false);
@@ -110,7 +112,7 @@ export const CreateCollectionAccount = () => {
             }
 
             if (status === ResponseStatusEnum.OK) {
-                console.log(data);
+                //console.log(data);
                 setAccountType(normalizeBanks(data));
             }
         } catch (error) {
@@ -121,21 +123,30 @@ export const CreateCollectionAccount = () => {
     };
 
     const selectedBank = async (optB) => {
+        //console.log(optB);
         setSelectedAccountTypeId(optB?.value);
         if(!isSupplier) {
             await getApprovedDeliveries(1, 100, selectedSupplierId);
         }
+        setShowCertificate(optB?.certificate);
     }
 
-    //
     const normalizeBanks = (data) => {
-        const rows =  data?.data?.bancos;
-        return rows.map((row) => ({
-            value: row?.banco_id,
-            label: row?.entidad_bancaria
-        }));
+        const rows = data?.data?.bancos;
+        const fav = rows.find((row) => Boolean(row?.favorita));
+        if (!fav) {
+          AlertComponent.warning('', 'El proveedor no ha registrado cuentas bancarias!');
+          return [];
+        }
 
-    }
+        return [
+            {
+                value: fav?.banco_id ?? null,
+                label: `${fav?.banco_nombre || ""} - ${fav?.numero_cuenta || ""}`,
+                certificate: fav?.certificado_pdf ?? null,
+            }
+        ];
+    };
 
     //
     const getApprovedDeliveries = async (pageToFetch = 1, sizeToFetch, supplierId) => {
@@ -224,6 +235,39 @@ export const CreateCollectionAccount = () => {
         }
     };
 
+
+    //
+    const handleViewFile = async (pdfUrl) => {
+        if (!pdfUrl) {
+            AlertComponent.error('Error', 'No se ha seleccionado una cuenta bancaria.');
+            return;
+        }
+        setLoading(true);
+        try {
+            setInformationLoadingText("Obteniendo archivo");
+
+            const { blob, status, type } = await filesServices.downloadFile(pdfUrl);
+
+            if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
+                const mime = (type || blob.type || '').toLowerCase();
+
+                // Solo PDF o imágenes
+                if (mime.includes('pdf') || mime.startsWith('image/')) {
+                    const fileURL = URL.createObjectURL(blob);
+                    window.open(fileURL, '_blank');
+                }
+            }
+
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo, archivo no encontrado.');
+            }
+        } catch (error) {
+            console.error("Error al descargar archivo:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const onBack = () => navigate(`/admin/payments-suppliers`);
 
     //
@@ -275,7 +319,7 @@ export const CreateCollectionAccount = () => {
                     <Row className="gy-3 mb-4">
                         {isCanShowSelect && (
                             <>
-                                <Col xs={12} md={6}>
+                                <Col xs={12} md={5}>
                                     <Select
                                         classNamePrefix="rb"
                                         options={dataSuppliers}
@@ -320,7 +364,7 @@ export const CreateCollectionAccount = () => {
                             </>
                         )}
 
-                        <Col xs={12} md={6}>
+                        <Col xs={12} md={5}>
                             <Select
                                 classNamePrefix="rb1"
                                 options={accountType}
@@ -354,6 +398,20 @@ export const CreateCollectionAccount = () => {
                                 }}
                             />
                         </Col>
+
+                        {isCanShowSelect && (
+                            <Col xs={12} md={2}>
+                                <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    type="button"
+                                    onClick={() => handleViewFile(showCertificate)}
+                                >
+                                    Ver Certificado
+                                </Button>
+                            </Col>
+                        )}
+
                     </Row>
 
                     {loading && (

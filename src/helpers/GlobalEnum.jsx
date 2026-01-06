@@ -21,7 +21,8 @@ export const RolesEnum = {
     ENVIRONMENTAL: 6,
     PAYMENTS: 7,
     SYSTEM_USER: 8,
-    TRUST_PAYMENTS: 9
+    TRUST_PAYMENTS: 9,
+    LEGAL: 10
 }
 
 export const GeneralStatusDeliveryProductEnum = {
@@ -54,11 +55,57 @@ export const BeneficiaresManagementEnum = {
 }
 
 export const DeliveryStatusEnum = {
-    REGISTERED:  { key: "registradas",  label: "Registradas",    value: "REGISTRADO" },
-    DELIVERED:   { key: "entregadas",   label: "Entregadas",     value: "ENTREGADO" },
-    PAID:      { key: "pagadas",      label: "Pagadas",        value: "PAGADO" },
-    CORRECTION: { key: "subsanacion",  label: "En Subsanación", value: "SUBSANACION" },
-    ISSUEDFORPAYMENT: { key: "emitido_para_pago",  label: "Emitido para pago", value: "EMITIDO_PARA_PAGO" },
+    REGISTERED: {
+        key: "registradas",
+        label: "Registradas",
+        value: "REGISTRADO"
+    },
+    DELIVERED: {
+        key: "entregadas",
+        label: "Entregadas con documentación",
+        value: "ENTREGADO"
+    },
+    SENT_TO_SUPERVISION: {
+        key: "enviado_a_supervision",
+        label: "En Supervisión",
+        value: "ENVIADO_A_SUPERVISION"
+    },
+    SENT_TO_PAYMENTS: {
+        key: "enviado_a_pagos",
+        label: "En Pagos",
+        value: "ENVIADO_A_PAGOS"
+    },
+    CORRECTION: {
+        key: "subsanacion",
+        label: "En Subsanación Proveedor",
+        value: "SUBSANACION"
+    },
+    CORRECTION_IMPLEMENTATION: {
+        key: "subsanacion_implementacion",
+        label: "En Subsanación Implementación",
+        value: "SUBSANACION_IMPLEMENTACION"
+    },
+
+    PENDING_FOR_INVOICE: {
+        key: "pendiente_para_cuenta_de_cobro",
+        label: "Pendiente para cuenta de cobro",
+        value: "PENDIENTE_PARA_CUENTA_DE_COBRO"
+    },
+    fIDUCIARY: {
+        key: "fiduciaria",
+        label: "En Fiduciaria",
+        value: "FIDUCIARIA"
+    },
+    ISSUEDFORPAYMENT: {
+        key: "emitido_para_pago",
+        label: "Emitido para pago",
+        value: "EMITIDO_PARA_PAGO"
+    },
+    PAID: {
+        key: "pagadas",
+        label: "Pagadas",
+        value: "PAGADO"
+    },
 };
 
 export const ReportTypePaymentsEnum = {

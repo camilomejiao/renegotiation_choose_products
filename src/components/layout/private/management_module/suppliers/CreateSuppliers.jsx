@@ -1,8 +1,8 @@
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
-import { Autocomplete, CircularProgress, FormControlLabel, Switch, TextField } from "@mui/material";
-import {Button, Card} from "react-bootstrap";
+import {Autocomplete, Checkbox, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
+import { Button, Card } from "react-bootstrap";
 import { useFormik } from "formik";
 
 //Img
@@ -21,6 +21,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { filesServices } from "../../../../../helpers/services/FilesServices";
+import {ConfirmationModal} from "../../../shared/Modals/ConfirmationModal";
 
 
 //
@@ -39,10 +40,11 @@ const initialValues = {
     accounts: [
         {
             id: null,
-            account_type: "",
+            account_type: null,
             account_number: "",
-            bank: "",
+            bank: null,
             bankCertFile: null,
+            default_favorite: null
         },
     ],
 };
@@ -73,6 +75,7 @@ const validationSchema = yup.object().shape({
                 account_number: yup.string().nullable(),
                 bank: yup.string().nullable(),
                 bankCertFile: yup.mixed().nullable(),
+                default_favorite: yup.boolean().nullable(),
             })
         )
         .min(1, "Debe existir al menos una cuenta bancaria"),
@@ -93,6 +96,12 @@ export const CreateSuppliers = () => {
     const [muniOptions, setMuniOptions] = useState([]);
     const [loadingDepts, setLoadingDepts] = useState(false);
     const [loadingMunis, setLoadingMunis] = useState(false);
+    const [acountsType, setAcountsType] = useState([]);
+    const [banksList, setBanksList] = useState([]);
+
+    //check
+    const [showAccountDefaultModal, setShowAccountDefaultModal] = useState(false);
+    const [pendingDefault, setPendingDefault] = useState(null);
 
     //cache para no repetir requests por depto
     const deptsLoadedRef = useRef(false);
@@ -167,6 +176,42 @@ export const CreateSuppliers = () => {
     };
 
     //
+    const loadAcountsType = async () => {
+        try {
+            setLoading(true);
+            const {data, status} = await supplierServices.getAcountsType();
+            if(status === ResponseStatusEnum.OK) {
+                setAcountsType(data);
+                return data;
+            }
+            return [];
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al procesar la solicitud");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //
+    const loadBanks = async () => {
+        try {
+            setLoading(true);
+            const {data, status} = await supplierServices.getBanks();
+            if(status === ResponseStatusEnum.OK) {
+                setBanksList(data || []);
+                return data || [];
+            }
+            return [];
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Hubo un error al cargar la lista de bancos");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //
     const handleRemoveAccount = async (index, account) => {
         //Si no teine id quiere decir q es nueva
         console.log(index, account);
@@ -183,7 +228,7 @@ export const CreateSuppliers = () => {
             setLoading(true);
             setInformationLoadingText("Validando eliminación de la cuenta bancaria...");
 
-            const { status, data } = await supplierServices.validateOrDeleteBankAccount(account.id);
+            const { status, data } = await supplierServices.validateOrDeleteBankAccount(id, account.id);
 
             if (status === ResponseStatusEnum.OK) {
                 const next = [...formik.values.accounts];
@@ -193,7 +238,7 @@ export const CreateSuppliers = () => {
             } else {
                 AlertComponent.warning(
                     "No se puede eliminar la cuenta bancaria.",
-                    data?.detail || "La cuenta está asociada a información de pagos."
+                    data?.message || "La cuenta está asociada a información de pagos."
                 );
             }
         } catch (error) {
@@ -212,6 +257,8 @@ export const CreateSuppliers = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
+                setLoading(true);
+                setInformationLoadingText('Validando datos');
                 let response;
 
                 //CREAR (JSON)
@@ -234,7 +281,6 @@ export const CreateSuppliers = () => {
                 }
 
                 //EDITAR (FORMDATA)
-
                 if (isEdit) {
                     const formData = new FormData();
 
@@ -252,12 +298,21 @@ export const CreateSuppliers = () => {
                         formData.append("ubicacion_id", String(values.muni.id));
                     }
 
+                    //VALIDACIÓN: al menos una cuenta favorita
+                    const hasFavoriteAccount = (values.accounts).some((acc) => acc.default_favorite === true);
+
+                    if (!hasFavoriteAccount) {
+                        AlertComponent.warning("Debe marcar al menos una cuenta bancaria como cuenta favorita por defecto.");
+                        return;
+                    }
+
                     // 2. Bancos
-                    const bancos = (values.accounts || []).map((acc) => ({
+                    const bancos = (values.accounts).map((acc) => ({
                         banco_id: acc.id,
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
-                        entidad_bancaria: acc.bank || "",
+                        banco: acc.bank || null,
+                        favorita: acc.default_favorite || null
                     }));
 
                     formData.append("bancos", JSON.stringify(bancos));
@@ -282,18 +337,30 @@ export const CreateSuppliers = () => {
                         console.log("FORMDATA:", key, val);
                     }
 
+                    setInformationLoadingText('Enviando información');
+
                     response = await supplierServices.updateSupplier(id, formData);
                 }
 
                 if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
                     AlertComponent.success("Operación realizada correctamente");
-                    navigate("/admin/management");
+
+                    if(userAuth?.rol_id === RolesEnum.SUPPLIER) {
+                        window.location.reload()
+                    }
+
+                    if(userAuth?.rol_id !== RolesEnum.SUPPLIER) {
+                        navigate("/admin/management");
+                    }
                 } else {
                     AlertComponent.warning("Error",response?.data?.errors?.[0]?.title);
                 }
             } catch (error) {
                 console.error("Error al enviar el formulario:", error);
                 AlertComponent.error("Hubo un error al procesar la solicitud");
+            } finally {
+                setLoading(false);
+                setInformationLoadingText('Información enviada');
             }
         },
     });
@@ -332,10 +399,11 @@ export const CreateSuppliers = () => {
                     idFile: resp?.ruta_cedula_representante,
                     accounts: (resp?.bancos || []).map((c) => ({
                         id: c.id,
-                        account_type: c.tipo_cuenta ?? "",
+                        account_type: c.tipo_cuenta ? parseInt(c.tipo_cuenta) : null,
                         account_number: c.numero_cuenta ?? "",
-                        bank: c.entidad_bancaria ?? "",
+                        bank: c.banco ? parseInt(c.banco) : null,
                         bankCertFile: c?.ruta_certificado_bancario,
+                        default_favorite: c?.favorita,
                     })),
                 });
             }
@@ -384,9 +452,59 @@ export const CreateSuppliers = () => {
         return userAuth?.rol_id === rolesAllow;
     }
 
+    //check
+    const handleAskSetDefaultAccount = (index, account) => {
+        //console.log('index: ', index, 'account: ',account);
+        if (formik.values.accounts?.[index]?.default_favorite) return;
+
+        setPendingDefault({ index, account });
+        setShowAccountDefaultModal(true);
+    };
+
+    const handleCancelSetDefault = () => {
+        setShowAccountDefaultModal(false);
+        setPendingDefault(null);
+    };
+
+    const setOnlyOneFavorite = (selectedIndex) => {
+        const next = (formik.values.accounts || []).map((acc, idx) => ({
+            ...acc,
+            default_favorite: idx === selectedIndex,
+        }));
+        formik.setFieldValue("accounts", next);
+    };
+
+    const handleConfirmSetDefault = async () => {
+        if (!pendingDefault) return;
+
+        const { index, account } = pendingDefault;
+
+        try {
+            setLoading(true);
+            setInformationLoadingText("Actualizando cuenta por defecto...");
+
+            setOnlyOneFavorite(index);
+
+            if (!account?.id) {
+                AlertComponent.success("", "Cuenta marcada como favorita, dale guardar para confirmar la selección.");
+
+            }
+        } catch (error) {
+            console.error(error);
+            AlertComponent.error("Error al actualizar la cuenta por defecto.");
+        } finally {
+            setLoading(false);
+            setInformationLoadingText("");
+            setShowAccountDefaultModal(false);
+            setPendingDefault(null);
+        }
+    };
+
     useEffect(() => {
+        loadAcountsType();
+        loadBanks();
         if (id) {
-            fetchSupplierData(id)
+            fetchSupplierData(id);
         }
     }, []);
 
@@ -635,6 +753,16 @@ export const CreateSuppliers = () => {
                                                     )}
                                                 </h3>
 
+                                                <FormControlLabel
+                                                    label="Cuenta por defecto"
+                                                    control={
+                                                        <Checkbox
+                                                            checked={Boolean(account.default_favorite)}
+                                                            onChange={() => handleAskSetDefaultAccount(index, account)}
+                                                        />
+                                                    }
+                                                />
+
                                                 <Button
                                                     variant="outline-danger"
                                                     size="sm"
@@ -656,19 +784,22 @@ export const CreateSuppliers = () => {
                                                         select
                                                         SelectProps={{ native: true }}
                                                         label="Tipo de cuenta"
-                                                        value={account.account_type}
+                                                        value={account.account_type || ""}
                                                         onChange={(e) =>
                                                             formik.setFieldValue(
                                                                 `accounts[${index}].account_type`,
-                                                                e.target.value
+                                                                e.target.value ? parseInt(e.target.value) : null
                                                             )
                                                         }
                                                         helperText="Selecciona el tipo de cuenta"
                                                         disabled={!isEditable}
                                                     >
                                                         <option value=""></option>
-                                                        <option value="AHO">Ahorros</option>
-                                                        <option value="COR">Corriente</option>
+                                                        {acountsType.map((as) => (
+                                                            <option key={as.id} value={as.id}>
+                                                                {as.nombre}
+                                                            </option>
+                                                        ))}
                                                     </TextField>
                                                 </div>
 
@@ -694,22 +825,30 @@ export const CreateSuppliers = () => {
                                                 {/* Banco */}
                                                 <div className="col-md-6">
                                                     <label className="form-label fw-semibold">
-                                                        Entidad bancaria <span className="text-danger">*</span>
+                                                        Banco <span className="text-danger">*</span>
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        name="entidadBancaria"
-                                                        value={account.bank}
+                                                    <TextField
+                                                        fullWidth
+                                                        select
+                                                        SelectProps={{ native: true }}
+                                                        label="Banco"
+                                                        value={account.bank || ""}
                                                         onChange={(e) =>
                                                             formik.setFieldValue(
                                                                 `accounts[${index}].bank`,
-                                                                e.target.value
+                                                                e.target.value ? parseInt(e.target.value) : null
                                                             )
                                                         }
-                                                        placeholder="Ej: Banco Agrario"
-                                                        disabled={!isEditable}     // 🔒 bloquear también aquí
-                                                    />
+                                                        helperText="Selecciona el banco"
+                                                        disabled={!isEditable}
+                                                    >
+                                                        <option value=""></option>
+                                                        {banksList.map((bank) => (
+                                                            <option key={bank.id} value={bank.id}>
+                                                                {bank.nombre}
+                                                            </option>
+                                                        ))}
+                                                    </TextField>
                                                 </div>
 
                                                 {/* Certificado bancario */}
@@ -728,7 +867,7 @@ export const CreateSuppliers = () => {
                                                                     e.currentTarget.files?.[0] ?? null
                                                                 )
                                                             }
-                                                            disabled={!isEditable} // 🔒 solo subir archivo en la cuenta nueva
+                                                            disabled={!isEditable}
                                                         />
 
                                                         {/* Ver documento si existe ruta en cuentas viejas o nuevas guardadas */}
@@ -760,9 +899,9 @@ export const CreateSuppliers = () => {
                                                 ...formik.values.accounts,
                                                 {
                                                     id: null,
-                                                    account_type: "",
+                                                    account_type: null,
                                                     account_number: "",
-                                                    bank: "",
+                                                    bank: null,
                                                     bankCertFile: null,
                                                 },
                                             ])
@@ -794,6 +933,16 @@ export const CreateSuppliers = () => {
                 </form>
 
             </div>
+
+            <ConfirmationModal
+                show={showAccountDefaultModal}
+                title={"Confirmar cuenta por defecto"}
+                message={"¿Estás seguro de que deseas dejar esta cuenta como cuenta por defecto?"}
+                onConfirm={handleConfirmSetDefault}
+                onClose={handleCancelSetDefault}
+                cancelLabel={"Cancelar"}
+                confirmLabel={"Sí, dejar por defecto"}
+            />
         </>
     )
 }

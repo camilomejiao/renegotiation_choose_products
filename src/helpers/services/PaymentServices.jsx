@@ -149,6 +149,12 @@ class PaymentServices {
     }
 
     //
+    getFileCollectionAccountExcel(){
+        const url = this.buildUrl(`cuentas-cobro/listado-excel?page=1&page_size=1000&estado=REGISTRADA`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
     changeStatusCollectionAccountDetail(SPId) {
         const url = this.buildUrl(`fiduciaria/${SPId}/emitir-para-pago/`);
         return authTokenService.fetchWithAuth(url, {

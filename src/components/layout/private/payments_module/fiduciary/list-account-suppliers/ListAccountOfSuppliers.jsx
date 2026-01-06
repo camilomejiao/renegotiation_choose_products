@@ -47,6 +47,7 @@ export const ListAccountOfSuppliers = () => {
         { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
         { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
         { field: "total", headerName: "Valor Total", flex: 0.5 },
+        { field: "user", headerName: "Registró", flex: 0.5 },
     ];
 
     const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -80,6 +81,7 @@ export const ListAccountOfSuppliers = () => {
                 supplier_name: row?.nombre_proveedor,
                 supplier_nit: row?.nit_proveedor,
                 total: `$ ${valorSP.toLocaleString("es-CO")}`,
+                user: row?.usuario_creacion
             };
         });
     }
@@ -121,6 +123,42 @@ export const ListAccountOfSuppliers = () => {
             setInformationLoadingText("Generando documento, espere un momento por favor...");
 
             const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(selectedIds, reportType);
+            console.log(blob, status);
+
+            if (status === ResponseStatusEnum.OK && blob) {
+                const fileURL = URL.createObjectURL(blob);
+                // Si es PDF y quieres abrir en otra pestaña:
+                if ((type).includes('pdf')) {
+                    window.open(fileURL, '_blank');
+                } else {
+                    // Descarga (Excel u otros binarios)
+                    const a = document.createElement('a');
+                    a.href = fileURL;
+                    a.download = filename || 'reporte.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+
+                // Limpia el ObjectURL
+                setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
+            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+                AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+        } catch (error) {
+            console.error("Error al Generar documento PDF para cuenta:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    //
+    const handleGenerateExelPayments = async (reportType) => {
+        try {
+            setLoading(true);
+            setInformationLoadingText("Generando documento, espere un momento por favor...");
+
+            const { status, blob, type, filename, data } = await paymentServices.getFileCollectionAccountExcel();
             console.log(blob, status);
 
             if (status === ResponseStatusEnum.OK && blob) {
@@ -202,13 +240,23 @@ export const ListAccountOfSuppliers = () => {
 
                     <Col xs={6} md="auto" className="payments-toolbar__btn payments-toolbar__btn--right">
                         <Button
+                            style={{marginRight: '5px'}}
                             variant="outline-success"
                             className="btn-responsive"
                             onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
                             disabled={!selectedIds.length > 0}
                             title="Generar excel"
                         >
-                            Generar Excel
+                            Generar Documento FCP
+                        </Button>
+
+                        <Button
+                            variant="outline-secondary"
+                            className="btn-responsive"
+                            onClick={() => handleGenerateExelPayments(ReportTypePaymentsEnum.EXCEL)}
+                            title="Generar excel"
+                        >
+                            Generar Reporte de Cuentas de cobro
                         </Button>
                     </Col>
                 </Row>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Row } from "react-bootstrap";
+import Select from "react-select";
 
 //img
 import imgPayments from "../../../../../assets/image/payments/payments.png";
@@ -23,7 +24,7 @@ import {
     ResponseStatusEnum,
     RolesEnum
 } from "../../../../../helpers/GlobalEnum";
-import Select from "react-select";
+
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 const canShowSuppliers = [RolesEnum.SUPPLIER];
@@ -68,7 +69,7 @@ export const DeliveriesInformation = () => {
     const [selectedDeptId, setSelectedDeptId] = useState("");
     const [selectedMuniId, setSelectedMuniId] = useState("");
 
-    const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTERED.key);
+    const [activeStatusKey, setActiveStatusKey] = useState("");
 
     //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
@@ -167,6 +168,7 @@ export const DeliveriesInformation = () => {
             );
 
             if (status === ResponseStatusEnum.OK) {
+                console.log(data.results);
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
                 setRowCount(data.count);
@@ -299,6 +301,7 @@ export const DeliveriesInformation = () => {
         if (!canSearch) return;
 
         setPage(0);
+        setActiveStatusKey("");
         setSelectedSupplierId("");
         setCommittedSearch(query);
     };
@@ -488,7 +491,8 @@ export const DeliveriesInformation = () => {
                             }
                             onChange={(opt) => handleChangeStatus(opt?.value)}
                             placeholder="Filtrar por estado"
-                            isClearable={false}
+                            isSearchable
+                            isClearable
                             styles={{
                                 control: (base, state) => ({
                                     ...base,
@@ -564,7 +568,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Depto */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbD"
                                     options={deptOptions}
                                     placeholder="Departamento"
                                     isSearchable
@@ -605,7 +609,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Muni */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbM"
                                     options={muniOptions}
                                     placeholder="Municipio"
                                     isSearchable
@@ -660,14 +664,14 @@ export const DeliveriesInformation = () => {
                         paginationMode="server"
                         rowCount={rowCount}
                         pageSizeOptions={[25, 50, 100]}
+                        rowHeight={50}
+                        headerHeight={48}
                         paginationModel={{ page, pageSize }}
                         onPaginationModelChange={({ page, pageSize }) => {
                             setPage(page);
                             setPageSize(pageSize);
                         }}
                         onRowClick={handleRowClick}
-                        rowHeight={64}
-                        headerHeight={48}
                         componentsProps={{
                             columnHeader: {
                                 style: {
