@@ -673,6 +673,7 @@ export const CreateSuppliers = () => {
                                         color="success"
                                         checked={formik.values.active}
                                         onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+                                        disabled={!disabledEdit()}
                                     />
                                 }
                             />
