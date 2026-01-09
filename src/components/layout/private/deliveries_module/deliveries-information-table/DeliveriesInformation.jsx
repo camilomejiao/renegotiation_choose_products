@@ -42,7 +42,7 @@ const canShowOtherRol = [
 const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
 
 /** Roles que pueden ver el boton descargra. */
-const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL];
+const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL, RolesEnum.PAYMENTS, RolesEnum.SUPERVISION, RolesEnum.SUPPLIER];
 export const DeliveriesInformation = () => {
 
     const { userAuth } = useOutletContext();

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import {Button, Col, Row} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { DataGrid } from "@mui/x-data-grid";
@@ -38,7 +38,6 @@ import './ProductPriceQuotesBySupplier.css';
 export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();
-    const navigate = useNavigate();
 
     const [productList, setProductList] = useState([]);
     const [editedProducts, setEditedProducts] = useState([]);
@@ -154,8 +153,8 @@ export const ProductPriceQuotesBySupplier = () => {
             width: 160,
             editable: true,
             renderCell: (params) => {
-                const min = Number(params.row.precio_min ?? 0);
-                const max = Number(params.row.precio_max ?? Infinity);
+                //const min = Number(params.row.precio_min ?? 0);
+                //const max = Number(params.row.precio_max ?? Infinity);
                 const current = Number(params.row.price ?? 0);
 
                 return (

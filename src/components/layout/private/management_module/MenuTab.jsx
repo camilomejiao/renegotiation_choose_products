@@ -7,7 +7,6 @@ import imgAdd from "../../../../assets/image/payments/imgPay.png";
 //Components
 import { UserList } from "./user/UserList";
 import { SupplierList } from "./suppliers/SupplierList";
-import { BeneficiaryList } from "./beneficiaries/BeneficiaryList";
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 
 export const MenuTab = () => {
@@ -35,9 +34,6 @@ export const MenuTab = () => {
                     </Tab>
                     <Tab eventKey="suppliers" title="PROVEEDORES">
                         <SupplierList />
-                    </Tab>
-                    <Tab eventKey="beneficiaries" title="BENEFICIARIOS">
-                        <BeneficiaryList />
                     </Tab>
                 </Tabs>
             </div>

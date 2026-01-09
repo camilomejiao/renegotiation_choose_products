@@ -133,6 +133,15 @@ export const CreateCollectionAccount = () => {
 
     const normalizeBanks = (data) => {
         const rows = data?.data?.bancos;
+
+        if(isSupplier) {
+            return rows.map((row) => ({
+                value: row?.banco_id,
+                label: `${row?.banco_nombre || ''} - ${row?.numero_cuenta || ''}`,
+                certificate: row?.certificado_pdf
+            }));
+        }
+
         const fav = rows.find((row) => Boolean(row?.favorita));
         if (!fav) {
           AlertComponent.warning('', 'El proveedor no ha registrado cuentas bancarias!');
@@ -312,11 +321,17 @@ export const CreateCollectionAccount = () => {
                     </div>
                 )}
 
-                <Card className="p-3 p-md-4 shadow-sm mb-4">
+                <Card className="p-3 p-md-4 shadow-sm mb-2">
                     <h4 className="mb-4 text-primary fw-bold text-center text-md-start">Información para Cuenta de Cobro</h4>
 
+                    {!isCanShowSelect && (
+                        <h6 className="mb-0 fw-semibold">
+                            Nota: El certificado bancario debe haber sido expedido dentro de los últimos 90 días al momento de generar la cuenta de cobro.
+                        </h6>
+                    )}
+
                     {/* Selects */}
-                    <Row className="gy-3 mb-4">
+                    <Row className="gy-3 mb-4 mt-2">
                         {isCanShowSelect && (
                             <>
                                 <Col xs={12} md={5}>

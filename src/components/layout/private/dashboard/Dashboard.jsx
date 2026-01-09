@@ -1,6 +1,6 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { useEffect } from "react";
-import {Col, Container, Row} from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 
 
 // Colores corporativos
@@ -12,15 +12,10 @@ const COLORS = {
 };
 
 export const Dashboard = () => {
-
-    //
-    const navigate = useNavigate();
-
-    // Si ya usas contexto con userAuth / userData, ajusta aquí:
     const { userAuth } = useOutletContext?.() || {};
-    const nombre = userAuth?.nombres || userAuth?.name || "proveedor/a";
+    //console.log('userAuth: ', userAuth);
+    //const nombre = userAuth?.nombres || userAuth?.name || "proveedor/a";
 
-    // //Quitar cuando ya se pueda ver
     useEffect(() => {
         //navigate("/admin/search-user", { replace: true });
     }, []);
@@ -37,7 +32,7 @@ export const Dashboard = () => {
             >
                 <Container>
                     <h2 className="mb-1" style={{ fontWeight: 800 }}>
-                        ¡Bienvenido, {nombre}!
+                        ¡Bienvenido!
                     </h2>
                     <p className="mb-0">
                         Portal de la <b>Dirección de Sustitución de Cultivos de Uso Ilícito</b>.

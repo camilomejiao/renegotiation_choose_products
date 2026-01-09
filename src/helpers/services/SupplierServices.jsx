@@ -25,28 +25,6 @@ class SupplierServices {
         return this.baseUrl + endpoint;
     }
 
-    // =============================
-    // CONSULTAS AL BACKEND
-    // =============================
-
-    /**
-     * Obtener todos los proveedores registrados.
-     * @returns {Promise<Response>} - Promesa con la lista de proveedores.
-     */
-    getSuppliersAll() {
-        const url = `${GlobalConnex.url}usuario/`;
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Obtener la información detallada de un proveedor por su ID.
-     * @param {number|string} supplierId - ID del proveedor.
-     * @returns {Promise<Response>} - Promesa con los datos del proveedor.
-     */
-    getInfoSupplier(supplierId) {
-        const url = `${GlobalConnex.url}usuario/${supplierId}/`;
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
 
     // =============================
     // NUEVO PROVEEDORES
@@ -130,6 +108,16 @@ class SupplierServices {
 
     getIdActiveConvocationOfSupplier() {
         return localStorage.getItem("jornada_id");
+    }
+
+
+    // ==============================================
+    // GESTIÓN SI FALTA ALGUN DOCUMENTO AL PROVEEDOR
+    // ==============================================
+
+    getSupplierWithoutDocuments(supplierId) {
+        const url = this.buildUrl(`${supplierId}/informacion-completa/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 }
 
