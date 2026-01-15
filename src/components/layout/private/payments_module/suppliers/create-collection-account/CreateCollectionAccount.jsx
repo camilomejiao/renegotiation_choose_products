@@ -67,16 +67,20 @@ export const CreateCollectionAccount = () => {
         { field: "amount_of_money", headerName: "Valor", flex: 1 },
     ];
 
-    // Carga catálogo (activos) una sola vez
+    //Carga catálogo (activos) una sola vez
     const loadSuppliersOnce = async () => {
         if (loadRef.current) return;
         try {
             setLoading(true);
             setInformationLoadingText('Cargando proveedores...');
-            const { data, status } = await supplierServices.getSuppliers();
+            const { data, status } = await supplierServices.getSuppliersWithOutstandingAccountsReceivable();
             if (status === ResponseStatusEnum.OK) {
                 setDataDataSuppliers(normalizeCatalogSuppliers(data));
                 loadRef.current = true;
+            }
+
+            if (status === ResponseStatusEnum.NOT_FOUND) {
+                AlertComponent.info('No hay proveedores con cuentas pendientes!')
             }
         } catch (error) {
             console.error("Error cargando proveedores (catálogo):", error);
@@ -101,6 +105,8 @@ export const CreateCollectionAccount = () => {
             return;
         }
         setSelectedSupplierId(opt?.value ?? opt);
+        setDataTable([]);
+        setAccountType([]);
         try {
             setLoading(true);
             setInformationLoadingText('Verificando cuentas bancarias del proveedor...');

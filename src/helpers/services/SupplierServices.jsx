@@ -25,7 +25,6 @@ class SupplierServices {
         return this.baseUrl + endpoint;
     }
 
-
     // =============================
     // NUEVO PROVEEDORES
     // =============================
@@ -57,7 +56,6 @@ class SupplierServices {
         });
     }
 
-
     updateSupplier(id, formData) {
         const url = this.buildUrl(`${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
@@ -70,7 +68,6 @@ class SupplierServices {
         const url = this.buildUrl(`${supplierId}/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
-
 
     validateOrDeleteBankAccount(supplierId, accountId) {
         const url = this.buildUrl(`${supplierId}/cuentas-bancarias/${accountId}`);
@@ -117,6 +114,14 @@ class SupplierServices {
 
     getSupplierWithoutDocuments(supplierId) {
         const url = this.buildUrl(`${supplierId}/informacion-completa/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    // ==============================================
+    // PROVEEDORES CON CUENTAS DE COBRO POR HACER
+    // ==============================================
+    getSuppliersWithOutstandingAccountsReceivable() {
+        const url = this.buildUrl(`pendientes-cuenta-cobro/`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 }
