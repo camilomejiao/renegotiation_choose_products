@@ -390,6 +390,13 @@ export const ReviewDocuments = () => {
                                             <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
                                         </button>
                                     )}
+                                    {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
+                                        <button className="button-download"
+                                                onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
+                                                disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
+                                            <img src={downloadImg} alt="" /> RUT Proveedor
+                                        </button>
+                                    )}
                                     {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
                                         <button className="button-download"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}
@@ -506,6 +513,13 @@ export const ReviewDocuments = () => {
                                         <button className="button-download"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
                                             <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                                        </button>
+                                    )}
+                                    {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
+                                        <button className="button-download"
+                                                onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
+                                                disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
+                                            <img src={downloadImg} alt="" /> RUT Proveedor
                                         </button>
                                     )}
                                 </Col>

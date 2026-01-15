@@ -67,12 +67,12 @@ export const DeliveryStatusEnum = {
     },
     SENT_TO_SUPERVISION: {
         key: "enviado_a_supervision",
-        label: "En Supervisión",
+        label: "En Revisión Supervisión",
         value: "ENVIADO_A_SUPERVISION"
     },
     SENT_TO_PAYMENTS: {
         key: "enviado_a_pagos",
-        label: "En Pagos",
+        label: "En Revisión Pagos",
         value: "ENVIADO_A_PAGOS"
     },
     CORRECTION: {
@@ -89,7 +89,7 @@ export const DeliveryStatusEnum = {
     PENDING_FOR_INVOICE: {
         key: "pendiente_para_cuenta_de_cobro",
         label: "Pendiente para cuenta de cobro",
-        value: "PENDIENTE_PARA_CUENTA_DE_COBRO"
+        value: "PENDIENTE_CUENTA_COBRO"
     },
     fIDUCIARY: {
         key: "fiduciaria",

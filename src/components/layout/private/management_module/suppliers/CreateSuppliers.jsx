@@ -673,6 +673,7 @@ export const CreateSuppliers = () => {
                                         color="success"
                                         checked={formik.values.active}
                                         onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+                                        disabled={!disabledEdit()}
                                     />
                                 }
                             />
@@ -867,7 +868,6 @@ export const CreateSuppliers = () => {
                                                                     e.currentTarget.files?.[0] ?? null
                                                                 )
                                                             }
-                                                            disabled={!isEditable}
                                                         />
 
                                                         {/* Ver documento si existe ruta en cuentas viejas o nuevas guardadas */}
@@ -885,6 +885,10 @@ export const CreateSuppliers = () => {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            <h6 className="mb-0 fw-semibold mt-2">
+                                                Nota: El certificado bancario debe haber sido expedido dentro de los últimos 90 días al momento de generar la cuenta de cobro.
+                                            </h6>
                                         </Card>
                                     );
                                 })}

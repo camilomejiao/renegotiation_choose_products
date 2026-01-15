@@ -1,4 +1,3 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
@@ -36,8 +35,6 @@ const PAGE_SIZE = 100;
 const BATCH_SIZE = 250;
 
 export const ValidationSupervision = () => {
-    const { userAuth } = useOutletContext();
-    const navigate = useNavigate();
 
     const [convocations, setConvocations] = useState([]);
     const [selectedConvocation, setSelectedConvocation] = useState(null);

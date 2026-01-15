@@ -122,7 +122,7 @@ export const ListAccountOfSuppliers = () => {
             setLoading(true);
             setInformationLoadingText("Generando documento, espere un momento por favor...");
 
-            const { status, blob, type, filename, data } = await paymentServices.getExcelAndPdfFile(selectedIds, reportType);
+            const { status, blob, type, filename } = await paymentServices.getExcelAndPdfFile(selectedIds, reportType);
             console.log(blob, status);
 
             if (status === ResponseStatusEnum.OK && blob) {
@@ -158,8 +158,8 @@ export const ListAccountOfSuppliers = () => {
             setLoading(true);
             setInformationLoadingText("Generando documento, espere un momento por favor...");
 
-            const { status, blob, type, filename, data } = await paymentServices.getFileCollectionAccountExcel();
-            console.log(blob, status);
+            const { status, blob, type, filename } = await paymentServices.getFileCollectionAccountExcel();
+            //console.log(blob, status);
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);

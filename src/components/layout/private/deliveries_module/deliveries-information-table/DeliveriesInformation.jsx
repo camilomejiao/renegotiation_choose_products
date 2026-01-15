@@ -20,7 +20,6 @@ import { locationServices } from "../../../../../helpers/services/LocationServic
 //Enum
 import {
     DeliveryStatusEnum,
-    ReportTypePaymentsEnum,
     ResponseStatusEnum,
     RolesEnum
 } from "../../../../../helpers/GlobalEnum";
@@ -42,7 +41,7 @@ const canShowOtherRol = [
 const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
 
 /** Roles que pueden ver el boton descargra. */
-const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL];
+const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL, RolesEnum.PAYMENTS, RolesEnum.SUPERVISION, RolesEnum.SUPPLIER];
 export const DeliveriesInformation = () => {
 
     const { userAuth } = useOutletContext();
@@ -168,7 +167,7 @@ export const DeliveriesInformation = () => {
             );
 
             if (status === ResponseStatusEnum.OK) {
-                console.log(data.results);
+                //console.log(data.results);
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
                 setRowCount(data.count);
@@ -355,13 +354,22 @@ export const DeliveriesInformation = () => {
     }
 
     //
-    const handleGenerateDocument = async (reportType) => {
+    const handleGenerateDocument = async () => {
         try {
             setLoading(true);
             setInformationLoadingText("Generando documento, espere un momento por favor...");
 
-            const { status, blob, type, filename, data } = await deliveriesServices.getExcelDeliveriesDetailToSupervision();
-            console.log(blob, status);
+            const { search, statusValue, supplierId, onlySended, deptId, muniId } = await getCurrentFilters();
+
+            const { status, blob, type, filename, data } =
+                await deliveriesServices.getExcelDeliveriesDetailToSupervision(
+                    search,
+                    statusValue,
+                    supplierId,
+                    onlySended,
+                    deptId,
+                    muniId
+                );
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
@@ -369,7 +377,7 @@ export const DeliveriesInformation = () => {
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
-                    // Descarga (Excel u otros binarios)
+                    //Descarga (Excel)
                     const a = document.createElement('a');
                     a.href = fileURL;
                     a.download = filename || 'reporte.xlsx';
@@ -377,17 +385,51 @@ export const DeliveriesInformation = () => {
                     a.click();
                     a.remove();
                 }
-
                 // Limpia el ObjectURL
                 setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
-            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+            }
+            if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
                 AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                AlertComponent.info('', 'No exiten datos con esa busqueda.');
             }
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    //
+    const getCurrentFilters = async () => {
+        const hasSearch = (committedSearch || "").length >= 4;
+
+        const search = hasSearch ? committedSearch : "";
+        const statusKey = hasSearch ? "" : activeStatusKey;
+        const statusValue = getStatusValueFromKey(statusKey);
+
+        let supplierId = "";
+        let deptId = "";
+        let muniId = "";
+
+        if (!hasSearch) {
+            supplierId = selectedSupplierId || "";
+            deptId = selectedDeptId || "";
+            muniId = selectedMuniId || "";
+        }
+
+        if (canShowSupplier) {
+            supplierId = await supplierServices.getSupplierId();
+        }
+
+        let onlySended = false;
+        if (statusValue === DeliveryStatusEnum.REGISTERED.value) {
+            onlySended = true;
+        }
+
+        return { search, statusValue, supplierId, onlySended, deptId, muniId };
     };
 
     //
@@ -399,23 +441,22 @@ export const DeliveriesInformation = () => {
 
     //
     useEffect(() => {
-        const hasSearch = (committedSearch || "").length >= 4;
+        (async () => {
+            const { search, statusValue, supplierId, onlySended, deptId, muniId } =
+                await getCurrentFilters();
 
-        // Si hay search => ignora tab y proveedor
-        const effectiveStatusKey  = hasSearch ? "" : activeStatusKey;
-        const effectiveSupplierId = hasSearch ? "" : (selectedSupplierId || "");
-        const effectiveDeptId = hasSearch ? "" : (selectedDeptId || "");
-        const effectiveMuniId = hasSearch ? "" : (selectedMuniId || "");
+            const statusKey = activeStatusKey;
 
-        getDeliveriesInformation(
-            page + 1,
-            pageSize,
-            hasSearch ? committedSearch : "",
-            effectiveStatusKey,
-            effectiveSupplierId,
-            effectiveDeptId,
-            effectiveMuniId
-        );
+            getDeliveriesInformation(
+                page + 1,
+                pageSize,
+                search,
+                statusKey,
+                supplierId,
+                deptId,
+                muniId
+            );
+        })();
     }, [page, pageSize, activeStatusKey, selectedSupplierId, committedSearch, selectedDeptId, selectedMuniId]);
 
     return (
@@ -466,7 +507,7 @@ export const DeliveriesInformation = () => {
                             <Button
                                 variant="outline-success"
                                 className="btn-responsive"
-                                onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
+                                onClick={() => handleGenerateDocument()}
                                 title="Generar excel"
                             >
                                 Generar Reporte

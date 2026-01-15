@@ -17,7 +17,6 @@ import { SearchUser } from "../components/layout/private/search_user_module/Sear
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
-//import { _Dashboard } from "../components/layout/private/dashboard/_Dashboard";
 import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
@@ -27,8 +26,6 @@ import { Deliveries } from "../components/layout/private/deliveries_module/Deliv
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries_module/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
 import { ValidationSupervision } from "../components/layout/private/products_module/validation_supervision/ValidationSupervision";
-//import { EditProduct } from "../components/layout/private/products/old_process/edit_products/EditProduct";
-//import { AddProducts } from "../components/layout/private/products/old_process/create_products/AddProducts";
 import { MenuTab } from "../components/layout/private/management_module/MenuTab";
 import { CreateUser } from "../components/layout/private/management_module/user/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
@@ -77,12 +74,14 @@ import {
     SearchBeneficiaryInformation
 } from "../components/layout/private/beneficiaries_management_module/search_beneficiary_information/SearchBeneficiaryInformation";
 
+//Guards
+import {SupplierDocsGuard} from "../guards/SupplierDocsGuard";
+
 export const Routing = () => {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-
                     <Route path={RouterEnum.Conex } element={ <Conex /> } />
 
                     <Route path="/" element={ <PublicLayout /> }>
@@ -92,73 +91,77 @@ export const Routing = () => {
                     </Route>
 
                     <Route path={ RouterEnum.RouterAdmin } element={<PrivateLayout /> }>
-                        {/* Dashboard */}
-                        <Route index element={ <Dashboard /> } />
 
-                        {/* Buscar usuario */}
-                        <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
-                        <Route path={ RouterEnum.SearchBeneficiaryInformation }  element={ <SearchBeneficiaryInformation /> }  />
-
-                        {/* Renegociacion */}
-                        <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
-                        <Route path={ RouterEnum.Renegociation }  element={ <Renegociation /> }  />
-
-                        {/* Ordenes */}
-                        <Route path={ RouterEnum.CreateOrder }  element={ <CreateOrder /> }  />
-
-                        {/* Entregas */}
-                        <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
-                        <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
-                        <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
-                        <Route path={ RouterEnum.DeliveryInformationAndTracking } element={ <DeliveriesInformation /> }  />
-
-                        {/* Productos */}
-                        {/*<Route path={ RouterEnum.CreateProducts }  element={ <AddProducts /> }  />*/}
-                        {/*<Route path={ RouterEnum.EditProduct }  element={ <EditProduct /> }  />*/}
-                        <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
-                        <Route path={ RouterEnum.ProductUpload }  element={ <ProductUploadTechnical /> }  />
-                        <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
-                        <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
-                        <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
-                        <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
-                        <Route path={ RouterEnum.ReportByConvocation }  element={ <ReportByConvocation /> }  />
-
-                        {/* Payments */}
-                        <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
-                        <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryDeliveryReview /> }  />
-                        <Route path={ RouterEnum.ReviewPaymentsBeneficiaryId }  element={ <ReviewDocuments /> }  />
-                        <Route path={ RouterEnum.PaymentsSuppliersList }  element={ <PaySuppliers /> }  />
-                        <Route path={ RouterEnum.CreateCollectionAccount }  element={ <CreateCollectionAccount /> }  />
-
-                        {/* Fiduciary */}
-                        <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
-                        <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
-                        <Route path={ RouterEnum.SearchSP }  element={ <SearchPaymentRequests /> }  />
-
-                        {/* Conciliation */}
-                        <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />
-                        <Route path={ RouterEnum.ConciliationDetail }  element={ <ConciliationDetail /> }  />
-
-                        {/* Management */}
-                        <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
-                        <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
-                        <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
-                        <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
-                        <Route path={ RouterEnum.EditSuppliers }  element={ <CreateSuppliers /> }  />
-                        <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
-                        <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
-                        <Route path={ RouterEnum.CreateConvocationEdit }  element={ <ConvocationMenuTab /> }  />
-
-                        {/* Convocation Suppliers */}
-                        <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />
-                        <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
-
-                        {/* Reportes */}
-                        <Route path={ RouterEnum.Reports }  element={ <BeneficiariesManagement /> }  />
-                        <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
-                        <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
-
+                        {/* WHITELIST, lo que no necesita validación */}
+                        <Route path={RouterEnum.EditSuppliers} element={<CreateSuppliers />} />
                         <Route path={ RouterEnum.Logout } element={ <Logout /> }         />
+
+                        {/* Guard */}
+                        <Route element={<SupplierDocsGuard />}>
+                            {/* Dashboard */}
+                            <Route index element={ <Dashboard /> } />
+
+                            {/* Buscar usuario */}
+                            <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
+                            <Route path={ RouterEnum.SearchBeneficiaryInformation }  element={ <SearchBeneficiaryInformation /> }  />
+
+                            {/* Renegociacion */}
+                            <Route path={ RouterEnum.SearchUserForRenegociation }  element={ <SearchUserForRenegociation /> }  />
+                            <Route path={ RouterEnum.Renegociation }  element={ <Renegociation /> }  />
+
+                            {/* Ordenes */}
+                            <Route path={ RouterEnum.CreateOrder }  element={ <CreateOrder /> }  />
+
+                            {/* Entregas */}
+                            <Route path={ RouterEnum.SearchUserForDeliveries }  element={ <SearchUserForDeliveries /> }  />
+                            <Route path={ RouterEnum.Deliveries }  element={ <Deliveries /> }  />
+                            <Route path={ RouterEnum.EditDeliveryOrder }  element={ <EditDeliveryOrder /> }  />
+                            <Route path={ RouterEnum.DeliveryInformationAndTracking } element={ <DeliveriesInformation /> }  />
+
+                            {/* Productos */}
+                            <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
+                            <Route path={ RouterEnum.ProductUpload }  element={ <ProductUploadTechnical /> }  />
+                            <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
+                            <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
+                            <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
+                            <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
+                            <Route path={ RouterEnum.ReportByConvocation }  element={ <ReportByConvocation /> }  />
+
+                            {/* Payments */}
+                            <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />
+                            <Route path={ RouterEnum.PaymentsRole }  element={ <BeneficiaryDeliveryReview /> }  />
+                            <Route path={ RouterEnum.ReviewPaymentsBeneficiaryId }  element={ <ReviewDocuments /> }  />
+                            <Route path={ RouterEnum.PaymentsSuppliersList }  element={ <PaySuppliers /> }  />
+                            <Route path={ RouterEnum.CreateCollectionAccount }  element={ <CreateCollectionAccount /> }  />
+
+                            {/* Fiduciary */}
+                            <Route path={ RouterEnum.ListAccountOfSuppliers }  element={ <ListAccountOfSuppliers /> }  />
+                            <Route path={ RouterEnum.CollectionAccountDetails }  element={ <CollectionAccountDetails /> }  />
+                            <Route path={ RouterEnum.SearchSP }  element={ <SearchPaymentRequests /> }  />
+
+                            {/* Conciliation */}
+                            <Route path={ RouterEnum.ListConciliation }  element={ <ListConciliation /> }  />
+                            <Route path={ RouterEnum.ConciliationDetail }  element={ <ConciliationDetail /> }  />
+
+                            {/* Management */}
+                            <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
+                            <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
+                            <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
+                            <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
+                            {/*<Route path={ RouterEnum.EditSuppliers }  element={ <CreateSuppliers /> }  />*/}
+                            <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
+                            <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
+                            <Route path={ RouterEnum.CreateConvocationEdit }  element={ <ConvocationMenuTab /> }  />
+
+                            {/* Convocation Suppliers */}
+                            <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />
+                            <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
+
+                            {/* Reportes */}
+                            <Route path={ RouterEnum.Reports }  element={ <BeneficiariesManagement /> }  />
+                            <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
+                            <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
+                        </Route>
                     </Route>
 
                     <Route path="*" element={<PageNotFound />} />
