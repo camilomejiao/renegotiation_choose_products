@@ -44,7 +44,7 @@ const initialValues = {
             account_number: "",
             bank: null,
             bankCertFile: null,
-            default_favorite: null
+            default_favorite: false
         },
     ],
 };
@@ -75,7 +75,7 @@ const validationSchema = yup.object().shape({
                 account_number: yup.string().nullable(),
                 bank: yup.string().nullable(),
                 bankCertFile: yup.mixed().nullable(),
-                default_favorite: yup.boolean().nullable(),
+                default_favorite: yup.boolean(),
             })
         )
         .min(1, "Debe existir al menos una cuenta bancaria"),
@@ -312,7 +312,7 @@ export const CreateSuppliers = () => {
                         tipo_cuenta: acc.account_type,
                         numero_cuenta: acc.account_number || "",
                         banco: acc.bank || null,
-                        favorita: acc.default_favorite || null
+                        favorita: acc.default_favorite || false
                     }));
 
                     formData.append("bancos", JSON.stringify(bancos));
