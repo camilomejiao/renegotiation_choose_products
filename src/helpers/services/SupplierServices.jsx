@@ -26,29 +26,6 @@ class SupplierServices {
     }
 
     // =============================
-    // CONSULTAS AL BACKEND
-    // =============================
-
-    /**
-     * Obtener todos los proveedores registrados.
-     * @returns {Promise<Response>} - Promesa con la lista de proveedores.
-     */
-    getSuppliersAll() {
-        const url = `${GlobalConnex.url}usuario/`;
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    /**
-     * Obtener la información detallada de un proveedor por su ID.
-     * @param {number|string} supplierId - ID del proveedor.
-     * @returns {Promise<Response>} - Promesa con los datos del proveedor.
-     */
-    getInfoSupplier(supplierId) {
-        const url = `${GlobalConnex.url}usuario/${supplierId}/`;
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
-    }
-
-    // =============================
     // NUEVO PROVEEDORES
     // =============================
 
@@ -79,7 +56,6 @@ class SupplierServices {
         });
     }
 
-
     updateSupplier(id, formData) {
         const url = this.buildUrl(`${id}/actualizar/`);
         return authTokenService.fetchWithAuth(url, {
@@ -93,9 +69,8 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
-
-    validateOrDeleteBankAccount(accountId) {
-        const url = this.buildUrl(`${accountId}/eliminar`);
+    validateOrDeleteBankAccount(supplierId, accountId) {
+        const url = this.buildUrl(`${supplierId}/cuentas-bancarias/${accountId}`);
         return authTokenService.fetchWithAuth(url, { method: "DELETE" });
     }
 
@@ -104,6 +79,17 @@ class SupplierServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    //
+    getAcountsType() {
+        const url = GlobalConnex.url+ `lista/parametros/?tipo_parametro_id=29`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    //
+    getBanks() {
+        const url = GlobalConnex.url + `lista/bancos/`;
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
 
     // =============================
     // GESTIÓN DE LOCALSTORAGE
@@ -119,6 +105,24 @@ class SupplierServices {
 
     getIdActiveConvocationOfSupplier() {
         return localStorage.getItem("jornada_id");
+    }
+
+
+    // ==============================================
+    // GESTIÓN SI FALTA ALGUN DOCUMENTO AL PROVEEDOR
+    // ==============================================
+
+    getSupplierWithoutDocuments(supplierId) {
+        const url = this.buildUrl(`${supplierId}/informacion-completa/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
+    // ==============================================
+    // PROVEEDORES CON CUENTAS DE COBRO POR HACER
+    // ==============================================
+    getSuppliersWithOutstandingAccountsReceivable() {
+        const url = this.buildUrl(`pendientes-cuenta-cobro/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 }
 

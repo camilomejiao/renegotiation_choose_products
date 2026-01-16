@@ -80,4 +80,7 @@ export const RouterEnum = {
 
     //
     Conex: 'conex',
+
+    //
+    SupplierDocuments: "edit-suppliers/:id",
 }

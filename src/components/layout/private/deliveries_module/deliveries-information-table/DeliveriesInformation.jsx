@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Row } from "react-bootstrap";
+import Select from "react-select";
 
 //img
 import imgPayments from "../../../../../assets/image/payments/payments.png";
@@ -19,11 +20,10 @@ import { locationServices } from "../../../../../helpers/services/LocationServic
 //Enum
 import {
     DeliveryStatusEnum,
-    ReportTypePaymentsEnum,
     ResponseStatusEnum,
     RolesEnum
 } from "../../../../../helpers/GlobalEnum";
-import Select from "react-select";
+
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 const canShowSuppliers = [RolesEnum.SUPPLIER];
@@ -41,7 +41,7 @@ const canShowOtherRol = [
 const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
 
 /** Roles que pueden ver el boton descargra. */
-const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL];
+const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS, RolesEnum.SUPERVISION, RolesEnum.SUPPLIER];
 export const DeliveriesInformation = () => {
 
     const { userAuth } = useOutletContext();
@@ -68,7 +68,7 @@ export const DeliveriesInformation = () => {
     const [selectedDeptId, setSelectedDeptId] = useState("");
     const [selectedMuniId, setSelectedMuniId] = useState("");
 
-    const [activeStatusKey, setActiveStatusKey] = useState(DeliveryStatusEnum.REGISTERED.key);
+    const [activeStatusKey, setActiveStatusKey] = useState("");
 
     //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
@@ -167,6 +167,7 @@ export const DeliveriesInformation = () => {
             );
 
             if (status === ResponseStatusEnum.OK) {
+                //console.log(data.results);
                 const rows = await normalizeRows(data.results);
                 setDataTable(rows);
                 setRowCount(data.count);
@@ -299,6 +300,7 @@ export const DeliveriesInformation = () => {
         if (!canSearch) return;
 
         setPage(0);
+        setActiveStatusKey("");
         setSelectedSupplierId("");
         setCommittedSearch(query);
     };
@@ -352,13 +354,22 @@ export const DeliveriesInformation = () => {
     }
 
     //
-    const handleGenerateDocument = async (reportType) => {
+    const handleGenerateDocument = async () => {
         try {
             setLoading(true);
             setInformationLoadingText("Generando documento, espere un momento por favor...");
 
-            const { status, blob, type, filename, data } = await deliveriesServices.getExcelDeliveriesDetailToSupervision();
-            console.log(blob, status);
+            const { search, statusValue, supplierId, onlySended, deptId, muniId } = await getCurrentFilters();
+
+            const { status, blob, type, filename, data } =
+                await deliveriesServices.getExcelDeliveriesDetailToSupervision(
+                    search,
+                    statusValue,
+                    supplierId,
+                    onlySended,
+                    deptId,
+                    muniId
+                );
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
@@ -366,7 +377,7 @@ export const DeliveriesInformation = () => {
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
-                    // Descarga (Excel u otros binarios)
+                    //Descarga (Excel)
                     const a = document.createElement('a');
                     a.href = fileURL;
                     a.download = filename || 'reporte.xlsx';
@@ -374,17 +385,51 @@ export const DeliveriesInformation = () => {
                     a.click();
                     a.remove();
                 }
-
                 // Limpia el ObjectURL
                 setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
-            } else if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
+            }
+            if (status === ResponseStatusEnum.NOT_FOUND || !blob) {
                 AlertComponent.error('Error', 'No se puede descargar el archivo.');
+            }
+
+            if (status === ResponseStatusEnum.BAD_REQUEST) {
+                AlertComponent.info('', 'No exiten datos con esa busqueda.');
             }
         } catch (error) {
             console.error("Error al Generar documento PDF para cuenta:", error);
         } finally {
             setLoading(false);
         }
+    };
+
+    //
+    const getCurrentFilters = async () => {
+        const hasSearch = (committedSearch || "").length >= 4;
+
+        const search = hasSearch ? committedSearch : "";
+        const statusKey = hasSearch ? "" : activeStatusKey;
+        const statusValue = getStatusValueFromKey(statusKey);
+
+        let supplierId = "";
+        let deptId = "";
+        let muniId = "";
+
+        if (!hasSearch) {
+            supplierId = selectedSupplierId || "";
+            deptId = selectedDeptId || "";
+            muniId = selectedMuniId || "";
+        }
+
+        if (canShowSupplier) {
+            supplierId = await supplierServices.getSupplierId();
+        }
+
+        let onlySended = false;
+        if (statusValue === DeliveryStatusEnum.REGISTERED.value) {
+            onlySended = true;
+        }
+
+        return { search, statusValue, supplierId, onlySended, deptId, muniId };
     };
 
     //
@@ -396,23 +441,22 @@ export const DeliveriesInformation = () => {
 
     //
     useEffect(() => {
-        const hasSearch = (committedSearch || "").length >= 4;
+        (async () => {
+            const { search, statusValue, supplierId, onlySended, deptId, muniId } =
+                await getCurrentFilters();
 
-        // Si hay search => ignora tab y proveedor
-        const effectiveStatusKey  = hasSearch ? "" : activeStatusKey;
-        const effectiveSupplierId = hasSearch ? "" : (selectedSupplierId || "");
-        const effectiveDeptId = hasSearch ? "" : (selectedDeptId || "");
-        const effectiveMuniId = hasSearch ? "" : (selectedMuniId || "");
+            const statusKey = activeStatusKey;
 
-        getDeliveriesInformation(
-            page + 1,
-            pageSize,
-            hasSearch ? committedSearch : "",
-            effectiveStatusKey,
-            effectiveSupplierId,
-            effectiveDeptId,
-            effectiveMuniId
-        );
+            getDeliveriesInformation(
+                page + 1,
+                pageSize,
+                search,
+                statusKey,
+                supplierId,
+                deptId,
+                muniId
+            );
+        })();
     }, [page, pageSize, activeStatusKey, selectedSupplierId, committedSearch, selectedDeptId, selectedMuniId]);
 
     return (
@@ -463,7 +507,7 @@ export const DeliveriesInformation = () => {
                             <Button
                                 variant="outline-success"
                                 className="btn-responsive"
-                                onClick={() => handleGenerateDocument(ReportTypePaymentsEnum.EXCEL)}
+                                onClick={() => handleGenerateDocument()}
                                 title="Generar excel"
                             >
                                 Generar Reporte
@@ -488,7 +532,8 @@ export const DeliveriesInformation = () => {
                             }
                             onChange={(opt) => handleChangeStatus(opt?.value)}
                             placeholder="Filtrar por estado"
-                            isClearable={false}
+                            isSearchable
+                            isClearable
                             styles={{
                                 control: (base, state) => ({
                                     ...base,
@@ -564,7 +609,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Depto */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbD"
                                     options={deptOptions}
                                     placeholder="Departamento"
                                     isSearchable
@@ -605,7 +650,7 @@ export const DeliveriesInformation = () => {
                             {/* Selector de Muni */}
                             <Col xs={12} md={6}>
                                 <Select
-                                    classNamePrefix="rb"
+                                    classNamePrefix="rbM"
                                     options={muniOptions}
                                     placeholder="Municipio"
                                     isSearchable
@@ -660,14 +705,14 @@ export const DeliveriesInformation = () => {
                         paginationMode="server"
                         rowCount={rowCount}
                         pageSizeOptions={[25, 50, 100]}
+                        rowHeight={50}
+                        headerHeight={48}
                         paginationModel={{ page, pageSize }}
                         onPaginationModelChange={({ page, pageSize }) => {
                             setPage(page);
                             setPageSize(pageSize);
                         }}
                         onRowClick={handleRowClick}
-                        rowHeight={64}
-                        headerHeight={48}
                         componentsProps={{
                             columnHeader: {
                                 style: {

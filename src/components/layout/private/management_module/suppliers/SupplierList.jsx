@@ -49,12 +49,12 @@ export const SupplierList = () => {
         const rows = payload?.results?.data?.proveedores;
         return rows.map((row) => ({
             id: row?.id,
-            name: row?.nombre,
-            company_name: row?.nombre_empresa ?? "",
+            name: row?.nombre_representante ?? "", // Nombre del representante legal
+            company_name: row?.nombre ?? "", // Razón social (nombre de la empresa)
             nit: row?.nit,
             email: row?.correo,
-            dept: row?.departamento ?? "",
-            muni: row?.municipio ?? "",
+            dept: row?.depto_name ?? "",
+            muni: row?.municipio_name ?? "",
             status: row?.aprobado,
             description: row?.estado_aprobacion,
             resolution: row?.resolucion_aprobacion,

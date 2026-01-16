@@ -60,6 +60,10 @@ const validationSchema = yup.object().shape({
     activity: yup.mixed().nullable(),
 });
 
+
+const money = (n) => Number(n || 0).toLocaleString("es-CO", { style: "currency", currency: "COP" });
+
+
 export const SearchBeneficiaryInformation = () => {
     const [loading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState("");
@@ -84,7 +88,17 @@ export const SearchBeneficiaryInformation = () => {
     // cache de municipios por depto
     const muniCacheRef = useRef(new Map());
 
-    //
+    /**
+     * Carga las opciones iniciales requeridas por los filtros:
+     * - Departamentos
+     * - Estados de CUB
+     * - Actividades CUB
+     *
+     * Internamente usa una función `load` para estandarizar:
+     * - activación/desactivación del loader general
+     * - manejo del texto informativo
+     * - asignación del resultado al estado correspondiente
+     */
     const fetchOptions = async () => {
         const load = async (fn, set) => {
             try {
@@ -106,7 +120,18 @@ export const SearchBeneficiaryInformation = () => {
         await load(() => beneficiaryInformationServices.getCubActivity(), setActivityOptions);
     };
 
-    //
+    /**
+     * Configuración de Formik:
+     * - initialValues: valores iniciales del formulario
+     * - validationSchema: validaciones con Yup
+     * - onSubmit:
+     *   1) Valida que exista al menos un filtro/campo diligenciado.
+     *   2) Si no hay filtros, muestra un warning y detiene el flujo.
+     *   3) Si hay filtros, construye `searchParams` para disparar la búsqueda.
+     *
+     * Nota: El efecto `useEffect([page, pageSize, searchParams])` es el que
+     * finalmente ejecuta la consulta cuando `searchParams` cambia.
+     */
     const formik = useFormik({
         initialValues,
         validationSchema,
@@ -140,6 +165,13 @@ export const SearchBeneficiaryInformation = () => {
                 return;
             }
 
+            setBeneficiaryInfo('');
+            setMovements({
+                datos_cub: null,
+                estado_cuenta: [],
+                resumen_pagos: [],
+            });
+
             setSearchParams({
                 cub,
                 identification,
@@ -153,7 +185,26 @@ export const SearchBeneficiaryInformation = () => {
         },
     });
 
-    //
+    /**
+     * Ejecuta la búsqueda de información básica del titular/beneficiario con paginación.
+     *
+     * @param {number} pageSize - Cantidad de registros por página.
+     * @param {number} page - Página (1-based) solicitada al backend.
+     * @param {string} cub - CUB (opcional).
+     * @param {string} identification - Identificación (opcional).
+     * @param {string} first_name - Nombres (opcional).
+     * @param {string} last_name - Apellidos (opcional).
+     * @param {string|null} state - Estado CUB (en este caso se envía el nombre).
+     * @param {string|null} activity - Actividad CUB (en este caso se envía el nombre).
+     * @param {string|null} depto - Departamento (en este caso se envía el nombre).
+     * @param {number|null} muni - Municipio (en este caso se envía el id).
+     *
+     * Flujo:
+     * - Activa loader general y texto "Buscando..."
+     * - Llama al servicio `searchForUserOrCubInformation`
+     * - Normaliza filas con `normalizeInitialInformationRows`
+     * - Actualiza `rowCount` para paginación server-side
+     */
     const getBeneficiaryInformation = async (
         pageSize = 100,
         page = 1,
@@ -196,7 +247,20 @@ export const SearchBeneficiaryInformation = () => {
         }
     }
 
-    //
+    /**
+     * Carga municipios de un departamento (por id) con cache en memoria.
+     *
+     * - Si no llega deptId:
+     *   - Limpia opciones de municipios
+     *   - Resetea el campo `muni` en Formik
+     *
+     * - Si llega deptId:
+     *   - Revisa si ya existe en `muniCacheRef`:
+     *     - Si NO existe, consulta al servicio `getMunis(deptId)` y guarda en cache.
+     *     - Si existe, reutiliza la lista cacheada.
+     *   - Actualiza `muniOptions` con la lista resultante.
+     *   - Si el municipio actualmente seleccionado no pertenece al nuevo depto, lo limpia.
+     */
     const loadMunicipalities = async (deptId) => {
         if (!deptId) {
             setMuniOptions([]);
@@ -230,25 +294,42 @@ export const SearchBeneficiaryInformation = () => {
         }
     };
 
-    //
+    /**
+     * Maneja el cambio de Departamento en el Autocomplete.
+     * - Actualiza el valor `depto` en Formik
+     * - Dispara la carga de municipios para ese depto
+     */
     const handleDeptChange = async (_evt, value) => {
         formik.setFieldValue("depto", value);
         await loadMunicipalities(value?.id || null);
     };
 
-    //
+    /**
+     * Maneja el cambio de Municipio en el Autocomplete.
+     * - Actualiza el valor `muni` en Formik
+     */
     const handleMuniChange = (_evt, value) => {
         formik.setFieldValue("muni", value);
     };
 
-    //
+    /**
+     * Limpia el formulario y los resultados.
+     * - Resetea Formik (valores y touched)
+     * - Limpia información básica (`beneficiaryInfo`)
+     * - Limpia movimientos/detalle (`movements`)
+     */
     const handleClear = () => {
         formik.resetForm();
         setBeneficiaryInfo(null);
         setMovements(null);
     };
 
-    //
+    /**
+     * Exportación (mock).
+     * - Valida que exista información cargada para exportar.
+     * - Actualmente solo imprime por consola y muestra alerta.
+     * Nota: El botón está comentado en el UI.
+     */
     const handleExport = () => {
         if (!beneficiaryInfo) {
             AlertComponent.warning("Primero realice una búsqueda para exportar la información.");
@@ -259,7 +340,12 @@ export const SearchBeneficiaryInformation = () => {
         AlertComponent.success("Exportación generada (mock).");
     };
 
-    //
+    /**
+     * Exportación (mock).
+     * - Valida que exista información cargada para exportar.
+     * - Actualmente solo imprime por consola y muestra alerta.
+     * Nota: El botón está comentado en el UI.
+     */
     const showDetails = async (params) => {
         try {
             setLoading(true);
@@ -281,7 +367,10 @@ export const SearchBeneficiaryInformation = () => {
 
     }
 
-    //
+    /**
+     * Renderiza la celda de acciones en la tabla principal (info básica).
+     * - Incluye botón "Detalles" que dispara `showDetails(row)`
+     */
     const renderActionsCell = (params) => {
         const row = params.row;
         return (
@@ -304,13 +393,13 @@ export const SearchBeneficiaryInformation = () => {
     //
     const ColumnsInitialInformationTable  = [
         { field: "id", headerName: "N°", width: 80 },
-        { field: "cub", headerName: "CUB", width: 100 },
-        { field: "cub_state", headerName: "ESTADO CUB", width: 100 },
-        { field: "identification", headerName: "IDENTIFICACIÓN", width: 150 },
-        { field: "name", headerName: "NOMBRE COMPLETO", width: 270 },
-        { field: "depto", headerName: "DEPARTAMENTO", width: 130 },
-        { field: "muni", headerName: "MUNICIPIO", width: 110 },
-        { field: "village", headerName: "VEREDA", width: 150 },
+        { field: "cub", headerName: "Cub", width: 100 },
+        { field: "cub_state", headerName: "Estado Cub", width: 100 },
+        { field: "identification", headerName: "Identificación", width: 150 },
+        { field: "name", headerName: "Nombre completo", width: 270 },
+        { field: "depto", headerName: "Departamento", width: 130 },
+        { field: "muni", headerName: "Municipio", width: 200 },
+        { field: "village", headerName: "Vereda", width: 150 },
         {
             field: "actions",
             headerName: "Detalles",
@@ -321,7 +410,13 @@ export const SearchBeneficiaryInformation = () => {
         },
     ];
 
-    //
+    /**
+     * Normaliza la respuesta del backend para la tabla de información básica.
+     * Convierte `results` en filas compatibles con DataGrid y sus columnas.
+     *
+     * @param {Array} data - Lista cruda desde el backend.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizeInitialInformationRows = (data) => {
         return data.map((row) => ({
             id: row.id,
@@ -336,23 +431,31 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     const AccountStatementColumns = [
-        { field: "id", headerName: "N°", width: 80 },
-        { field: "component", headerName: "componente", width: 250 },
-        { field: "pay", headerName: "Pago", width: 250 },
-        { field: "debt", headerName: "Deuda", width: 250 },
-        { field: "total", headerName: "Total", width: 250 },
+        { field: "id", headerName: "N°", width: 120 },
+        { field: "component", headerName: "Componente", width: 270 },
+        { field: "pay", headerName: "Pago", width: 270 },
+        { field: "debt", headerName: "Saldo", width: 270 },
+        { field: "total", headerName: "Total", width: 270 },
     ];
 
     const PaymentSummaryColumns = [
         { field: "id", headerName: "N°", width: 80 },
-        { field: "agreement", headerName: "contrato", width: 70 },
-        { field: "component", headerName: "componente", width: 250 },
-        { field: "secondary", headerName: "secundario", width: 200 },
-        { field: "payment_identification", headerName: "identificacion pago", width: 150 },
-        { field: "paid_holder", headerName: "Pago Titular", width: 300 },
-        { field: "pay", headerName: "pago", width: 180 },
+        { field: "agreement", headerName: "Contrato", width: 180 },
+        { field: "component", headerName: "Componente", width: 250 },
+        { field: "secondary", headerName: "Secundario", width: 200 },
+        { field: "payment_identification", headerName: "Identificacion pago", width: 150 },
+        { field: "paid_holder", headerName: "Titular pago", width: 300 },
+        { field: "paid", headerName: "Pagado", width: 90 },
+        { field: "pay", headerName: "Pago", width: 170 },
     ];
 
+    /**
+     * Normaliza el bloque `datos_cub` del detalle.
+     * Asegura estructura consistente, evita null/undefined y aplica valores por defecto.
+     *
+     * @param {Object|null} datos - Objeto crudo del backend.
+     * @returns {Object|null} Objeto normalizado o null si no existe.
+     */
     const normalizeDatosCub = (datos) => {
         if (!datos) return null;
 
@@ -369,40 +472,97 @@ export const SearchBeneficiaryInformation = () => {
             plan: datos.plan || "",
             linea: datos.linea || "",
             restriccion: datos.restriccion || "",
+            nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
+            identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
+            sexo_beneficiario: datos.sexo_beneficiario || "NO APLICA",
         };
     };
 
+    /**
+     * Normaliza el arreglo `estado_cuenta` y convierte valores numéricos a moneda COP.
+     * Adicionalmente conserva versiones numéricas (payNum, debtNum, totalNum) para cálculos posteriores.
+     *
+     * @param {Array} data - Lista cruda de estado de cuenta.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizeAccountStatementRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
-        return data.map((row, index) => ({
-            id: index + 1,
-            component: row?.componente || "",
-            pay: Number(row?.pago || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-            debt: Number(row?.deuda || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-            total: Number(row?.total || 0).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-            }),
-        }));
+        return data.map((row, index) => {
+            const payNum = Number(row?.pago || 0);
+            const debtNum = Number(row?.deuda || 0);
+            const totalNum = Number(row?.total || 0);
+
+            return {
+                id: index + 1,
+                component: row?.componente || "",
+
+                payNum,
+                debtNum,
+                totalNum,
+
+                pay: money(payNum),
+                debt: money(debtNum),
+                total: money(totalNum),
+            };
+        });
     };
 
+    /**
+     * Agrega una fila adicional "TOTAL" al final del estado de cuenta.
+     * Suma los valores numéricos (payNum, debtNum, totalNum) de todas las filas.
+     *
+     * @param {Array} rows - Filas de estado de cuenta ya normalizadas.
+     * @returns {Array} Filas + fila total al final.
+     */
+    const addTotalRow = (rows = []) => {
+        const totals = rows.reduce(
+            (acc, r) => {
+                acc.pay += Number(r.payNum || 0);
+                acc.debt += Number(r.debtNum || 0);
+                acc.total += Number(r.totalNum || 0);
+                return acc;
+            },
+            { pay: 0, debt: 0, total: 0 }
+        );
+
+        return [
+            ...rows,
+            {
+                id: "TOTAL",
+                component: "",
+                pay: money(totals.pay),
+                debt: money(totals.debt),
+                total: money(totals.total),
+                // (opcionales por si luego necesitas validar)
+                payNum: totals.pay,
+                debtNum: totals.debt,
+                totalNum: totals.total,
+            },
+        ];
+    };
+
+    const rows = addTotalRow(movements?.estado_cuenta || []);
+
+
+    /**
+     * Normaliza el arreglo `resumen_pagos` del detalle.
+     * Convierte campos a string seguros y formatea `pago` a moneda COP.
+     *
+     * @param {Array} data - Lista cruda de resumen de pagos.
+     * @returns {Array} Filas normalizadas para DataGrid.
+     */
     const normalizePaymentSummaryRows = (data = []) => {
         if (!Array.isArray(data)) return [];
 
         return data.map((row, index) => ({
             id: index + 1,
-            agreement: row?.contrato ?? "",
+            agreement: row?.nombre_contrato ?? "",
             component: row?.componente ?? "",
             secondary: row?.secundario ?? "",
             payment_identification: row?.identificacion_pago ?? "",
             paid_holder: row?.titular_pago ?? "",
+            paid: row?.es_pagado ?? "",
             pay: Number(row?.pago || 0).toLocaleString("es-CO", {
                 style: "currency",
                 currency: "COP",
@@ -410,6 +570,16 @@ export const SearchBeneficiaryInformation = () => {
         }));
     };
 
+    /**
+     * Normaliza la respuesta completa del endpoint de detalle.
+     * Unifica en un solo objeto los tres bloques usados por la UI:
+     * - datos_cub
+     * - estado_cuenta
+     * - resumen_pagos
+     *
+     * @param {Object} data - Respuesta cruda del backend.
+     * @returns {Object} Objeto normalizado para setear en `movements`.
+     */
     const normalizeDetailData = (data) => ({
         datos_cub: normalizeDatosCub(data?.datos_cub),
         estado_cuenta: normalizeAccountStatementRows(data?.estado_cuenta),
@@ -430,10 +600,10 @@ export const SearchBeneficiaryInformation = () => {
             searchParams.identification,
             searchParams.first_name,
             searchParams.last_name,
-            searchParams.state,
-            searchParams.activity,
-            searchParams.depto,
-            searchParams.muni
+            searchParams.state?.nombre,
+            searchParams.activity?.nombre,
+            searchParams.depto?.nombre,
+            searchParams.muni?.id
         );
     }, [page, pageSize, searchParams]);
 
@@ -442,7 +612,7 @@ export const SearchBeneficiaryInformation = () => {
         <div className="main-container">
             <HeaderImage
                 imageHeader={imgDCSIPeople}
-                titleHeader={"Busqueda de beneficiarios"}
+                titleHeader={"Busqueda de Titulares"}
                 bannerIcon={imgAdd}
                 backgroundIconColor={"#2148C0"}
                 bannerInformation={""}
@@ -454,7 +624,7 @@ export const SearchBeneficiaryInformation = () => {
                 <Card className="mt-4 shadow-sm">
                     <Card.Body>
                         <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Búsqueda de beneficiario
+                            Búsqueda de titulares
                         </h4>
 
                         <form onSubmit={formik.handleSubmit}>
@@ -582,7 +752,7 @@ export const SearchBeneficiaryInformation = () => {
                                             const selected =
                                                 stateOptions.find((s) => String(s.id) === val) ||
                                                 null;
-                                            formik.setFieldValue("status", selected);
+                                            formik.setFieldValue("state", selected);
                                         }}
                                     >
                                         <option value=""></option>
@@ -650,14 +820,14 @@ export const SearchBeneficiaryInformation = () => {
                                 Limpiar búsqueda
                             </Button>
 
-                            <Button
-                                variant="outline-success"
-                                type="button"
-                                onClick={handleExport}
-                                disabled={loading || !beneficiaryInfo}
-                            >
-                                Exportar
-                            </Button>
+                            {/*<Button*/}
+                            {/*    variant="outline-success"*/}
+                            {/*    type="button"*/}
+                            {/*    onClick={handleExport}*/}
+                            {/*    disabled={loading || !beneficiaryInfo}*/}
+                            {/*>*/}
+                            {/*    Exportar*/}
+                            {/*</Button>*/}
                         </div>
                     </form>
                 </Card.Body>
@@ -671,129 +841,141 @@ export const SearchBeneficiaryInformation = () => {
 
             {/* Info básica */}
             {beneficiaryInfo && (
-                <Card className="mt-4">
-                    <Card.Body>
-                        <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Información básica del beneficiario
-                        </h4>
-                        <DataGrid
-                            rows={beneficiaryInfo}
-                            columns={ColumnsInitialInformationTable}
-                            paginationMode="server"
-                            rowCount={rowCount}
-                            pageSizeOptions={[25, 50, 100]}
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={({ page, pageSize }) => {
-                                setPage(page);
-                                setPageSize(pageSize);
-                            }}
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left",
-                                        fontWeight: "bold",
-                                        fontSize: "10px",
-                                        wordWrap: "break-word",
+                <>
+                    <Card className="mt-4">
+                        <Card.Body>
+                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
+                                Información básica del Titular
+                            </h4>
+                            <DataGrid
+                                rows={beneficiaryInfo}
+                                columns={ColumnsInitialInformationTable}
+                                paginationMode="server"
+                                rowCount={rowCount}
+                                pageSizeOptions={[25, 50, 100]}
+                                rowHeight={40}
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={({ page, pageSize }) => {
+                                    setPage(page);
+                                    setPageSize(pageSize);
+                                }}
+                                componentsProps={{
+                                    columnHeader: {
+                                        style: {
+                                            textAlign: "left",
+                                            fontWeight: "bold",
+                                            fontSize: "10px",
+                                            wordWrap: "break-word",
+                                        },
                                     },
-                                },
-                            }}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
-                        />
-                    </Card.Body>
-                </Card>
+                                }}
+                                sx={{
+                                    "& .MuiDataGrid-columnHeaders": {
+                                        backgroundColor: "#40A581",
+                                        color: "white",
+                                        fontSize: "14px",
+                                    },
+                                    "& .MuiDataGrid-columnHeader": {
+                                        textAlign: "center",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    },
+                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                        backgroundColor: "#40A581 !important",
+                                        color: "white !important",
+                                    },
+                                    "& .MuiDataGrid-cell": {
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                        justifyContent: "center",
+                                        display: "flex",
+                                    },
+                                    "& .MuiDataGrid-row:hover": {
+                                        backgroundColor: "#E8F5E9",
+                                    },
+                                }}
+                            />
+                        </Card.Body>
+                    </Card>
+                </>
+            )}
+
+            {/* Movimientos */}
+            {movements?.datos_cub && (
+                <>
+                    <Card className="mt-4 mb-4 shadow-sm">
+                        <Card.Body>
+                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
+                                Detalle nucleo familiar
+                            </h4>
+
+                            {movements?.datos_cub && Object.keys(movements.datos_cub).length > 0 && (
+                                <div className="mt-3">
+                                    <Card className="mb-3">
+                                        <Card.Body>
+                                            <Row>
+                                                <Col md={4}>
+                                                    <strong>CUB:</strong> {movements.datos_cub.cub}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Nombre beneficiario:</strong> {movements.datos_cub.nombre_completo_beneficiario}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Identificación beneficiario:</strong> {movements.datos_cub.identificacion_beneficiario}
+                                                </Col>
+                                            </Row>
+
+                                            <Row className="mt-2">
+                                                <Col md={4}>
+                                                    <strong>Ubicación:</strong>{" "}
+                                                    {`${movements.datos_cub.departamento} - ${movements.datos_cub.municipio}`}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Actividad:</strong> {movements.datos_cub.actividad}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Plan:</strong> {movements.datos_cub.plan}
+                                                </Col>
+                                            </Row>
+
+                                            <Row className="mt-2">
+                                                <Col md={8}>
+                                                    <strong>Linea:</strong> {movements.datos_cub.linea}
+                                                </Col>
+                                                <Col md={4}>
+                                                    <strong>Restricción:</strong> {movements.datos_cub.restriccion}
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Card>
+                                </div>
+                            )}
+
+                        </Card.Body>
+                    </Card>
+                </>
             )}
 
             {/* Movimientos */}
             {movements?.datos_cub && (
                 <Card className="mt-4 mb-4 shadow-sm">
+
                     <Card.Body>
                         <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Movimientos financieros del beneficiario
+                            Estado de cuenta
                         </h4>
-
-                        {movements?.datos_cub && (
-                            <div className="mt-3">
-                                <Card className="mb-3">
-                                    <Card.Body>
-                                        <Row>
-                                            <Col md={4}>
-                                                <strong>CUB:</strong> {movements.datos_cub.cub}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Estado CUB:</strong> {movements.datos_cub.estado_cub}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Nombre:</strong> {movements.datos_cub.nombre_completo}
-                                            </Col>
-                                        </Row>
-                                        <Row className="mt-2">
-                                            <Col md={4}>
-                                                <strong>Identificación:</strong>{" "}
-                                                {movements.datos_cub.identificacion}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Ubicación:</strong>{" "}
-                                                {`${movements.datos_cub.departamento} - ${movements.datos_cub.municipio}`}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Actividad:</strong> {movements.datos_cub.actividad}
-                                            </Col>
-                                        </Row>
-                                        <Row className="mt-2">
-                                            <Col md={4}>
-                                                <strong>Plan:</strong>{" "}
-                                                {movements.datos_cub.plan}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Linea:</strong>{" "}
-                                                {movements.datos_cub.linea}
-                                            </Col>
-                                            <Col md={4}>
-                                                <strong>Restriccion:</strong> {movements.datos_cub.restriccion}
-                                            </Col>
-                                        </Row>
-                                    </Card.Body>
-                                </Card>
-                            </div>
-                        )}
 
                         {movements?.estado_cuenta?.length > 0 && (
                             <div className="mt-3">
                                 <Card className="mb-2 border-0">
-                                    <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                        Estado de cuenta
-                                    </h4>
                                     <DataGrid
-                                        rows={movements.estado_cuenta}
+                                        rows={rows}
                                         columns={AccountStatementColumns}
-                                        pageSize={10}
+                                        pageSize={25}
+                                        rowHeight={35}
                                         rowsPerPageOptions={[5, 10, 20]}
-                                        rowHeight={50}
+                                        getRowClassName={(params) => (params.id === "TOTAL" ? "row-total" : "")}
                                         componentsProps={{
                                             columnHeader: {
                                                 style: {
@@ -805,16 +987,20 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                         }}
                                         sx={{
+                                            "& .row-total": {
+                                                fontWeight: "bold",
+                                                backgroundColor: "#f5f5f5",
+                                            },
                                             "& .MuiDataGrid-columnHeaders": {
                                                 backgroundColor: "#40A581",
                                                 color: "white",
                                                 fontSize: "14px",
                                             },
                                             "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
+                                                textAlign: "left",
                                                 display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
+                                                justifyContent: "left",
+                                                alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                                                 backgroundColor: "#40A581 !important",
@@ -822,8 +1008,8 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                             "& .MuiDataGrid-cell": {
                                                 fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
+                                                textAlign: "left",
+                                                justifyContent: "left",
                                                 display: "flex",
                                             },
                                             "& .MuiDataGrid-row:hover": {
@@ -846,7 +1032,7 @@ export const SearchBeneficiaryInformation = () => {
                                         columns={PaymentSummaryColumns}
                                         pageSize={10}
                                         rowsPerPageOptions={[5, 10, 20]}
-                                        rowHeight={50}
+                                        rowHeight={35}
                                         componentsProps={{
                                             columnHeader: {
                                                 style: {
@@ -864,10 +1050,10 @@ export const SearchBeneficiaryInformation = () => {
                                                 fontSize: "14px",
                                             },
                                             "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
+                                                textAlign: "left",
                                                 display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
+                                                justifyContent: "left",
+                                                alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
                                                 backgroundColor: "#40A581 !important",
@@ -875,8 +1061,8 @@ export const SearchBeneficiaryInformation = () => {
                                             },
                                             "& .MuiDataGrid-cell": {
                                                 fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
+                                                textAlign: "left",
+                                                justifyContent: "left",
                                                 display: "flex",
                                             },
                                             "& .MuiDataGrid-row:hover": {

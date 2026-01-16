@@ -222,23 +222,16 @@ export const ReviewDocuments = () => {
     };
 
     //
-    const getDenyDestinationOptions = (userRole, RolesEnum) => {
-        if ([RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS].includes(userRole)) {
-            return [{ id: RolesEnum.SUPPLIER, label: "Proveedor" }];
-        }
-        if (userRole === RolesEnum.SUPERVISION) {
-            return [
-                { id: RolesEnum.TERRITORIAL_LINKS, label: "Territorial" },
-                { id: RolesEnum.TECHNICAL, label: "Técnica" },
-                { id: RolesEnum.SUPPLIER, label: "Proveedor" },
-            ];
-        }
-        return [];
+    const getDenyDestinationOptions = () => {
+        return [
+            { id: RolesEnum.TECHNICAL, label: "Técnica / Implementación" },
+            { id: RolesEnum.SUPPLIER, label: "Proveedor" },
+        ];
     };
 
     //
     const denyDestinationOptions = useMemo(
-        () => getDenyDestinationOptions(userAuth?.rol_id, RolesEnum),
+        () => getDenyDestinationOptions(),
         [userAuth?.rol_id]
     );
 
@@ -397,6 +390,13 @@ export const ReviewDocuments = () => {
                                             <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
                                         </button>
                                     )}
+                                    {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
+                                        <button className="button-download"
+                                                onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
+                                                disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
+                                            <img src={downloadImg} alt="" /> RUT Proveedor
+                                        </button>
+                                    )}
                                     {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
                                         <button className="button-download"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}
@@ -513,6 +513,13 @@ export const ReviewDocuments = () => {
                                         <button className="button-download"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
                                             <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                                        </button>
+                                    )}
+                                    {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
+                                        <button className="button-download"
+                                                onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
+                                                disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
+                                            <img src={downloadImg} alt="" /> RUT Proveedor
                                         </button>
                                     )}
                                 </Col>

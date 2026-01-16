@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import {Button, Col, Row} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { DataGrid } from "@mui/x-data-grid";
@@ -38,7 +38,6 @@ import './ProductPriceQuotesBySupplier.css';
 export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();
-    const navigate = useNavigate();
 
     const [productList, setProductList] = useState([]);
     const [editedProducts, setEditedProducts] = useState([]);
@@ -58,7 +57,7 @@ export const ProductPriceQuotesBySupplier = () => {
         { field: "id", headerName: "ID", width: 70 },
         {
             field: "category",
-            headerName: "CATEGORIA",
+            headerName: "Categoria",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -76,9 +75,9 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "name",
-            headerName: "NOMBRE PRODUCTO",
+            headerName: "Nombre Producto",
             flex: 1,
-            minWidth: 200,
+            minWidth: 400,
             renderCell: (params) => (
                 <div
                     style={{
@@ -92,12 +91,29 @@ export const ProductPriceQuotesBySupplier = () => {
                 </div>
             ),
         },
-        { field: "unit", headerName: "UNIDAD", width: 150 },
+        {
+            field: "unit",
+            headerName: "Unidad",
+            flex: 1,
+            minWidth: 80,
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {params.value}
+                </div>
+            ),
+        },
         {
             field: "description",
-            headerName: "DESCRIPCION",
+            headerName: "Descripción",
             flex: 1,
-            minWidth: 200,
+            minWidth: 300,
             editable: true,
             renderCell: (params) => (
                 <div
@@ -114,9 +130,9 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "brand",
-            headerName: "MARCA",
+            headerName: "Marca",
             flex: 1,
-            minWidth: 200,
+            minWidth: 100,
             editable: true,
             renderCell: (params) => (
                 <div
@@ -133,12 +149,12 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "price",
-            headerName: "VALOR",
-            width: 250,
+            headerName: "Valor",
+            width: 160,
             editable: true,
             renderCell: (params) => {
-                const min = Number(params.row.precio_min ?? 0);
-                const max = Number(params.row.precio_max ?? Infinity);
+                //const min = Number(params.row.precio_min ?? 0);
+                //const max = Number(params.row.precio_max ?? Infinity);
                 const current = Number(params.row.price ?? 0);
 
                 return (
@@ -154,6 +170,9 @@ export const ProductPriceQuotesBySupplier = () => {
                             const newRow = { ...params.row, price: value };
                             // esto re-renderiza la celda; el commit real se hace al salir de la fila
                             params.api.updateRows([newRow]);
+                        }}
+                        style={{
+                            fontSize: "10px"
                         }}
                     />
                 );
@@ -371,6 +390,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
             if(status === ResponseStatusEnum.CREATED) {
                 showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+                getProductList(selectedPlan.value, onlyMine);
             }
         } catch (error) {
             handleError('Error', 'Error al guardar los productos.');
@@ -470,8 +490,8 @@ export const ProductPriceQuotesBySupplier = () => {
                             loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
-                            rowHeight={64} // ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
-                            headerHeight={48}
+                            rowHeight={100}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                            headerHeight={88}
                             componentsProps={{
                                 columnHeader: {
                                     style: {

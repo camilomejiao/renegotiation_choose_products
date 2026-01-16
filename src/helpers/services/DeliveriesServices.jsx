@@ -165,9 +165,32 @@ class DeliveriesServices {
     /**
      *
      */
-    getExcelDeliveriesDetailToSupervision() {
-        const url = this.buildUrl(`aprobaciones/reporte-excel/`);
-        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    getExcelDeliveriesDetailToSupervision(search = "", statusDelivery = "", supplierId = "", onlySended = false, deptId = "",muniId = "") {
+        const params = new URLSearchParams();
+
+        if (statusDelivery) {
+            params.set("state", statusDelivery);
+            params.set("only_sended", String(onlySended));
+        }
+        if (search) {
+            params.set("search", search);
+        }
+        if (supplierId) {
+            params.set("provider_id", supplierId);
+        }
+        if (deptId) {
+            params.set("department_id", deptId);
+        }
+        if (muniId) {
+            params.set("municipality_id", muniId);
+        }
+
+        const qs = params.toString(); // "" ó "state=...&search=..."
+        const urlOpt = this.buildUrl(
+            qs ? `aprobaciones/reporte-excel/?${qs}` : "aprobaciones/reporte-excel/"
+        );
+
+        return authTokenService.fetchWithAuth(urlOpt, { method: "GET" });
     }
 }
 

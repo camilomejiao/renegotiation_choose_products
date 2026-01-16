@@ -877,7 +877,7 @@ export const Deliveries = () => {
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
 
             if (data.length <= 0) {
-                showInfo("Error", "No tienes productos pendientes");
+                showInfo('', 'No tienes productos pendientes');
                 setShowDeliveryForm(false);
 
                 setTimeout(() => {
