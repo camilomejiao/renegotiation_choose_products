@@ -21,7 +21,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { filesServices } from "../../../../../helpers/services/FilesServices";
-import {ConfirmationModal} from "../../../shared/Modals/ConfirmationModal";
+import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
 
 
 //
@@ -573,7 +573,6 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("cellphone")}
                                 error={formik.touched.cellphone && Boolean(formik.errors.cellphone)}
                                 helperText={formik.touched.cellphone && formik.errors.cellphone}
-                                disabled={!disabledEdit()}
                             />
                         </div>
 
@@ -585,7 +584,6 @@ export const CreateSuppliers = () => {
                                 {...formik.getFieldProps("legal_representative")}
                                 error={formik.touched.legal_representative && Boolean(formik.errors.legal_representative)}
                                 helperText={formik.touched.legal_representative && formik.errors.legal_representative}
-                                disabled={!disabledEdit()}
                             />
                         </div>
 
