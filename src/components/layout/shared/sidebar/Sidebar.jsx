@@ -97,7 +97,7 @@ const menuConfig = (role, id) => {
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.SUPPLIER]: [
-            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Mi perfil" },
+            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Gestión del Proveedor" },
             { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotización de catalogos" },
             { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
             { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
