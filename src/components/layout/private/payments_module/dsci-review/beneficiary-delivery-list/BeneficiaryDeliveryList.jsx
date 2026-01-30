@@ -86,8 +86,8 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
 
         const query = (q || "").trim().toLowerCase();
-        const canSearch = query.length === 0 || query.length >= 5;
-        if (!canSearch) return; // no dispares la búsqueda si 1–4 chars
+        const canSearch = query.length === 0 || query.length >= 4;
+        if (!canSearch) return; // no dispares la búsqueda si 1–3 chars
 
         // opcional: resetear página si usas paginación
         setPage(0);
