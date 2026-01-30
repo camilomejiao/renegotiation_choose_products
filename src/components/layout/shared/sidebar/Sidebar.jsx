@@ -110,14 +110,21 @@ const menuConfig = (role, id) => {
         [RolesEnum.SYSTEM_USER]: [
             { path: "/", icon: FaHouseUser, label: "Inicio" },
             { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
-            { path: "/admin/supplier-validation", icon: BsShieldCheck, label: "Validación de proveedores" },
+            { path: "/admin/management", icon: MdPeople, label: "Control de Usuarios/Proveedores" },
+            { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
             { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión De Beneficiarios" },
-            { path: "/admin/products-supervision", icon: FaBoxOpen, label: "Catálogo de productos" },
-            { path: "/admin/management", icon: MdPeople, label: "Gestión Integral del Beneficiario" },
-            { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
+            {
+                label: "Administración Catálogo de productos",
+                icon: FaBoxes,
+                children: [
+                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo Técnica" },
+                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Ambiental" },
+                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validación de Supervisión" },
+                ]
+            },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.LEGAL]: [
