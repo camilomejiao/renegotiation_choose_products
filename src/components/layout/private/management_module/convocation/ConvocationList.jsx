@@ -141,13 +141,13 @@ export const ConvocationList = () => {
 
             <div className="container mt-lg-3">
 
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+                <div className="table-toolbar mt-5">
                     <input
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="input-responsive me-2"
+                        className="input-responsive"
                     />
                     <div className="text-end">
                         <Button

@@ -1261,12 +1261,12 @@ export const Deliveries = () => {
                 <div className="deliveries-banner">
                     <Container>
                         <Row className="justify-content-end align-items-center mt-4">
-                            <Col xs={12} md={6}>
+                            <Col xs={12} md={6} className="deliveries-consolidated">
                                 {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL) && consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf"
+                                        className="deliveries-button deliveries deliveries-button--secondary deliveries-button--consolidated"
                                     >
                                         VER CONSOLIDADO DE COMPRAS
                                     </button>
@@ -1355,11 +1355,11 @@ export const Deliveries = () => {
                                         },
                                     }}
                                 />
-                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
+                                <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(-1)}
-                                        className="responsive-button btn-action-back mb-2 mb-md-0"
+                                        className="responsive-button deliveries-back-button btn-action-back mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>
@@ -1421,11 +1421,11 @@ export const Deliveries = () => {
                                     }}
                                 />
 
-                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
+                                <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(refreshPage())}
-                                        className="responsive-button btn-action-back mb-2 mb-md-0"
+                                        className="responsive-button deliveries-back-button btn-action-back mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>

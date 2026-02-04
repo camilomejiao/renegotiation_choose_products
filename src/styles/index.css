@@ -1560,6 +1560,24 @@ body,
   height: 26px;
 }
 
+.deliveries-button--secondary {
+  height: 52px;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, #0f766e, #14b8a6);
+}
+
+.deliveries-consolidated {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.deliveries-button--consolidated {
+  background: linear-gradient(120deg, #7c3aed, #a78bfa);
+  color: #fff;
+}
+
 .deliveries-info {
   background: var(--color-surface-muted);
   border-radius: var(--radius-md);
@@ -1572,6 +1590,29 @@ body,
   flex-wrap: wrap;
   gap: var(--space-3);
   width: 100%;
+}
+
+.button-container--deliveries {
+  max-width: 520px;
+  margin-left: auto;
+}
+
+.responsive-button {
+  min-width: 200px;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+
+.deliveries-back-button {
+  min-width: 140px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-button {
+    width: 100%;
+  }
 }
 
 .button-grid-cell {
@@ -1616,6 +1657,11 @@ body,
 
   .button-container {
     justify-content: center;
+  }
+
+  .button-container--deliveries {
+    max-width: 100%;
+    margin-left: 0;
   }
 }
 
@@ -4018,6 +4064,29 @@ body,
   min-width: 180px;
 }
 
+/* Search inputs + selects (tables) */
+.table-toolbar .input-responsive,
+.table-toolbar .search-input,
+.table-toolbar .form-control,
+.table-toolbar .form-select,
+.table-toolbar select {
+  border: 2px solid rgba(29, 78, 216, 0.6) !important;
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--gray-800);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.06);
+}
+
+.table-toolbar .input-responsive:focus,
+.table-toolbar .search-input:focus,
+.table-toolbar .form-control:focus,
+.table-toolbar .form-select:focus,
+.table-toolbar select:focus {
+  border-color: var(--action-search-dark) !important;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
+  outline: none;
+}
+
 .table-toolbar .button-order-responsive,
 .table-toolbar .btn {
   height: 40px;
@@ -4060,7 +4129,7 @@ body,
   width: min(300px, 100%);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
+  border: 2px solid rgba(29, 78, 216, 0.6);
   font-size: 0.95rem;
 }
 

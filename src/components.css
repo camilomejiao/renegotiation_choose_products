@@ -575,6 +575,7 @@
 .auth-submit {
   width: 100%;
   padding: 12px 24px;
+  text-align: center;
 }
 
 /* Responsive adjustments */
