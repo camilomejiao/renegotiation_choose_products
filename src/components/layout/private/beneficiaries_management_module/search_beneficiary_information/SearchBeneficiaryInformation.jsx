@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Card, Row, Col, Button, Spinner, Container } from "react-bootstrap";
+import { Card, Row, Col, Button, Container } from "react-bootstrap";
 import { Autocomplete, TextField } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -9,6 +9,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -797,18 +798,7 @@ export const SearchBeneficiaryInformation = () => {
                                 type="submit"
                                 disabled={loading}
                             >
-                                {loading ? (
-                                    <>
-                                        <Spinner
-                                            size="sm"
-                                            animation="border"
-                                            className="me-2"
-                                        />
-                                        Buscando...
-                                    </>
-                                ) : (
-                                    "Buscar"
-                                )}
+                                {loading ? "Buscando..." : "Buscar"}
                             </Button>
 
                             <Button
@@ -833,11 +823,7 @@ export const SearchBeneficiaryInformation = () => {
                 </Card.Body>
             </Card>
 
-            {loading && (
-                <div className="overlay">
-                    <div className="loader">{loadingText}</div>
-                </div>
-            )}
+            {loading && <Loading fullScreen text={loadingText} />}
 
             {/* Info básica */}
             {beneficiaryInfo && (

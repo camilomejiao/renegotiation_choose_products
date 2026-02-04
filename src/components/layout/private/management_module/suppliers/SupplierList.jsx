@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Utils
 import {getAccionColumns, getSuppliersColumns} from "../../../../../helpers/utils/ManagementColumns";
@@ -137,11 +138,7 @@ export const SupplierList = () => {
                     </div>
                 </div>
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">Cargando Datos...</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text="Cargando Datos..." />}
 
                 <div style={{ height: 600, width: "auto" }}>
                     <DataGrid

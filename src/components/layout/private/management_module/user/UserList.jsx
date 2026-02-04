@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaPlus} from "react-icons/fa";
@@ -126,11 +127,7 @@ export const UserList = () => {
                     </div>
                 </div>
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">Cargando Datos...</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text="Cargando Datos..." />}
 
                 <div style={{height: 600, width: "100%"}}>
                     <DataGrid

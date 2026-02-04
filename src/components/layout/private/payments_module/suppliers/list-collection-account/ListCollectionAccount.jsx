@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
+import { Loading } from "../../../../shared/loading/Loading";
 import { FaCheckCircle, FaInfoCircle, FaMoneyCheck, FaReceipt } from "react-icons/fa";
 
 //Css
@@ -123,11 +124,7 @@ export const ListCollectionAccount = () => {
 
     return (
         <>
-            {loading && (
-                <div className="overlay">
-                    <div className="loader">{informationLoadingText}</div>
-                </div>
-            )}
+            {loading && <Loading fullScreen text={informationLoadingText} />}
 
             <div className="d-flex justify-content-between align-items-center my-3">
                 <span><strong>Total cuentas de cobro:</strong> {pagination.count}</span>

@@ -10,6 +10,7 @@ import downloadImg from "../../../../../../assets/image/payments/download.png";
 
 // Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../../shared/loading/Loading";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 
 // Services
@@ -144,11 +145,7 @@ export const CollectionAccountDetails = () => {
                 backgroundInformationColor={'#40A581'}
             />
 
-            {loading && (
-                <div className="overlay">
-                    <div className="loader">{informationLoadingText}</div>
-                </div>
-            )}
+            {loading && <Loading fullScreen text={informationLoadingText} />}
 
             {accountInformation && (
                 <div className="content-collection-details">

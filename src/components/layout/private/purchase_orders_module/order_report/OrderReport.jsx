@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaBroom, FaSearch, FaTrash } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 // Image
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -242,11 +243,7 @@ export const OrderReport = () => {
                         </div>
                     </div>
 
-                    {isLoading && (
-                        <div className="overlay">
-                            <div className="loader">{informationLoadingText}</div>
-                        </div>
-                    )}
+                    {isLoading && <Loading fullScreen text={informationLoadingText} />}
 
                     <div style={{ height: 500, width: "100%" }}>
                         <DataGrid

@@ -1,4 +1,5 @@
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../../shared/loading/Loading";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -261,11 +262,7 @@ export const ListAccountOfSuppliers = () => {
                     </Col>
                 </Row>
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div style={{ height: 600, width: "auto" }}>
                     <DataGrid

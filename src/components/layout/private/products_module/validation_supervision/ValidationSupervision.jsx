@@ -9,6 +9,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
@@ -556,11 +557,7 @@ export const ValidationSupervision = () => {
                             </Col>
                         </Row>
 
-                        {loading && (
-                            <div className="overlay">
-                                <div className="loader">Cargando...</div>
-                            </div>
-                        )}
+                        {loading && <Loading fullScreen text="Cargando..." />}
 
                         <div className="grid-wrap" style={{height: 600, width: "100%"}}>
                             <DataGrid

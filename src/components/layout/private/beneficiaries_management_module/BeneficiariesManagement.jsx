@@ -1,6 +1,6 @@
 import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Col, Container, Row, Spinner } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import printJS from "print-js";
 
 //img
@@ -17,6 +17,7 @@ import { handleError, showAlert } from "../../../../helpers/utils/utils";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { ConsolidatedPurchaseReport } from "./beneficiaries_report/ConsolidatedPurchaseReport";
 import { BalanceInFavorReport } from "./balance_in_favor_report/BalanceInFavorReport";
+import { Loading } from "../../shared/loading/Loading";
 
 //Services
 import { userServices } from "../../../../helpers/services/UserServices";
@@ -244,12 +245,7 @@ export const BeneficiariesManagement = () => {
                 {/* Contenedor de la información del usuario */}
                 <UserInformation userData={userData} />
 
-                {loading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="outline-success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
+                {loading && <Loading text="Cargando..." />}
 
                 <div className="search-banner-reports">
                     <Container>

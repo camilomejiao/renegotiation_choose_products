@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {Button, Container, Form, Spinner} from "react-bootstrap";
+import {Button, Container, Form} from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Img
@@ -13,6 +13,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import {FaSave, FaStepBackward} from "react-icons/fa";
+import { Loading } from "../../shared/loading/Loading";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -253,12 +254,7 @@ export const EditDeliveryOrder = () => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="outline-success" />
-                        <span>Editando productos...</span>
-                    </div>
-                )}
+                {isLoading && <Loading text="Editando productos..." />}
 
                 <div className="p-5">
                     <Container>

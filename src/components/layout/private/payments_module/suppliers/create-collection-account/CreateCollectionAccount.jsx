@@ -7,6 +7,7 @@ import Select from "react-select";
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../../shared/loading/Loading";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -322,9 +323,7 @@ export const CreateCollectionAccount = () => {
 
             <div className="container mt-lg-5">
                 {(sendingData || loadingDeliveries) && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
+                    <Loading fullScreen text={informationLoadingText} />
                 )}
 
                 <Card className="p-3 p-md-4 shadow-sm mb-2">
@@ -435,11 +434,9 @@ export const CreateCollectionAccount = () => {
 
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">{informationLoadingText}</div>
-                        </div>
-                    )}
+                        {loading && (
+                            <Loading fullScreen text={informationLoadingText} />
+                        )}
 
                     <div style={{ height: 500, width: "100%" }}>
                         <DataGrid

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
-import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import {
     FaCheck, FaCheckCircle,
     FaClipboardCheck,
@@ -18,6 +18,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
+import { Loading } from "../../shared/loading/Loading";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 import { FEModal } from "../../shared/Modals/FEModal";
@@ -1305,12 +1306,7 @@ export const Deliveries = () => {
                     </Container>
                 </div>
 
-                {loading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
+                {loading && <Loading text="Cargando..." />}
 
                 <div className="">
                     <Container>

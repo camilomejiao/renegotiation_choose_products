@@ -8,6 +8,7 @@ import { UserInformation } from "../../../../shared/user_information/UserInforma
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import { PaymentsConfirmationModal } from "../../../../shared/Modals/PaymentsConfirmationModal";
 import { PlanHistory } from "../../../../shared/Modals/PlanHistory";
+import { Loading } from "../../../../shared/loading/Loading";
 
 //helper
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
@@ -316,11 +317,7 @@ export const ReviewDocuments = () => {
                     <UserInformation userData={beneficiaryInformation.beneficiario} />
                 )}
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div className="content-review-documents" >
                     <Row className="mb-4">
@@ -339,11 +336,7 @@ export const ReviewDocuments = () => {
                         </Col>
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">{informationLoadingText}</div>
-                        </div>
-                    )}
+                    {loading && <Loading fullScreen text={informationLoadingText} />}
 
                     <Row className="mb-4">
                         <Col md={4} xs={12} className="observations-history mt-4">

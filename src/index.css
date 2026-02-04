@@ -53,7 +53,7 @@ body,
 */
 .content {
   margin-top: var(--header-h);          /* separa del header */
-  padding-left: var(--sidebar-w);       /* espacio visual para el sidebar fijo */
+  margin-left: var(--sidebar-w);       /* espacio visual para el sidebar fijo */
   height: calc(100vh - var(--header-h));
   width: 100vw;                         /* no permitir crecimiento extra */
   max-width: 100vw;

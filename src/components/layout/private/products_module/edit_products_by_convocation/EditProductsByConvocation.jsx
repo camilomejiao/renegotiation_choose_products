@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Spinner } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import {FaFastBackward, FaPlus, FaSave} from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import Select from "react-select";
@@ -19,6 +19,7 @@ import {handleError, showAlert} from "../../../../../helpers/utils/utils";
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
 
@@ -297,12 +298,7 @@ export const EditProductsByConvocation = () => {
                     backgroundInformationColor={''}
                 />
 
-                {loading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
+                {loading && <Loading text="Cargando..." />}
 
                 <div className="container mt-lg-3">
                     <div className="row align-items-center g-2">

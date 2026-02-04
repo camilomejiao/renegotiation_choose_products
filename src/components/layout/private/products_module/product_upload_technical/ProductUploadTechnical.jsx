@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { Loading } from "../../../shared/loading/Loading";
 
 export const ProductUploadTechnical = () => {
 
@@ -314,13 +315,6 @@ export const ProductUploadTechnical = () => {
                 backgroundInformationColor={''}
             />
 
-            {loading && (
-                <div className="spinner-container">
-                    <Spinner animation="border" variant="success" />
-                    <span>Cargando...</span>
-                </div>
-            )}
-
             <div className="container mt-lg-3">
                 {/* Select */}
                 <Row className="gy-3">
@@ -387,11 +381,7 @@ export const ProductUploadTechnical = () => {
                 </div>
 
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">Guardando Productos...</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text="Cargando..." />}
 
                 <div style={{height: 600, width: "100%"}}>
                     <DataGrid

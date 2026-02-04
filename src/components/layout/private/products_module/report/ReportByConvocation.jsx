@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import { Button, Col, Row } from "react-bootstrap";
 import Select from "react-select";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Components
 import {HeaderImage} from "../../../shared/header_image/HeaderImage";
@@ -348,11 +349,7 @@ export const ReportByConvocation = () => {
                         </Col>
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">Cargando...</div>
-                        </div>
-                    )}
+                    {loading && <Loading fullScreen text="Cargando..." />}
 
                     <div style={{height: 600, width: "100%"}}>
 

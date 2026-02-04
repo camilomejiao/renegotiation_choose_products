@@ -9,13 +9,14 @@ import {
     Autocomplete,
     CircularProgress,
 } from "@mui/material";
-import {Button, Spinner} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 
 // Img
 import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { PasswordChangeDialog } from "../../../shared/Modals/PasswordChangeDialog";
+import { Loading } from "../../../shared/loading/Loading";
 
 // Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -375,12 +376,7 @@ export const CreateUser = () => {
                     backgroundInformationColor={""}
                 />
 
-                {loadingUser && (
-                    <div className="overlay">
-                        <Spinner animation="border" variant="success" />
-                        <div className="loader">Cargando...</div>
-                    </div>
-                )}
+                {loadingUser && <Loading fullScreen text="Cargando..." />}
 
                 <form
                     onSubmit={async (e) => {
