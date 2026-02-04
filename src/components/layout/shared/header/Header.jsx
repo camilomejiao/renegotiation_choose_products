@@ -12,9 +12,10 @@ export const Header = () => {
                 <img
                     src={logo1}
                     alt="Agencia de Renovación del Territorio"
-                    style={{ height: '50px', filter: 'brightness(0) invert(1)' }}
+                    style={{ height: '50px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' }}
                 />
             </div>
         </header>
     );
 };
+
