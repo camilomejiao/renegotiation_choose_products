@@ -334,13 +334,13 @@ body,
 }
 
 .table thead th {
-  background: var(--gray-100);
-  color: var(--gray-700);
+  background: #2d3a4d;
+  color: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 0.75rem;
-  border-bottom: 2px solid var(--gray-200);
+  border-bottom: 2px solid #1f2a38;
 }
 
 .table th,
@@ -353,6 +353,30 @@ body,
   background: var(--gray-50);
 }
 
+/* DataGrid (MUI) header uniform color */
+.MuiDataGrid-columnHeaders {
+  background-color: #2d3a4d !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #1f2a38 !important;
+}
+
+.MuiDataGrid-columnHeaderTitle {
+  color: #ffffff !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.MuiDataGrid-container--top [role="row"],
+.MuiDataGrid-container--bottom [role="row"] {
+  background-color: #2d3a4d !important;
+  color: #ffffff !important;
+}
+
+/* Header row class override */
+.MuiDataGrid-row--borderBottom.css-yseucu-MuiDataGrid-columnHeaderRow {
+  background-color: #2d3a4d !important;
+}
+
 .MuiTableContainer-root {
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -362,13 +386,13 @@ body,
 }
 
 .MuiTableHead-root .MuiTableCell-root {
-  background: var(--gray-100);
-  color: var(--gray-700);
+  background: #2d3a4d;
+  color: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 0.75rem;
-  border-bottom: 2px solid var(--gray-200);
+  border-bottom: 2px solid #1f2a38;
 }
 
 .MuiTableBody-root .MuiTableRow-root:hover {

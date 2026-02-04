@@ -62,20 +62,6 @@ body,
   background-color: #fff;
 }
 
-/* Si prefieres margin-left en lugar de padding-left,
-   sustituye el bloque anterior por éste:
-.content {
-  margin-top: var(--header-h);
-  margin-left: var(--sidebar-w);
-  height: calc(100vh - var(--header-h));
-  width: calc(100vw - var(--sidebar-w));  // clave para evitar desborde
-  max-width: 100vw;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #fff;
-}
-*/
-
 /* Wrapper para DataGrid o tablas que no deben generar scroll extra */
 .grid-wrap {
   height: 100%;
