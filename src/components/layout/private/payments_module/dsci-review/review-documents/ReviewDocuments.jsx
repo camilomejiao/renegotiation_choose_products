@@ -21,7 +21,6 @@ import imgPayments from "../../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 
 //Css
-import './ReviewDocuments.css';
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";

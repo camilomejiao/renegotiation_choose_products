@@ -38,9 +38,6 @@ import { userServices } from "../../../../helpers/services/UserServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
-//Css
-import './Deliveries.css';
-
 //Enum
 import {
     BeneficiaresManagementEnum,

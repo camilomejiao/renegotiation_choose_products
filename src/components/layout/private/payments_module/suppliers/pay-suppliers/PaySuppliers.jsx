@@ -12,7 +12,6 @@ import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 import { ListCollectionAccount } from "../list-collection-account/ListCollectionAccount";
 
 //Css
-import './PaySuppliers.css';
 
 export const PaySuppliers = () => {
 

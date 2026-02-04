@@ -23,7 +23,6 @@ import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Css
-import "./CompanyReport.css";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";

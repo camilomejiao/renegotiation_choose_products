@@ -24,9 +24,6 @@ import { userServices } from "../../../../helpers/services/UserServices";
 import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
-//Css
-import './BeneficiariesManagement.css';
-
 //Enum
 import {BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";

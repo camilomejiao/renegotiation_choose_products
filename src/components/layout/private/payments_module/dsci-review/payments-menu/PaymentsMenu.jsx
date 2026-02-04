@@ -14,7 +14,6 @@ import fiduciaria from "../../../../../../assets/image/payments/fiduciaria.png";
 import { RolesEnum } from "../../../../../../helpers/GlobalEnum";
 
 //Css
-import "./PaymentsMenu.css";
 
 const userCards = [
     { title: "Supervisión", role: RolesEnum.SUPERVISION, key: "supervision", img: supervision },

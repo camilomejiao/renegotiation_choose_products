@@ -12,7 +12,6 @@ import imgAdd from '../../../../../assets/image/addProducts/imgAdd.png';
 import frame from '../../../../../assets/image/addProducts/Frame.png';
 
 //Css
-import './CreateOrder.css';
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";

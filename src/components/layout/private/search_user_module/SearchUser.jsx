@@ -3,7 +3,6 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 //css
-import './SearchUser.css';
 
 //Component
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";

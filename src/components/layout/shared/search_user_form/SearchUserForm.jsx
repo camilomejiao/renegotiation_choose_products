@@ -10,7 +10,6 @@ import { userServices } from "../../../../helpers/services/UserServices";
 import {ComponentEnum, ResponseStatusEnum} from "../../../../helpers/GlobalEnum";
 
 //Css
-import './SearchUserForm.css';
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import {renegotiationServices} from "../../../../helpers/services/RenegociationServices";
 

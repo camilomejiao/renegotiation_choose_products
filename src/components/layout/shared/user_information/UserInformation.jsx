@@ -4,7 +4,6 @@ import { Col, Container, Row } from "react-bootstrap";
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
 
 //Css
-import './UserInformation.css';
 
 export const UserInformation = ({userData}) => {
 

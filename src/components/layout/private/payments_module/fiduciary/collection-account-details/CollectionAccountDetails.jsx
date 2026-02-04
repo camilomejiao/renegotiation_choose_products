@@ -21,7 +21,6 @@ import { filesServices } from "../../../../../../helpers/services/FilesServices"
 import { ReportTypePaymentsEnum, ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
 
 // CSS
-import './CollectionAccountDetails.css';
 
 export const CollectionAccountDetails = () => {
     const params = useParams();

@@ -4,9 +4,6 @@ import { Accordion, Col, Row } from "react-bootstrap";
 import { Loading } from "../../../../shared/loading/Loading";
 import { FaCheckCircle, FaInfoCircle, FaMoneyCheck, FaReceipt } from "react-icons/fa";
 
-//Css
-import './ListCollectionAccount.css';
-
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
 import { supplierServices } from "../../../../../../helpers/services/SupplierServices";

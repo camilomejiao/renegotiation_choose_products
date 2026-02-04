@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Container, Row } from "react-bootstrap";
 
-import './ListAccountOfSuppliers.css';
-
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
 

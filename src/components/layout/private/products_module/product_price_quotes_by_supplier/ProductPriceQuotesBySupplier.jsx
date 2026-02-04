@@ -33,9 +33,6 @@ import {
     getStatusProduct
 } from "../../../../../helpers/utils/ValidateProductColumns";
 
-//Css
-import './ProductPriceQuotesBySupplier.css';
-
 export const ProductPriceQuotesBySupplier = () => {
 
     const { userAuth } = useOutletContext();

@@ -15,7 +15,6 @@ import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseO
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
-import "./OrderReport.css";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Components
