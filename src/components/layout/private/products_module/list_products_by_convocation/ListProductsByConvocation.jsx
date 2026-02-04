@@ -253,7 +253,11 @@ export const ListProductsByConvocation = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="outline-danger" onClick={closeSuppliersModal}>
+                    <Button
+                        variant="outline-secondary"
+                        onClick={closeSuppliersModal}
+                        className="btn-action-back"
+                    >
                         Cerrar
                     </Button>
                 </Modal.Footer>

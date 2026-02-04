@@ -329,7 +329,7 @@ export const EditProductsByConvocation = () => {
                                 variant="outline-primary"
                                 size="md"
                                 onClick={handleBack}
-                                className="button-order-responsive"
+                                className="button-order-responsive btn-action-back"
                             >
                                 <FaFastBackward /> Volver al listado
                             </Button>

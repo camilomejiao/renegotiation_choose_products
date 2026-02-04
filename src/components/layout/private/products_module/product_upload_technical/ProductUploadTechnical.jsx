@@ -374,7 +374,7 @@ export const ProductUploadTechnical = () => {
                         <Button
                             variant="outline-secondary"
                             onClick={handleBack}
-                            className="button-order-responsive">
+                            className="button-order-responsive btn-action-back">
                             <FaBackspace /> Atras
                         </Button>
                     </div>

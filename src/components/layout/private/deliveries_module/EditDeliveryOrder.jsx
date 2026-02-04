@@ -309,7 +309,7 @@ export const EditDeliveryOrder = () => {
                             <Button
                                 variant="outline-secondary"
                                 onClick={handleBack}
-                                className="responsive-button mb-2 mb-md-0"
+                                className="responsive-button btn-action-back mb-2 mb-md-0"
                             >
                                 <FaStepBackward /> ATRÁS
                             </Button>

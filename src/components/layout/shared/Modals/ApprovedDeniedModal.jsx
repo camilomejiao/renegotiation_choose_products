@@ -41,7 +41,7 @@ export const ApprovedDeniedModal = ({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="secondary" onClick={onClose} className="btn-action-back">
                         Cancelar
                     </Button>
                     <Button variant="primary" onClick={onSubmit}>

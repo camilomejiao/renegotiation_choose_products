@@ -54,7 +54,7 @@ export const FEModal = ({ show, onClose, onSave, loading, defaultNumber = "" }) 
             </Modal.Body>
 
             <Modal.Footer className="d-flex justify-content-between">
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="secondary" onClick={onClose} className="btn-action-back">
                     Cancelar
                 </Button>
                 <Button

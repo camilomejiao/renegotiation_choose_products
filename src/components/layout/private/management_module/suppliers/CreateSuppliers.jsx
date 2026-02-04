@@ -921,9 +921,10 @@ export const CreateSuppliers = () => {
                             Guardar
                         </Button>
 
-                        <Button variant="outline-danger"
+                        <Button variant="outline-secondary"
                                 type="button"
                                 onClick={() => navigate("/admin/management")}
+                                className="btn-action-back"
                         >
                             Cancelar
                         </Button>

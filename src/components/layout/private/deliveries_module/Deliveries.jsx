@@ -1359,7 +1359,7 @@ export const Deliveries = () => {
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(-1)}
-                                        className="responsive-button mb-2 mb-md-0"
+                                        className="responsive-button btn-action-back mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>
@@ -1425,7 +1425,7 @@ export const Deliveries = () => {
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(refreshPage())}
-                                        className="responsive-button mb-2 mb-md-0"
+                                        className="responsive-button btn-action-back mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>

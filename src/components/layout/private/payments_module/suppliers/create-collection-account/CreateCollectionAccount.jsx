@@ -483,8 +483,10 @@ export const CreateCollectionAccount = () => {
                     </div>
 
                     <div className="d-flex justify-content-end gap-2 mt-3">
-                        <Button variant="outline-secondary"
-                                onClick={onBack}
+                        <Button
+                            variant="outline-secondary"
+                            onClick={onBack}
+                            className="btn-action-back"
                         >
                             <FaStepBackward /> Atras
                         </Button>

@@ -238,7 +238,12 @@ export const General = ({id, onBack}) => {
                     <Button variant="outline-success" type="submit">
                         Guardar
                     </Button>
-                    <Button variant="outline-danger" onClick={onBack} type="button">
+                    <Button
+                        variant="outline-secondary"
+                        onClick={onBack}
+                        type="button"
+                        className="btn-action-back"
+                    >
                         Cancelar
                     </Button>
                 </div>

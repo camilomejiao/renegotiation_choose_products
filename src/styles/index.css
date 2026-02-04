@@ -13,6 +13,18 @@
   --success-color: #16a34a;
   --info-color: #0284c7;
 
+  /* Action button colors */
+  --action-create: #16a34a;
+  --action-create-dark: #15803d;
+  --action-search: #1d4ed8;
+  --action-search-dark: #1e40af;
+  --action-back: #64748b;
+  --action-back-dark: #475569;
+  --action-clear: #94a3b8;
+  --action-clear-dark: #64748b;
+  --action-info: #0284c7;
+  --action-info-dark: #0369a1;
+
   --gray-50: #f8fafc;
   --gray-100: #f1f5f9;
   --gray-200: #e2e8f0;
@@ -2392,7 +2404,11 @@ body,
   background: linear-gradient(120deg, #b22e2e, #e05b5b);
 }
 .btn-back {
-  background: linear-gradient(120deg, #575454, #767474);
+  background: linear-gradient(
+    120deg,
+    var(--action-back) 0%,
+    var(--action-back-dark) 100%
+  );
 }
 .button-download {
   background: linear-gradient(120deg, #40a581, #68c7a5);
@@ -2654,7 +2670,11 @@ body,
   padding: var(--space-4) var(--space-5);
   border: none;
   border-radius: var(--radius-md);
-  background: linear-gradient(120deg, #2d98c0, #3fb1da);
+  background: linear-gradient(
+    120deg,
+    var(--action-back) 0%,
+    var(--action-back-dark) 100%
+  );
   color: #fff;
   font-weight: 700;
   cursor: pointer;
@@ -3313,21 +3333,154 @@ body,
   color: #333 !important;
 }
 
-/* Resetear cualquier estilo de selección de Bootstrap */
-.btn-outline-primary {
-  color: #6c757d !important;
-  border-color: #5ba3d4 !important;
-  background: white !important;
+/* =========================================================
+   Action Buttons (Create / Search / Back / Clear)
+   These classes normalize colors across the system.
+   ========================================================= */
+.btn-outline-primary,
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--action-search) 0%,
+    var(--action-search-dark) 100%
+  ) !important;
+  color: #fff !important;
+  border: none !important;
 }
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary:active,
 .btn-outline-primary.active,
-.btn-outline-primary.show {
-  color: #6c757d !important;
-  background-color: white !important;
-  border-color: #4a90b8 !important;
+.btn-outline-primary.show,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background: linear-gradient(
+    135deg,
+    var(--action-search-dark) 0%,
+    var(--action-search) 100%
+  ) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-success,
+.btn-success {
+  background: linear-gradient(
+    135deg,
+    var(--action-create) 0%,
+    var(--action-create-dark) 100%
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background: linear-gradient(
+    135deg,
+    var(--action-create-dark) 0%,
+    var(--action-create) 100%
+  ) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-secondary,
+.btn-secondary {
+  background: linear-gradient(
+    135deg,
+    var(--action-back) 0%,
+    var(--action-back-dark) 100%
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  background: linear-gradient(
+    135deg,
+    var(--action-back-dark) 0%,
+    var(--action-back) 100%
+  ) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-info {
+  background: linear-gradient(
+    135deg,
+    var(--action-info) 0%,
+    var(--action-info-dark) 100%
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+  background: linear-gradient(
+    135deg,
+    var(--action-info-dark) 0%,
+    var(--action-info) 100%
+  ) !important;
+  box-shadow: var(--shadow-md);
+}
+
+/* Utility: explicit back/cancel/close button tone */
+.btn-action-back {
+  background: linear-gradient(
+    135deg,
+    var(--action-back) 0%,
+    var(--action-back-dark) 100%
+  ) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-action-back:hover,
+.btn-action-back:focus,
+.btn-action-back:active {
+  background: linear-gradient(
+    135deg,
+    var(--action-back-dark) 0%,
+    var(--action-back) 100%
+  ) !important;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-search {
+  background: linear-gradient(
+    135deg,
+    var(--action-search) 0%,
+    var(--action-search-dark) 100%
+  );
+  color: #fff;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-search:hover,
+.btn-search:focus {
+  background: linear-gradient(
+    135deg,
+    var(--action-search-dark) 0%,
+    var(--action-search) 100%
+  );
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 /* ===== ESTANDARIZACIÓN DE BOTONES ===== */
@@ -3616,36 +3769,7 @@ body,
   margin-bottom: 4px;
 }
 
-/* Botones principales */
-.btn-outline-info {
-  border: 1px solid #046999 !important;
-  color: #046999 !important;
-  background: transparent !important;
-  border-radius: 6px !important;
-  padding: 10px 20px !important;
-  font-weight: 500 !important;
-  transition: all 0.15s ease !important;
-  font-size: 0.9rem !important;
-}
-
-.btn-outline-info:hover {
-  background: #046999 !important;
-  color: white !important;
-}
-
-.btn-success {
-  background: #2e7d32 !important;
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 10px 20px !important;
-  font-weight: 500 !important;
-  transition: all 0.15s ease !important;
-  font-size: 0.9rem !important;
-}
-
-.btn-success:hover {
-  background: #1b5e20 !important;
-}
+/* Botones principales: se estandarizan arriba en Action Buttons */
 
 /* Tabla profesional */
 .professional-table {

@@ -275,9 +275,10 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
                         {saving ? "Guardando..." : "Guardar"}
                     </Button>
                     <Button
-                        variant="outline-danger"
+                        variant="outline-secondary"
                         onClick={onBack}
                         type="button"
+                        className="btn-action-back"
                     >
                         Cancelar
                     </Button>
