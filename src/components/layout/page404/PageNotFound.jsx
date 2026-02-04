@@ -6,7 +6,7 @@ export const PageNotFound = () => {
         <div className="page-standalone">
             <div className="page-standalone__content">
                 <img src={image} alt="Not Found" />
-                <Link to="/admin" className="btn btn-primary">Back</Link>
+                <Link to="/admin" className="btn btn-primary btn-action-back">Back</Link>
             </div>
         </div>
     );

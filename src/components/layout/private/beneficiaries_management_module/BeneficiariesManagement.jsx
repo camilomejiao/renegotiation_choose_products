@@ -244,73 +244,86 @@ export const BeneficiariesManagement = () => {
 
                 {loading && <Loading text="Cargando..." />}
 
-                <div className="search-banner-reports">
+                <div className="search-banner-reports beneficiaries-actions">
                     <Container>
-                        <Row className="justify-content-start">
-                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
-                                <button onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.CONSOLIDATED)} className="reporting-system-button unique">
+                        <Row className="justify-content-start gy-2">
+                            <Col xs={12} md={3} className="beneficiaries-actions__primary">
+                                <button
+                                    onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.CONSOLIDATED)}
+                                    className="reporting-system-button unique"
+                                >
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     DOCUMENTO CONSOLIDADO DE ORDENES DE COMPRA POR TITULAR
                                 </button>
                             </Col>
-                            <Col xs={12} md={9} className="d-flex justify-content-center">
+                            <Col xs={12} md={9} className="beneficiaries-actions__secondary">
                                 <button
                                     onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.CONSOLIDATED)}
-                                    className="reporting-system-button files">
+                                    className="reporting-system-button files"
+                                >
                                     <img src={imgFrame} alt="icono único" className="button-icon" />
                                     CARGAR CONSOLIDADO DE COMPRAS
                                 </button>
 
-                                {consolidated &&(
+                                {consolidated && (
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf">
+                                        className="reporting-system-button view-pdf"
+                                    >
                                         <img src={glass} alt="icono pdf" className="button-icon" />
                                         VER PDF
                                     </button>
                                 )}
                             </Col>
                         </Row>
-                        <Row className="justify-content-start mt-2">
-                            <Col xs={12} md={3} className="d-flex justify-content-center mb-3 mb-md-0">
-                                <button onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.BALANCE)} className="reporting-system-button unique">
+                        <Row className="justify-content-start mt-2 gy-2">
+                            <Col xs={12} md={3} className="beneficiaries-actions__primary">
+                                <button
+                                    onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.BALANCE)}
+                                    className="reporting-system-button unique"
+                                >
                                     <img src={imgFrame2} alt="icono único" className="button-icon" />
                                     DOCUMENTO SALDO A FAVOR
                                 </button>
                             </Col>
-                            <Col xs={12} md={9} className="d-flex justify-content-center">
+                            <Col xs={12} md={9} className="beneficiaries-actions__secondary">
                                 <button
                                     onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.BALANCE)}
-                                    className="reporting-system-button files">
+                                    className="reporting-system-button files"
+                                >
                                     <img src={imgFrame} alt="icono único" className="button-icon" />
                                     CARGAR DOCUMENTO DE SALDO A FAVOR
                                 </button>
 
-                                {balance &&(
+                                {balance && (
                                     <button
                                         onClick={() => handleViewFile(balance)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf">
+                                        className="reporting-system-button view-pdf"
+                                    >
                                         <img src={glass} alt="icono pdf" className="button-icon" />
                                         VER PDF
                                     </button>
                                 )}
                             </Col>
                         </Row>
-                        <Row className="justify-content-start mt-2">
-                            <Col xs={12} md={3} className="d-flex justify-content-center justify-content-md-end">
-                                <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    ENTREGAS
-                                </button>
-                            </Col>
-                        </Row>
                     </Container>
                 </div>
-
-                {/* Authorization Component */}
-                <AuthorizationSection component={ComponentEnum.USER} userData={userData} wide={5} />
+                <div className="beneficiaries-side">
+                    <div className="beneficiaries-side__auth">
+                        <AuthorizationSection component={ComponentEnum.USER} userData={userData} wide={12} />
+                    </div>
+                    <div className="beneficiaries-side__deliveries">
+                        <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
+                            <img src={imgFrame2} alt="icono único" className="button-icon" />
+                            ENTREGAS
+                        </button>
+                        <p className="beneficiaries-side__hint">
+                            Accede al módulo de entregas del beneficiario.
+                        </p>
+                    </div>
+                </div>
 
                 {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
@@ -334,3 +347,7 @@ export const BeneficiariesManagement = () => {
         </>
     )
 }
+
+
+
+
