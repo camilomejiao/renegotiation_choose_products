@@ -1564,9 +1564,14 @@ body,
   justify-content: flex-end;
 }
 
+.deliveries-button--create {
+  background: linear-gradient(120deg, #1d4ed8, #2563eb);
+  color: #ffffff;
+}
+
 .deliveries-button--consolidated {
-  background: linear-gradient(120deg, #7c3aed, #a78bfa);
-  color: #fff;
+  background: linear-gradient(120deg, #0f766e, #14b8a6);
+  color: #ffffff;
 }
 
 .deliveries-info {
@@ -1610,9 +1615,11 @@ body,
 }
 
 .deliveries-back-button {
-  min-width: 140px;
+  min-width: 120px;
+  width: auto;
   padding: 6px 12px;
   font-size: 0.85rem;
+  border-radius: 999px;
 }
 
 @media (max-width: 768px) {
@@ -5080,3 +5087,57 @@ a.button-pill {
   cursor: not-allowed;
   box-shadow: none;
 }
+
+
+/* Deliveries - action buttons aligned with cards style */
+.deliveries-action-button {
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  gap: 8px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.deliveries-action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.16);
+}
+
+.deliveries-action-button--primary {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+}
+
+.deliveries-action-button--secondary {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+}
+
+.deliveries-action-button--ghost {
+  background: #f1f5f9;
+  color: #1f2937;
+  box-shadow: none;
+  border: 1px solid #cbd5f5;
+}
+
+.deliveries-action-button--ghost:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.deliveries-action-button .button-icon {
+  width: 18px;
+  height: 18px;
+}
+.deliveries-action-button--success {
+  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+}
+
+
