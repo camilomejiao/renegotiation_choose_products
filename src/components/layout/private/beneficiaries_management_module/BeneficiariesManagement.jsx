@@ -1,14 +1,12 @@
-import {useNavigate, useOutletContext, useParams} from "react-router-dom";
+﻿import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import printJS from "print-js";
+import { Container } from "react-bootstrap";
+import {FaFileAlt, FaFileInvoiceDollar, FaFilePdf, FaFileSignature, FaUpload} from "react-icons/fa";import printJS from "print-js";
 
 //img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
 import imgAdd from "../../../../assets/image/addProducts/imgAdd.png";
-import imgFrame from "../../../../assets/image/icons/frame.png";
 import imgFrame2 from "../../../../assets/image/icons/Frame1.png";
-import glass from "../../../../assets/image/icons/magnifying_glass.png";
 
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
@@ -25,7 +23,9 @@ import { reportServices } from "../../../../helpers/services/ReportServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
 
 //Enum
-import {BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum, RolesEnum} from "../../../../helpers/GlobalEnum";
+import { BeneficiaresManagementEnum, ComponentEnum, ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
+
+//Helpers
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 
 const pickLatest = (arr = []) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null);
@@ -46,7 +46,7 @@ export const BeneficiariesManagement = () => {
     const [consolidated, setConsolidated] = useState("");
     const [balance, setBalance] = useState("");
 
-    //Obtiene la información del usuario
+    //Obtiene la informaciÃ³n del usuario
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userServices.userInformation(cubId);
@@ -95,7 +95,7 @@ export const BeneficiariesManagement = () => {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(file.type)) {
-                handleError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
+                handleError('Archivo no vÃ¡lido', 'Solo se permiten imÃ¡genes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
@@ -108,7 +108,7 @@ export const BeneficiariesManagement = () => {
                 const { status } = await filesServices.uploadFileReport(cubId, formData);
 
                 if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
-                    showAlert('Éxito', 'Archivo enviado exitosamente');
+                    showAlert('Ã‰xito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
@@ -232,7 +232,7 @@ export const BeneficiariesManagement = () => {
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgDCSIPeople}
-                    titleHeader={'¡Explora el banco de proveedores!'}
+                    titleHeader={'Â¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
                     backgroundIconColor={'#ff5722'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
@@ -244,70 +244,123 @@ export const BeneficiariesManagement = () => {
 
                 {loading && <Loading text="Cargando..." />}
 
-                <div className="search-banner-reports beneficiaries-actions">
+                <div className="beneficiaries-docs">
                     <Container>
-                        <Row className="justify-content-start gy-2">
-                            <Col xs={12} md={3} className="beneficiaries-actions__primary">
+                        <div className="beneficiaries-docs__header">
+                            <h2>Documentos y Reportes</h2>
+                            <p>Acceda a instructivos, formatos y documentos necesarios para la gestión de pagos</p>
+                        </div>
+                        <div className="beneficiaries-docs__grid beneficiaries-docs__grid--two-rows">
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Consolidado</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--primary">
+                                        <FaFileAlt />
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.CONSOLIDATED)}
-                                    className="reporting-system-button unique"
+                                    className="beneficiaries-docs__button beneficiaries-docs__button--primary"
                                 >
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    DOCUMENTO CONSOLIDADO DE ORDENES DE COMPRA POR TITULAR
+                                    Documento Consolidado Orden de Compra
                                 </button>
-                            </Col>
-                            <Col xs={12} md={9} className="beneficiaries-actions__secondary">
+                            </div>
+
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Documentos</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--success">
+                                        <FaUpload />
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.CONSOLIDATED)}
-                                    className="reporting-system-button files"
+                                    className="beneficiaries-docs__button beneficiaries-docs__button--success"
                                 >
-                                    <img src={imgFrame} alt="icono único" className="button-icon" />
-                                    CARGAR CONSOLIDADO DE COMPRAS
+                                    Cargar Consolidado Orden de Compra
                                 </button>
+                            </div>
 
-                                {consolidated && (
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Ver PDF</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--info">
+                                        <FaFilePdf />
+                                    </span>
+                                </div>
+                                {consolidated ? (
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf"
+                                        className="beneficiaries-docs__button beneficiaries-docs__button--info"
                                     >
-                                        <img src={glass} alt="icono pdf" className="button-icon" />
-                                        VER PDF
+                                        Ver PDF
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="beneficiaries-docs__button beneficiaries-docs__button--disabled"
+                                        disabled
+                                    >
+                                        Sin PDF
                                     </button>
                                 )}
-                            </Col>
-                        </Row>
-                        <Row className="justify-content-start mt-2 gy-2">
-                            <Col xs={12} md={3} className="beneficiaries-actions__primary">
+                            </div>
+
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Saldo a Favor</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--warning">
+                                        <FaFileSignature />
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => handleHeadlineInformationToReport(params.id, BeneficiaresManagementEnum.BALANCE)}
-                                    className="reporting-system-button unique"
+                                    className="beneficiaries-docs__button beneficiaries-docs__button--warning"
                                 >
-                                    <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                    DOCUMENTO SALDO A FAVOR
+                                    Documento Saldo a Favor
                                 </button>
-                            </Col>
-                            <Col xs={12} md={9} className="beneficiaries-actions__secondary">
+                            </div>
+
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Solicitud</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--success">
+                                        <FaUpload />
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => handleUploadFile(params.id, BeneficiaresManagementEnum.BALANCE)}
-                                    className="reporting-system-button files"
+                                    className="beneficiaries-docs__button beneficiaries-docs__button--success"
                                 >
-                                    <img src={imgFrame} alt="icono único" className="button-icon" />
-                                    CARGAR DOCUMENTO DE SALDO A FAVOR
+                                    Cargar Saldo a Favor
                                 </button>
+                            </div>
 
-                                {balance && (
+                            <div className="beneficiaries-docs__card">
+                                <div className="beneficiaries-docs__card-top">
+                                    <span className="beneficiaries-docs__card-title">Ver PDF</span>
+                                    <span className="beneficiaries-docs__card-icon beneficiaries-docs__card-icon--info">
+                                        <FaFileInvoiceDollar />
+                                    </span>
+                                </div>
+                                {balance ? (
                                     <button
                                         onClick={() => handleViewFile(balance)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf"
+                                        className="beneficiaries-docs__button beneficiaries-docs__button--info"
                                     >
-                                        <img src={glass} alt="icono pdf" className="button-icon" />
-                                        VER PDF
+                                        Ver PDF
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="beneficiaries-docs__button beneficiaries-docs__button--disabled"
+                                        disabled
+                                    >
+                                        Sin PDF
                                     </button>
                                 )}
-                            </Col>
-                        </Row>
+                            </div>
+                        </div>
                     </Container>
                 </div>
                 <div className="beneficiaries-side">
@@ -316,16 +369,16 @@ export const BeneficiariesManagement = () => {
                     </div>
                     <div className="beneficiaries-side__deliveries">
                         <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
-                            <img src={imgFrame2} alt="icono único" className="button-icon" />
+                            <img src={imgFrame2} alt="icono Ãºnico" className="button-icon" />
                             ENTREGAS
                         </button>
                         <p className="beneficiaries-side__hint">
-                            Accede al módulo de entregas del beneficiario.
+                            Accede al mÃ³dulo de entregas del beneficiario.
                         </p>
                     </div>
                 </div>
 
-                {/* Aquí renderizas el componente pero lo ocultas */}
+                {/* Aqui renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
                     {isReadyToPrintHeadLineInformation && (
                         <div ref={headlineReportRef}>
@@ -347,6 +400,9 @@ export const BeneficiariesManagement = () => {
         </>
     )
 }
+
+
+
 
 
 

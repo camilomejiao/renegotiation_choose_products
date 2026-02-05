@@ -1310,51 +1310,53 @@ export const Deliveries = () => {
                         <hr/>
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
                             <>
-                                <DataGrid
-                                    rows={listDeliveriesToUser}
-                                    columns={deliveryColumns}
-                                    pageSize={10}
-                                    rowsPerPageOptions={[5, 10, 20]}
-                                    disableColumnMenu
-                                    disableSelectionOnClick
-                                    rowHeight={100}
-                                    componentsProps={{
-                                        columnHeader: {
-                                            style: {
-                                                textAlign: "left",
-                                                fontWeight: "bold",
-                                                fontSize: "10px",
-                                                wordWrap: "break-word",
+                                <div className="deliveries-table-card">
+                                    <DataGrid
+                                        rows={listDeliveriesToUser}
+                                        columns={deliveryColumns}
+                                        pageSize={10}
+                                        rowsPerPageOptions={[5, 10, 20]}
+                                        disableColumnMenu
+                                        disableSelectionOnClick
+                                        rowHeight={100}
+                                        componentsProps={{
+                                            columnHeader: {
+                                                style: {
+                                                    textAlign: "left",
+                                                    fontWeight: "bold",
+                                                    fontSize: "10px",
+                                                    wordWrap: "break-word",
+                                                },
                                             },
-                                        },
-                                    }}
-                                    sx={{
-                                        "& .MuiDataGrid-columnHeaders": {
-                                            backgroundColor: "#2d3a4d",
-                                            color: "white",
-                                            fontSize: "14px",
-                                        },
-                                        "& .MuiDataGrid-columnHeader": {
-                                            textAlign: "center",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                        },
-                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                            backgroundColor: "#2d3a4d !important",
-                                            color: "white !important",
-                                        },
-                                        "& .MuiDataGrid-cell": {
-                                            fontSize: "14px",
-                                            textAlign: "center",
-                                            justifyContent: "center",
-                                            display: "flex",
-                                        },
-                                        "& .MuiDataGrid-row:hover": {
-                                            backgroundColor: "#E8F5E9",
-                                        },
-                                    }}
-                                />
+                                        }}
+                                        sx={{
+                                            "& .MuiDataGrid-columnHeaders": {
+                                                backgroundColor: "#2d3a4d",
+                                                color: "white",
+                                                fontSize: "14px",
+                                            },
+                                            "& .MuiDataGrid-columnHeader": {
+                                                textAlign: "center",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            },
+                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                                backgroundColor: "#2d3a4d !important",
+                                                color: "white !important",
+                                            },
+                                            "& .MuiDataGrid-cell": {
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                                justifyContent: "center",
+                                                display: "flex",
+                                            },
+                                            "& .MuiDataGrid-row:hover": {
+                                                backgroundColor: "#E8F5E9",
+                                            },
+                                        }}
+                                    />
+                                </div>
                                 <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="outline-secondary"
@@ -1376,50 +1378,52 @@ export const Deliveries = () => {
 
                         {showDeliveryForm && (
                             <>
-                                <DataGrid
-                                    rows={deliveryProducts}
-                                    columns={productsToBeDeliveredColumns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5, 10, 20]}
-                                    disableColumnMenu
-                                    disableSelectionOnClick
-                                    componentsProps={{
-                                        columnHeader: {
-                                            style: {
-                                                textAlign: "left", // Alinea los títulos a la izquierda
-                                                fontWeight: "bold", // Opcional: Aplica un peso específico
-                                                fontSize: "14px", // Ajusta el tamaño de fuente
-                                                wordWrap: "break-word", // Permite que el título se divida en varias líneas
+                                <div className="deliveries-table-card">
+                                    <DataGrid
+                                        rows={deliveryProducts}
+                                        columns={productsToBeDeliveredColumns}
+                                        pageSize={5}
+                                        rowsPerPageOptions={[5, 10, 20]}
+                                        disableColumnMenu
+                                        disableSelectionOnClick
+                                        componentsProps={{
+                                            columnHeader: {
+                                                style: {
+                                                    textAlign: "left", // Alinea los títulos a la izquierda
+                                                    fontWeight: "bold", // Opcional: Aplica un peso específico
+                                                    fontSize: "14px", // Ajusta el tamaño de fuente
+                                                    wordWrap: "break-word", // Permite que el título se divida en varias líneas
+                                                },
                                             },
-                                        },
-                                    }}
-                                    sx={{
-                                        "& .MuiDataGrid-columnHeaders": {
-                                            backgroundColor: "#2d3a4d",
-                                            color: "white",
-                                            fontSize: "14px",
-                                        },
-                                        "& .MuiDataGrid-columnHeader": {
-                                            textAlign: "center",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                        },
-                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                            backgroundColor: "#2d3a4d !important",
-                                            color: "white !important",
-                                        },
-                                        "& .MuiDataGrid-cell": {
-                                            fontSize: "14px",
-                                            textAlign: "center",
-                                            justifyContent: "center",
-                                            display: "flex",
-                                        },
-                                        "& .MuiDataGrid-row:hover": {
-                                            backgroundColor: "#E8F5E9",
-                                        },
-                                    }}
-                                />
+                                        }}
+                                        sx={{
+                                            "& .MuiDataGrid-columnHeaders": {
+                                                backgroundColor: "#2d3a4d",
+                                                color: "white",
+                                                fontSize: "14px",
+                                            },
+                                            "& .MuiDataGrid-columnHeader": {
+                                                textAlign: "center",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            },
+                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                                backgroundColor: "#2d3a4d !important",
+                                                color: "white !important",
+                                            },
+                                            "& .MuiDataGrid-cell": {
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                                justifyContent: "center",
+                                                display: "flex",
+                                            },
+                                            "& .MuiDataGrid-row:hover": {
+                                                backgroundColor: "#E8F5E9",
+                                            },
+                                        }}
+                                    />
+                                </div>
 
                                 <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
