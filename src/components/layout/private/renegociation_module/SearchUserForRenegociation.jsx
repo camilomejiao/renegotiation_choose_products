@@ -1,12 +1,8 @@
 import { useNavigate } from "react-router-dom";
-
-//Img
-import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
-import imgAdd from "../../../../assets/image/payments/imgPay.png";
+import { FaSearch } from "react-icons/fa";
 
 //Components
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
-import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { ComponentEnum } from "../../../../helpers/GlobalEnum";
 
 export const SearchUserForRenegociation = () => {
@@ -19,23 +15,33 @@ export const SearchUserForRenegociation = () => {
     }
 
     return (
-        <div className="page-wrapper">
-            <HeaderImage
-                imageHeader={imgDCSIPeople}
-                titleHeader={`Bienvenido al Banco de Proveedores`}
-                bannerIcon={imgAdd}
-                backgroundIconColor={"#2148C0"}
-                bannerInformation={"RENEGOCIACIÓN."}
-                backgroundInformationColor={"#F66D1F"}
-            />
+        <div className="search-user-page">
+            <section className="search-user-hero">
+                <div className="search-user-hero__card">
+                    <h1 className="search-user-hero__title">
+                        Bienvenido al Portal de <span>Proveedores</span>
+                    </h1>
+                    <p className="search-user-hero__subtitle">
+                        Sistema de gestión para proveedores de la DSCI - RenHacemos
+                    </p>
+                    <div className="search-user-hero__cta">
+                        DA EL SIGUIENTE PASO EN TUS VENTAS AHORA
+                    </div>
+                </div>
+            </section>
 
-            <section className="surface-card">
-                <header className="surface-card__header">
-                    <h2 className="surface-card__title">Consulta de beneficiarios</h2>
-                    <span className="text-soft">Ingresa el documento para iniciar</span>
+            <section className="search-user-card">
+                <header className="search-user-card__header">
+                    <h2 className="search-user-card__title">
+                        <FaSearch />
+                        Búsqueda de Usuario
+                    </h2>
+                    <p className="search-user-card__subtitle">
+                        Ingrese el documento de identidad para buscar un beneficiario
+                    </p>
                 </header>
 
-                <div className="surface-card__body">
+                <div className="search-user-card__body">
                     <SearchUserForm component={ComponentEnum.RENEGOTIATION} onSearchSuccess={handleSearchSuccess} />
                 </div>
             </section>

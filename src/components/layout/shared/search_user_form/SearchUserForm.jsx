@@ -80,7 +80,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             <Form className="search-form" onSubmit={handleSearch}>
                 <Row className="g-2 justify-content-center align-items-center">
                     {component === ComponentEnum.RENEGOTIATION ? (
-                        <Col xs={12} sm={7} md={6} className="d-flex align-items-start gap-2">
+                        <Col xs={12} sm={7} md={6} className="d-flex align-items-start gap-2 search-form--renegotiation">
                             <Form.Select
                                 value={searchType}
                                 onChange={(e) => setSearchType(e.target.value)}
@@ -90,34 +90,40 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
                                 <option value="1">CUB</option>
                             </Form.Select>
 
-                            <Form.Control
-                                type="number"
-                                min="1"
-                                placeholder="Buscar"
-                                className="search-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                style={{ width: '80% !important' }}
-                            />
+                            <div className="search-input-with-icon">
+                                <img src={magnifyingGlass} alt="" className="search-input-with-icon__icon" />
+                                <Form.Control
+                                    type="number"
+                                    min="1"
+                                    placeholder="Ingrese número de documento"
+                                    className="search-input"
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                />
+                            </div>
 
                             <Button type="submit" variant="outline-primary" className="search-button">
-                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '20px', height: '20px' }} />
+                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '16px', height: '16px' }} />
+                                Buscar Usuario
                             </Button>
                         </Col>
                     ) : (
                         <Col xs={12} sm={7} md={6} className="search-form2 d-flex align-items-end gap-2">
-                            <Form.Control
-                                type="number"
-                                min="1"
-                                placeholder="Buscar"
-                                className="search-input"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                style={{ width: '95% !important' }}
-                            />
+                            <div className="search-input-with-icon">
+                                <img src={magnifyingGlass} alt="" className="search-input-with-icon__icon" />
+                                <Form.Control
+                                    type="number"
+                                    min="1"
+                                    placeholder="Ingrese número de documento"
+                                    className="search-input"
+                                    value={searchValue}
+                                    onChange={(e) => setSearchValue(e.target.value)}
+                                />
+                            </div>
 
                             <Button type="submit" variant="outline-primary" className="search-button" style={{marginLeft: '10px'}}>
-                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '20px', height: '20px', }} />
+                                <img src={magnifyingGlass} alt="Buscar" style={{ width: '16px', height: '16px' }} />
+                                Buscar Usuario
                             </Button>
                         </Col>
                     )}
