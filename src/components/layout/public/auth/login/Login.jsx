@@ -139,11 +139,7 @@ export const Login = () => {
                                         Iniciar Sesión
                                     </button>
 
-                                    <div className="auth-page__footer">
-                                        <a href="/forgot-password" className="auth-page__link">
-                                            ¿Olvidó su contraseña?
-                                        </a>
-                                    </div>
+                                    {/* Funcionalidad de recuperación no habilitada */}
                                 </form>
                             )}
                         </Formik>
