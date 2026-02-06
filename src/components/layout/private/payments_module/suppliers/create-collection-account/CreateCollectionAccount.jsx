@@ -3,6 +3,7 @@ import {useNavigate, useOutletContext} from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FaFileAlt, FaSave, FaStepBackward } from "react-icons/fa";
+import { SectionHeader } from "../../../../shared/section_header/SectionHeader";
 import Select from "react-select";
 
 //Components
@@ -327,13 +328,11 @@ export const CreateCollectionAccount = () => {
                 )}
 
                 <Card className="p-3 p-md-4 shadow-sm mb-2">
-                    <div className="search-beneficiary-header">
-                        <div className="search-beneficiary-header__title">
-                            <FaFileAlt className="search-beneficiary-header__icon" />
-                            <h4 className="search-beneficiary-title">Información para Cuenta de Cobro</h4>
-                        </div>
-                        <p>Complete la Información requerida para generar la cuenta de cobro.</p>
-                    </div>
+                    <SectionHeader
+                        icon={FaFileAlt}
+                        title="Información para Cuenta de Cobro"
+                        subtitle="Complete la información requerida para generar la cuenta de cobro."
+                    />
 
                     {!isCanShowSelect && (
                         <h6 className="mb-0 fw-semibold">
@@ -507,5 +506,6 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
+
 
 

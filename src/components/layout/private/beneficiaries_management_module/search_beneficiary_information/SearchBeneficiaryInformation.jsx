@@ -3,6 +3,7 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { Card, Row, Col, Button, Container } from "react-bootstrap";
 import { FaFileAlt, FaListAlt, FaMoneyCheckAlt, FaUsers, FaUserTag } from "react-icons/fa";
+import { SectionHeader } from "../../../shared/section_header/SectionHeader";
 import { Autocomplete, TextField } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -625,13 +626,11 @@ export const SearchBeneficiaryInformation = () => {
                 {/* Card de Búsqueda */}
                 <Card className="mt-4 shadow-sm">
                     <Card.Body>
-                        <div className="search-beneficiary-header">
-                            <div className="search-beneficiary-header__title">
-                                <FaFileAlt className="search-beneficiary-header__icon" />
-                                <h4 className="search-beneficiary-title">Búsqueda de Titulares</h4>
-                            </div>
-                            <p>Acceda a instructivos, formatos y documentos necesarios para la información del titular</p>
-                        </div>
+                        <SectionHeader
+                            icon={FaFileAlt}
+                            title="Búsqueda de Titulares"
+                            subtitle="Acceda a instructivos, formatos y documentos necesarios para la información del titular"
+                        />
 
                         <form onSubmit={formik.handleSubmit}>
                             {/* Bloque 1: campos de texto */}
@@ -835,13 +834,11 @@ export const SearchBeneficiaryInformation = () => {
                 <>
                     <Card className="mt-4">
                         <Card.Body>
-                            <div className="search-beneficiary-header">
-                                <div className="search-beneficiary-header__title">
-                                    <FaUserTag className="search-beneficiary-header__icon" />
-                                    <h4 className="search-beneficiary-title">Información básica del Titular</h4>
-                                </div>
-                                <p>Datos generales del beneficiario según los filtros aplicados.</p>
-                            </div>
+                            <SectionHeader
+                                icon={FaUserTag}
+                                title="Información básica del Titular"
+                                subtitle="Datos generales del beneficiario según los filtros aplicados."
+                            />
                             <DataGrid
                                 rows={beneficiaryInfo}
                                 columns={ColumnsInitialInformationTable}
@@ -901,13 +898,11 @@ export const SearchBeneficiaryInformation = () => {
                 <>
                     <Card className="mt-4 mb-4 shadow-sm">
                         <Card.Body>
-                            <div className="search-beneficiary-header">
-                                <div className="search-beneficiary-header__title">
-                                    <FaUsers className="search-beneficiary-header__icon" />
-                                    <h4 className="search-beneficiary-title">Detalle núcleo familiar</h4>
-                                </div>
-                                <p>Información complementaria del titular y su núcleo familiar.</p>
-                            </div>
+                            <SectionHeader
+                                icon={FaUsers}
+                                title="Detalle núcleo familiar"
+                                subtitle="Información complementaria del titular y su núcleo familiar."
+                            />
 
                             {movements?.datos_cub && Object.keys(movements.datos_cub).length > 0 && (
                                 <div className="mt-3">
@@ -961,13 +956,11 @@ export const SearchBeneficiaryInformation = () => {
                 <Card className="mt-4 mb-4 shadow-sm">
 
                     <Card.Body>
-                        <div className="search-beneficiary-header">
-                            <div className="search-beneficiary-header__title">
-                                <FaMoneyCheckAlt className="search-beneficiary-header__icon" />
-                                <h4 className="search-beneficiary-title">Estado de cuenta</h4>
-                            </div>
-                            <p>Resumen de pagos, saldos y totales por componente.</p>
-                        </div>
+                        <SectionHeader
+                            icon={FaMoneyCheckAlt}
+                            title="Estado de cuenta"
+                            subtitle="Resumen de pagos, saldos y totales por componente."
+                        />
 
                         {movements?.estado_cuenta?.length > 0 && (
                             <div className="mt-3">
@@ -1027,13 +1020,11 @@ export const SearchBeneficiaryInformation = () => {
                         {movements?.resumen_pagos?.length > 0 && (
                             <div className="mt-3">
                                 <Card className="mb-2 border-0">
-                                    <div className="search-beneficiary-header">
-                                        <div className="search-beneficiary-header__title">
-                                            <FaListAlt className="search-beneficiary-header__icon" />
-                                            <h4 className="search-beneficiary-title">Resumen de pagos</h4>
-                                        </div>
-                                        <p>Detalle de pagos registrados para el titular.</p>
-                                    </div>
+                                    <SectionHeader
+                                        icon={FaListAlt}
+                                        title="Resumen de pagos"
+                                        subtitle="Detalle de pagos registrados para el titular."
+                                    />
                                     <DataGrid
                                         rows={movements.resumen_pagos}
                                         columns={PaymentSummaryColumns}
