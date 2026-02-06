@@ -1,9 +1,8 @@
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../../shared/loading/Loading";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Container, Row } from "react-bootstrap";
-
-import './ListAccountOfSuppliers.css';
 
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -261,11 +260,7 @@ export const ListAccountOfSuppliers = () => {
                     </Col>
                 </Row>
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div style={{ height: 600, width: "auto" }}>
                     <DataGrid
@@ -295,7 +290,7 @@ export const ListAccountOfSuppliers = () => {
                         }}
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#40A581",
+                                backgroundColor: "#2d3a4d",
                                 color: "white",
                                 fontSize: "12px",
                             },
@@ -306,7 +301,7 @@ export const ListAccountOfSuppliers = () => {
                                 alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#40A581 !important",
+                                backgroundColor: "#2d3a4d !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {

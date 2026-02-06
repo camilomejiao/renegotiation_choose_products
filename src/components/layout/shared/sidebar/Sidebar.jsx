@@ -1,6 +1,5 @@
 import { createElement, useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { Container, Accordion, Card } from 'react-bootstrap';
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     FaBars,
     FaSignOutAlt,
@@ -20,9 +19,6 @@ import {
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
 import {BsBank, BsCashStack, BsShieldCheck} from "react-icons/bs";
-
-//Css
-import './Sidebar.css';
 
 //Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
@@ -150,12 +146,21 @@ const getRoleTitle = (role) => {
     return titles[role] ?? 'Perfil';
 };
 
-export const Sidebar = ({ userAuth }) => {
+export const Sidebar = ({ userAuth, onToggle }) => {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
+    const [isOpen, setIsOpen] = useState(true);
     const [openSubmenus, setOpenSubmenus] = useState({});
 
-    const toggleSidebar = () => setIsOpen(!isOpen);
+    const toggleSidebar = () => {
+        setIsOpen((prev) => {
+            const next = !prev;
+            if (onToggle) {
+                onToggle(next);
+            }
+            return next;
+        });
+    };
 
     const toggleSubmenu = (label) => {
         setOpenSubmenus((prev) => ({ ...prev, [label]: !prev[label] }));
@@ -166,70 +171,83 @@ export const Sidebar = ({ userAuth }) => {
     const title = getRoleTitle(role);
     const titleIcon = role === RolesEnum.SUPPLIER ? FaRegBuilding : role === RolesEnum.TERRITORIAL_LINKS ? FaHardHat : FaUser;
 
+    const isActive = (path) => {
+        if (!path) return false;
+        if (path === "/" && (location.pathname === "/" || location.pathname === "/admin")) return true;
+        return location.pathname.startsWith(path) && path !== "/";
+    };
+
     return (
-        <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-            <Container fluid className="sidebar-content">
-                {items.length > 0 && (
-                    <Accordion>
-                        <Card className="accordion-card">
-                            <Accordion.Header>
-                                <div className="accordion-toggle">
-                                    {titleIcon && createElement(titleIcon, { className: "sidebar-icon" })}
-                                    {isOpen && <span className="sidebar-text">{title}</span>}
+        <div className={`gov-sidebar ${isOpen ? 'open' : ''}`}>
+            <div className="nav-item">
+                <div className="nav-link" style={{ cursor: 'default' }}>
+                    {titleIcon && createElement(titleIcon, { className: "sidebar-icon" })}
+                    {isOpen && <span>{title}</span>}
+                </div>
+            </div>
+
+            {items.map((item) => {
+                if (item.children && Array.isArray(item.children)) {
+                    const isSubmenuOpen = openSubmenus[item.label];
+                    const hasActiveChild = item.children.some((subItem) => isActive(subItem.path));
+                    return (
+                        <div className="nav-item" key={item.label}>
+                            <button
+                                type="button"
+                                className={`nav-link ${hasActiveChild ? 'active' : ''}`}
+                                onClick={() => toggleSubmenu(item.label)}
+                            >
+                                {createElement(item.icon, { className: "sidebar-icon" })}
+                                {isOpen && (
+                                    <>
+                                        <span>{item.label}</span>
+                                        <span style={{ marginLeft: 'auto', fontSize: '10px' }}>
+                                            {isSubmenuOpen ? "▲" : "▼"}
+                                        </span>
+                                    </>
+                                )}
+                            </button>
+                            {isSubmenuOpen && (
+                                <div>
+                                    {item.children.map((subItem) => (
+                                        <div className="nav-item" key={subItem.path}>
+                                            <button
+                                                type="button"
+                                                className={`nav-link ${isActive(subItem.path) ? 'active' : ''}`}
+                                                style={{ paddingLeft: isOpen ? '48px' : '24px' }}
+                                                onClick={() => navigate(subItem.path)}
+                                            >
+                                                {subItem?.icon && createElement(subItem.icon, { className: "sidebar-icon" })}
+                                                {isOpen && <span>{subItem.label}</span>}
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                <div className="dropdown-content">
-                                    {items.map((item) => {
-                                        if (item.children && Array.isArray(item.children)) {
-                                            const isSubmenuOpen = openSubmenus[item.label];
+                            )}
+                        </div>
+                    );
+                }
 
-                                            return (
-                                                <div className={`dropdown-item has-submenu ${isSubmenuOpen ? "expanded" : ""}`} key={item.label}>
-                                                    <div className="submenu-header" onClick={() => toggleSubmenu(item.label)}>
-                                                        {createElement(item.icon, { className: "sidebar-icon" })}
-                                                        {isOpen && (
-                                                            <>
-                                                                <span className="sidebar-text">{item.label}</span>
-                                                                <span className="submenu-toggle">{isSubmenuOpen ? "▲" : "▼"}</span>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                    {isSubmenuOpen && (
-                                                        <div className="submenu-body">
-                                                            {item.children.map((subItem) => (
-                                                                <div
-                                                                    className="dropdown-item sub-item"
-                                                                    key={subItem.path}
-                                                                    onClick={() => navigate(subItem.path)}
-                                                                >
-                                                                    {subItem?.icon && createElement(subItem.icon, { className: "sidebar-icon" })}
-                                                                    {isOpen && <span className="sidebar-text ms-4">{subItem.label}</span>}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }
+                const Icon = item.icon;
+                return (
+                    <div className="nav-item" key={item.path}>
+                        <button
+                            type="button"
+                            className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
+                            onClick={() => navigate(item.path)}
+                        >
+                            {Icon && <Icon className="sidebar-icon" />}
+                            {isOpen && <span>{item.label}</span>}
+                        </button>
+                    </div>
+                );
+            })}
 
-                                        const Icon = item.icon;
-                                        return (
-                                            <div className="dropdown-item" key={item.path} onClick={() => navigate(item.path)}>
-                                                {Icon && <Icon className="sidebar-icon" />}
-                                                {isOpen && <span className="sidebar-text">{item.label}</span>}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </Accordion.Body>
-                        </Card>
-                    </Accordion>
-                )}
-            </Container>
-
-            <div className="sidebar-toggle" onClick={toggleSidebar}>
-                <FaBars className="toggle-icon" />
+            <div className="nav-item" style={{ marginTop: 'auto' }}>
+                <button type="button" className="nav-link" onClick={toggleSidebar}>
+                    <FaBars className="sidebar-icon" />
+                    {isOpen && <span>Contraer</span>}
+                </button>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { Loading } from "../../../shared/loading/Loading";
 
 export const ProductUploadTechnical = () => {
 
@@ -314,13 +315,6 @@ export const ProductUploadTechnical = () => {
                 backgroundInformationColor={''}
             />
 
-            {loading && (
-                <div className="spinner-container">
-                    <Spinner animation="border" variant="success" />
-                    <span>Cargando...</span>
-                </div>
-            )}
-
             <div className="container mt-lg-3">
                 {/* Select */}
                 <Row className="gy-3">
@@ -361,13 +355,13 @@ export const ProductUploadTechnical = () => {
 
                 <hr/>
 
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-2">
+                <div className="table-toolbar mb-2">
                     <input
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="input-responsive me-2"
+                        className="input-responsive"
                     />
                     <div className="text-end">
                         <Button
@@ -380,18 +374,14 @@ export const ProductUploadTechnical = () => {
                         <Button
                             variant="outline-secondary"
                             onClick={handleBack}
-                            className="button-order-responsive">
+                            className="button-order-responsive btn-action-back">
                             <FaBackspace /> Atras
                         </Button>
                     </div>
                 </div>
 
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">Guardando Productos...</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text="Cargando..." />}
 
                 <div style={{height: 600, width: "100%"}}>
                     <DataGrid
@@ -415,7 +405,7 @@ export const ProductUploadTechnical = () => {
                         }}
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#40A581",
+                                backgroundColor: "#2d3a4d",
                                 color: "white",
                                 fontSize: "14px",
                             },
@@ -426,7 +416,7 @@ export const ProductUploadTechnical = () => {
                                 alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#40A581 !important",
+                                backgroundColor: "#2d3a4d !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {

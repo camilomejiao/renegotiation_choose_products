@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Utils
 import {getAccionColumns, getSuppliersColumns} from "../../../../../helpers/utils/ManagementColumns";
@@ -117,13 +118,13 @@ export const SupplierList = () => {
         <>
             <div className="container mt-lg-3">
 
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 w-100 mb-3 mt-5">
+                <div className="table-toolbar mt-5">
                     <input
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="input-responsive me-2"
+                        className="input-responsive"
                     />
                     <div className="text-end">
                         <Button
@@ -137,11 +138,7 @@ export const SupplierList = () => {
                     </div>
                 </div>
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">Cargando Datos...</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text="Cargando Datos..." />}
 
                 <div style={{ height: 600, width: "auto" }}>
                     <DataGrid
@@ -168,7 +165,7 @@ export const SupplierList = () => {
                         }}
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#40A581",
+                                backgroundColor: "#2d3a4d",
                                 color: "white",
                                 fontSize: "14px",
                             },
@@ -179,7 +176,7 @@ export const SupplierList = () => {
                                 alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#40A581 !important",
+                                backgroundColor: "#2d3a4d !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {

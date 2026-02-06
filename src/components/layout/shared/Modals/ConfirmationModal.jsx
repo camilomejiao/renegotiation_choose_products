@@ -19,7 +19,7 @@ export const ConfirmationModal = ({
                 </Modal.Header>
                 <Modal.Body>{message}</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="secondary" onClick={onClose} className="btn-action-back">
                         {cancelLabel}
                     </Button>
                     <Button variant="danger" onClick={onConfirm}>

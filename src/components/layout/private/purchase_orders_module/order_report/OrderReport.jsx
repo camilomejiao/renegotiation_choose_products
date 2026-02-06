@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaBroom, FaSearch, FaTrash } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 // Image
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -14,7 +15,6 @@ import { purchaseOrderServices } from "../../../../../helpers/services/PurchaseO
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
 
 // Css
-import "./OrderReport.css";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Components
@@ -242,11 +242,7 @@ export const OrderReport = () => {
                         </div>
                     </div>
 
-                    {isLoading && (
-                        <div className="overlay">
-                            <div className="loader">{informationLoadingText}</div>
-                        </div>
-                    )}
+                    {isLoading && <Loading fullScreen text={informationLoadingText} />}
 
                     <div style={{ height: 500, width: "100%" }}>
                         <DataGrid
@@ -259,7 +255,7 @@ export const OrderReport = () => {
                             paginationMode="server"
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
+                                    backgroundColor: "#2d3a4d",
                                     color: "white",
                                     fontSize: "14px",
                                 },
@@ -270,7 +266,7 @@ export const OrderReport = () => {
                                     alignItems: "center",
                                 },
                                 "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
+                                    backgroundColor: "#2d3a4d !important",
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {

@@ -11,6 +11,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
@@ -739,11 +740,7 @@ export const ValidationEnvironmental = () => {
                         </Col>
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">Cargando...</div>
-                        </div>
-                    )}
+                    {loading && <Loading fullScreen text="Cargando..." />}
 
                     <div style={{ height: 600, width: "100%" }}>
                         <DataGrid
@@ -776,7 +773,7 @@ export const ValidationEnvironmental = () => {
                             }}
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
+                                    backgroundColor: "#2d3a4d",
                                     color: "white",
                                     fontSize: "12px",
                                 },
@@ -787,7 +784,7 @@ export const ValidationEnvironmental = () => {
                                     alignItems: "center",
                                 },
                                 "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
+                                    backgroundColor: "#2d3a4d !important",
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cellContent": {

@@ -12,6 +12,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Services
 import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
@@ -31,9 +32,6 @@ import {
     getObservationsSupervisionColumns,
     getStatusProduct
 } from "../../../../../helpers/utils/ValidateProductColumns";
-
-//Css
-import './ProductPriceQuotesBySupplier.css';
 
 export const ProductPriceQuotesBySupplier = () => {
 
@@ -474,11 +472,7 @@ export const ProductPriceQuotesBySupplier = () => {
                         </Col>
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">Guardando Productos...</div>
-                        </div>
-                    )}
+                    {loading && <Loading fullScreen text="Guardando Productos..." />}
 
                     <div style={{height: 600, width: "100%"}}>
                         <DataGrid
@@ -504,7 +498,7 @@ export const ProductPriceQuotesBySupplier = () => {
                             }}
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
+                                    backgroundColor: "#2d3a4d",
                                     color: "white",
                                     fontSize: "12px",
                                 },
@@ -515,7 +509,7 @@ export const ProductPriceQuotesBySupplier = () => {
                                     alignItems: "center",
                                 },
                                 "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
+                                    backgroundColor: "#2d3a4d !important",
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cellContent": {

@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import { Button, Col, Row } from "react-bootstrap";
 import Select from "react-select";
 import { DataGrid } from "@mui/x-data-grid";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Components
 import {HeaderImage} from "../../../shared/header_image/HeaderImage";
@@ -348,11 +349,7 @@ export const ReportByConvocation = () => {
                         </Col>
                     </Row>
 
-                    {loading && (
-                        <div className="overlay">
-                            <div className="loader">Cargando...</div>
-                        </div>
-                    )}
+                    {loading && <Loading fullScreen text="Cargando..." />}
 
                     <div style={{height: 600, width: "100%"}}>
 
@@ -383,7 +380,7 @@ export const ReportByConvocation = () => {
                             }}
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
+                                    backgroundColor: "#2d3a4d",
                                     color: "white",
                                     fontSize: "12px",
                                 },
@@ -394,7 +391,7 @@ export const ReportByConvocation = () => {
                                     alignItems: "center",
                                 },
                                 "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
+                                    backgroundColor: "#2d3a4d !important",
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {

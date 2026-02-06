@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useParams} from "react-router-dom";
-import { Button, Col, Container, Form, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import { debounce } from "@mui/material";
 import printJS from "print-js";
@@ -12,12 +12,12 @@ import imgAdd from '../../../../../assets/image/addProducts/imgAdd.png';
 import frame from '../../../../../assets/image/addProducts/Frame.png';
 
 //Css
-import './CreateOrder.css';
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
+import { Loading } from "../../../shared/loading/Loading";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
@@ -365,12 +365,7 @@ export const CreateOrder = () => {
                         </Col>
                     </Row>
 
-                    {isLoading && (
-                        <div className="spinner-container">
-                            <Spinner animation="border" variant="success" />
-                            <span>Cargando...</span>
-                        </div>
-                    )}
+                    {isLoading && <Loading text="Cargando..." />}
 
                     {/* Tabla */}
                     <div className="mt-3 table-responsive scrollable-thead-body">

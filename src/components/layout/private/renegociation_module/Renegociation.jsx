@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Col, Container, Row, Form, Spinner } from "react-bootstrap";
+import { Button, Col, Container, Row, Form } from "react-bootstrap";
 import { TextField } from "@mui/material";
 import { FaEye } from "react-icons/fa";
 import printJS from "print-js";
@@ -18,6 +18,7 @@ import { PlanInversion } from "./plan/PlanInversion";
 import { LineDetailModal } from "../../shared/Modals/LineDetailModal";
 import { AuthorizationSection } from "../../shared/authorization_section/AuthorizationSection";
 import { PlanHistory } from "../../shared/Modals/PlanHistory";
+import { Loading } from "../../shared/loading/Loading";
 import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 //Enum
@@ -471,13 +472,7 @@ export const Renegociation = () => {
                         </Col>
                     </Row>
 
-                    {isLoading && (
-                        <div className="overlay">
-                            <div><Spinner animation="border" variant="success" /></div>
-                            <br/>
-                            <div className="loader">Cargando...</div>
-                        </div>
-                    )}
+                    {isLoading && <Loading fullScreen text="Cargando..." />}
 
                     <Row className="justify-content-end">
                         {/* Sección de Autorización */}
