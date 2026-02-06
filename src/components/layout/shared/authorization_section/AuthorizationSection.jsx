@@ -7,7 +7,6 @@ import printJS from "print-js";
 import imgFrame1 from "../../../../assets/image/icons/frame.png";
 
 //Css
-import './AuthorizationSection.css';
 
 //
 import { Authorization } from "./authorization/Authorization";

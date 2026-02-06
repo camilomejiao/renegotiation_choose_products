@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {Col, Container, Dropdown, Row, Spinner} from "react-bootstrap";
+import {Col, Container, Dropdown, Row} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx';
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { CompanyReportPrinting } from "./report/CompanyReportPrinting";
+import { Loading } from "../../../shared/loading/Loading";
 import { format } from "date-fns";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
@@ -22,7 +23,6 @@ import imgFrame2 from "../../../../../assets/image/icons/Frame1.png";
 import { reportServices } from "../../../../../helpers/services/ReportServices";
 
 //Css
-import "./CompanyReport.css";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -198,12 +198,7 @@ export const CompanyReport = () => {
                     backgroundInformationColor={'#2148C0'}
                 />
 
-                {isLoading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
+                {isLoading && <Loading text="Cargando..." />}
 
                 <div className="banner-reports">
                     <Container>

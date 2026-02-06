@@ -45,7 +45,7 @@ export const PaymentsConfirmationModal = ({
             </Modal.Body>
 
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="secondary" onClick={onClose} className="btn-action-back">
                     {cancelLabel}
                 </Button>
                 <Button

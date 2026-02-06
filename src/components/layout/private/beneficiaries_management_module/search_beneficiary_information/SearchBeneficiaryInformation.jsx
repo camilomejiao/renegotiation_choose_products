@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Card, Row, Col, Button, Spinner, Container } from "react-bootstrap";
+import { Card, Row, Col, Button, Container } from "react-bootstrap";
+import { FaFileAlt, FaListAlt, FaMoneyCheckAlt, FaUsers, FaUserTag } from "react-icons/fa";
+import { SectionHeader } from "../../../shared/section_header/SectionHeader";
 import { Autocomplete, TextField } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -9,6 +11,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -94,10 +97,10 @@ export const SearchBeneficiaryInformation = () => {
      * - Estados de CUB
      * - Actividades CUB
      *
-     * Internamente usa una función `load` para estandarizar:
-     * - activación/desactivación del loader general
+     * Internamente usa una funciÃ³n `load` para estandarizar:
+     * - activaciÃ³n/desactivaciÃ³n del loader general
      * - manejo del texto informativo
-     * - asignación del resultado al estado correspondiente
+     * - asignaciÃ³n del resultado al estado correspondiente
      */
     const fetchOptions = async () => {
         const load = async (fn, set) => {
@@ -121,13 +124,13 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * Configuración de Formik:
+     * ConfiguraciÃ³n de Formik:
      * - initialValues: valores iniciales del formulario
      * - validationSchema: validaciones con Yup
      * - onSubmit:
      *   1) Valida que exista al menos un filtro/campo diligenciado.
      *   2) Si no hay filtros, muestra un warning y detiene el flujo.
-     *   3) Si hay filtros, construye `searchParams` para disparar la búsqueda.
+     *   3) Si hay filtros, construye `searchParams` para disparar la Búsqueda.
      *
      * Nota: El efecto `useEffect([page, pageSize, searchParams])` es el que
      * finalmente ejecuta la consulta cuando `searchParams` cambia.
@@ -147,7 +150,7 @@ export const SearchBeneficiaryInformation = () => {
                 activity,
             } = values;
 
-            // Validación: al menos un campo / filtro diligenciado
+            // ValidaciÃ³n: al menos un campo / filtro diligenciado
             const hasAnyValue =
                 (identification && identification.trim() !== "") ||
                 (cub && cub.trim() !== "") ||
@@ -186,24 +189,24 @@ export const SearchBeneficiaryInformation = () => {
     });
 
     /**
-     * Ejecuta la búsqueda de información básica del titular/beneficiario con paginación.
+     * Ejecuta la Búsqueda de Información básica del titular/beneficiario con paginaciÃ³n.
      *
-     * @param {number} pageSize - Cantidad de registros por página.
-     * @param {number} page - Página (1-based) solicitada al backend.
+     * @param {number} pageSize - Cantidad de registros por pÃ¡gina.
+     * @param {number} page - PÃ¡gina (1-based) solicitada al backend.
      * @param {string} cub - CUB (opcional).
      * @param {string} identification - Identificación (opcional).
      * @param {string} first_name - Nombres (opcional).
      * @param {string} last_name - Apellidos (opcional).
-     * @param {string|null} state - Estado CUB (en este caso se envía el nombre).
-     * @param {string|null} activity - Actividad CUB (en este caso se envía el nombre).
-     * @param {string|null} depto - Departamento (en este caso se envía el nombre).
-     * @param {number|null} muni - Municipio (en este caso se envía el id).
+     * @param {string|null} state - Estado CUB (en este caso se envÃ­a el nombre).
+     * @param {string|null} activity - Actividad CUB (en este caso se envÃ­a el nombre).
+     * @param {string|null} depto - Departamento (en este caso se envÃ­a el nombre).
+     * @param {number|null} muni - Municipio (en este caso se envÃ­a el id).
      *
      * Flujo:
      * - Activa loader general y texto "Buscando..."
      * - Llama al servicio `searchForUserOrCubInformation`
      * - Normaliza filas con `normalizeInitialInformationRows`
-     * - Actualiza `rowCount` para paginación server-side
+     * - Actualiza `rowCount` para paginaciÃ³n server-side
      */
     const getBeneficiaryInformation = async (
         pageSize = 100,
@@ -241,7 +244,7 @@ export const SearchBeneficiaryInformation = () => {
 
         } catch (error) {
             console.error(error);
-            AlertComponent.error("Error al buscar la información del beneficiario.");
+            AlertComponent.error("Error al buscar la Información del beneficiario.");
         } finally {
             setLoading(false);
         }
@@ -315,7 +318,7 @@ export const SearchBeneficiaryInformation = () => {
     /**
      * Limpia el formulario y los resultados.
      * - Resetea Formik (valores y touched)
-     * - Limpia información básica (`beneficiaryInfo`)
+     * - Limpia Información básica (`beneficiaryInfo`)
      * - Limpia movimientos/detalle (`movements`)
      */
     const handleClear = () => {
@@ -325,26 +328,26 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * Exportación (mock).
-     * - Valida que exista información cargada para exportar.
+     * ExportaciÃ³n (mock).
+     * - Valida que exista Información cargada para exportar.
      * - Actualmente solo imprime por consola y muestra alerta.
-     * Nota: El botón está comentado en el UI.
+     * Nota: El botÃ³n estÃ¡ comentado en el UI.
      */
     const handleExport = () => {
         if (!beneficiaryInfo) {
-            AlertComponent.warning("Primero realice una búsqueda para exportar la información.");
+            AlertComponent.warning("Primero realice una Búsqueda para exportar la Información.");
             return;
         }
 
-        console.log("Exportar información de: ", beneficiaryInfo);
-        AlertComponent.success("Exportación generada (mock).");
+        console.log("Exportar Información de: ", beneficiaryInfo);
+        AlertComponent.success("ExportaciÃ³n generada (mock).");
     };
 
     /**
-     * Exportación (mock).
-     * - Valida que exista información cargada para exportar.
+     * ExportaciÃ³n (mock).
+     * - Valida que exista Información cargada para exportar.
      * - Actualmente solo imprime por consola y muestra alerta.
-     * Nota: El botón está comentado en el UI.
+     * Nota: El botÃ³n estÃ¡ comentado en el UI.
      */
     const showDetails = async (params) => {
         try {
@@ -369,7 +372,7 @@ export const SearchBeneficiaryInformation = () => {
 
     /**
      * Renderiza la celda de acciones en la tabla principal (info básica).
-     * - Incluye botón "Detalles" que dispara `showDetails(row)`
+     * - Incluye botÃ³n "Detalles" que dispara `showDetails(row)`
      */
     const renderActionsCell = (params) => {
         const row = params.row;
@@ -411,7 +414,7 @@ export const SearchBeneficiaryInformation = () => {
     ];
 
     /**
-     * Normaliza la respuesta del backend para la tabla de información básica.
+     * Normaliza la respuesta del backend para la tabla de Información básica.
      * Convierte `results` en filas compatibles con DataGrid y sus columnas.
      *
      * @param {Array} data - Lista cruda desde el backend.
@@ -443,7 +446,7 @@ export const SearchBeneficiaryInformation = () => {
         { field: "agreement", headerName: "Contrato", width: 180 },
         { field: "component", headerName: "Componente", width: 250 },
         { field: "secondary", headerName: "Secundario", width: 200 },
-        { field: "payment_identification", headerName: "Identificacion pago", width: 150 },
+        { field: "payment_identification", headerName: "Identificación pago", width: 150 },
         { field: "paid_holder", headerName: "Titular pago", width: 300 },
         { field: "paid", headerName: "Pagado", width: 90 },
         { field: "pay", headerName: "Pago", width: 170 },
@@ -470,7 +473,7 @@ export const SearchBeneficiaryInformation = () => {
             nombre_completo: datos.nombre_completo || "",
             sexo: datos.sexo || "",
             plan: datos.plan || "",
-            linea: datos.linea || "",
+            Línea: datos.Línea || "",
             restriccion: datos.restriccion || "",
             nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
             identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
@@ -479,8 +482,8 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * Normaliza el arreglo `estado_cuenta` y convierte valores numéricos a moneda COP.
-     * Adicionalmente conserva versiones numéricas (payNum, debtNum, totalNum) para cálculos posteriores.
+     * Normaliza el arreglo `estado_cuenta` y convierte valores numÃ©ricos a moneda COP.
+     * Adicionalmente conserva versiones numÃ©ricas (payNum, debtNum, totalNum) para cÃ¡lculos posteriores.
      *
      * @param {Array} data - Lista cruda de estado de cuenta.
      * @returns {Array} Filas normalizadas para DataGrid.
@@ -510,7 +513,7 @@ export const SearchBeneficiaryInformation = () => {
 
     /**
      * Agrega una fila adicional "TOTAL" al final del estado de cuenta.
-     * Suma los valores numéricos (payNum, debtNum, totalNum) de todas las filas.
+     * Suma los valores numÃ©ricos (payNum, debtNum, totalNum) de todas las filas.
      *
      * @param {Array} rows - Filas de estado de cuenta ya normalizadas.
      * @returns {Array} Filas + fila total al final.
@@ -559,7 +562,7 @@ export const SearchBeneficiaryInformation = () => {
             id: index + 1,
             agreement: row?.nombre_contrato ?? "",
             component: row?.componente ?? "",
-            secondary: row?.secundario ?? "",
+            secondary: row?.Secundario ?? "",
             payment_identification: row?.identificacion_pago ?? "",
             paid_holder: row?.titular_pago ?? "",
             paid: row?.es_pagado ?? "",
@@ -612,7 +615,7 @@ export const SearchBeneficiaryInformation = () => {
         <div className="main-container">
             <HeaderImage
                 imageHeader={imgDCSIPeople}
-                titleHeader={"Busqueda de Titulares"}
+                titleHeader={"Búsqueda de Titulares"}
                 bannerIcon={imgAdd}
                 backgroundIconColor={"#2148C0"}
                 bannerInformation={""}
@@ -620,12 +623,14 @@ export const SearchBeneficiaryInformation = () => {
             />
 
             <Container>
-                {/* Card de búsqueda */}
+                {/* Card de Búsqueda */}
                 <Card className="mt-4 shadow-sm">
                     <Card.Body>
-                        <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Búsqueda de titulares
-                        </h4>
+                        <SectionHeader
+                            icon={FaFileAlt}
+                            title="Búsqueda de Titulares"
+                            subtitle="Acceda a instructivos, formatos y documentos necesarios para la información del titular"
+                        />
 
                         <form onSubmit={formik.handleSubmit}>
                             {/* Bloque 1: campos de texto */}
@@ -791,24 +796,13 @@ export const SearchBeneficiaryInformation = () => {
                                 </div>
                             </div>
 
-                        <div className="d-flex justify-content-start gap-2 mt-4">
+                        <div className="d-flex justify-content-end gap-2 mt-4 search-beneficiary-actions">
                             <Button
                                 variant="outline-primary"
                                 type="submit"
                                 disabled={loading}
                             >
-                                {loading ? (
-                                    <>
-                                        <Spinner
-                                            size="sm"
-                                            animation="border"
-                                            className="me-2"
-                                        />
-                                        Buscando...
-                                    </>
-                                ) : (
-                                    "Buscar"
-                                )}
+                                {loading ? "Buscando..." : "Buscar"}
                             </Button>
 
                             <Button
@@ -817,7 +811,7 @@ export const SearchBeneficiaryInformation = () => {
                                 onClick={handleClear}
                                 disabled={loading}
                             >
-                                Limpiar búsqueda
+                                Limpiar Búsqueda
                             </Button>
 
                             {/*<Button*/}
@@ -833,20 +827,18 @@ export const SearchBeneficiaryInformation = () => {
                 </Card.Body>
             </Card>
 
-            {loading && (
-                <div className="overlay">
-                    <div className="loader">{loadingText}</div>
-                </div>
-            )}
+            {loading && <Loading fullScreen text={loadingText} />}
 
             {/* Info básica */}
             {beneficiaryInfo && (
                 <>
                     <Card className="mt-4">
                         <Card.Body>
-                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                Información básica del Titular
-                            </h4>
+                            <SectionHeader
+                                icon={FaUserTag}
+                                title="Información básica del Titular"
+                                subtitle="Datos generales del beneficiario según los filtros aplicados."
+                            />
                             <DataGrid
                                 rows={beneficiaryInfo}
                                 columns={ColumnsInitialInformationTable}
@@ -871,7 +863,7 @@ export const SearchBeneficiaryInformation = () => {
                                 }}
                                 sx={{
                                     "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#40A581",
+                                        backgroundColor: "#2d3a4d",
                                         color: "white",
                                         fontSize: "14px",
                                     },
@@ -882,7 +874,7 @@ export const SearchBeneficiaryInformation = () => {
                                         alignItems: "center",
                                     },
                                     "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#40A581 !important",
+                                        backgroundColor: "#2d3a4d !important",
                                         color: "white !important",
                                     },
                                     "& .MuiDataGrid-cell": {
@@ -906,9 +898,11 @@ export const SearchBeneficiaryInformation = () => {
                 <>
                     <Card className="mt-4 mb-4 shadow-sm">
                         <Card.Body>
-                            <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                Detalle nucleo familiar
-                            </h4>
+                            <SectionHeader
+                                icon={FaUsers}
+                                title="Detalle núcleo familiar"
+                                subtitle="Información complementaria del titular y su núcleo familiar."
+                            />
 
                             {movements?.datos_cub && Object.keys(movements.datos_cub).length > 0 && (
                                 <div className="mt-3">
@@ -941,7 +935,7 @@ export const SearchBeneficiaryInformation = () => {
 
                                             <Row className="mt-2">
                                                 <Col md={8}>
-                                                    <strong>Linea:</strong> {movements.datos_cub.linea}
+                                                    <strong>Línea:</strong> {movements.datos_cub.Línea}
                                                 </Col>
                                                 <Col md={4}>
                                                     <strong>Restricción:</strong> {movements.datos_cub.restriccion}
@@ -962,9 +956,11 @@ export const SearchBeneficiaryInformation = () => {
                 <Card className="mt-4 mb-4 shadow-sm">
 
                     <Card.Body>
-                        <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                            Estado de cuenta
-                        </h4>
+                        <SectionHeader
+                            icon={FaMoneyCheckAlt}
+                            title="Estado de cuenta"
+                            subtitle="Resumen de pagos, saldos y totales por componente."
+                        />
 
                         {movements?.estado_cuenta?.length > 0 && (
                             <div className="mt-3">
@@ -992,7 +988,7 @@ export const SearchBeneficiaryInformation = () => {
                                                 backgroundColor: "#f5f5f5",
                                             },
                                             "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#40A581",
+                                                backgroundColor: "#2d3a4d",
                                                 color: "white",
                                                 fontSize: "14px",
                                             },
@@ -1003,7 +999,7 @@ export const SearchBeneficiaryInformation = () => {
                                                 alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#40A581 !important",
+                                                backgroundColor: "#2d3a4d !important",
                                                 color: "white !important",
                                             },
                                             "& .MuiDataGrid-cell": {
@@ -1024,9 +1020,11 @@ export const SearchBeneficiaryInformation = () => {
                         {movements?.resumen_pagos?.length > 0 && (
                             <div className="mt-3">
                                 <Card className="mb-2 border-0">
-                                    <h4 className="mb-4 text-primary fw-bold text-center text-md-start">
-                                        Resumen de pagos
-                                    </h4>
+                                    <SectionHeader
+                                        icon={FaListAlt}
+                                        title="Resumen de pagos"
+                                        subtitle="Detalle de pagos registrados para el titular."
+                                    />
                                     <DataGrid
                                         rows={movements.resumen_pagos}
                                         columns={PaymentSummaryColumns}
@@ -1045,7 +1043,7 @@ export const SearchBeneficiaryInformation = () => {
                                         }}
                                         sx={{
                                             "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#40A581",
+                                                backgroundColor: "#2d3a4d",
                                                 color: "white",
                                                 fontSize: "14px",
                                             },
@@ -1056,7 +1054,7 @@ export const SearchBeneficiaryInformation = () => {
                                                 alignItems: "left",
                                             },
                                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#40A581 !important",
+                                                backgroundColor: "#2d3a4d !important",
                                                 color: "white !important",
                                             },
                                             "& .MuiDataGrid-cell": {
@@ -1082,3 +1080,7 @@ export const SearchBeneficiaryInformation = () => {
     </>
     );
 };
+
+
+
+

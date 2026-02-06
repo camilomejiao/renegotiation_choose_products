@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {Spinner, Tab, Tabs} from "react-bootstrap";
+import {Tab, Tabs} from "react-bootstrap";
 
 //Img
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -12,6 +12,7 @@ import {useState} from "react";
 import imgPayments from "../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import {HeaderImage} from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 
 export const ConvocationMenuTab = () => {
     const navigate = useNavigate();
@@ -41,12 +42,7 @@ export const ConvocationMenuTab = () => {
                 backgroundInformationColor={'#40A581'}
             />
 
-            {loading && (
-                <div className="spinner-container">
-                    <Spinner animation="border" variant="success" />
-                    <span>Cargando...</span>
-                </div>
-            )}
+            {loading && <Loading text="Cargando..." />}
 
             <div className="container mt-5">
                 <Tabs

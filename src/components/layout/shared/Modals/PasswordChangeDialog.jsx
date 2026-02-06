@@ -92,7 +92,7 @@ export const PasswordChangeDialog = ({open, onClose, onSave, minLength = 8}) => 
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={onClose}>Cancelar</Button>
+                <Button onClick={onClose} className="btn-action-back">Cancelar</Button>
                 <Button
                     onClick={handleSave}
                     variant="contained"

@@ -68,7 +68,7 @@ export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
                 )}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={handleClose} className="btn-action-back">
                     Cerrar
                 </Button>
             </Modal.Footer>

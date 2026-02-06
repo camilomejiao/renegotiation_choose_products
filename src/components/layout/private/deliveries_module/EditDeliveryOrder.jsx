@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {Button, Container, Form, Spinner} from "react-bootstrap";
+import {Button, Container, Form} from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 
 //Img
@@ -13,6 +13,7 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import {FaSave, FaStepBackward} from "react-icons/fa";
+import { Loading } from "../../shared/loading/Loading";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -253,12 +254,7 @@ export const EditDeliveryOrder = () => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="outline-success" />
-                        <span>Editando productos...</span>
-                    </div>
-                )}
+                {isLoading && <Loading text="Editando productos..." />}
 
                 <div className="p-5">
                     <Container>
@@ -283,7 +279,7 @@ export const EditDeliveryOrder = () => {
                             }}
                             sx={{
                                 "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#40A581",
+                                    backgroundColor: "#2d3a4d",
                                     color: "white",
                                     fontSize: "14px",
                                 },
@@ -294,7 +290,7 @@ export const EditDeliveryOrder = () => {
                                     alignItems: "center",
                                 },
                                 "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#40A581 !important",
+                                    backgroundColor: "#2d3a4d !important",
                                     color: "white !important",
                                 },
                                 "& .MuiDataGrid-cell": {
@@ -313,7 +309,7 @@ export const EditDeliveryOrder = () => {
                             <Button
                                 variant="outline-secondary"
                                 onClick={handleBack}
-                                className="responsive-button mb-2 mb-md-0"
+                                className="responsive-button btn-action-back mb-2 mb-md-0"
                             >
                                 <FaStepBackward /> ATRÁS
                             </Button>

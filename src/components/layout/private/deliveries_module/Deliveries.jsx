@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Select from "react-select";
-import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import {
     FaCheck, FaCheckCircle,
     FaClipboardCheck,
@@ -18,6 +18,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../shared/user_information/UserInformation";
+import { Loading } from "../../shared/loading/Loading";
 import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 import { FEModal } from "../../shared/Modals/FEModal";
@@ -36,9 +37,6 @@ import { deliveriesServices } from "../../../../helpers/services/DeliveriesServi
 import { userServices } from "../../../../helpers/services/UserServices";
 import { supplierServices } from "../../../../helpers/services/SupplierServices";
 import { filesServices } from "../../../../helpers/services/FilesServices";
-
-//Css
-import './Deliveries.css';
 
 //Enum
 import {
@@ -76,7 +74,7 @@ const isValidPdf = (file) => {
 // ============================
 
 /**
- * Devuelve true si la fila tiene número de factura electrónica (FE).
+ * Devuelve true si la fila tiene nÃºmero de factura electrÃ³nica (FE).
  * @param {Object} row - Fila del DataGrid.
  */
 const hasFeNumber = (row) => row?.fe_number;
@@ -93,7 +91,7 @@ const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesE
 const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl);
 
 /**
- * Devuelve la URL del archivo FE (factura electrónica) de la fila.
+ * Devuelve la URL del archivo FE (factura electrÃ³nica) de la fila.
  * @param {Object} row - Fila del DataGrid.
  */
 const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
@@ -106,7 +104,7 @@ const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
 const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
 
 /**
- * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrónica) de la fila.
+ * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrÃ³nica) de la fila.
  * @param {Object} row - Fila del DataGrid.
  */
 const hasPdfOK = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl && row?.evidencePdf?.feFileUrl && row?.evidenceImg?.imgEvidence1Url && row?.evidenceImg?.imgEvidence2Url);
@@ -151,8 +149,8 @@ export const Deliveries = () => {
 
     /**
      * Obtiene los proveedores asociados al usuario autenticado.
-     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION → consulta todos los proveedores del titular.
-     * - Si el usuario es SUPPLIER → consulta solo su proveedor.
+     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION â†’ consulta todos los proveedores del titular.
+     * - Si el usuario es SUPPLIER â†’ consulta solo su proveedor.
      */
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
@@ -198,7 +196,7 @@ export const Deliveries = () => {
     /**
      * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
      * @param {number} deliveryId - ID de la entrega.
-     * @returns {Object} Información de archivos y estados de aprobación.
+     * @returns {Object} InformaciÃ³n de archivos y estados de aprobación.
      */
     const getDeliveryUrl = async (deliveryId) => {
         try {
@@ -257,7 +255,7 @@ export const Deliveries = () => {
     };
 
     /**
-     * Obtiene información del titular (datos personales).
+     * Obtiene informaciÃ³n del titular (datos personales).
      * @param {number} cubId - ID del titular.
      */
     const getUserInformation = async (cubId) => {
@@ -279,8 +277,8 @@ export const Deliveries = () => {
     }
 
     /**
-     * Determina si un botón debe estar deshabilitado según:
-     * - Estado de aprobación (territorial o técnica).
+     * Determina si un botÃ³n debe estar deshabilitado según:
+     * - Estado de aprobación (territorial o tÃ©cnica).
      * - Rol del usuario autenticado.
      */
     const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
@@ -315,7 +313,7 @@ export const Deliveries = () => {
         return false;
     };
 
-    /** Renderiza el ícono de envio de entrega. */
+    /** Renderiza el ícono de envío de entrega. */
     const renderSendSupplierIcon = (status) => {
         if (status === 1 || status === true) {
             return (
@@ -395,7 +393,10 @@ export const Deliveries = () => {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "6px",
-                    color: "#6c757d",
+                    color: "#ffffff",
+                    backgroundColor: "#f59e0b",
+                    padding: "4px 8px",
+                    borderRadius: "8px",
                     fontWeight: 500,
                 }}
             >
@@ -405,6 +406,9 @@ export const Deliveries = () => {
         );
     }
 
+
+    /** Renderiza la celda de FE (cargar/ver/editar factura electrÃ³nica). */
+    
     /** Renderiza el botón de generación de acta de entrega. */
     const renderGeneratePdfCell = (params) => (
         <div>
@@ -445,18 +449,15 @@ export const Deliveries = () => {
             </div>
         );
     };
-
-
-    /** Renderiza la celda de FE (cargar/ver/editar factura electrónica). */
-    const renderFeCell = (params) => {
+const renderFeCell = (params) => {
         const row = params.row;
         const canEdit = canEditRoles.includes(userAuth.rol_id);
         const fePdfUrl = getFePdfUrl(row);
 
         // 1) Sin consolidado -> no hacer nada
-        if (!hasPdfConsolidado(row)) return <span>—</span>;
+        if (!hasPdfConsolidado(row)) return <span>â€”</span>;
 
-        // 2) Con consolidado pero SIN FE -> botón para cargar FE (PDF + número)
+        // 2) Con consolidado pero SIN FE -> botÃ³n para cargar FE (PDF + nÃºmero)
         if (!hasFeNumber(row)) {
             return (
                 <div>
@@ -464,7 +465,7 @@ export const Deliveries = () => {
                         variant="outline-info"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row) || !canEdit}
-                        title="Adjuntar factura electrónica (PDF) y número de FE"
+                        title="Adjuntar factura electrÃ³nica (PDF) y nÃºmero de FE"
                     >
                         Subir FE
                     </Button>
@@ -472,7 +473,7 @@ export const Deliveries = () => {
             );
         }
 
-        // 3) Con FE -> mostrar "Ver FE" (si hay PDF FE) + número + botón editar (si procede)
+        // 3) Con FE -> mostrar "Ver FE" (si hay PDF FE) + nÃºmero + botÃ³n editar (si procede)
         return (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span>{row.fe_number}</span>
@@ -525,7 +526,7 @@ export const Deliveries = () => {
                     </Button>
                 )}
 
-                {/* Aprobación Técnica/Admin (solo si hay consolidado) */}
+                {/* aprobación TÃ©cnica/Admin (solo si hay consolidado) */}
                 {hasPdfOK(row) && isTechOrAdmin && row?.actions?.aprobadoProveedor && (
                     <Button
                         style={{ backgroundColor: "#FFF", marginRight: 10 }}
@@ -534,7 +535,7 @@ export const Deliveries = () => {
                             setOpenModal(true);
                         }}
                         disabled={isButtonDisabledTecnical(row)}
-                        title="Aprobación técnica"
+                        title="aprobación tÃ©cnica"
                     >
                         {renderApprovalIcon(row.actions?.approvedTechnical)}
                     </Button>
@@ -652,7 +653,7 @@ export const Deliveries = () => {
         },
         {
             field: "evidence_photo",
-            headerName: "EVIDENCIA FOTOGRAFICA",
+            headerName: "EVIDENCIA FOTOGRÁFICA",
             width: 550,
             renderCell: renderPhotoCell,
             sortable: false,
@@ -671,6 +672,7 @@ export const Deliveries = () => {
                         lineHeight: "1.4",
                         wordWrap: "break-word",
                         overflowWrap: "break-word",
+                        textAlign: "justify",
                     }}
                 >
                     {params.value}
@@ -719,7 +721,7 @@ export const Deliveries = () => {
     };
 
     /**
-     * Descarga y abre un PDF en nueva pestaña.
+     * Descarga y abre un PDF en nueva pestaÃ±a.
      * @param {string} pdfUrl - URL del archivo PDF.
      */
     const handleViewFile = async (pdfUrl) => {
@@ -737,7 +739,7 @@ export const Deliveries = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imágenes
+                // Solo PDF o imÃ¡genes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const url = URL.createObjectURL(blob);
                     window.open(url, '_blank', 'noopener,noreferrer');
@@ -898,7 +900,7 @@ export const Deliveries = () => {
             }
 
             if (status === ResponseStatusEnum.BAD_REQUEST) {
-                showError("Error", "Error al obtener las órdenes de compra");
+                showError("Error", "Error al obtener las Ã³rdenes de compra");
             }
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
@@ -917,12 +919,12 @@ export const Deliveries = () => {
         try {
             const { status} = await deliveriesServices.removeDelivery(id);
             if (status === ResponseStatusEnum.NO_CONTENT) {
-                showAlert('Éxito', 'Entrega eliminada exitosamente');
+                showAlert('Ã‰xito', 'Entrega eliminada exitosamente');
                 refreshPage();
             }
 
             if (status === ResponseStatusEnum.METHOD_NOT_ALLOWED) {
-                showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÓN');
+                showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÃ“N');
             }
 
             if (status === ResponseStatusEnum.FORBIDDEN) {
@@ -933,11 +935,11 @@ export const Deliveries = () => {
         }
     }
 
-    // Helper común para enviar al backend y manejar UX
+    // Helper comÃºn para enviar al backend y manejar UX
     const submitApproval = async ({deliveryId, payload, successMessage, handleClose}) => {
-        if (loading) return false; // evita doble envío
+        if (loading) return false; // evita doble envÃ­o
         if (!deliveryId) {
-            showError("Validación", "No se encontró el ID de la entrega.");
+            showError("ValidaciÃ³n", "No se encontrÃ³ el ID de la entrega.");
             return false;
         }
 
@@ -963,9 +965,9 @@ export const Deliveries = () => {
         }
     };
 
-    //Envio del porveedor
+    //envío del porveedor
     const handleConfirmDelete = async () => {
-        // Envío del proveedor (aprobado=1 con observación fija)
+        // EnvÃ­o del proveedor (aprobado=1 con observaciÃ³n fija)
         const payload = {
             aprobado: 1,
             observacion: "Enviado por el proveedor",
@@ -979,13 +981,13 @@ export const Deliveries = () => {
         });
     };
 
-    //Envio de aprobación del tecnico
+    //envío de aprobación del tecnico
     const handleApproveByAudit = async () => {
-        // Envío de aprobación/denegación del técnico (requiere acción y comentario)
+        // EnvÃ­o de aprobación/denegaciÃ³n del tÃ©cnico (requiere acciÃ³n y comentario)
         const trimmed = (comment || "").trim();
 
         if (action === 'deny' && trimmed === "") {
-            showError("Validación", "Debes escribir un comentario.");
+            showError("ValidaciÃ³n", "Debes escribir un comentario.");
             return;
         }
 
@@ -1013,11 +1015,11 @@ export const Deliveries = () => {
     };
 
     /**
-     * Maneja el envío de archivos al backend (consolidado o FE).
+     * Maneja el envÃ­o de archivos al backend (consolidado o FE).
      * @param {File}   file
      * @param {number} deliveryId
-     * @param {string} fileName - "pdf" (consolidado) | "fe" (factura electrónica)
-     * @param {string} [numeroFE] - Solo se envía cuando fileName === "fe"
+     * @param {string} fileName - "pdf" (consolidado) | "fe" (factura electrÃ³nica)
+     * @param {string} [numeroFE] - Solo se envÃ­a cuando fileName === "fe"
      */
     const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
@@ -1026,9 +1028,9 @@ export const Deliveries = () => {
             const valid = expectImage ? isValidImage(file) : isValidPdf(file);
             if (!valid) {
                 showError(
-                    'Archivo no válido',
+                    'Archivo no vÃ¡lido',
                     expectImage
-                        ? 'Solo se permiten imágenes (JPG, PNG).'
+                        ? 'Solo se permiten imÃ¡genes (JPG, PNG).'
                         : 'Solo se permite PDF.'
                 );
                 refreshPage();
@@ -1058,7 +1060,7 @@ export const Deliveries = () => {
                 const { data, status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === ResponseStatusEnum.CREATED) {
-                    showAlert('Éxito', 'Archivo enviado exitosamente');
+                    showAlert('Ã‰xito', 'Archivo enviado exitosamente');
                     //refreshPage();
                     await getListDeliveriesToUser(params.id);
                 }
@@ -1159,7 +1161,7 @@ export const Deliveries = () => {
 
             const {data, status} = await deliveriesServices.saveProducts(dataSupplier, params.id, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
-                showAlert('Éxito', 'Productos entregados correctamente.')
+                showAlert('Ã‰xito', 'Productos entregados correctamente.')
                 refreshPage();
             }
 
@@ -1191,11 +1193,11 @@ export const Deliveries = () => {
             setFeLoading(true);
 
             if(!feNumber) {
-                showError("Error", "Debe agregar el número de Factura ó Documento Equivalente.");
+                showError("Error", "Debe agregar el nÃºmero de Factura Ã³ Documento Equivalente.");
                 return;
             }
 
-            // Guardas FE (archivo + número)
+            // Guardas FE (archivo + nÃºmero)
             await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
 
             // Refrescas la tabla completa
@@ -1257,20 +1259,20 @@ export const Deliveries = () => {
                     backgroundInformationColor={'#F66D1F'}
                 />
 
-                {/* Contenedor de la información del usuario */}
+                {/* Contenedor de la informaciÃ³n del usuario */}
                 <UserInformation userData={userData} />
 
                 <div className="deliveries-banner">
                     <Container>
-                        <Row className="justify-content-end align-items-center mt-4">
-                            <Col xs={12} md={6}>
+                        <Row className="justify-content-end align-items-center">
+                            <Col xs={12} md={6} className="deliveries-consolidated">
                                 {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL) && consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
-                                        className="reporting-system-button view-pdf"
+                                        className="deliveries-action-button deliveries-action-button--primary"
                                     >
-                                        VER CONSOLIDADO DE COMPRAS
+                                        <FaFilePdf /> VER CONSOLIDADO DE COMPRAS
                                     </button>
                                 )}
                             </Col>
@@ -1294,10 +1296,8 @@ export const Deliveries = () => {
                                   userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) && (
                                     <button
                                         onClick={handleCreateDeliveries}
-                                        className="deliveries-button deliveries d-flex align-items-center"
-                                    >
-                                        <img src={imgFrame2} alt="icono único" className="button-icon" />
-                                        CREAR ENTREGAS
+                                        className="deliveries-action-button deliveries-action-button--success d-flex align-items-center"
+                                    > <FaPaperPlane /> CREAR ENTREGAS
                                     </button>
                                 )}
                             </Col>
@@ -1305,68 +1305,65 @@ export const Deliveries = () => {
                     </Container>
                 </div>
 
-                {loading && (
-                    <div className="spinner-container">
-                        <Spinner animation="border" variant="success" />
-                        <span>Cargando...</span>
-                    </div>
-                )}
+                {loading && <Loading text="Cargando..." />}
 
                 <div className="">
                     <Container>
                         <hr/>
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
                             <>
-                                <DataGrid
-                                    rows={listDeliveriesToUser}
-                                    columns={deliveryColumns}
-                                    pageSize={10}
-                                    rowsPerPageOptions={[5, 10, 20]}
-                                    disableColumnMenu
-                                    disableSelectionOnClick
-                                    rowHeight={100}
-                                    componentsProps={{
-                                        columnHeader: {
-                                            style: {
-                                                textAlign: "left",
-                                                fontWeight: "bold",
-                                                fontSize: "10px",
-                                                wordWrap: "break-word",
+                                <div className="deliveries-table-card">
+                                    <DataGrid
+                                        rows={listDeliveriesToUser}
+                                        columns={deliveryColumns}
+                                        pageSize={10}
+                                        rowsPerPageOptions={[5, 10, 20]}
+                                        disableColumnMenu
+                                        disableSelectionOnClick
+                                        rowHeight={100}
+                                        componentsProps={{
+                                            columnHeader: {
+                                                style: {
+                                                    textAlign: "left",
+                                                    fontWeight: "bold",
+                                                    fontSize: "10px",
+                                                    wordWrap: "break-word",
+                                                },
                                             },
-                                        },
-                                    }}
-                                    sx={{
-                                        "& .MuiDataGrid-columnHeaders": {
-                                            backgroundColor: "#40A581",
-                                            color: "white",
-                                            fontSize: "14px",
-                                        },
-                                        "& .MuiDataGrid-columnHeader": {
-                                            textAlign: "center",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                        },
-                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                            backgroundColor: "#40A581 !important",
-                                            color: "white !important",
-                                        },
-                                        "& .MuiDataGrid-cell": {
-                                            fontSize: "14px",
-                                            textAlign: "center",
-                                            justifyContent: "center",
-                                            display: "flex",
-                                        },
-                                        "& .MuiDataGrid-row:hover": {
-                                            backgroundColor: "#E8F5E9",
-                                        },
-                                    }}
-                                />
-                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
+                                        }}
+                                        sx={{
+                                            "& .MuiDataGrid-columnHeaders": {
+                                                backgroundColor: "#2d3a4d",
+                                                color: "white",
+                                                fontSize: "14px",
+                                            },
+                                            "& .MuiDataGrid-columnHeader": {
+                                                textAlign: "center",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            },
+                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                                backgroundColor: "#2d3a4d !important",
+                                                color: "white !important",
+                                            },
+                                            "& .MuiDataGrid-cell": {
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                                justifyContent: "center",
+                                                display: "flex",
+                                            },
+                                            "& .MuiDataGrid-row:hover": {
+                                                backgroundColor: "#E8F5E9",
+                                            },
+                                        }}
+                                    />
+                                </div>
+                                <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(-1)}
-                                        className="responsive-button mb-2 mb-md-0"
+                                        className="responsive-button deliveries-back-button deliveries-action-button deliveries-action-button--ghost mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>
@@ -1383,56 +1380,58 @@ export const Deliveries = () => {
 
                         {showDeliveryForm && (
                             <>
-                                <DataGrid
-                                    rows={deliveryProducts}
-                                    columns={productsToBeDeliveredColumns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5, 10, 20]}
-                                    disableColumnMenu
-                                    disableSelectionOnClick
-                                    componentsProps={{
-                                        columnHeader: {
-                                            style: {
-                                                textAlign: "left", // Alinea los títulos a la izquierda
-                                                fontWeight: "bold", // Opcional: Aplica un peso específico
-                                                fontSize: "14px", // Ajusta el tamaño de fuente
-                                                wordWrap: "break-word", // Permite que el título se divida en varias líneas
+                                <div className="deliveries-table-card">
+                                    <DataGrid
+                                        rows={deliveryProducts}
+                                        columns={productsToBeDeliveredColumns}
+                                        pageSize={5}
+                                        rowsPerPageOptions={[5, 10, 20]}
+                                        disableColumnMenu
+                                        disableSelectionOnClick
+                                        componentsProps={{
+                                            columnHeader: {
+                                                style: {
+                                                    textAlign: "left", // Alinea los tÃ­tulos a la izquierda
+                                                    fontWeight: "bold", // Opcional: Aplica un peso especÃ­fico
+                                                    fontSize: "14px", // Ajusta el tamaÃ±o de fuente
+                                                    wordWrap: "break-word", // Permite que el tÃ­tulo se divida en varias lÃ­neas
+                                                },
                                             },
-                                        },
-                                    }}
-                                    sx={{
-                                        "& .MuiDataGrid-columnHeaders": {
-                                            backgroundColor: "#40A581",
-                                            color: "white",
-                                            fontSize: "14px",
-                                        },
-                                        "& .MuiDataGrid-columnHeader": {
-                                            textAlign: "center",
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                        },
-                                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                            backgroundColor: "#40A581 !important",
-                                            color: "white !important",
-                                        },
-                                        "& .MuiDataGrid-cell": {
-                                            fontSize: "14px",
-                                            textAlign: "center",
-                                            justifyContent: "center",
-                                            display: "flex",
-                                        },
-                                        "& .MuiDataGrid-row:hover": {
-                                            backgroundColor: "#E8F5E9",
-                                        },
-                                    }}
-                                />
+                                        }}
+                                        sx={{
+                                            "& .MuiDataGrid-columnHeaders": {
+                                                backgroundColor: "#2d3a4d",
+                                                color: "white",
+                                                fontSize: "14px",
+                                            },
+                                            "& .MuiDataGrid-columnHeader": {
+                                                textAlign: "center",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            },
+                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                                backgroundColor: "#2d3a4d !important",
+                                                color: "white !important",
+                                            },
+                                            "& .MuiDataGrid-cell": {
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                                justifyContent: "center",
+                                                display: "flex",
+                                            },
+                                            "& .MuiDataGrid-row:hover": {
+                                                backgroundColor: "#E8F5E9",
+                                            },
+                                        }}
+                                    />
+                                </div>
 
-                                <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
+                                <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
                                     <Button
                                         variant="outline-secondary"
                                         onClick={() => navigate(refreshPage())}
-                                        className="responsive-button mb-2 mb-md-0"
+                                        className="responsive-button deliveries-back-button deliveries-action-button deliveries-action-button--ghost mb-2 mb-md-0"
                                     >
                                         <FaStepBackward /> ATRÁS
                                     </Button>
@@ -1471,13 +1470,13 @@ export const Deliveries = () => {
                 {/* Confirmación Entregas */}
                 <ConfirmationModal
                     show={showConfirmationModal}
-                    title="Confirmación de envio"
-                    message="¿Estás seguro de que deseas enviar esta entrega a revisión?"
+                    title="Confirmación de envío"
+                    message="Â¿EstÃ¡s seguro de que deseas enviar esta entrega a revisiÃ³n?"
                     onConfirm={handleConfirmDelete}
                     onClose={handleCloseModalConfirm}
                 />
 
-                {/* Modal de aprobación/denegación */}
+                {/* Modal de aprobación/denegaciÃ³n */}
                 <ApprovedDeniedModal
                     open={openModal}
                     onClose={handleCloseModalApproved}
@@ -1492,3 +1491,17 @@ export const Deliveries = () => {
         </>
     )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

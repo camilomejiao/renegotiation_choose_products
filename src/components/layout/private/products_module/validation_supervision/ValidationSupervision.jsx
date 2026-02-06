@@ -9,6 +9,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 // Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 import { ApprovedDeniedModal } from "../../../shared/Modals/ApprovedDeniedModal";
 
 // Services
@@ -556,11 +557,7 @@ export const ValidationSupervision = () => {
                             </Col>
                         </Row>
 
-                        {loading && (
-                            <div className="overlay">
-                                <div className="loader">Cargando...</div>
-                            </div>
-                        )}
+                        {loading && <Loading fullScreen text="Cargando..." />}
 
                         <div className="grid-wrap" style={{height: 600, width: "100%"}}>
                             <DataGrid
@@ -593,7 +590,7 @@ export const ValidationSupervision = () => {
                                 }}
                                 sx={{
                                     "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#40A581",
+                                        backgroundColor: "#2d3a4d",
                                         color: "white",
                                         fontSize: "14px",
                                     },
@@ -604,7 +601,7 @@ export const ValidationSupervision = () => {
                                         alignItems: "center",
                                     },
                                     "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#40A581 !important",
+                                        backgroundColor: "#2d3a4d !important",
                                         color: "white !important",
                                     },
                                     "& .MuiDataGrid-cellContent": {

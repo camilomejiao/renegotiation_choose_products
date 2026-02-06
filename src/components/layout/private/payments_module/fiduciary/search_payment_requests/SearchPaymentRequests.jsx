@@ -189,7 +189,7 @@ export const SearchPaymentRequests = () => {
                         }}
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#40A581",
+                                backgroundColor: "#2d3a4d",
                                 color: "white",
                                 fontSize: "12px",
                             },
@@ -200,7 +200,7 @@ export const SearchPaymentRequests = () => {
                                 alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#40A581 !important",
+                                backgroundColor: "#2d3a4d !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {

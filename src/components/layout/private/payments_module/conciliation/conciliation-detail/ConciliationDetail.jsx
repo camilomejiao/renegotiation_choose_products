@@ -6,6 +6,7 @@ import imgPayments from "../../../../../../assets/image/payments/pay-supplier.pn
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
 //Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../../shared/loading/Loading";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Col, Row} from "react-bootstrap";
 import downloadImg from "../../../../../../assets/image/payments/download.png";
@@ -55,11 +56,7 @@ export const ConciliationDetail = () => {
                 backgroundInformationColor={'#40A581'}
             />
 
-            {loading && (
-                <div className="overlay">
-                    <div className="loader">{informationLoadingText}</div>
-                </div>
-            )}
+            {loading && <Loading fullScreen text={informationLoadingText} />}
 
             {accountInformation && (
                 <div className="content-collection-details">

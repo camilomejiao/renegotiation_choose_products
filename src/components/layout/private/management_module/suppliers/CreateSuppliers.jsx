@@ -10,6 +10,7 @@ import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../shared/loading/Loading";
 
 //Enum
 import {ResponseStatusEnum, RolesEnum} from "../../../../../helpers/GlobalEnum";
@@ -520,11 +521,7 @@ export const CreateSuppliers = () => {
                     backgroundInformationColor={''}
                 />
 
-                {loading && (
-                    <div className="overlay">
-                        <div className="loader">{informationLoadingText}</div>
-                    </div>
-                )}
+                {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <form onSubmit={formik.handleSubmit} className="container">
                     <div className="row g-3 mt-5">
@@ -924,9 +921,10 @@ export const CreateSuppliers = () => {
                             Guardar
                         </Button>
 
-                        <Button variant="outline-danger"
+                        <Button variant="outline-secondary"
                                 type="button"
                                 onClick={() => navigate("/admin/management")}
+                                className="btn-action-back"
                         >
                             Cancelar
                         </Button>

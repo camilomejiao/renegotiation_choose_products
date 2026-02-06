@@ -1,9 +1,6 @@
 import { useEffect } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import { FaSearch } from "react-icons/fa";
 import { useNavigate, useOutletContext } from "react-router-dom";
-
-//css
-import './SearchUser.css';
 
 //Component
 import { SearchUserForm } from "../../shared/search_user_form/SearchUserForm";
@@ -28,23 +25,36 @@ export const SearchUser = () => {
     useEffect(() => {}, []);
 
     return (
-        <>
-            <Container fluid className="dashboard-container">
-                <Row className="text-center mt-5">
-                    <Col>
-                        <h1 className="dashboard-title">
-                            Bienvenido al <span className="highlight-text">banco de <br/>Proveedores</span> de la DSCI
-                        </h1>
-                        <p className="green-box">
-                            Da el siguiente paso en tus <span className="highlight-text2">ventas</span> ahora.
-                        </p>
-                    </Col>
-                </Row>
+        <div className="search-user-page">
+            <section className="search-user-hero">
+                <div className="search-user-hero__card">
+                    <h1 className="search-user-hero__title">
+                        Bienvenido al Portal de <span>Proveedores</span>
+                    </h1>
+                    <p className="search-user-hero__subtitle">
+                        Sistema de gestión para proveedores de la DSCI - RenHacemos
+                    </p>
+                    <div className="search-user-hero__cta">
+                        DA EL SIGUIENTE PASO EN TUS VENTAS AHORA
+                    </div>
+                </div>
+            </section>
 
-                <Row className="justify-content-center mt-4">
+            <section className="search-user-card">
+                <header className="search-user-card__header">
+                    <h2 className="search-user-card__title">
+                        <FaSearch />
+                        Búsqueda de Usuario
+                    </h2>
+                    <p className="search-user-card__subtitle">
+                        Ingrese el documento de identidad para buscar un beneficiario
+                    </p>
+                </header>
+
+                <div className="search-user-card__body">
                     <SearchUserForm component={ComponentEnum.USER} onSearchSuccess={handleSearchSuccess} />
-                </Row>
-            </Container>
-        </>
+                </div>
+            </section>
+        </div>
     );
 }

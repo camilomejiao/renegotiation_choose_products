@@ -1,6 +1,5 @@
 import { Col, Row } from "react-bootstrap";
 
-import './HeaderImage.css';
 
 export const HeaderImage = ({ imageHeader, titleHeader, bannerIcon, backgroundIconColor, bannerInformation, backgroundInformationColor }) => {
 

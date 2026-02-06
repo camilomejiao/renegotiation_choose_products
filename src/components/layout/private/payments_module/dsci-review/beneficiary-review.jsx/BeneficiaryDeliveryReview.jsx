@@ -12,7 +12,6 @@ import supervision from "../../../../../../assets/image/payments/supervision.png
 import pagos from "../../../../../../assets/image/payments/pagos.png";
 
 //Css
-import './BeneficiaryDeliveryReview.css';
 
 export const BeneficiaryDeliveryReview = () => {
 

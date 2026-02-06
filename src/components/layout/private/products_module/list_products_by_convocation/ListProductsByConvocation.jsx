@@ -187,7 +187,7 @@ export const ListProductsByConvocation = () => {
                         }
                         sx={{
                             "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#40A581",
+                                backgroundColor: "#2d3a4d",
                                 color: "white",
                                 fontSize: "14px",
                             },
@@ -198,7 +198,7 @@ export const ListProductsByConvocation = () => {
                                 alignItems: "center",
                             },
                             "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#40A581 !important",
+                                backgroundColor: "#2d3a4d !important",
                                 color: "white !important",
                             },
                             "& .MuiDataGrid-cell": {
@@ -219,7 +219,7 @@ export const ListProductsByConvocation = () => {
             </div>
 
             <Modal show={showSuppliersModal} onHide={closeSuppliersModal} centered>
-                <Modal.Header closeButton style={{ backgroundColor: "#40A581", color: "#fff" }}>
+                <Modal.Header closeButton style={{ backgroundColor: "#2d3a4d", color: "#fff" }}>
                     <Modal.Title>
                         Proveedores
                     </Modal.Title>
@@ -253,7 +253,11 @@ export const ListProductsByConvocation = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="outline-danger" onClick={closeSuppliersModal}>
+                    <Button
+                        variant="outline-secondary"
+                        onClick={closeSuppliersModal}
+                        className="btn-action-back"
+                    >
                         Cerrar
                     </Button>
                 </Modal.Footer>
