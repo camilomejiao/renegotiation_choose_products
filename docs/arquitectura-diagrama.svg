@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Diagrama de arquitectura">
+  <style>
+    .box { fill: #ffffff; stroke: #1e3a8a; stroke-width: 2; rx: 12; ry: 12; }
+    .title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+    .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+    .arrow { stroke: #1e3a8a; stroke-width: 2; marker-end: url(#arrow); }
+    .dashed { stroke-dasharray: 6 4; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#1e3a8a" />
+    </marker>
+  </defs>
+
+  <rect x="30" y="30" width="520" height="460" class="box" />
+  <text x="50" y="60" class="title">Frontend SPA (React)</text>
+
+  <rect x="70" y="90" width="440" height="70" class="box" />
+  <text x="90" y="130" class="text">Router + Layouts (Public / Private)</text>
+
+  <rect x="70" y="180" width="440" height="90" class="box" />
+  <text x="90" y="215" class="text">Modules</text>
+  <text x="90" y="240" class="text">beneficiaries, payments, deliveries, products</text>
+
+  <rect x="70" y="290" width="440" height="70" class="box" />
+  <text x="90" y="330" class="text">Shared Components (HeaderImage, SectionHeader)</text>
+
+  <rect x="70" y="380" width="440" height="70" class="box" />
+  <text x="90" y="420" class="text">Global Styles (src/styles/index.css)</text>
+
+  <rect x="620" y="140" width="250" height="120" class="box" />
+  <text x="640" y="175" class="text">API Services</text>
+  <text x="640" y="200" class="text">helpers/services/*</text>
+
+  <rect x="930" y="160" width="220" height="80" class="box" />
+  <text x="950" y="205" class="text">Backend API</text>
+
+  <line x1="290" y1="160" x2="290" y2="180" class="arrow" />
+  <line x1="290" y1="270" x2="290" y2="290" class="arrow" />
+  <line x1="510" y1="225" x2="620" y2="200" class="arrow" />
+  <line x1="870" y1="200" x2="930" y2="200" class="arrow" />
+  <line x1="290" y1="360" x2="290" y2="380" class="arrow dashed" />
+</svg>

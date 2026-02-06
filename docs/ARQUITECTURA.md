@@ -3,6 +3,11 @@
 ## 1) Resumen
 Este proyecto es una SPA (Single Page Application) construida en React 18 con enrutamiento client‑side, separación por módulos funcionales y un set de servicios para comunicación con el backend. La UI combina React‑Bootstrap, MUI (DataGrid), React‑Select y un sistema de estilos globales en `src/styles/index.css`.
 
+## Diagrama (alto nivel)
+Diagrama exportado en imagen:
+
+- `docs/arquitectura-diagrama.svg`
+
 ## 2) Stack técnico
 - **Framework UI:** React 18 (`react`, `react-dom`, `react-scripts`)
 - **Enrutamiento:** `react-router-dom`
@@ -119,7 +124,3 @@ Cuando se agregue un nuevo módulo:
 - Mantener botones con clases estandarizadas
 - Tablas con DataGrid y header uniforme
 - Inputs y selects con bordes visibles y consistentes
-
----
-
-Si quieres ampliar este documento con diagramas (c4, flujo de autenticación, etc.), o convertirlo en una guía de onboarding, lo agrego sin problema.
