@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { Form, Col, Row } from "react-bootstrap";
 import { FaStepBackward } from "react-icons/fa";
@@ -19,8 +19,6 @@ import checkImg from "../../../../../../assets/image/payments/check.png";
 import closeImg from "../../../../../../assets/image/payments/close.png";
 import imgPayments from "../../../../../../assets/image/payments/payments.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-
-//Css
 
 //Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
@@ -177,7 +175,7 @@ export const ReviewDocuments = () => {
     //
     const approveAndDeny = async (accion, rolDestinoId = null) => {
         if (accion === DeliveryDocumentReviewAction.DENY && !comments.trim()) {
-            AlertComponent.warning("Debe escribir una observación para denegar la entrega.");
+            AlertComponent.warning("Debe escribir una Observación para denegar la entrega.");
             setLoading(false);
             return;
         }
@@ -235,7 +233,7 @@ export const ReviewDocuments = () => {
         [userAuth?.rol_id]
     );
 
-    // Valor de la entrega desde backend (número)
+    // Valor de la entrega desde backend (Número)
     const valorEntrega = useMemo(
         () => Number(beneficiaryInformation?.valor ?? 0),
         [beneficiaryInformation?.valor]
@@ -263,7 +261,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if ((vFactura > valorEntrega || vFactura < newValorEntrega) && (accion === DeliveryDocumentReviewAction.APPROVE)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) Ã³ menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
             return false;
         }
@@ -288,7 +286,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if (vFactura && valorEntrega && (vFactura > valorEntrega || vFactura < newValorEntrega)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) Ã³ menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
         }
     };
@@ -319,31 +317,29 @@ export const ReviewDocuments = () => {
                 {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div className="content-review-documents" >
-                    <Row className="mb-4">
-                        <Col md={6}>
-                            <h5 className="section-title">Proveedor</h5>
-                            <div><strong>Nombre:</strong> {beneficiaryInformation?.proveedor?.nombre}</div>
-                            <div><strong>NIT:</strong> {beneficiaryInformation?.proveedor?.nit}</div>
-                            <div><strong>Resolución:</strong> {beneficiaryInformation?.proveedor?.resolucion}</div>
-                        </Col>
-
-                        <Col md={6}>
-                            <div className="total_">
-                                <strong>Numero Entrega: {beneficiaryInformation?.id} </strong> <br/>
-                                <strong>Valor Entrega: ${parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')} </strong>
-                            </div>
-                        </Col>
-                    </Row>
+                    <div className="review-summary-grid">
+                        <div className="review-summary-card">
+                            <div className="review-summary-card__title">Proveedor</div>
+                            <div className="review-summary-card__row"><strong>Nombre:</strong> {beneficiaryInformation?.proveedor?.nombre}</div>
+                            <div className="review-summary-card__row"><strong>NIT:</strong> {beneficiaryInformation?.proveedor?.nit}</div>
+                            <div className="review-summary-card__row"><strong>Resolución:</strong> {beneficiaryInformation?.proveedor?.resolucion}</div>
+                        </div>
+                        <div className="review-summary-card review-summary-card--highlight">
+                            <div className="review-summary-card__title">Entrega</div>
+                            <div className="review-summary-card__row"><strong>Número Entrega:</strong> {beneficiaryInformation?.id}</div>
+                            <div className="review-summary-card__row"><strong>Valor Entrega:</strong> ${parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')}</div>
+                        </div>
+                    </div>
 
                     {loading && <Loading fullScreen text={informationLoadingText} />}
 
-                    <Row className="mb-4">
-                        <Col md={4} xs={12} className="observations-history mt-4">
+                    <Row className="review-documents__sections">
+                        <Col md={4} xs={12} className="observations-history review-documents__card mt-4">
                             <h5 className="section-title">Historial de revisiones</h5>
                             {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
                                 <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
                                     <div><strong>Usuario:</strong> {rev.correo}</div>
-                                    <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
+                                    <div><strong>Estado:</strong> {rev.aprobado ? 'âœ… Aprobado' : 'âŒ Denegado'}</div>
                                     <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
                                     <div><strong>Observación:</strong> {rev.observacion}</div>
                                 </div>
@@ -352,52 +348,52 @@ export const ReviewDocuments = () => {
 
                         {canShowSupervision && (
                             <>
-                                <Col md={4} xs={12} className="documents-download mt-4">
+                                <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Documentos adjuntos</h5>
                                     {beneficiaryInformation?.archivos?.legalizacion?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--primary"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.legalizacion)}
                                                 disabled={beneficiaryInformation?.archivos?.legalizacion?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> Legalizacion
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.orden_compra?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--success"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.orden_compra)}
                                                 disabled={beneficiaryInformation?.archivos?.orden_compra?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> Plan de inversión
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--warning"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}
                                                 disabled={beneficiaryInformation?.archivos?.acta_entrega?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> Acta de entrega
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--info"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}
                                                 disabled={beneficiaryInformation?.archivos?.factura_electronica?.url_descarga === "None"}>
-                                            <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                                            <img src={downloadImg} alt="" /> FE o Documento Equivalente
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--primary"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
                                                 disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> RUT Proveedor
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.evidencia1?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--info"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia1)}
                                                 disabled={beneficiaryInformation?.archivos?.evidencia1?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> Evidencia 1
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.evidencia2?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--info"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.evidencia2)}
                                                 disabled={beneficiaryInformation?.archivos?.evidencia2?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> Evidencia 2
@@ -405,17 +401,17 @@ export const ReviewDocuments = () => {
                                     )}
                                 </Col>
 
-                                <Col md={4} xs={12} className="documents-download mt-4">
+                                <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Validaciones Supervisión</h5>
 
                                     <button
-                                        className="button-download_histoy"
+                                        className="button-download_histoy button-download--primary"
                                         onClick={() => handlePlanHistory(beneficiaryInformation?.beneficiario?.id)}
                                     >
                                         <img src={downloadImg} alt="" /> Historial planes de inversión
                                     </button>
 
-                                    {/* Card visual de la sección */}
+                                    {/* Card visual de la secciÃ³n */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Fechas */}
@@ -493,22 +489,22 @@ export const ReviewDocuments = () => {
 
                         {canShowPayments && (
                             <>
-                                <Col md={4} xs={12} className="documents-download mt-4">
+                                <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Documentos adjuntos</h5>
                                     {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--warning"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.acta_entrega)}>
                                             <img src={downloadImg} alt="" /> Acta de entrega
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.factura_electronica?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--info"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.factura_electronica)}>
-                                            <img src={downloadImg} alt="" /> FE Ó Documento Equivalente
+                                            <img src={downloadImg} alt="" /> FE o Documento Equivalente
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga && (
-                                        <button className="button-download"
+                                        <button className="button-download button-download--primary"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.rut_proveedor)}
                                                 disabled={beneficiaryInformation?.archivos?.rut_proveedor?.url_descarga === "None"}>
                                             <img src={downloadImg} alt="" /> RUT Proveedor
@@ -516,10 +512,10 @@ export const ReviewDocuments = () => {
                                     )}
                                 </Col>
 
-                                <Col md={4} xs={12} className="documents-download mt-4">
+                                <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Validaciones Pagos</h5>
 
-                                    {/* Card visual de la sección */}
+                                    {/* Card visual de la secciÃ³n */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Valor */}
@@ -547,7 +543,7 @@ export const ReviewDocuments = () => {
                     </Row>
                 </div>
 
-                <Row className="observations my-3 mt-3">
+                <Row className="observations my-3">
                     <Col>
                         <Form.Control
                             as="textarea"
@@ -602,3 +598,7 @@ export const ReviewDocuments = () => {
         </>
     )
 }
+
+
+
+

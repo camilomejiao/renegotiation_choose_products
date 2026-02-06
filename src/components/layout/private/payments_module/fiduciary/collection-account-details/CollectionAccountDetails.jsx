@@ -1,12 +1,18 @@
-import { useNavigate, useParams } from "react-router-dom";
+﻿import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
-import { FaStepBackward } from "react-icons/fa";
+import {
+    FaArrowLeft,
+    FaFileExcel,
+    FaFilePdf,
+    FaIdCard,
+    FaMoneyCheckAlt,
+    FaUniversity,
+} from "react-icons/fa";
 
 // Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../../assets/image/payments/imgPay.png";
-import downloadImg from "../../../../../../assets/image/payments/download.png";
 
 // Components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
@@ -19,8 +25,6 @@ import { filesServices } from "../../../../../../helpers/services/FilesServices"
 
 // Enums
 import { ReportTypePaymentsEnum, ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
-
-// CSS
 
 export const CollectionAccountDetails = () => {
     const params = useParams();
@@ -81,7 +85,7 @@ export const CollectionAccountDetails = () => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaña:
+                // Si es PDF y quieres abrir en otra pestaÃ±a:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -147,52 +151,51 @@ export const CollectionAccountDetails = () => {
             {loading && <Loading fullScreen text={informationLoadingText} />}
 
             {accountInformation && (
-                <div className="content-collection-details">
-                    <Row className="mb-4">
-                        <Col md={5}>
-                            <h5 className="section-title">Proveedor</h5>
-                            <div><strong>Nombre:</strong> {accountInformation?.proveedor.nombre}</div>
-                            <div><strong>NIT:</strong> {accountInformation?.proveedor.nit}</div>
-                            <div><strong>Cuenta N°:</strong> {accountInformation?.cuenta_cobro.numero}</div>
-                        </Col>
-
-                        <Col md={3}>
-                            <h5 className="section-title">Cuenta bancaria</h5>
-                            <div><strong>Entidad:</strong> {accountInformation?.banco?.entidad_bancaria}</div>
-                            <div><strong>Número:</strong> {accountInformation?.banco?.numero_cuenta}</div>
-                        </Col>
-
-                        <Col md={4}>
-                            <div className="total">
-                                Total: <strong>$
-                                        {(() => {
-                                            const valorFETotal = Number(accountInformation?.cuenta_cobro.valor_total_factura_electronica || 0);
-                                            const valorTotal = Number(accountInformation?.cuenta_cobro.valor_total || 0);
-                                            return (valorFETotal > 0 ? valorFETotal : valorTotal).toLocaleString('es-CO');
-                                        })()}
-                                    </strong>
+                <div className="content-collection-details collection-details">
+                    <div className="collection-summary-grid">
+                        <div className="collection-summary-card">
+                            <div className="collection-summary-card__title">Proveedor</div>
+                            <div className="collection-summary-card__row"><strong>Nombre:</strong> {accountInformation?.proveedor.nombre}</div>
+                            <div className="collection-summary-card__row"><strong>NIT:</strong> {accountInformation?.proveedor.nit}</div>
+                            <div className="collection-summary-card__row"><strong>Cuenta N°:</strong> {accountInformation?.cuenta_cobro.numero}</div>
+                        </div>
+                        <div className="collection-summary-card">
+                            <div className="collection-summary-card__title">Cuenta bancaria</div>
+                            <div className="collection-summary-card__row"><strong>Entidad:</strong> {accountInformation?.banco?.entidad_bancaria}</div>
+                            <div className="collection-summary-card__row"><strong>Número:</strong> {accountInformation?.banco?.numero_cuenta}</div>
+                        </div>
+                        <div className="collection-summary-card collection-summary-card--highlight">
+                            <div className="collection-summary-card__title">Total</div>
+                            <div className="collection-summary-card__value">
+                                ${(() => {
+                                    const valorFETotal = Number(accountInformation?.cuenta_cobro.valor_total_factura_electronica || 0);
+                                    const valorTotal = Number(accountInformation?.cuenta_cobro.valor_total || 0);
+                                    return (valorFETotal > 0 ? valorFETotal : valorTotal).toLocaleString('es-CO');
+                                })()}
                             </div>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
 
-                    <Row className="mb-4">
-                        <Col md={5}>
-                            <h5 className="section-title">Documentos adjuntos</h5>
-                            <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
-                                <img src={downloadImg} alt="" /> Certificado bancario
-                            </button>
-                            <button className="button-download-collection" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
-                                <img src={downloadImg} alt="" /> RUT
-                            </button>
-                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.EXCEL)}>
-                                <img src={downloadImg} alt="" /> Generar documento excel
-                            </button>
-                            <button className="button-generate" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.PDF)}>
-                                <img src={downloadImg} alt="" /> Generar documento pdf
-                            </button>
-                        </Col>
+                    <div className="collection-summary-grid2">
+                        <div className="collection-summary-card">
+                            <h5 className="section-title">Consolidado de documentos</h5>
+                            <div className="collection-details__downloads">
+                                <button className="button-download-collection button-download--primary" onClick={() => handleViewFile(accountInformation?.archivos.certificado_bancario)}>
+                                    <FaUniversity /> Certificado bancario
+                                </button>
+                                <button className="button-download-collection button-download--success" onClick={() => handleViewFile(accountInformation?.archivos.rut)}>
+                                    <FaIdCard /> RUT
+                                </button>
+                                <button className="button-download-collection button-download--warning" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.EXCEL)}>
+                                    <FaFileExcel /> Generar documento excel
+                                </button>
+                                <button className="button-download-collection button-download--info" onClick={() => handleGenerateDocument(accountInformation?.cuenta_cobro.numero, ReportTypePaymentsEnum.PDF)}>
+                                    <FaFilePdf /> Generar documento pdf
+                                </button>
+                            </div>
+                        </div>
 
-                        <Col md={7}>
+                        <div className="collection-summary-card">
                             <h5 className="section-title">Entregas</h5>
                             {accountInformation?.detalles.map((item, idx) => (
                                 <div key={idx} className="revision-box">
@@ -204,18 +207,18 @@ export const CollectionAccountDetails = () => {
                                     </div>
                                 </div>
                             ))}
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
 
-                    <Row className="justify-content-center mt-4">
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center">
-                            <Button className="generate" variant="outline-warning" onClick={() => handleChangeStatusAccount(accountInformation?.cuenta_cobro?.id)}>
-                                Emitir para pago
+                    <Row className="justify-content-center collection-actions g-3">
+                        <Col xs="12" md="auto" className="d-flex justify-content-center">
+                            <Button className="collection-actions__btn" variant="outline-warning" onClick={() => handleChangeStatusAccount(accountInformation?.cuenta_cobro?.id)}>
+                                <FaMoneyCheckAlt /> Emitir para pago
                             </Button>
                         </Col>
-                        <Col xs="12" md="6" lg="4" className="d-flex justify-content-center mb-3 mb-md-0">
-                            <button className="button-back" onClick={() => navigate(-1)}>
-                                <FaStepBackward /> Cuentas de cobro
+                        <Col xs="12" md="auto" className="d-flex justify-content-center mb-3 mb-md-0">
+                            <button className="collection-actions__btn collection-actions__btn--ghost" onClick={() => navigate(-1)}>
+                                <FaArrowLeft /> Cuentas de cobro
                             </button>
                         </Col>
                     </Row>
@@ -224,3 +227,5 @@ export const CollectionAccountDetails = () => {
         </>
     );
 };
+
+

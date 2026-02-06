@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+﻿import {useEffect, useRef, useState} from "react";
 import {useNavigate, useOutletContext} from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Card, Col, Row } from "react-bootstrap";
-import { FaSave, FaStepBackward } from "react-icons/fa";
+import { FaFileAlt, FaSave, FaStepBackward } from "react-icons/fa";
 import Select from "react-select";
 
 //Components
@@ -54,14 +54,14 @@ export const CreateCollectionAccount = () => {
     const [sendingData, setSendingData] = useState(false);
     const [showCertificate, setShowCertificate] = useState("");
 
-    //Para no recargar el catálogo múltiples veces
+    //Para no recargar el catálogo mÃºltiples veces
     const loadRef = useRef(false);
 
     const statusCollectionAccountColumns = [
         { field: "id", headerName: "N° Entrega", flex: 0.8 },
         { field: "cub_id", headerName: "Cub", flex: 0.4 },
         { field: "name", headerName: "Beneficiario", flex: 2.5 },
-        { field: "identification", headerName: "Identificacion", flex: 1 },
+        { field: "identification", headerName: "Identificación", flex: 1 },
         { field: "date", headerName: "Fecha", flex: 0.6 },
         { field: "unid", headerName: "Productos", flex: 0.6 },
         { field: "amount", headerName: "Cantidad de Productos", flex: 1.2 },
@@ -96,7 +96,7 @@ export const CreateCollectionAccount = () => {
         const rows =  data?.data?.proveedores;
         return rows.map((row) => ({
             value: String(row.id),
-            label: `${row.nombre} — ${row.nit}`,
+            label: `${row.nombre} â€” ${row.nit}`,
         }));
     }
 
@@ -115,7 +115,7 @@ export const CreateCollectionAccount = () => {
             const {data, status} = await supplierServices.getBankAccountsBySupplierId(suppId);
 
             if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.NOT_FOUND || data?.data?.bancos.length === 0) {
-                AlertComponent.warning('', 'Proveedor no tiene cuentras registradas');
+                AlertComponent.warning('', 'Proveedor no tiene cuentas registradas');
             }
 
             if (status === ResponseStatusEnum.OK) {
@@ -198,7 +198,7 @@ export const CreateCollectionAccount = () => {
                 id: row?.id,
                 cub_id: beneficiario?.cub_id,
                 name: `${beneficiario?.nombre ?? ""} ${beneficiario?.apellido ?? ""}`.trim(),
-                identification: beneficiario?.identificacion ?? "",
+                identification: beneficiario?.Identificación ?? "",
                 date: row.fecha_creacion.split("T")[0],
                 unid: row?.cantidad_productos ?? 0,
                 amount: row?.total_cantidad_productos ?? 0,
@@ -239,7 +239,7 @@ export const CreateCollectionAccount = () => {
             setLoading(true);
             const { status } = await paymentServices.createCollectionAccounts(payload, supplier);
             if (status === ResponseStatusEnum.CREATED) {
-                AlertComponent.success("Éxito", "Cuenta de cobro creada exitosamente.");
+                AlertComponent.success("Ã‰xito", "Cuenta de cobro creada exitosamente.");
                 navigate('/admin/payments-suppliers');
             }
         } catch (error) {
@@ -267,7 +267,7 @@ export const CreateCollectionAccount = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imágenes
+                // Solo PDF o imÃ¡genes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const fileURL = URL.createObjectURL(blob);
                     window.open(fileURL, '_blank');
@@ -310,7 +310,7 @@ export const CreateCollectionAccount = () => {
                 titleHeader={'Proceso de pago'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás revisar el estado de tus órdenes de pago.'}
+                bannerInformation={'Aquí podrÃ¡s revisar el estado de tus órdenes de pago.'}
                 backgroundInformationColor={'#F66D1F'}
             />
 
@@ -327,7 +327,13 @@ export const CreateCollectionAccount = () => {
                 )}
 
                 <Card className="p-3 p-md-4 shadow-sm mb-2">
-                    <h4 className="mb-4 text-primary fw-bold text-center text-md-start">Información para Cuenta de Cobro</h4>
+                    <div className="search-beneficiary-header">
+                        <div className="search-beneficiary-header__title">
+                            <FaFileAlt className="search-beneficiary-header__icon" />
+                            <h4 className="search-beneficiary-title">Información para Cuenta de Cobro</h4>
+                        </div>
+                        <p>Complete la Información requerida para generar la cuenta de cobro.</p>
+                    </div>
 
                     {!isCanShowSelect && (
                         <h6 className="mb-0 fw-semibold">
@@ -353,7 +359,7 @@ export const CreateCollectionAccount = () => {
                                             const q = input.toLowerCase();
                                             return (
                                                 option.label.toLowerCase().includes(q) || // nombre
-                                                option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
+                                                option.label.toLowerCase().split("â€”")[1]?.includes(q) // NIT
                                             );
                                         }}
                                         styles={{
@@ -501,3 +507,5 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
+
+
