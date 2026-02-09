@@ -82,7 +82,7 @@ const validationSchema = yup.object().shape({
         .min(1, "Debe existir al menos una cuenta bancaria"),
 });
 
-const rolesAllow = RolesEnum.ADMIN;
+const rolesAllow = [RolesEnum.ADMIN, RolesEnum.SYSTEM_USER];
 
 export const CreateSuppliers = () => {
 
@@ -450,7 +450,7 @@ export const CreateSuppliers = () => {
     };
 
     const disabledEdit = () => {
-        return userAuth?.rol_id === rolesAllow;
+        return rolesAllow.includes(userAuth?.rol_id);
     }
 
     //check
