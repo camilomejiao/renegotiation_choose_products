@@ -562,7 +562,7 @@ export const SearchBeneficiaryInformation = () => {
             id: index + 1,
             agreement: row?.nombre_contrato ?? "",
             component: row?.componente ?? "",
-            secondary: row?.secundario ?? "",
+            secondary: row?.Secundario ?? "",
             payment_identification: row?.identificacion_pago ?? "",
             paid_holder: row?.titular_pago ?? "",
             paid: row?.es_pagado ?? "",

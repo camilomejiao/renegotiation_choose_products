@@ -2,7 +2,7 @@
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para la gesti�n de proveedores (usuarios tipo proveedor).
+ * Servicio para la gestión de proveedores (usuarios tipo proveedor).
  */
 class SupplierServices {
 

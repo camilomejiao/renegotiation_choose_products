@@ -46,7 +46,7 @@ export const BeneficiariesManagement = () => {
     const [consolidated, setConsolidated] = useState("");
     const [balance, setBalance] = useState("");
 
-    //Obtiene la informaci�n del usuario
+    //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userServices.userInformation(cubId);
@@ -95,7 +95,7 @@ export const BeneficiariesManagement = () => {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(file.type)) {
-                handleError('Archivo no v�lido', 'Solo se permiten im�genes (PNG, JPEG, JPG) o archivos PDF.');
+                handleError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
@@ -232,14 +232,14 @@ export const BeneficiariesManagement = () => {
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgDCSIPeople}
-                    titleHeader={'�Explora el banco de proveedores!'}
+                    titleHeader={'¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
                     backgroundIconColor={'#ff5722'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
                     backgroundInformationColor={'#0056b3'}
                 />
 
-                {/* Contenedor de la informaci�n del usuario */}
+                {/* Contenedor de la información del usuario */}
                 <UserInformation userData={userData} />
 
                 {loading && <Loading text="Cargando..." />}
@@ -248,7 +248,7 @@ export const BeneficiariesManagement = () => {
                     <Container>
                         <div className="beneficiaries-docs__header">
                             <h2>Documentos y Reportes</h2>
-                            <p>Acceda a instructivos, formatos y documentos necesarios para la gesti�n de pagos</p>
+                            <p>Acceda a instructivos, formatos y documentos necesarios para la gestión de pagos</p>
                         </div>
                         <div className="beneficiaries-docs__grid beneficiaries-docs__grid--two-rows">
                             <div className="beneficiaries-docs__card">
@@ -369,11 +369,11 @@ export const BeneficiariesManagement = () => {
                     </div>
                     <div className="beneficiaries-side__deliveries">
                         <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
-                            <img src={imgFrame2} alt="icono �nico" className="button-icon" />
+                            <img src={imgFrame2} alt="icono único" className="button-icon" />
                             ENTREGAS
                         </button>
                         <p className="beneficiaries-side__hint">
-                            Accede al m�dulo de entregas del beneficiario.
+                            Accede al módulo de entregas del beneficiario.
                         </p>
                     </div>
                 </div>
@@ -387,7 +387,7 @@ export const BeneficiariesManagement = () => {
                     )}
                 </div>
 
-                {/* Aqu� renderizas el componente pero lo ocultas */}
+                {/* Aquí renderizas el componente pero lo ocultas */}
                 <div style={{ display: 'none' }}>
                     {isReadyToPrintBalanceInFavor && (
                         <div ref={headlineBalanceRef}>

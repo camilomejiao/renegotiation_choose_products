@@ -10,7 +10,7 @@ class RenegotiationServices {
     }
 
     /**
-     * Construye la URL completa para un endpoint de renegociaci�n.
+     * Construye la URL completa para un endpoint de renegociación.
      * @param {string} endpoint - Ruta relativa del endpoint.
      * @returns {string} URL completa del endpoint.
      */
@@ -23,9 +23,9 @@ class RenegotiationServices {
     // =============================
 
     /**
-     * Obtener informaci�n de renegociaci�n de un usuario.
-     * @param {string} type - Tipo de identificaci�n (por ejemplo: "cedula").
-     * @param {string|number} identificationId - N�mero de identificaci�n del usuario.
+     * Obtener información de renegociación de un usuario.
+     * @param {string} type - Tipo de identificación (por ejemplo: "cedula").
+     * @param {string|number} identificationId - Número de identificación del usuario.
      * @returns {Promise<Response>}
      */
     getUserRenegotiation(type, identificationId) {
@@ -43,7 +43,7 @@ class RenegotiationServices {
     }
 
     /**
-     * Obtener l�neas asociadas a un plan y un CUB.
+     * Obtener líneas asociadas a un plan y un CUB.
      * @param {number} planId - ID del plan.
      * @param {number|string} cubId - ID del CUB.
      * @returns {Promise<Response>}
@@ -58,7 +58,7 @@ class RenegotiationServices {
     // =============================
 
     /**
-     * Obtener informaci�n del acuerdo de compromiso para reporte.
+     * Obtener información del acuerdo de compromiso para reporte.
      * @param {number|string} cubId - ID del CUB.
      * @returns {Promise<Response>}
      */
@@ -88,11 +88,11 @@ class RenegotiationServices {
     }
 
     // =============================
-    // ACTUALIZACIÓN Y ENV�O
+    // ACTUALIZACIÓN Y ENVÍO
     // =============================
 
     /**
-     * Actualizar informaci�n de compromiso del usuario.
+     * Actualizar información de compromiso del usuario.
      * @param {number|string} cubId - ID del CUB.
      * @param {object} data - Datos a actualizar.
      * @returns {Promise<Response>}

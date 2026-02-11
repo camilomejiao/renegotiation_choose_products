@@ -109,7 +109,7 @@ export const ValidationEnvironmental = () => {
         },
         {
             field: "description",
-            headerName: "Descripci�n",
+            headerName: "Descripción",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -195,7 +195,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Carga los planes de una jornada espec�fica (cuando se selecciona una Jornada).
+     * Carga los planes de una jornada específica (cuando se selecciona una Jornada).
      * @param {number} convocationId
      */
     const getPlans = async (convocationId) => {
@@ -275,7 +275,7 @@ export const ValidationEnvironmental = () => {
 
     /**
      * Convierte la lista cruda de productos al formato que usa el DataGrid.
-     * Incluye mapeo de campos visibles y los campos din�micos ambientales.
+     * Incluye mapeo de campos visibles y los campos dinámicos ambientales.
      * @param {Array<object>} data
      * @returns {Promise<Array<object>>}
      */
@@ -356,7 +356,7 @@ export const ValidationEnvironmental = () => {
     }, 300);
 
     /**
-     * Crea un handler para Selects de columnas din�micas.
+     * Crea un handler para Selects de columnas dinámicas.
      * @param {string} field
      * @returns {(params:any, newValue:any) => void}
      */
@@ -365,7 +365,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Handler gen�rico para inputs custom (ambientales, etc.)
+     * Handler genérico para inputs custom (ambientales, etc.)
      * @param {object} params
      * @param {string} fieldKey
      * @param {any} newValue
@@ -375,7 +375,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Obtiene y setea las columnas din�micas ambientales.
+     * Obtiene y setea las columnas dinámicas ambientales.
      */
     const getEnvironmentalColumns = async () => {
         const columns = await getEnvironmentalCategoriesColumns(handleSelectChange, handleCustomChange);
@@ -400,8 +400,8 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Construye un objeto con los c�digos ambientales como keys din�micas,
-     * utilizando las categor�as como gu�a.
+     * Construye un objeto con los códigos ambientales como keys dinámicas,
+     * utilizando las categorías como guía.
      * @param {object} row
      * @param {Array<{codigo:string}>} categories
      */
@@ -416,7 +416,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * (Opcional) Construye un map de observaciones por rol. Seguro si rows est� vac�o.
+     * (Opcional) Construye un map de observaciones por rol. Seguro si rows está vacío.
      * @param {Array} rows
      */
     const extractObservations = (row = {}) => {
@@ -445,7 +445,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * (Opcional) Extrae el l�mite ambiental seleccionado (si existe en la fila).
+     * (Opcional) Extrae el límite ambiental seleccionado (si existe en la fila).
      * @param {object} row
      */
     const extractCountEnvironmental = (row = {}) => {
@@ -457,7 +457,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * MUI DataGrid: procesa la actualizaci�n de una fila completa (modo "row").
+     * MUI DataGrid: procesa la actualización de una fila completa (modo "row").
      * Guarda los cambios en `editedProducts` para enviar luego.
      * @param {object} newRow
      * @param {object} oldRow
@@ -478,7 +478,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Maneja la selecci�n de filas en la tabla.
+     * Maneja la selección de filas en la tabla.
      * @param {Array<number>} newSelection
      */
     const handleSelectionChange = (newSelection) => {
@@ -486,7 +486,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Abre el modal de aprobaci�n/denegaci�n validando que haya selecci�n.
+     * Abre el modal de aprobación/denegación validando que haya selección.
      */
     const handleOpenModal = () => {
         if (selectedIds.length === 0) {
@@ -497,7 +497,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Cierra el modal de aprobaci�n y limpia estado local de acci�n/comentario.
+     * Cierra el modal de aprobación y limpia estado local de acción/comentario.
      */
     const handleCloseModalApproved = () => {
         setOpenModal(false);
@@ -506,7 +506,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Crea el payload para aprobaci�n por lotes.
+     * Crea el payload para aprobación por lotes.
      */
     const createApprovalPayload = (idsBatch, estado, comentario) => ({
         ids: idsBatch,
@@ -515,7 +515,7 @@ export const ValidationEnvironmental = () => {
     });
 
     /**
-     * Llama al servicio de aprobaci�n por lotes.
+     * Llama al servicio de aprobación por lotes.
      * @param {object} payload
      * @returns {Promise<boolean>}
      */
@@ -552,7 +552,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Acci�n principal de aprobar/denegar los productos seleccionados.
+     * Acción principal de aprobar/denegar los productos seleccionados.
      * @param {Array<number>} ids
      * @param {'approve'|'deny'} accion
      * @param {string} comment
@@ -578,7 +578,7 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Obtiene solo los c�digos (keys) de las categor�as ambientales.
+     * Obtiene solo los códigos (keys) de las categorías ambientales.
      * @returns {Promise<string[]>}
      */
     const getEnvironmentalCategoryKeys = async () => {
@@ -633,7 +633,7 @@ export const ValidationEnvironmental = () => {
             const { status } = await convocationProductsServices.updateValidationEnvironmental(sendData);
 
             if(status === ResponseStatusEnum.OK) {
-                showAlert("Bien hecho!", "Productos actualizados con �xito.");
+                showAlert("Bien hecho!", "Productos actualizados con éxito.");
                 setEditedProducts([]);
             }
         } catch (error) {
@@ -667,13 +667,13 @@ export const ValidationEnvironmental = () => {
     };
 
     /**
-     * Submit del modal de aprobaci�n/denegaci�n.
+     * Submit del modal de aprobación/denegación.
      */
     const handleApproveDenySubmit = async () => {
         try {
             await handleApproveByAudit(selectedIds, action, comment);
         } catch (error) {
-            console.error("Error en la aprobaci�n:", error);
+            console.error("Error en la aprobación:", error);
         }
     };
 
@@ -691,7 +691,7 @@ export const ValidationEnvironmental = () => {
     return (
         <>
             <div className="main-container">
-                <HeaderImage imageHeader={imgPeople} titleHeader="�Listado de productos!" />
+                <HeaderImage imageHeader={imgPeople} titleHeader="¡Listado de productos!" />
 
                 <div className="container mt-lg-3">
                     <Row className="gy-2 align-items-center mt-3 mb-3">
@@ -759,7 +759,7 @@ export const ValidationEnvironmental = () => {
                                 setPageSize(pageSize);
                             }}
                             rowsPerPageOptions={[10, 50, 100]}
-                            rowHeight={64}// ↑ m�s alto para textos multil�nea (p.ej. 64, 72, 88)
+                            rowHeight={64}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
                             headerHeight={48}
                             componentsProps={{
                                 columnHeader: {
@@ -815,7 +815,7 @@ export const ValidationEnvironmental = () => {
                             }}
                         />
 
-                        {/* Modal de aprobaci�n/denegaci�n */}
+                        {/* Modal de aprobación/denegación */}
                         <ApprovedDeniedModal
                             open={openModal}
                             onClose={handleCloseModalApproved}
@@ -827,7 +827,7 @@ export const ValidationEnvironmental = () => {
                         />
                     </div>
 
-                    {/* Bot�n Guardar */}
+                    {/* Botón Guardar */}
                     <div className="d-flex justify-content-end gap-2 mt-3">
                         <Button
                             variant="outline-warning"

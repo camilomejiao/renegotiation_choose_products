@@ -105,7 +105,7 @@ export const Renegociation = () => {
         }
     }
 
-    // M�todo para obtener l�neas al cambiar el PlanId
+    // Método para obtener líneas al cambiar el PlanId
     const handlePlanChange = async (e) => {
         const planId = e.target.value;
         setFormData({ PlanId: planId, LineaId: "" });
@@ -118,7 +118,7 @@ export const Renegociation = () => {
         }
     };
 
-    // L�gica para habilitar/deshabilitar el bot�n de guardar
+    // Lógica para habilitar/deshabilitar el botón de guardar
     const isSaveEnabled = () => {
         return comentarios && cellPhone && formData.PlanId && formData.LineaId && (formData.LineaId !== userData.linea_id);
     }
@@ -152,14 +152,14 @@ export const Renegociation = () => {
             }
 
             if(status === ResponseStatusEnum.OK) {
-                showAlert('Bien hecho!', 'Actualizaci�n realizada con exito');
+                showAlert('Bien hecho!', 'Actualización realizada con exito');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
             }
         } catch (error) {
             console.log(error);
-            showError(error, 'Error al actualizar la informaci�n');
+            showError(error, 'Error al actualizar la información');
         } finally {
             setIsLoading(false);
         }
@@ -244,7 +244,7 @@ export const Renegociation = () => {
         printJS({
             printable: printContent,
             type: 'raw-html',
-            documentTitle: 'Plan de Inversi�n',
+            documentTitle: 'Plan de Inversión',
         });
     }
 
@@ -286,7 +286,7 @@ export const Renegociation = () => {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(file.type)) {
-                showError('Archivo no v�lido', 'Solo se permiten im�genes (PNG, JPEG, JPG) o archivos PDF.');
+                showError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
@@ -338,7 +338,7 @@ export const Renegociation = () => {
 
                 URL.revokeObjectURL(url);
             } else {
-                showError('Error', 'No se recibi� un archivo v�lido.');
+                showError('Error', 'No se recibió un archivo válido.');
             }
         } catch (error) {
             console.error("Error al descargar el archivo:", error);
@@ -372,11 +372,11 @@ export const Renegociation = () => {
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
                     <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>�Renegociaci�n!</h1>
+                        <h1>¡Renegociación!</h1>
                     </div>
                 </div>
 
-                {/* Contenedor de la informaci�n del usuario */}
+                {/* Contenedor de la información del usuario */}
                 <UserInformation userData={userData} />
 
                 <Container>
@@ -396,7 +396,7 @@ export const Renegociation = () => {
                             </Form.Group>
                         </Col>
 
-                        {/* Select para L�nea */}
+                        {/* Select para Línea */}
                         <Col xs={12} md={6} className="mb-3">
                             <Form.Group>
                                 <Form.Label>Linea</Form.Label>
@@ -440,11 +440,11 @@ export const Renegociation = () => {
                                 required
                             />
                         </Col>
-                        {/* Campo de texto Tel�fono */}
+                        {/* Campo de texto Teléfono */}
                         <Col xs={12} md={6} className="mb-3">
                             <TextField
-                                label="Tel�fono"
-                                placeholder="Escribe tu tel�fono"
+                                label="Teléfono"
+                                placeholder="Escribe tu teléfono"
                                 fullWidth
                                 value={cellPhone}
                                 onChange={(e) => setCellPhone(e.target.value)}
@@ -453,7 +453,7 @@ export const Renegociation = () => {
                                 required
                             />
                         </Col>
-                        {/* Secci�n para los botones alineados a la derecha */}
+                        {/* Sección para los botones alineados a la derecha */}
                         <Col xs={12} md={6} className="justify-content-end d-flex gap-2">
                             <Button
                                 variant="outline-success"
@@ -475,7 +475,7 @@ export const Renegociation = () => {
                     {isLoading && <Loading fullScreen text="Cargando..." />}
 
                     <Row className="justify-content-end">
-                        {/* Secci�n de Autorizaci�n */}
+                        {/* Sección de Autorización */}
                         <Col md={5}>
                             {isValidUserData() && (
                                 <AuthorizationSection
@@ -486,9 +486,9 @@ export const Renegociation = () => {
                             )}
                         </Col>
 
-                        {/* Secci�n de Botones para Subir/Ver Archivos */}
+                        {/* Sección de Botones para Subir/Ver Archivos */}
                         <Col md={7} className="d-flex flex-column gap-3 mt-4">
-                            {/* Secci�n 1: Plan Firmado */}
+                            {/* Sección 1: Plan Firmado */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
                                     <Button variant="outline-secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'acuerdo')}>
@@ -502,16 +502,16 @@ export const Renegociation = () => {
                                 </Col>
                             </Row>
 
-                            {/* Secci�n 2: Legalizaci�n */}
+                            {/* Sección 2: Legalización */}
                             <Row className="d-flex flex-row flex-wrap justify-content-end gap-2">
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
                                     <Button variant="outline-secondary" className="w-100 py-1" onClick={() => handleShowConfirmationModal(engagementId, 'legalizacion')}>
-                                        Subir Legalizaci�n
+                                        Subir Legalización
                                     </Button>
                                 </Col>
                                 <Col xs={6} md={4} className="d-flex justify-content-center">
                                     <Button variant="outline-info" className="w-100 py-1" onClick={() => handleDownload(engagementId, "legalizacion")}>
-                                        <FaEye className="me-2" /> Ver Legalizaci�n
+                                        <FaEye className="me-2" /> Ver Legalización
                                     </Button>
                                 </Col>
                             </Row>
@@ -520,7 +520,7 @@ export const Renegociation = () => {
                 </Container>
             </div>
 
-            {/* Aqu� renderizas el componente pero lo ocultas */}
+            {/* Aquí renderizas el componente pero lo ocultas */}
             <div style={{ display: 'none' }}>
                 {isReadyToPrintPlan && engagement && (
                     <div ref={planRef}>
@@ -529,13 +529,13 @@ export const Renegociation = () => {
                 )}
             </div>
 
-            {/* Modal para detalles de la l�nea */}
+            {/* Modal para detalles de la línea */}
             <LineDetailModal show={showModalLineDatail} handleClose={handleCloseModal} userData={userData} planData={lineDetailData} />
 
             {/* Modal Historicos */}
             <PlanHistory show={showModalPlanHistory} handleClose={handleCloseModal} data={planHistoryData} />
 
-            {/* Modal de Confirmaci�n */}
+            {/* Modal de Confirmación */}
             <ConfirmationModal show={showModalConfirmation} onConfirm={handleConfirmUpload} onClose={handleCloseModal} />
         </>
     )

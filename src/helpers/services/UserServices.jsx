@@ -2,7 +2,7 @@
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para la gesti�n de usuarios
+ * Servicio para la gestión de usuarios
  */
 class UserServices {
     constructor() {
@@ -23,10 +23,10 @@ class UserServices {
     // =============================
 
     /**
-     * Buscar un usuario por t�rmino de b�squeda.
-     * Puede ser nombre, c�dula, n�mero CUB u otro dato.
+     * Buscar un usuario por término de búsqueda.
+     * Puede ser nombre, cédula, número CUB u otro dato.
      *
-     * @param {string} data - T�rmino de b�squeda.
+     * @param {string} data - Término de búsqueda.
      * @returns {Promise<object>} - Promesa con la respuesta del servidor.
      */
     searchUser(data) {
@@ -35,7 +35,7 @@ class UserServices {
     }
 
     /**
-     * Obtener informaci�n detallada de un usuario por ID de CUB.
+     * Obtener información detallada de un usuario por ID de CUB.
      *
      * @param {number|string} cubId - ID del usuario (CUB).
      * @returns {Promise<object>} - Promesa con los datos del usuario.

@@ -71,12 +71,12 @@ export const DeliveriesInformation = () => {
 
     const [activeStatusKey, setActiveStatusKey] = useState("");
 
-    //Para no recargar el cat�logo m�ltiples veces
+    //Para no recargar el catálogo múltiples veces
     const loadedRef = useRef(false);
     const loadedDeptsRef = useRef(false);
 
     const columns = [
-        { field: "id", headerName: "N� Entrega", width: 100 },
+        { field: "id", headerName: "N° Entrega", width: 100 },
         { field: "send_date", headerName: "Fecha de envio", width: 100 },
         { field: "department_name", headerName: "Departamento", width: 110 },
         { field: "municipality_name", headerName: "Municipio", width: 110 },
@@ -100,7 +100,7 @@ export const DeliveriesInformation = () => {
                 </div>
             ),
         },
-        { field: "identification", headerName: "Identificaci�n", width: 110 },
+        { field: "identification", headerName: "Identificación", width: 110 },
         {
             field: "supplier_name",
             headerName: "Proveedor",
@@ -123,7 +123,7 @@ export const DeliveriesInformation = () => {
         { field: "pay", headerName: "Valor", width: 110 },
         {
             field: "observation",
-            headerName: "Observaci�n",
+            headerName: "Observación",
             flex: 1,
             minWidth: 200,
             renderCell: (params) => (
@@ -207,7 +207,7 @@ export const DeliveriesInformation = () => {
         });
     }
 
-    // Carga cat�logo (activos) una sola vez
+    // Carga catálogo (activos) una sola vez
     const loadSuppliersOnce = async () => {
         if (loadedRef.current) return;
         try {
@@ -220,7 +220,7 @@ export const DeliveriesInformation = () => {
                 setDataDataSuppliers([]);
             }
         } catch (e) {
-            console.error("Error cargando proveedores (cat�logo):", e);
+            console.error("Error cargando proveedores (catálogo):", e);
             setDataDataSuppliers([]);
         } finally {
             setLoading(false);
@@ -374,7 +374,7 @@ export const DeliveriesInformation = () => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pesta�a:
+                // Si es PDF y quieres abrir en otra pestaña:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -467,14 +467,14 @@ export const DeliveriesInformation = () => {
                 titleHeader={'Seguimientos De Entregas'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aqu� podr�s revisar tus entregas.'}
+                bannerInformation={'Aquí podrás revisar tus entregas.'}
                 backgroundInformationColor={'#F66D1F'}
             />
 
             <div className="container mt-lg-5">
                 {/* Toolbar */}
                 <Row className="gy-2 align-items-center mt-3">
-                    {/* Buscador + bot�n pegado */}
+                    {/* Buscador + botón pegado */}
                     <Col xs={12} md={6}>
                         <input
                             type="text"
@@ -490,7 +490,7 @@ export const DeliveriesInformation = () => {
                             className="form-control search-input"
                         />
                     </Col>
-                    {/* Buscador + bot�n pegado */}
+                    {/* Buscador + botón pegado */}
                     <Col xs={12} md={2}>
                         <Button
                             variant="outline-primary"
@@ -765,5 +765,4 @@ export const DeliveriesInformation = () => {
         </>
     )
 }
-
 

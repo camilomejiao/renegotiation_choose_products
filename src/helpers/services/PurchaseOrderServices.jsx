@@ -2,8 +2,8 @@
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para gestionar �rdenes de compra.
- * Permite obtener, eliminar y operar sobre registros de �rdenes.
+ * Servicio para gestionar órdenes de compra.
+ * Permite obtener, eliminar y operar sobre registros de órdenes.
  */
 class PurchaseOrderServices {
     constructor() {
@@ -24,8 +24,8 @@ class PurchaseOrderServices {
     // =============================
 
     /**
-     * Obtiene todas las �rdenes de compra de forma paginada.
-     * @param {number} page - N�mero de p�gina a consultar.
+     * Obtiene todas las órdenes de compra de forma paginada.
+     * @param {number} page - Número de página a consultar.
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getAll(page) {
@@ -38,7 +38,7 @@ class PurchaseOrderServices {
     // =============================
 
     /**
-     * Elimina una orden de compra espec�fica por su ID.
+     * Elimina una orden de compra específica por su ID.
      * @param {number|string} orderId - ID de la orden de compra a eliminar.
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */

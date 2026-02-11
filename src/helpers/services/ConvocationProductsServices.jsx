@@ -2,7 +2,7 @@
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para interactuar con el m�dulo de Jornadas (WorksDay) en la API.
+ * Servicio para interactuar con el módulo de Jornadas (WorksDay) en la API.
  *
  *
  */
@@ -70,7 +70,7 @@ class ConvocationProductsServices {
      * POST `/jornadas/productos/`
      *
      * @param {object} products - Payload a enviar.
-     * @param {number|string} products.jornada_plan - Identificador de la relaci�n jornada–plan (o el que defina tu API).
+     * @param {number|string} products.jornada_plan - Identificador de la relación jornada–plan (o el que defina tu API).
      * @param {Array<object>} products.productos - Arreglo de productos a registrar (puede enviar en lotes).
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
@@ -101,7 +101,7 @@ class ConvocationProductsServices {
      * POST `/jornadas/productos/proveedor/bulk/`
      *
      * @param {object} products - Payload a enviar.
-     * @param {number|string} products.proveedor_id - Identificador del proveedor (seg�n contrato).
+     * @param {number|string} products.proveedor_id - Identificador del proveedor (según contrato).
      * @param {Array<object>} products.productos - Arreglo de productos a registrar.
      * @returns {Promise<{ data: any, status: number }>} Promesa con `data` y `status`.
      */
@@ -170,5 +170,4 @@ class ConvocationProductsServices {
 }
 
 export const convocationProductsServices = new ConvocationProductsServices();
-
 

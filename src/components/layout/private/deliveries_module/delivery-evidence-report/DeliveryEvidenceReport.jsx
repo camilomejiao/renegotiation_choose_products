@@ -19,16 +19,16 @@ export const DeliveryEvidenceReport = ({deliveryInformation}) => {
                             <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                                 <tbody>
                                 <tr>
-                                    <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>REGISTRO FOTOGR�FICO</td>
+                                    <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>REGISTRO FOTOGRÁFICO</td>
                                 </tr>
                                 <tr>
-                                    <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO IL�CITO Y TR�NSITO A LA LEGALIDAD</td>
+                                    <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
                                 </tr>
                                 <tr>
                                     <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                    <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>C�digo:</td>
-                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versi�n: 01</td>
-                                    <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicaci�n: </td>
+                                    <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
+                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: 01</td>
+                                    <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -120,7 +120,7 @@ export const DeliveryEvidenceReport = ({deliveryInformation}) => {
                     <thead>
                     <tr>
                         <td style={{ textAlign: 'center', border: '1px solid black', backgroundColor: 'gray' }}>
-                            <h4>REGISTRO FOTOGR�FICO</h4>
+                            <h4>REGISTRO FOTOGRÁFICO</h4>
                         </td>
                     </tr>
                     </thead>

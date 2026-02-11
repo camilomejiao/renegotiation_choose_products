@@ -28,13 +28,13 @@ export const PlanInversion = ({engagement}) => {
                                 </td>
                             </tr>
                             <tr>
-                                <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO IL�CITO Y TR�NSITO A LA LEGALIDAD</td>
+                                <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
                             </tr>
                             <tr>
                                 <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>C�digo:</td>
-                                <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versi�n: preliminar</td>
-                                <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicaci�n: preliminar</td>
+                                <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
+                                <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
+                                <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
                             </tr>
                             </tbody>
                         </table>
@@ -92,7 +92,7 @@ export const PlanInversion = ({engagement}) => {
                                 borderRight: "1px solid black",
                             }}
                         >
-                            C�dula: {engagement?.identificacion}
+                            Cédula: {engagement?.identificacion}
                         </td>
                         <td
                             style={{
@@ -163,7 +163,7 @@ export const PlanInversion = ({engagement}) => {
                                 borderRight: "1px solid black",
                             }}
                         >
-                            Restricci�n: {engagement?.restriccion}
+                            Restricción: {engagement?.restriccion}
                         </td>
                     </tr>
                 </thead>
@@ -348,15 +348,15 @@ export const PlanInversion = ({engagement}) => {
                             {
                                 engagement?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `Implementaci�n del componente de recolectores/ Programa Nacional Integral de Sustituci�n de Cultivos de Uso Il�cito. Corresponde a la puesta
-                                            en marcha del componente dirigido a la poblaci�n recolectora, en el cual se establece un plan de asistencia condicionada a la ejecuci�n de
-                                            actividades orientadas al emprendimiento y fortalecimiento de los ingresos econ�micos de los beneficiarios.
-                                            Este plan se desarrolla mediante la adquisici�n de insumos, herramientas y bienes que contribuyan a impulsar iniciativas sostenibles, enmarcadas en
-                                            Proyectos Productivos de car�cter no agropecuario, con el prop�sito de promover la generaci�n de medios de vida dignos y el desarrollo econ�mico de la
-                                            poblaci�n beneficiaria en la categor�a de  recolectores.
-                                            La implementaci�n de este componente deber� atender las consideraciones de orden t�cnico, jur�dico y administrativo que garanticen la transparencia,
+                                    `Implementación del componente de recolectores/ Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito. Corresponde a la puesta
+                                            en marcha del componente dirigido a la población recolectora, en el cual se establece un plan de asistencia condicionada a la ejecución de
+                                            actividades orientadas al emprendimiento y fortalecimiento de los ingresos económicos de los beneficiarios.
+                                            Este plan se desarrolla mediante la adquisición de insumos, herramientas y bienes que contribuyan a impulsar iniciativas sostenibles, enmarcadas en
+                                            Proyectos Productivos de carácter no agropecuario, con el propósito de promover la generación de medios de vida dignos y el desarrollo económico de la
+                                            población beneficiaria en la categoría de  recolectores.
+                                            La implementación de este componente deberá atender las consideraciones de orden técnico, jurídico y administrativo que garanticen la transparencia,
                                             eficiencia y sostenibilidad del proceso, asegurando que las inversiones se realicen conforme a los lineamientos establecidos por la
-                                            Direcci�n y las normas aplicables en materia contractual, presupuestal y de control.`
+                                            Dirección y las normas aplicables en materia contractual, presupuestal y de control.`
                                     : engagement?.observacion
                             }
                         </td>
@@ -383,25 +383,25 @@ export const PlanInversion = ({engagement}) => {
                             {
                                 engagement?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `NOTA 1: Obligaci�n general sobre bienes muebles sujetos a registro. En el marco de la implementaci�n del programa, y
+                                    `NOTA 1: Obligación general sobre bienes muebles sujetos a registro. En el marco de la implementación del programa, y
                                             particularmente para los bienes muebles sujetos a registro (motocicletas, motocargueros y en general automotores), el beneficiario–recolector asume
-                                            la obligaci�n general de conservar y destinar dichos bienes exclusivamente a las actividades productivas aprobadas dentro de su plan de emprendimiento,
-                                            garantizando su uso adecuado y mantenimiento durante toda la vigencia del programa. En consecuencia, el beneficiario no podr� transferir, ceder,
-                                            enajenar, arrendar, ni entregar a ning�n t�tulo (propiedad, posesi�n o tenencia)  el bien asignado a ning�n tercero que no pertenezca al
+                                            la obligación general de conservar y destinar dichos bienes exclusivamente a las actividades productivas aprobadas dentro de su plan de emprendimiento,
+                                            garantizando su uso adecuado y mantenimiento durante toda la vigencia del programa. En consecuencia, el beneficiario no podrá transferir, ceder,
+                                            enajenar, arrendar, ni entregar a ningún título (propiedad, posesión o tenencia)  el bien asignado a ningún tercero que no pertenezca al
                                             grupo familiar beneficiario registrado en el programa, so pena de incurrir en causal de incumplimiento del programa y de las obligaciones administrativas
-                                            que se deriven de su vinculaci�n. El bien deber� permanecer a nombre del beneficiario durante al menos cinco (5) a�os contados a partir de su entrega.
-                                            Dicha obligaci�n estar� sujeta a seguimiento y verificaci�n peri�dica por parte de la DSCI, conforme a los lineamientos t�cnicos, jur�dicos y administrativos vigentes.
-                                            Los beneficiarios–recolectores que presenten un plan de asistencia condicionada enmarcado en la l�nea productiva del servicio de transporte mediante veh�culo automotor
-                                            deber�n cumplir previo a la aprobaci�n del respectivo plan de emprendimiento, con los siguientes requisitos m�nimos:
+                                            que se deriven de su vinculación. El bien deberá permanecer a nombre del beneficiario durante al menos cinco (5) años contados a partir de su entrega.
+                                            Dicha obligación estará sujeta a seguimiento y verificación periódica por parte de la DSCI, conforme a los lineamientos técnicos, jurídicos y administrativos vigentes.
+                                            Los beneficiarios–recolectores que presenten un plan de asistencia condicionada enmarcado en la línea productiva del servicio de transporte mediante vehículo automotor
+                                            deberán cumplir previo a la aprobación del respectivo plan de emprendimiento, con los siguientes requisitos mínimos:
                                         REQUISITOS:
-                                            i) Estar inscrito en el Registro Único Nacional de Tr�nsito (RUNT);
+                                            i) Estar inscrito en el Registro Único Nacional de Tránsito (RUNT);
                                             ii) Presentar copia del documento de identidad vigente;
-                                            iii) Acreditar paz y salvo por concepto de multas e infracciones de tr�nsito, as� como de impuestos sobre veh�culos automotores de su propiedad;
-                                            iv) Contar con licencia de conducci�n vigente correspondiente al tipo de veh�culo;
-                                            v) Suscribir los formularios y documentos exigidos por el organismo de tr�nsito competente, de acuerdo con la normatividad aplicable.
-                                            NOTA 2: El incumplimiento de uno o varios de los requisitos anteriores impedir� que el proveedor del bien mueble sujeto a registro pueda realizar la
-                                            legalizaci�n del veh�culo a nombre del beneficiario–recolector, circunstancia que obligar� a este �ltimo a modificar su plan de asistencia condicionada o de
-                                            emprendimiento, en coordinaci�n con la entidad responsable del programa.`
+                                            iii) Acreditar paz y salvo por concepto de multas e infracciones de tránsito, así como de impuestos sobre vehículos automotores de su propiedad;
+                                            iv) Contar con licencia de conducción vigente correspondiente al tipo de vehículo;
+                                            v) Suscribir los formularios y documentos exigidos por el organismo de tránsito competente, de acuerdo con la normatividad aplicable.
+                                            NOTA 2: El incumplimiento de uno o varios de los requisitos anteriores impedirá que el proveedor del bien mueble sujeto a registro pueda realizar la
+                                            legalización del vehículo a nombre del beneficiario–recolector, circunstancia que obligará a este último a modificar su plan de asistencia condicionada o de
+                                            emprendimiento, en coordinación con la entidad responsable del programa.`
                                     : engagement?.recomendacion_tecnica
                             }
                         </td>
@@ -424,22 +424,22 @@ export const PlanInversion = ({engagement}) => {
                             {
                                 engagement?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `Se aclara que la atenci�n brindada a los recolectores mediante la entrega de activos productivos de la
-                                        l�nea no agropecuaria, alrededor de opciones de auto empleabilidad que tambi�n impactan positivamente a la comunidad,
-                                        encaminadas a mejorar sus ingresos econ�micos, est� alineada con los compromisos que constan en el Formulario de Vinculaci�n y, consecuentemente,
-                                        con los objetivos del numeral 4.1.3.6.a del Acuerdo Final para la Terminaci�n del Conflicto y la Construcci�n de una Paz Estable y Duradera
-                                        Por su parte, una vez realizada la entrega de los insumos se�alados, se dar� por terminada la ruta de atenci�n
-                                        para el/la recolector/a identificado/a con el CUB se�alado en este documento dentro del Programa Nacional Integral de
-                                        Sustituci�n de Cultivos de Uso Il�cito (PNIS); toda vez que la atenci�n de recolectores no contempla el componente de
-                                        asistencia t�cnica integral por parte de la DSCI. Esto, sin perjuicio de las eventuales verificaciones posteriores que,
+                                    `Se aclara que la atención brindada a los recolectores mediante la entrega de activos productivos de la
+                                        línea no agropecuaria, alrededor de opciones de auto empleabilidad que también impactan positivamente a la comunidad,
+                                        encaminadas a mejorar sus ingresos económicos, está alineada con los compromisos que constan en el Formulario de Vinculación y, consecuentemente,
+                                        con los objetivos del numeral 4.1.3.6.a del Acuerdo Final para la Terminación del Conflicto y la Construcción de una Paz Estable y Duradera
+                                        Por su parte, una vez realizada la entrega de los insumos señalados, se dará por terminada la ruta de atención
+                                        para el/la recolector/a identificado/a con el CUB señalado en este documento dentro del Programa Nacional Integral de
+                                        Sustitución de Cultivos de Uso Ilícito (PNIS); toda vez que la atención de recolectores no contempla el componente de
+                                        asistencia técnica integral por parte de la DSCI. Esto, sin perjuicio de las eventuales verificaciones posteriores que,
                                         en cualquier tiempo, pueda hacer esta dependencia respecto del adecuado uso de los bienes e insumos entregados.`
                                     :
                                     `Legalizaciones: Las adquisiciones de bienes, servicios y pago de mano de obra efectuados por los beneficiarios 
-                                        con cargo al valor de las transferencias deber�n ser legalizados dentro de los dos
+                                        con cargo al valor de las transferencias deberán ser legalizados dentro de los dos
                                         (2) meses siguientes a cada uno de los desembolsos, mediante la entrega a la DSCI de las facturas
-                                        documentos id�neos que comprueben la adquisici�n de los bienes, servicios y pago de mano de obra
-                                        contemplados en los planes de inversi�n. Una vez se haya realizado la legalizaci�n que se habla, se
-                                        iniciar� el proceso de trasferencia de los saldos restantes para cada proyecto de inversi�n.`
+                                        documentos idóneos que comprueben la adquisición de los bienes, servicios y pago de mano de obra
+                                        contemplados en los planes de inversión. Una vez se haya realizado la legalización que se habla, se
+                                        iniciará el proceso de trasferencia de los saldos restantes para cada proyecto de inversión.`
                             }
                         </td>
                     </tr>
@@ -457,7 +457,7 @@ export const PlanInversion = ({engagement}) => {
                                 width: "12%"
                             }}
                         >
-                            JUR�DICA
+                            JURÍDICA
                         </td>
                         <td
                             style={{
@@ -471,32 +471,32 @@ export const PlanInversion = ({engagement}) => {
                             {
                                 engagement?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `Responsabilidades de los beneficiarios – uso y destinaci�n de bienes:
-                                        1. Responsabilidad general. Ser� responsabilidad exclusiva del beneficiario–recolector garantizar el buen uso, manejo, conservaci�n y destinaci�n 
-                                        l�cita de los insumos, materiales, herramientas, equipos y dem�s bienes entregados o adquiridos en el marco del Programa Nacional Integral de 
-                                        Sustituci�n de Cultivos de Uso Il�cito – PNIS, de conformidad con las condiciones, objetivos y finalidades definidas en su 
+                                    `Responsabilidades de los beneficiarios – uso y destinación de bienes:
+                                        1. Responsabilidad general. Será responsabilidad exclusiva del beneficiario–recolector garantizar el buen uso, manejo, conservación y destinación 
+                                        lícita de los insumos, materiales, herramientas, equipos y demás bienes entregados o adquiridos en el marco del Programa Nacional Integral de 
+                                        Sustitución de Cultivos de Uso Ilícito – PNIS, de conformidad con las condiciones, objetivos y finalidades definidas en su 
                                         Plan de Asistencia Condicionada de Emprendimiento.
-                                        2. Uso exclusivo de los bienes entregados. El beneficiario se obliga a utilizar los bienes entregados �nica y exclusivamente para el 
+                                        2. Uso exclusivo de los bienes entregados. El beneficiario se obliga a utilizar los bienes entregados única y exclusivamente para el 
                                         desarrollo de las actividades previstas en el proyecto de emprendimiento aprobado.
-                                        3. Prohibici�n de cesi�n o enajenaci�n . El beneficiario deber� garantizar que los bienes se mantengan a su nombre y bajo su tenencia por un 
-                                        per�odo m�nimo de tres (3) a�os contados a partir de la fecha de entrega (salvo el t�rmino establecido para bienes muebles sujetos a registro -veh�culos automotores- 
-                                        (que es de cinco (5) a�os) durante el cual no podr� transferirlos, enajenarlos ni cederlos a ning�n t�tulo, y deber� destinarlos al 
-                                        beneficio propio y de su n�cleo familiar. En consecuencia, el beneficiario se abstendr�, como parte de sus obligaciones, 
-                                        de realizar cualquier forma de venta, transferencia, permuta, arrendamiento, cesi�n o uso para fines distintos a los establecidos por el Programa. 
-                                        El incumplimiento de esta obligaci�n constituye causal de incumplimiento grave del Programa, y podr� dar lugar al retiro de este y a la recuperaci�n del 
-                                        bien o del valor equivalente, y  a las dem�s acciones administrativas o judiciales a que haya lugar.
-                                        4. Seguimiento y control. La Direcci�n de Sustituci�n de Cultivos de Uso Il�cito (DSCI), directamente o a trav�s del Fondo Colombia en Paz (FCP) o de las 
-                                        entidades que hagan sus veces, podr� efectuar en cualquier tiempo visitas de verificaci�n, controles aleatorios y/o peri�dicos, con el fin de constatar la existencia, 
-                                        estado, conservaci�n y uso adecuado de los bienes entregados, durante el t�rmino m�nimo de tres (3) a�os o mientras dure la obligaci�n de destinaci�n.
-                                        5. Responsabilidad penal. En caso de identificarse hechos que puedan constituir infracci�n o delito derivados del uso indebido de los bienes o recursos p�blicos, 
-                                        la DSCI y el Fondo Colombia en Paz informar�n a la Fiscal�a General de la Naci�n, conforme a lo previsto en el art�culo 403-A del 
-                                        C�digo Penal Colombiano – Fraude de Subvenciones, para que adelante las acciones que estime pertinentes, sin las sanciones administrativas o fiscales a las que haya lugar.`
+                                        3. Prohibición de cesión o enajenación . El beneficiario deberá garantizar que los bienes se mantengan a su nombre y bajo su tenencia por un 
+                                        período mínimo de tres (3) años contados a partir de la fecha de entrega (salvo el término establecido para bienes muebles sujetos a registro -vehículos automotores- 
+                                        (que es de cinco (5) años) durante el cual no podrá transferirlos, enajenarlos ni cederlos a ningún título, y deberá destinarlos al 
+                                        beneficio propio y de su núcleo familiar. En consecuencia, el beneficiario se abstendrá, como parte de sus obligaciones, 
+                                        de realizar cualquier forma de venta, transferencia, permuta, arrendamiento, cesión o uso para fines distintos a los establecidos por el Programa. 
+                                        El incumplimiento de esta obligación constituye causal de incumplimiento grave del Programa, y podrá dar lugar al retiro de este y a la recuperación del 
+                                        bien o del valor equivalente, y  a las demás acciones administrativas o judiciales a que haya lugar.
+                                        4. Seguimiento y control. La Dirección de Sustitución de Cultivos de Uso Ilícito (DSCI), directamente o a través del Fondo Colombia en Paz (FCP) o de las 
+                                        entidades que hagan sus veces, podrá efectuar en cualquier tiempo visitas de verificación, controles aleatorios y/o periódicos, con el fin de constatar la existencia, 
+                                        estado, conservación y uso adecuado de los bienes entregados, durante el término mínimo de tres (3) años o mientras dure la obligación de destinación.
+                                        5. Responsabilidad penal. En caso de identificarse hechos que puedan constituir infracción o delito derivados del uso indebido de los bienes o recursos públicos, 
+                                        la DSCI y el Fondo Colombia en Paz informarán a la Fiscalía General de la Nación, conforme a lo previsto en el artículo 403-A del 
+                                        Código Penal Colombiano – Fraude de Subvenciones, para que adelante las acciones que estime pertinentes, sin las sanciones administrativas o fiscales a las que haya lugar.`
                                     :
-                                    `Responsabilidad por falta de legalizaci�n: La no legalizaci�n de las sumas transferidas en los
-                                        t�rminos establecidos har� responsable al beneficiario o beneficiarios de todas las consecuencias
-                                        legales y econ�micas derivadas de dicho incumplimiento, a su vez acarrear� la desvinculaci�n del
-                                        Programa, la cesaci�n de sus beneficios y la no vinculaci�n a nuevos procesos de sustituci�n que
-                                        implemente la DSCI. El Fondo Colombia en Paz y la DSCI pondr�n en conocimiento de las autoridades
+                                    `Responsabilidad por falta de legalización: La no legalización de las sumas transferidas en los
+                                        términos establecidos hará responsable al beneficiario o beneficiarios de todas las consecuencias
+                                        legales y económicas derivadas de dicho incumplimiento, a su vez acarreará la desvinculación del
+                                        Programa, la cesación de sus beneficios y la no vinculación a nuevos procesos de sustitución que
+                                        implemente la DSCI. El Fondo Colombia en Paz y la DSCI pondrán en conocimiento de las autoridades
                                         competentes dicho incumplimiento.`
                             }
                         </td>
@@ -602,7 +602,7 @@ export const PlanInversion = ({engagement}) => {
                             borderTop: "1px solid black",
                         }}
                     >
-                        Nombre T�cnico de campo
+                        Nombre Técnico de campo
                     </td>
                     <td>&nbsp;</td>
                     <td
@@ -611,7 +611,7 @@ export const PlanInversion = ({engagement}) => {
                             borderTop: "1px solid black",
                         }}
                     >
-                        Firma T�cnico de campo
+                        Firma Técnico de campo
                     </td>
                     <td style={{ borderRight: "1px solid black" }}>&nbsp;</td>
                 </tr>
@@ -633,14 +633,14 @@ export const PlanInversion = ({engagement}) => {
                         {
                             engagement?.actividad === TypeActorEnum.COLLECTOR
                                 ?
-                                `NOTA 3: Con la suscripci�n del presente Plan de Asistencia Condicionada de Emprendimiento, el beneficiario se obliga a cumplir las obligaciones 
-                                de hacer o no hacer consignadas en el formulario de vinculaci�n y en el presente instrumento.`
+                                `NOTA 3: Con la suscripción del presente Plan de Asistencia Condicionada de Emprendimiento, el beneficiario se obliga a cumplir las obligaciones 
+                                de hacer o no hacer consignadas en el formulario de vinculación y en el presente instrumento.`
                                 :
-                                `Yo como titular del PNIS con la firma del presente plan de inversi�n acepto la modificaci�n del
-                                acuerdo individual de Sustituci�n, en cuanto a la renegociaci�n de la operaci�n de los proyectos
-                                productivos, en el marco del par�grafo 5 del art�culo 10 del Plan Nacional de Desarrollo "Colombia
+                                `Yo como titular del PNIS con la firma del presente plan de inversión acepto la modificación del
+                                acuerdo individual de Sustitución, en cuanto a la renegociación de la operación de los proyectos
+                                productivos, en el marco del parágrafo 5 del artículo 10 del Plan Nacional de Desarrollo "Colombia
                                 Potencia de la Vida". Me comprometo bajo el principio de buena fe a dar el manejo adecuado y
-                                transparente de los recursos entregados en el marco del PNIS para la ejecuci�n del proyecto productivo.`
+                                transparente de los recursos entregados en el marco del PNIS para la ejecución del proyecto productivo.`
                         }
                     </td>
                 </tr>
@@ -658,16 +658,16 @@ export const PlanInversion = ({engagement}) => {
                         {
                             engagement?.actividad === TypeActorEnum.COLLECTOR
                                 ?
-                                `NOTA 4: De conformidad con la naturaleza de los bienes entregados y durante los t�rminos m�nimos previstos en este documento, 
-                                queda prohibida cualquier forma de disposici�n jur�dica o material sobre dichos bienes (venta, transferencia, cesi�n, permuta u otra), 
-                                as� como su uso para fines distintos a los establecidos en el plan. El beneficiario deber� asegurar su cuidado y mantenimiento. 
-                                El incumplimiento de estas obligaciones dar� lugar a las acciones administrativas y/o legales a que haya lugar, 
+                                `NOTA 4: De conformidad con la naturaleza de los bienes entregados y durante los términos mínimos previstos en este documento, 
+                                queda prohibida cualquier forma de disposición jurídica o material sobre dichos bienes (venta, transferencia, cesión, permuta u otra), 
+                                así como su uso para fines distintos a los establecidos en el plan. El beneficiario deberá asegurar su cuidado y mantenimiento. 
+                                El incumplimiento de estas obligaciones dará lugar a las acciones administrativas y/o legales a que haya lugar, 
                                 conforme a la normativa vigente y a los lineamientos del PNIS..`
                                 :
-                                `Con la suscripci�n del presente plan, el beneficiario se compromete a la adquisici�n, manejo y uso
-                                de los m�todos de producci�n, insumos y materiales requeridos de acuerdo con las especificaciones de
-                                la asistencia t�cnica y el desarrollo de sistemas de producci�n que cumplan con los est�ndares y requisitos
-                                de calidad indispensables para alcanzar un mayor grado de agro industrializaci�n y competitividad productiva
+                                `Con la suscripción del presente plan, el beneficiario se compromete a la adquisición, manejo y uso
+                                de los métodos de producción, insumos y materiales requeridos de acuerdo con las especificaciones de
+                                la asistencia técnica y el desarrollo de sistemas de producción que cumplan con los estándares y requisitos
+                                de calidad indispensables para alcanzar un mayor grado de agro industrialización y competitividad productiva
                                 y comercial.`
                         }
                     </td>

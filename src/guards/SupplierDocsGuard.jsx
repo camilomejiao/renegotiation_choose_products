@@ -8,18 +8,18 @@ import AlertComponent from "../helpers/alert/AlertComponent";
  * SupplierDocsGuard
  * -----------------------------------------------------------------------------
  * OBJETIVO
- * - Bloquear el acceso a m�dulos privados cuando el usuario autenticado es PROVEEDOR
- *   y NO tiene su informaci�n/documentos completos.
- * - Si falta informaci�n -> redirigir al formulario de "Completar documentos" (edit-suppliers/:id).
+ * - Bloquear el acceso a módulos privados cuando el usuario autenticado es PROVEEDOR
+ *   y NO tiene su información/documentos completos.
+ * - Si falta información -> redirigir al formulario de "Completar documentos" (edit-suppliers/:id).
  *
  * POR QUÉ EXISTE (regla de negocio)
- * - Si un proveedor no tiene documentaci�n completa, no debe poder continuar con
+ * - Si un proveedor no tiene documentación completa, no debe poder continuar con
  *   acciones del sistema (pagos, cuentas de cobro, etc.) hasta corregirlo.
  *
  * PRINCIPIO DE DISEÑO
  * - El AuthProvider debe manejar datos globales (estado, fetch, TTL).
- * - El Guard debe manejar la navegaci�n y UX de bloqueo (redirect + alert).
- *   → Por eso el alert se muestra aqu�, no en AuthProvider.
+ * - El Guard debe manejar la navegación y UX de bloqueo (redirect + alert).
+ *   → Por eso el alert se muestra aquí, no en AuthProvider.
  *
  * DEPENDENCIAS
  *  - useAuth(): expone { auth, supplierCompliance }.
@@ -29,7 +29,7 @@ import AlertComponent from "../helpers/alert/AlertComponent";
 
 /**
  * --------------------------------------------------------------------------
- * Helper mensaje que ver� el usuario.
+ * Helper mensaje que verá el usuario.
  */
 const buildMissingDocsMessage = (supplierCompliance) => {
     if (!supplierCompliance) {
@@ -56,7 +56,7 @@ export const SupplierDocsGuard = () => {
     /**
      * Outlet context (reenviado)
      * ---------------------------------------------------------------------------
-     * Esto es CR�TICO muchos componentes hacen:
+     * Esto es CRÍTICO muchos componentes hacen:
      *   const { userAuth } = useOutletContext();
      * Si no reenviamos outletCtx, ese destructuring revienta (undefined).
      */
@@ -70,12 +70,12 @@ export const SupplierDocsGuard = () => {
      * ---------------------------------------------------------------------------
      * Evita que el Alert se dispare en cada render.
      * React puede renderizar varias veces (estricto, cambios de estado, etc).
-     * Este ref garantiza que el mensaje salga SOLO 1 vez por evento de redirecci�n.
+     * Este ref garantiza que el mensaje salga SOLO 1 vez por evento de redirección.
      */
     const alertedRef = useRef(false);
 
     // -------------------------
-    // FLAGS (solo l�gica)
+    // FLAGS (solo lógica)
     // -------------------------
 
     /**
@@ -93,14 +93,14 @@ export const SupplierDocsGuard = () => {
     /**
      * docsPath
      * - Ruta de “pantalla de completar documentos”.
-     * - Si en el futuro cambias el m�dulo donde se completan docs, cambia esto.
+     * - Si en el futuro cambias el módulo donde se completan docs, cambia esto.
      */
     const docsPath = auth?.id ? `/admin/edit-suppliers/${auth.id}` : "/admin";
 
     /**
      * alreadyOnDocs
      * - Protege contra loop infinito:
-     *   si ya est� en la pantalla de docs, no redirigir a la misma pantalla.
+     *   si ya está en la pantalla de docs, no redirigir a la misma pantalla.
      */
     const alreadyOnDocs = location.pathname.startsWith("/admin/edit-suppliers/");
 
@@ -108,9 +108,9 @@ export const SupplierDocsGuard = () => {
      * mustRedirect
      * - Regla final de bloqueo:
      *   - es proveedor
-     *   - no est� cargando
+     *   - no está cargando
      *   - compliance indica incompleto
-     *   - no est� ya en pantalla de docs
+     *   - no está ya en pantalla de docs
      */
     const mustRedirect =
         isSupplier &&
@@ -132,7 +132,7 @@ export const SupplierDocsGuard = () => {
 
         alertedRef.current = true;
 
-        AlertComponent.warning("Informaci�n incompleta", buildMissingDocsMessage(supplierCompliance));
+        AlertComponent.warning("Información incompleta", buildMissingDocsMessage(supplierCompliance));
     }, [mustRedirect, supplierCompliance]);
 
 
@@ -146,7 +146,7 @@ export const SupplierDocsGuard = () => {
     }
 
     /**
-     * Si est� cargando validaci�n:
+     * Si está cargando validación:
      * - mostramos un loader
      * - no alertamos
      * - no redirigimos
@@ -156,7 +156,7 @@ export const SupplierDocsGuard = () => {
     }
 
     /**
-     * Si ya est� en pantalla de documentos:
+     * Si ya está en pantalla de documentos:
      * - dejamos pasar (evita loop)
      */
     if (alreadyOnDocs) {
@@ -179,7 +179,7 @@ export const SupplierDocsGuard = () => {
     }
 
     /**
-     * Si todo est� ok:
+     * Si todo está ok:
      * - continuar normal
      */
     return <Outlet context={outletCtx} />;

@@ -77,7 +77,7 @@ export const EditDeliveryOrder = () => {
             flex: 1,
             renderCell: (params) => {
                 if (!params?.row) {
-                    console.warn("renderCell: fila vac�a en quantityToBeDelivered", params);
+                    console.warn("renderCell: fila vacía en quantityToBeDelivered", params);
                     return "–";
                 }
                 return (
@@ -154,7 +154,7 @@ export const EditDeliveryOrder = () => {
                 return {
                     id: Number(row?.id),
                     name: row?.producto?.nombre || "Sin nombre",
-                    description: row?.producto?.especificacion_tecnicas || "Sin descripci�n",
+                    description: row?.producto?.especificacion_tecnicas || "Sin descripción",
                     amount: Number(row?.cantidad) || 0,
                     quantityToBeDelivered: row?.quantityToDeliver !== undefined
                         ? Number(row.quantityToDeliver)
@@ -250,7 +250,7 @@ export const EditDeliveryOrder = () => {
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
                     <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>�Editar entrega de productos!</h1>
+                        <h1>¡Editar entrega de productos!</h1>
                     </div>
                 </div>
 
@@ -270,10 +270,10 @@ export const EditDeliveryOrder = () => {
                             componentsProps={{
                                 columnHeader: {
                                     style: {
-                                        textAlign: "left", // Alinea los t�tulos a la izquierda
-                                        fontWeight: "bold", // Opcional: Aplica un peso espec�fico
-                                        fontSize: "14px", // Ajusta el tama�o de fuente
-                                        wordWrap: "break-word", // Permite que el t�tulo se divida en varias l�neas
+                                        textAlign: "left", // Alinea los títulos a la izquierda
+                                        fontWeight: "bold", // Opcional: Aplica un peso específico
+                                        fontSize: "14px", // Ajusta el tamaño de fuente
+                                        wordWrap: "break-word", // Permite que el título se divida en varias líneas
                                     },
                                 },
                             }}
@@ -311,7 +311,7 @@ export const EditDeliveryOrder = () => {
                                 onClick={handleBack}
                                 className="responsive-button btn-action-back mb-2 mb-md-0"
                             >
-                                <FaStepBackward /> ATR�S
+                                <FaStepBackward /> ATRÁS
                             </Button>
 
                             <Button

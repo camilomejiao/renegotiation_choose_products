@@ -21,13 +21,13 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                                             <td colSpan="4" style={{ borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>{titleReport}</td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO IL�CITO Y TR�NSITO A LA LEGALIDAD</td>
+                                            <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
                                         </tr>
                                         <tr>
                                             <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                            <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>C�digo:</td>
-                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versi�n: preliminar</td>
-                                            <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicaci�n: preliminar</td>
+                                            <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
+                                            <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
+                                            <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -74,7 +74,7 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                             <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>CC Y CUB</td>
                             <td style={{ width: '5%', textAlign: 'center', border: '1px solid black' }}>U. MEDIDA</td>
                             <td style={{ width: '4%', textAlign: 'center', border: '1px solid black' }}>CANT.</td>
-                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLU�DO IVA</td>
+                            <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLUÍDO IVA</td>
                             <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>DTO.</td>
                             <td style={{ width: '25%', textAlign: 'center', border: '1px solid black' }}>VALOR TOTAL</td>
                         </tr>
@@ -110,7 +110,7 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                                     const cubData = dataReport.cubs[cubKey];
                                     return acc + Object.keys(cubData.productos).reduce((subAcc, productoKey) => {
                                         const producto = cubData.productos[productoKey];
-                                        return subAcc + (producto?.total || 0); // Asegura que `total` sea un n�mero v�lido
+                                        return subAcc + (producto?.total || 0); // Asegura que `total` sea un número válido
                                     }, 0);
                                 }, 0).toLocaleString()
                                 : '0'}
@@ -135,7 +135,7 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
                             <td
                                 style={{width: '10%', height: '100px', textAlign: 'left', border: '1px solid black', verticalAlign: 'top'}}
                             >
-                                C�dula del Representante
+                                Cédula del Representante
                             </td>
                             <td
                                 style={{width: '10%', textAlign: 'left', borderRight: '1px solid black', borderTop: '1px solid black', verticalAlign: 'top'}}
@@ -166,17 +166,17 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
 
                 <div style={{ border: '1px solid black' }}>
                     <p style={{ textAlign: 'center', marginTop: '20px' }}>
-                        Direcci�n de Sustituci�n de Cultivos de Uso Il�cito <br />
-                        Direcci�n: Carrera 7 No.26, Bogot� D.C., Colombia. Edificio Tequendama (Pisos 32 y 33) <br />
-                        Tel�fono: 4221030, Ext 7002 <br />
+                        Dirección de Sustitución de Cultivos de Uso Ilícito <br />
+                        Dirección: Carrera 7 No.26, Bogotá D.C., Colombia. Edificio Tequendama (Pisos 32 y 33) <br />
+                        Teléfono: 4221030, Ext 7002 <br />
                     </p>
                 </div>
 
                 <div>
                     <p style={{ textAlign: 'justify', padding: '5px' }}>
                         Nota: Una vez suscrita la presente orden de compra, cualquier otra orden anterior aceptada por el
-                        beneficiario del programa PNIS se entender� revocada en su integridad y, en consecuencia, queda sin
-                        efectos jur�dicos. No habr� lugar a reclamaci�n alguna por ninguna de las partes, entendi�ndose que
+                        beneficiario del programa PNIS se entenderá revocada en su integridad y, en consecuencia, queda sin
+                        efectos jurídicos. No habrá lugar a reclamación alguna por ninguna de las partes, entendiéndose que
                         todos los efectos de la orden de compra previa se revocan por la voluntad de ambas partes.<br />
                     </p>
                 </div>

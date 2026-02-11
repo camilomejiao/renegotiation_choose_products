@@ -73,7 +73,7 @@ export const ReviewDocuments = () => {
     const getBeneficiaryInformation = async (deliberyId) => {
         setLoading(true);
         try {
-            setInformationLoadingText("Obteniendo informaci�n");
+            setInformationLoadingText("Obteniendo información");
             const {data, status} = await paymentServices.getReviewApprovedDeliveriesById(deliberyId);
             if(status === ResponseStatusEnum.OK) {
                 setBeneficiaryInformation(data);
@@ -101,7 +101,7 @@ export const ReviewDocuments = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o im�genes
+                // Solo PDF o imágenes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const fileURL = URL.createObjectURL(blob);
                     window.open(fileURL, '_blank');
@@ -175,7 +175,7 @@ export const ReviewDocuments = () => {
     //
     const approveAndDeny = async (accion, rolDestinoId = null) => {
         if (accion === DeliveryDocumentReviewAction.DENY && !comments.trim()) {
-            AlertComponent.warning("Debe escribir una Observaci�n para denegar la entrega.");
+            AlertComponent.warning("Debe escribir una Observación para denegar la entrega.");
             setLoading(false);
             return;
         }
@@ -222,7 +222,7 @@ export const ReviewDocuments = () => {
     //
     const getDenyDestinationOptions = () => {
         return [
-            { id: RolesEnum.TECHNICAL, label: "T�cnica / Implementaci�n" },
+            { id: RolesEnum.TECHNICAL, label: "Técnica / Implementación" },
             { id: RolesEnum.SUPPLIER, label: "Proveedor" },
         ];
     };
@@ -233,7 +233,7 @@ export const ReviewDocuments = () => {
         [userAuth?.rol_id]
     );
 
-    // Valor de la entrega desde backend (N�mero)
+    // Valor de la entrega desde backend (Número)
     const valorEntrega = useMemo(
         () => Number(beneficiaryInformation?.valor ?? 0),
         [beneficiaryInformation?.valor]
@@ -261,7 +261,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if ((vFactura > valorEntrega || vFactura < newValorEntrega) && (accion === DeliveryDocumentReviewAction.APPROVE)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) � menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
             return false;
         }
@@ -286,7 +286,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if (vFactura && valorEntrega && (vFactura > valorEntrega || vFactura < newValorEntrega)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) � menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
         }
     };
@@ -304,7 +304,7 @@ export const ReviewDocuments = () => {
                 titleHeader={'Proceso de pago'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aqu� podr�s revisar el detalle de cada entrega para orden de pago.'}
+                bannerInformation={'Aquí podrás revisar el detalle de cada entrega para orden de pago.'}
                 backgroundInformationColor={'#F66D1F'}
             />
 
@@ -322,11 +322,11 @@ export const ReviewDocuments = () => {
                             <div className="review-summary-card__title">Proveedor</div>
                             <div className="review-summary-card__row"><strong>Nombre:</strong> {beneficiaryInformation?.proveedor?.nombre}</div>
                             <div className="review-summary-card__row"><strong>NIT:</strong> {beneficiaryInformation?.proveedor?.nit}</div>
-                            <div className="review-summary-card__row"><strong>Resoluci�n:</strong> {beneficiaryInformation?.proveedor?.resolucion}</div>
+                            <div className="review-summary-card__row"><strong>Resolución:</strong> {beneficiaryInformation?.proveedor?.resolucion}</div>
                         </div>
                         <div className="review-summary-card review-summary-card--highlight">
                             <div className="review-summary-card__title">Entrega</div>
-                            <div className="review-summary-card__row"><strong>N�mero Entrega:</strong> {beneficiaryInformation?.id}</div>
+                            <div className="review-summary-card__row"><strong>Número Entrega:</strong> {beneficiaryInformation?.id}</div>
                             <div className="review-summary-card__row"><strong>Valor Entrega:</strong> ${parseFloat(beneficiaryInformation?.valor).toLocaleString('es-CO')}</div>
                         </div>
                     </div>
@@ -341,7 +341,7 @@ export const ReviewDocuments = () => {
                                     <div><strong>Usuario:</strong> {rev.correo}</div>
                                     <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
                                     <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
-                                    <div><strong>Observaci�n:</strong> {rev.observacion}</div>
+                                    <div><strong>Observación:</strong> {rev.observacion}</div>
                                 </div>
                             ))}
                         </Col>
@@ -361,7 +361,7 @@ export const ReviewDocuments = () => {
                                         <button className="button-download button-download--success"
                                                 onClick={() => handleViewFile(beneficiaryInformation?.archivos?.orden_compra)}
                                                 disabled={beneficiaryInformation?.archivos?.orden_compra?.url_descarga === "None"}>
-                                            <img src={downloadImg} alt="" /> Plan de inversi�n
+                                            <img src={downloadImg} alt="" /> Plan de inversión
                                         </button>
                                     )}
                                     {beneficiaryInformation?.archivos?.acta_entrega?.url_descarga && (
@@ -402,16 +402,16 @@ export const ReviewDocuments = () => {
                                 </Col>
 
                                 <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
-                                    <h5 className="section-title">Validaciones Supervisi�n</h5>
+                                    <h5 className="section-title">Validaciones Supervisión</h5>
 
                                     <button
                                         className="button-download_histoy button-download--primary"
                                         onClick={() => handlePlanHistory(beneficiaryInformation?.beneficiario?.id)}
                                     >
-                                        <img src={downloadImg} alt="" /> Historial planes de inversi�n
+                                        <img src={downloadImg} alt="" /> Historial planes de inversión
                                     </button>
 
-                                    {/* Card visual de la secci�n */}
+                                    {/* Card visual de la sección */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Fechas */}
@@ -515,7 +515,7 @@ export const ReviewDocuments = () => {
                                 <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Validaciones Pagos</h5>
 
-                                    {/* Card visual de la secci�n */}
+                                    {/* Card visual de la sección */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Valor */}
@@ -563,7 +563,7 @@ export const ReviewDocuments = () => {
                             <img src={closeImg} alt="" /> Denegar
                         </button>
                         <button onClick={() => onBack()} className="btn-back">
-                            <FaStepBackward/> Atr�s
+                            <FaStepBackward/> Atrás
                         </button>
                     </Col>
                 </Row>
@@ -573,11 +573,11 @@ export const ReviewDocuments = () => {
             <PaymentsConfirmationModal
                 show={showModal}
                 variant={modalAction === "denegar" ? "deny" : "approve"}
-                title={modalAction === "denegar" ? "Confirmar denegaci�n" : "Confirmar aprobaci�n"}
+                title={modalAction === "denegar" ? "Confirmar denegación" : "Confirmar aprobación"}
                 message={
                     modalAction === "denegar"
-                        ? "Seleccione el rol encargado de subsanar y confirme la denegaci�n."
-                        : "�Desea aprobar esta entrega?"
+                        ? "Seleccione el rol encargado de subsanar y confirme la denegación."
+                        : "¿Desea aprobar esta entrega?"
                 }
                 confirmLabel={modalAction === "denegar" ? "Denegar" : "Aprobar"}
                 cancelLabel="Cancelar"

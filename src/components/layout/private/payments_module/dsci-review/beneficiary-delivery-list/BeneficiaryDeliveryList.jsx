@@ -33,11 +33,11 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "N� Entrega", width: 100 },
-        { field: "approval_date", headerName: "Fecha Aprobaci�n", width: 80 },
+        { field: "id", headerName: "N° Entrega", width: 100 },
+        { field: "approval_date", headerName: "Fecha Aprobación", width: 80 },
         { field: "cub_id", headerName: "CUB", width: 80 },
         { field: "name", headerName: "Beneficiario", width: 350 },
-        { field: "identification", headerName: "Identificaci�n", width: 100 },
+        { field: "identification", headerName: "Identificación", width: 100 },
         { field: "supplier_name", headerName: "Proveedor", width: 350 },
         { field: "supplier_nit", headerName: "Nit", width: 150 },
     ];
@@ -88,12 +88,12 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
-        if (!canSearch) return; // no dispares la b�squeda si 1–3 chars
+        if (!canSearch) return; // no dispares la búsqueda si 1–3 chars
 
-        // opcional: resetear p�gina si usas paginaci�n
+        // opcional: resetear página si usas paginación
         setPage(0);
 
-        // Si quieres mantener un peque�o debounce para evitar doble click/enter r�pidos:
+        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
             getDeliveryList(1, pageSize, query);
         }, 150);
@@ -110,7 +110,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pesta�a:
+                // Si es PDF y quieres abrir en otra pestaña:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -243,5 +243,4 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         </>
     )
 }
-
 

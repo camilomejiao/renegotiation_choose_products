@@ -25,13 +25,13 @@ export const AuthorizationSection = ({component, userData, wide}) => {
     const [option3, setOption3] = useState('');
 
     const options = [
-        'Imposibilidad jur�dica',
-        'Imposibilidad f�ctica',
+        'Imposibilidad jurídica',
+        'Imposibilidad fáctica',
         'Mayor impacto productivo',
-        //'Otros componentes no incluidos en el plan de inversi�n'
+        //'Otros componentes no incluidos en el plan de inversión'
     ];
 
-    // Funci�n para validar si se ha seleccionado al menos una opci�n
+    // Función para validar si se ha seleccionado al menos una opción
     const isValidSelection = () => {
         return (
             (option1 && option1.value && option1.value.trim() !== '') ||
@@ -40,10 +40,10 @@ export const AuthorizationSection = ({component, userData, wide}) => {
         );
     };
 
-    //Imprime la autorizaci�n del usuario
+    //Imprime la autorización del usuario
     const handlePrintAuthorization = () => {
         if (component === ComponentEnum.RENEGOTIATION && !isValidSelection()) {
-            AlertComponent.warning("","Debes seleccionar al menos una opci�n antes de continuar.");
+            AlertComponent.warning("","Debes seleccionar al menos una opción antes de continuar.");
             return;
         }
 
@@ -67,7 +67,7 @@ export const AuthorizationSection = ({component, userData, wide}) => {
         printJS({
             printable: printContent,
             type: 'raw-html',
-            documentTitle: 'Autorizaci�n Plan de Inversi�n',
+            documentTitle: 'Autorización Plan de Inversión',
         });
     }
 
@@ -78,16 +78,16 @@ export const AuthorizationSection = ({component, userData, wide}) => {
                     <Col md={wide}>
                         <div className="authorization-options">
                             <h4 style={{ fontWeight: "bold", fontSize: "18px", color: "#2148C0", textAlign: "center" }}>
-                                Selecciona las opciones para la autorizaci�n:
+                                Selecciona las opciones para la autorización:
                             </h4>
                             <p style={{ fontWeight: "bold", fontSize: "10px", color: "#2148C0", textAlign: "left" }}>
-                                Que la presente solicitud de actualizaci�n se fundamenta en:
+                                Que la presente solicitud de actualización se fundamenta en:
                             </p>
                             <Select
                                 value={option1}
                                 onChange={setOption1}
                                 options={options.map((opt) => ({ value: opt, label: opt }))}
-                                placeholder="Selecciona la primera opci�n"
+                                placeholder="Selecciona la primera opción"
                                 classNamePrefix="custom-select"
                                 className="custom-select"
                             />
@@ -95,7 +95,7 @@ export const AuthorizationSection = ({component, userData, wide}) => {
                                 value={option2}
                                 onChange={setOption2}
                                 options={options.map((opt) => ({ value: opt, label: opt }))}
-                                placeholder="Selecciona la segunda opci�n"
+                                placeholder="Selecciona la segunda opción"
                                 classNamePrefix="custom-select"
                                 className="custom-select"
                             />
@@ -103,7 +103,7 @@ export const AuthorizationSection = ({component, userData, wide}) => {
                                 value={option3}
                                 onChange={setOption3}
                                 options={options.map((opt) => ({ value: opt, label: opt }))}
-                                placeholder="Selecciona la tercera opci�n"
+                                placeholder="Selecciona la tercera opción"
                                 classNamePrefix="custom-select"
                                 className="custom-select"
                             />

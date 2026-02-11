@@ -24,9 +24,9 @@ class PaymentServices {
     // =============================
 
     /**
-     * Obtiene la lista paginada de entregas aprobadas listas para verificaci�n.
-     * @param {number} [page=1] - N�mero de p�gina.
-     * @param {number} [pageSize=100] - Tama�o de p�gina.
+     * Obtiene la lista paginada de entregas aprobadas listas para verificación.
+     * @param {number} [page=1] - Número de página.
+     * @param {number} [pageSize=100] - Tamaño de página.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
     getApprovedDeliveries(page = 1, pageSize = 100, search) {
@@ -39,7 +39,7 @@ class PaymentServices {
     }
 
     /**
-     * Obtiene el detalle de una entrega espec�fica en revisi�n.
+     * Obtiene el detalle de una entrega específica en revisión.
      * @param {number|string} deliveryId - ID de la entrega.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
@@ -50,7 +50,7 @@ class PaymentServices {
 
     /**
      * Aprueba o rechaza una entrega.
-     * @param {Object} payload - Cuerpo de la solicitud con la decisi�n.
+     * @param {Object} payload - Cuerpo de la solicitud con la decisión.
      * @param {number|string} id - ID de la entrega.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
@@ -68,8 +68,8 @@ class PaymentServices {
 
     /**
      * Obtiene una lista paginada de cuentas de cobro, opcionalmente filtradas por proveedor.
-     * @param {number} [page=1] - N�mero de p�gina.
-     * @param {number} [pageSize=100] - Tama�o de p�gina.
+     * @param {number} [page=1] - Número de página.
+     * @param {number} [pageSize=100] - Tamaño de página.
      * @param {number|string} [supplierId] - ID del proveedor (opcional).
      * @returns {Promise<Response>} Respuesta del servidor.
      */
@@ -108,7 +108,7 @@ class PaymentServices {
     }
 
     /**
-     * Crea una nueva cuenta de cobro con la informaci�n de pago.
+     * Crea una nueva cuenta de cobro con la información de pago.
      * @param {Object} payload - Formulario con los datos y archivos.
      * @param {number} supplierId - Formulario con el id del porveedor.
      * @returns {Promise<Response>} Respuesta del servidor.
@@ -127,8 +127,8 @@ class PaymentServices {
 
     /**
      * Obtiene todas las entregas aprobadas por proveedor (paginadas).
-     * @param {number} [page=1] - N�mero de p�gina.
-     * @param {number} [pageSize=100] - Tama�o de p�gina.
+     * @param {number} [page=1] - Número de página.
+     * @param {number} [pageSize=100] - Tamaño de página.
      * @returns {Promise<Response>} Respuesta del servidor.
      */
     getAllApprovedDeliveriesBySupplier(page = 1, pageSize = 100, supplierId) {
