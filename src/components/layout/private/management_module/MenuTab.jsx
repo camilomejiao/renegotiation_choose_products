@@ -37,7 +37,6 @@ export const MenuTab = () => {
                     </Tab>
                 </Tabs>
             </div>
-            );
         </>
     )
 }
