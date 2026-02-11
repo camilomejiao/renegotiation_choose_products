@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
 export const ConfirmationModal = ({
@@ -30,3 +30,4 @@ export const ConfirmationModal = ({
         </>
     );
 };
+

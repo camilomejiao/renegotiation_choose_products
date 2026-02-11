@@ -1,4 +1,4 @@
-import {ComponentEnum, TypeActorEnum} from "../../../../../helpers/GlobalEnum";
+﻿import {ComponentEnum, TypeActorEnum} from "../../../../../helpers/GlobalEnum";
 
 export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
     console.log(userData);
@@ -39,7 +39,7 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                                 <img src={img2} alt="" style={{height:'60px'}} />
                             </th>
                             <th style={{width:'0', borderTop: '1px solid black'}} >&nbsp;</th>
-                            <th style={{width:'10%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Actualización Plan No.</th>
+                            <th style={{width:'10%', borderTop: '1px solid black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>Actualizaci�n Plan No.</th>
                             <th style={{width:'55%', borderTop: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</th>
                         </tr>
                     </thead>
@@ -48,7 +48,7 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }} >
                     <thead>
                         <tr>
-                            <th style={{ width: '15%', border: '1px solid black' }}><strong>Cédula</strong></th>
+                            <th style={{ width: '15%', border: '1px solid black' }}><strong>C�dula</strong></th>
                             <th style={{ width: '15%', border: '1px solid black' }}>{userData.identificacion}</th>
                             <th style={{ width: '15%', border: '1px solid black' }}><strong>Nombre</strong></th>
                             <th style={{ width: '35%', border: '1px solid black' }} colSpan="3">{userData.nombre} {userData.apellido}</th>
@@ -66,9 +66,9 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                             <th style={{width:'15%', border: '1px solid black'}}>{userData.estado_cub}</th>
                         </tr>
                         <tr>
-                            <th style={{width:'15%', border: '1px solid black'}}><strong>Tipo de Línea</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>Tipo de L�nea</strong></th>
                             <th style={{width:'15%', border: '1px solid black'}}>{component === ComponentEnum.RENEGOTIATION ? userData?.plan_anterior : userData.plan}</th>
-                            <th style={{width:'15%', border: '1px solid black'}}><strong>Línea</strong></th>
+                            <th style={{width:'15%', border: '1px solid black'}}><strong>L�nea</strong></th>
                             <th style={{width:'35%', border: '1px solid black'}} colSpan="3">{component === ComponentEnum.RENEGOTIATION ? userData?.linea_anterior : userData.linea}</th>
                             <th style={{width:'10%', border: '1px solid black'}}><strong>Fecha</strong></th>
                             <th style={{width:'15%', border: '1px solid black'}}>{formattedDate}</th>
@@ -106,28 +106,28 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                             <th style={{ width: '40px', textAlign: 'center', border: '1px solid black'}}>1</th>
                             <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
                                 Que, actuando en pleno ejercicio de mis facultades, de manera libre, consciente e informada
-                                - sin que medie coacción o vicio del consentimiento alguno-, <strong>SOLICITO y/o AUTORIZO</strong>
-                                expresamente la actualización de mi plan de inversión, en el marco de la renegociación del
-                                <strong>Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS).</strong>
+                                - sin que medie coacci�n o vicio del consentimiento alguno-, <strong>SOLICITO y/o AUTORIZO</strong>
+                                expresamente la actualizaci�n de mi plan de inversi�n, en el marco de la renegociaci�n del
+                                <strong>Programa Nacional Integral de Sustituci�n de Cultivos de Uso Il�cito (PNIS).</strong>
                             </th>
                         </tr>
                         <tr>
                             <th style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>2</th>
                             <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
-                                Que recibí toda la información necesaria de forma clara y comprensible respecto de las
-                                condiciones y restricciones para la actualización de mi plan de inversión. Asimismo, tuve la
+                                Que recib� toda la informaci�n necesaria de forma clara y comprensible respecto de las
+                                condiciones y restricciones para la actualizaci�n de mi plan de inversi�n. Asimismo, tuve la
                                 oportunidad de formular todas las preguntas pertinentes, las cuales fueron resultadas de
                                 manera satisfactoria.
                             </th>
                         </tr>
                         <tr>
                             <th style={{width: '40px', textAlign: 'center', border: '1px solid black'}}>3</th>
-                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}}>Que la presente solicitud de actualización se fundamenta en:</th>
+                            <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}}>Que la presente solicitud de actualizaci�n se fundamenta en:</th>
                             <th style={{textAlign: 'left', border: '1px solid black'}}>
                                 <table>
                                     <tr>
                                         <td style={{width: '1%', border: '1px solid black'}}>
-                                            Otros componentes no incluidos en el plan de inversión
+                                            Otros componentes no incluidos en el plan de inversi�n
                                         </td>
                                     </tr>
                                     <tr>
@@ -144,30 +144,30 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                         </tr>
                         <tr>
                             <th colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
-                                Conforme los lineamientos adoptados y socializados por la Dirección de Sustitución de
-                                Cultivos de Uso Ilícito. Esta actualización responde a la necesidad de adecuar mi proyecto
-                                productivo a las condiciones normativas, técnicas o de mayor impacto social y productivo,
+                                Conforme los lineamientos adoptados y socializados por la Direcci�n de Sustituci�n de
+                                Cultivos de Uso Il�cito. Esta actualizaci�n responde a la necesidad de adecuar mi proyecto
+                                productivo a las condiciones normativas, t�cnicas o de mayor impacto social y productivo,
                                 conforme la causal ya indicada.
                             </th>
                         </tr>
                         <tr>
                             <th colSpan="3" style={{textAlign: 'center', marginTop: '20px', border: '1px solid black'}}>
-                                <p >Plan de inversión ajustado: {component === ComponentEnum.RENEGOTIATION ? userData?.linea : `____________________________________________ (SI APLICA (no montos))` } </p>
+                                <p >Plan de inversi�n ajustado: {component === ComponentEnum.RENEGOTIATION ? userData?.linea : `____________________________________________ (SI APLICA (no montos))` } </p>
                             </th>
                         </tr>
                         <tr>
                             <th style={{width: '40px', textAlign: 'center',border: '1px solid black'}}>4</th>
                             <th style={{textAlign: 'left', padding: '10px', border: '1px solid black'}} colSpan="2">
-                                Que autorizo a la DSCI para llevar a cabo todas las gestiones administrativas, jurídicas y
-                                operativas necesarias para la actualización solicitada y/o autorizada, comprometiéndome a
-                                cumplir con las disposiciones legales, ambientales y técnicas derivadas de este ajuste, en
+                                Que autorizo a la DSCI para llevar a cabo todas las gestiones administrativas, jur�dicas y
+                                operativas necesarias para la actualizaci�n solicitada y/o autorizada, comprometi�ndome a
+                                cumplir con las disposiciones legales, ambientales y t�cnicas derivadas de este ajuste, en
                                 plena observancia de la normativa, los principios y objetivos que rigen el <strong>PNIS.</strong>
                             </th>
                         </tr>
                         <tr>
                             <th colSpan="3" style={{textAlign: 'left', marginTop: '20px', padding: '10px', border: '1px solid black'}}>
-                                La presente se firma con total conocimiento y aceptación de sus implicaciones legales en la
-                                ubicación y fecha señaladas al inicio de este documento.
+                                La presente se firma con total conocimiento y aceptaci�n de sus implicaciones legales en la
+                                ubicaci�n y fecha se�aladas al inicio de este documento.
                             </th>
                         </tr>
                     </thead>
@@ -203,9 +203,9 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
                             <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>Telefono</th>
                             <th style={{textAlign: 'left', fontWeight: 'bold', border: '1px solid black'}}>&nbsp;</th>
                             <th style={{borderBottom: 'none', borderTop: 'none', borderLeft: '1px solid black'}}>&nbsp;</th>
-                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderLeft: '1px solid black'}}>Nombre Técnico de Campo
+                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderLeft: '1px solid black'}}>Nombre T�cnico de Campo
                             </th>
-                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderRight: '1px solid black'}}>Firma Técnico de Campo</th>
+                            <th style={{fontWeight: 'bold', borderTop: '1px solid black', borderRight: '1px solid black'}}>Firma T�cnico de Campo</th>
                         </tr>
                         <tr>
                             <th colSpan="2" style={{borderLeft: '1px solid black', borderRight: '1px solid black'}}>&nbsp;</th>
@@ -217,12 +217,13 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
 
                 <div className="footer" style={{ border: '1px solid black'}}>
                     <p style={{textAlign: 'center', marginTop: '20px'}}>
-                        Dirección de Sustitución de Cultivos de Uso Ilícito <br/>
-                        Dirección: Carrera 7 No.26, Bogotá D.C., Colombia. Edificio Tequendama (Pisos 32 y 33) <br/>
-                        Teléfono: 4221030, Ext 7002 <br/>
+                        Direcci�n de Sustituci�n de Cultivos de Uso Il�cito <br/>
+                        Direcci�n: Carrera 7 No.26, Bogot� D.C., Colombia. Edificio Tequendama (Pisos 32 y 33) <br/>
+                        Tel�fono: 4221030, Ext 7002 <br/>
                     </p>
                 </div>
             </div>
         </>
     )
 }
+

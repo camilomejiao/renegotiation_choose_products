@@ -1,4 +1,4 @@
-import { TypeActorEnum } from "../../../../../helpers/GlobalEnum";
+﻿import { TypeActorEnum } from "../../../../../helpers/GlobalEnum";
 
 
 export const ConsolidatedPurchaseReport = ({dataReport}) => {
@@ -39,13 +39,13 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO Y TRÁNSITO A LA LEGALIDAD</td>
+                                    <td colSpan="4" style={{ borderTop: '1px solid black', borderBottom: '1px solid black', textAlign: 'center', padding: '5px' }}>SUSTITUCIÓN DE CULTIVOS DE USO IL�CITO Y TR�NSITO A LA LEGALIDAD</td>
                                 </tr>
                                 <tr>
                                     <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>DIRECCIÓN DE SUSTITUCIÓN DE CULTIVOS DE USO ILICITO</td>
-                                    <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Código:</td>
-                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versión: preliminar</td>
-                                    <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicación: preliminar</td>
+                                    <td style={{ width: '15%', borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>C�digo:</td>
+                                    <td style={{ borderRight: '1px solid black', textAlign: 'center', padding: '5px' }}>Versi�n: preliminar</td>
+                                    <td style={{ textAlign: 'center', padding: '5px' }}>Fecha de publicaci�n: preliminar</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -76,7 +76,7 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                         <td style={{ border: '1px solid black', textAlign: 'center' }}>{dataReport?.vereda}</td>
                     </tr>
                     <tr>
-                        <td style={{ border: '1px solid black' }}><strong>Línea Productiva Seleccionada</strong></td>
+                        <td style={{ border: '1px solid black' }}><strong>L�nea Productiva Seleccionada</strong></td>
                         <td style={{ border: '1px solid black', textAlign: 'left' }} colSpan="5">{dataReport?.linea}</td>
                     </tr>
                     <tr>
@@ -113,7 +113,7 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                         <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>NOMBRE DEL PROVEEDOR</td>
                         <td style={{ width: '9%',  textAlign: 'center', border: '1px solid black' }}>NIT DEL PROVEEDOR</td>
                         <td style={{ width: '5%',  textAlign: 'center', border: '1px solid black' }}>U. DE MEDIDA</td>
-                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLUÍDO IVA</td>
+                        <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>PRECIO UNITARIO INCLU�DO IVA</td>
                         <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>CANT</td>
                         <td style={{ width: '4%',  textAlign: 'center', border: '1px solid black' }}>DTO</td>
                         <td style={{ width: '12%', textAlign: 'center', border: '1px solid black' }}>VALOR TOTAL</td>
@@ -167,19 +167,19 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                             {
                                 dataReport?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    '1. Los proveedores y precios aquí registrados corresponden a la selección realizada por cada titular. 2. Los precios tienen vigencia definida por cada proveedor. 3. El plan de asistencia condicionada para emprendimiento detalla los activos productivos a adquirir para la implementación del proyecto productivo.\n' +
-                                    'NOTA 1: Obligación general sobre bienes muebles sujetos a registro. En el marco de la implementación del programa, y particularmente para los bienes muebles sujetos a registro (motocicletas, motocargueros y en general automotores), el beneficiario–recolector asume la obligación general de conservar y destinar dichos bienes exclusivamente a las actividades productivas aprobadas dentro de su plan de emprendimiento, garantizando su uso adecuado y mantenimiento durante toda la vigencia del programa. En consecuencia, el beneficiario no podrá transferir, ceder, enajenar, arrendar, ni entregar a ningún título (propiedad, posesión o tenencia)  el bien asignado a ningún tercero que no pertenezca al grupo familiar beneficiario registrado en el programa, so pena de incurrir en causal de incumplimiento del programa y de las obligaciones administrativas que se deriven de su vinculación. El bien deberá permanecer a nombre del beneficiario durante al menos cinco (5) años contados a partir de su entrega. Dicha obligación estará sujeta a seguimiento y verificación periódica por parte de la DSCI, conforme a los lineamientos técnicos, jurídicos y administrativos vigentes.\n' +
-                                    'Los beneficiarios–recolectores que presenten un plan de asistencia condicionada enmarcado en la línea productiva del servicio de transporte mediante vehículo automotor, deberán cumplir previo a la aprobación del respectivo plan de emprendimiento, con los siguientes requisitos mínimos: \n' +
-                                    'REQUISITOS: i) Estar inscrito en el Registro Único Nacional de Tránsito (RUNT); ii) Presentar copia del documento de identidad vigente; iii) Acreditar paz y salvo por concepto de multas e infracciones de tránsito, así como de impuestos sobre vehículos automotores de su propiedad; iv) Contar con licencia de conducción vigente correspondiente al tipo de vehículo; v) Suscribir los formularios y documentos exigidos por el organismo de tránsito competente, de acuerdo con la normatividad aplicable.\n' +
-                                    'NOTA 2: El incumplimiento de uno o varios de los requisitos anteriores impedirá que el proveedor del bien mueble sujeto a registro pueda realizar la legalización del vehículo a nombre del beneficiario–recolector, circunstancia que obligará a este último a modificar su plan de asistencia condicionada o de emprendimiento, en coordinación con la entidad responsable del programa.\n'
+                                    '1. Los proveedores y precios aqu� registrados corresponden a la selecci�n realizada por cada titular. 2. Los precios tienen vigencia definida por cada proveedor. 3. El plan de asistencia condicionada para emprendimiento detalla los activos productivos a adquirir para la implementaci�n del proyecto productivo.\n' +
+                                    'NOTA 1: Obligaci�n general sobre bienes muebles sujetos a registro. En el marco de la implementaci�n del programa, y particularmente para los bienes muebles sujetos a registro (motocicletas, motocargueros y en general automotores), el beneficiario–recolector asume la obligaci�n general de conservar y destinar dichos bienes exclusivamente a las actividades productivas aprobadas dentro de su plan de emprendimiento, garantizando su uso adecuado y mantenimiento durante toda la vigencia del programa. En consecuencia, el beneficiario no podr� transferir, ceder, enajenar, arrendar, ni entregar a ning�n t�tulo (propiedad, posesi�n o tenencia)  el bien asignado a ning�n tercero que no pertenezca al grupo familiar beneficiario registrado en el programa, so pena de incurrir en causal de incumplimiento del programa y de las obligaciones administrativas que se deriven de su vinculaci�n. El bien deber� permanecer a nombre del beneficiario durante al menos cinco (5) a�os contados a partir de su entrega. Dicha obligaci�n estar� sujeta a seguimiento y verificaci�n peri�dica por parte de la DSCI, conforme a los lineamientos t�cnicos, jur�dicos y administrativos vigentes.\n' +
+                                    'Los beneficiarios–recolectores que presenten un plan de asistencia condicionada enmarcado en la l�nea productiva del servicio de transporte mediante veh�culo automotor, deber�n cumplir previo a la aprobaci�n del respectivo plan de emprendimiento, con los siguientes requisitos m�nimos: \n' +
+                                    'REQUISITOS: i) Estar inscrito en el Registro Único Nacional de Tr�nsito (RUNT); ii) Presentar copia del documento de identidad vigente; iii) Acreditar paz y salvo por concepto de multas e infracciones de tr�nsito, as� como de impuestos sobre veh�culos automotores de su propiedad; iv) Contar con licencia de conducci�n vigente correspondiente al tipo de veh�culo; v) Suscribir los formularios y documentos exigidos por el organismo de tr�nsito competente, de acuerdo con la normatividad aplicable.\n' +
+                                    'NOTA 2: El incumplimiento de uno o varios de los requisitos anteriores impedir� que el proveedor del bien mueble sujeto a registro pueda realizar la legalizaci�n del veh�culo a nombre del beneficiario–recolector, circunstancia que obligar� a este �ltimo a modificar su plan de asistencia condicionada o de emprendimiento, en coordinaci�n con la entidad responsable del programa.\n'
                                     :
-                                    '1. Los proveedores y precios aquí registrados corresponden a la selección realizada por cada titular en el Banco de Proveedores Locales.\n' +
+                                    '1. Los proveedores y precios aqu� registrados corresponden a la selecci�n realizada por cada titular en el Banco de Proveedores Locales.\n' +
                                     '2. Los precios tienen vigencia definida por cada proveedor.\n' +
-                                    '3. El plan de inversión actualizado detalla los activos productivos a adquirir para la implementación del proyecto productivo.\n' +
+                                    '3. El plan de inversi�n actualizado detalla los activos productivos a adquirir para la implementaci�n del proyecto productivo.\n' +
                                     '4. Se ha incluido la totalidad de los saldos por titular (Auto sostenimiento y Seguridad Alimentaria + Proyecto productivo de Ciclo Corto + Proyecto Productivo de Ciclo largo).\n' +
-                                    '5. El material vegetal debe provenir de viveros registrados según resolución ICA.\n' +
-                                    '6. La adquisición de aves y semovientes debe provenir de explotaciones agropecuarias registradas en el ICA.\n' +
-                                    '7. El plan de inversión planteado se encuentra soportado por el análisis de uso y aptitud de suelo, realizado por la asistencia técnica implementada en el programa.'
+                                    '5. El material vegetal debe provenir de viveros registrados seg�n resoluci�n ICA.\n' +
+                                    '6. La adquisici�n de aves y semovientes debe provenir de explotaciones agropecuarias registradas en el ICA.\n' +
+                                    '7. El plan de inversi�n planteado se encuentra soportado por el an�lisis de uso y aptitud de suelo, realizado por la asistencia t�cnica implementada en el programa.'
                             }
                         </td>
                     </tr>
@@ -191,41 +191,41 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                             {
                                 dataReport?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `Se aclara que la atención brindada a los recolectores mediante la entrega de activos productivos de la línea no agropecuaria, 
-                                          alrededor de opciones de auto empleabilidad que también impactan positivamente a la comunidad, encaminadas a mejorar sus ingresos 
-                                          económicos, está alineada con los compromisos que constan en el Formulario de Vinculación y, consecuentemente, con los objetivos del numeral 4.1.3.6.a 
-                                          del Acuerdo Final para la Terminación del Conflicto y la Construcción de una Paz Estable y Duradera.
+                                    `Se aclara que la atenci�n brindada a los recolectores mediante la entrega de activos productivos de la l�nea no agropecuaria, 
+                                          alrededor de opciones de auto empleabilidad que tambi�n impactan positivamente a la comunidad, encaminadas a mejorar sus ingresos 
+                                          econ�micos, est� alineada con los compromisos que constan en el Formulario de Vinculaci�n y, consecuentemente, con los objetivos del numeral 4.1.3.6.a 
+                                          del Acuerdo Final para la Terminaci�n del Conflicto y la Construcci�n de una Paz Estable y Duradera.
                                           
-                                          Por su parte, una vez realizada la entrega de los insumos señalados, se dará por terminada la ruta de atención para el/la recolector/a identificado/a con el CUB señalado 
-                                          en este documento dentro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS); toda vez que la atención de recolectores no contempla el 
-                                          componente de asistencia técnica integral por parte de la DSCI. Esto, sin perjuicio de las eventuales verificaciones posteriores que, en cualquier tiempo, 
+                                          Por su parte, una vez realizada la entrega de los insumos se�alados, se dar� por terminada la ruta de atenci�n para el/la recolector/a identificado/a con el CUB se�alado 
+                                          en este documento dentro del Programa Nacional Integral de Sustituci�n de Cultivos de Uso Il�cito (PNIS); toda vez que la atenci�n de recolectores no contempla el 
+                                          componente de asistencia t�cnica integral por parte de la DSCI. Esto, sin perjuicio de las eventuales verificaciones posteriores que, en cualquier tiempo, 
                                           pueda hacer esta dependencia respecto del adecuado uso de los bienes e insumos entregados.`
                                     :
-                                    `1. Una vez se reciban los activos productivos se firmará el acta de entrega en donde constará la satisfacción con la calidad y cantidades allí registradas.
-                                         2. Se podrán firmar actas de entrega parciales en aquellos casos en los que el proveedor requiera mayor tiempo para completar la entrega.`
+                                    `1. Una vez se reciban los activos productivos se firmar� el acta de entrega en donde constar� la satisfacci�n con la calidad y cantidades all� registradas.
+                                         2. Se podr�n firmar actas de entrega parciales en aquellos casos en los que el proveedor requiera mayor tiempo para completar la entrega.`
                             }
                         </td>
                     </tr>
                     <tr>
                         <td style={{ width: '10%', textAlign: 'center', border: '1px solid black' }}>
-                            JURÍDICAS
+                            JUR�DICAS
                         </td>
                         <td style={{ padding: '10px', border: '1px solid black', textAlign: "justify", }}>
                             {
                                 dataReport?.actividad === TypeActorEnum.COLLECTOR
                                     ?
-                                    `Responsabilidades de los beneficiarios – uso y destinación de bienes:
-                                         1. Responsabilidad general. Será responsabilidad exclusiva del beneficiario–recolector garantizar el buen uso, manejo, conservación y destinación lícita de los insumos, materiales, herramientas, equipos y demás bienes entregados o adquiridos en el marco del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito – PNIS, de conformidad con las condiciones, objetivos y finalidades definidas en su Plan de Asistencia Condicionada de Emprendimiento.
-                                         2. Uso exclusivo de los bienes entregados. El beneficiario se obliga a utilizar los bienes entregados única y exclusivamente para el desarrollo de las actividades previstas en el proyecto de emprendimiento aprobado. 
-                                         3. Prohibición de cesión o enajenación . El beneficiario deberá garantizar que los bienes se mantengan a su nombre y bajo su tenencia por un período mínimo de tres (3) años contados a partir de la fecha de entrega (salvo el término establecido para bienes muebles sujetos a registro -vehículos automotores- (que es de cinco (5) años) durante el cual no podrá transferirlos, enajenarlos ni cederlos a ningún título, y deberá destinarlos al beneficio propio y de su núcleo familiar. En consecuencia, el beneficiario se abstendrá, como parte de sus obligaciones, de realizar cualquier forma de venta, transferencia, permuta, arrendamiento, cesión o uso para fines distintos a los establecidos por el Programa. El incumplimiento de esta obligación constituye causal de incumplimiento grave del Programa, y podrá dar lugar al retiro de este y a la recuperación del bien o del valor equivalente, y  a las demás acciones administrativas o judiciales a que haya lugar.
-                                         4. Seguimiento y control. La Dirección de Sustitución de Cultivos de Uso Ilícito (DSCI), directamente o a través del Fondo Colombia en Paz (FCP) o de las entidades que hagan sus veces, podrá efectuar en cualquier tiempo visitas de verificación, controles aleatorios y/o periódicos, con el fin de constatar la existencia, estado, conservación y uso adecuado de los bienes entregados, durante el término mínimo de tres (3) años o mientras dure la obligación de destinación.
-                                         5. Responsabilidad penal. En caso de identificarse hechos que puedan constituir infracción o delito derivados del uso indebido de los bienes o recursos públicos, la DSCI y el Fondo Colombia en Paz informarán a la Fiscalía General de la Nación, conforme a lo previsto en el artículo 403-A del Código Penal Colombiano – Fraude de Subvenciones, para que adelante las acciones que estime pertinentes, sin las sanciones administrativas o fiscales a las que haya lugar.`
+                                    `Responsabilidades de los beneficiarios – uso y destinaci�n de bienes:
+                                         1. Responsabilidad general. Ser� responsabilidad exclusiva del beneficiario–recolector garantizar el buen uso, manejo, conservaci�n y destinaci�n l�cita de los insumos, materiales, herramientas, equipos y dem�s bienes entregados o adquiridos en el marco del Programa Nacional Integral de Sustituci�n de Cultivos de Uso Il�cito – PNIS, de conformidad con las condiciones, objetivos y finalidades definidas en su Plan de Asistencia Condicionada de Emprendimiento.
+                                         2. Uso exclusivo de los bienes entregados. El beneficiario se obliga a utilizar los bienes entregados �nica y exclusivamente para el desarrollo de las actividades previstas en el proyecto de emprendimiento aprobado. 
+                                         3. Prohibici�n de cesi�n o enajenaci�n . El beneficiario deber� garantizar que los bienes se mantengan a su nombre y bajo su tenencia por un per�odo m�nimo de tres (3) a�os contados a partir de la fecha de entrega (salvo el t�rmino establecido para bienes muebles sujetos a registro -veh�culos automotores- (que es de cinco (5) a�os) durante el cual no podr� transferirlos, enajenarlos ni cederlos a ning�n t�tulo, y deber� destinarlos al beneficio propio y de su n�cleo familiar. En consecuencia, el beneficiario se abstendr�, como parte de sus obligaciones, de realizar cualquier forma de venta, transferencia, permuta, arrendamiento, cesi�n o uso para fines distintos a los establecidos por el Programa. El incumplimiento de esta obligaci�n constituye causal de incumplimiento grave del Programa, y podr� dar lugar al retiro de este y a la recuperaci�n del bien o del valor equivalente, y  a las dem�s acciones administrativas o judiciales a que haya lugar.
+                                         4. Seguimiento y control. La Direcci�n de Sustituci�n de Cultivos de Uso Il�cito (DSCI), directamente o a trav�s del Fondo Colombia en Paz (FCP) o de las entidades que hagan sus veces, podr� efectuar en cualquier tiempo visitas de verificaci�n, controles aleatorios y/o peri�dicos, con el fin de constatar la existencia, estado, conservaci�n y uso adecuado de los bienes entregados, durante el t�rmino m�nimo de tres (3) a�os o mientras dure la obligaci�n de destinaci�n.
+                                         5. Responsabilidad penal. En caso de identificarse hechos que puedan constituir infracci�n o delito derivados del uso indebido de los bienes o recursos p�blicos, la DSCI y el Fondo Colombia en Paz informar�n a la Fiscal�a General de la Naci�n, conforme a lo previsto en el art�culo 403-A del C�digo Penal Colombiano – Fraude de Subvenciones, para que adelante las acciones que estime pertinentes, sin las sanciones administrativas o fiscales a las que haya lugar.`
                                     :
-                                    `La inadecuada utilización de los activos productivos entregados para la implementación del proyecto productivo podrá generar, entre otras, 
-                                         consecuencias jurídicas por dicho incumplimiento.
+                                    `La inadecuada utilizaci�n de los activos productivos entregados para la implementaci�n del proyecto productivo podr� generar, entre otras, 
+                                         consecuencias jur�dicas por dicho incumplimiento.
                                          
-                                         Adicionalmente, dicho incumplimiento podrá conllevar el retiro del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS), 
-                                         la terminación de los beneficios otorgados y la imposibilidad de participar en futuros programas de sustitución promovidos por el Gobierno Nacional.`
+                                         Adicionalmente, dicho incumplimiento podr� conllevar el retiro del Programa Nacional Integral de Sustituci�n de Cultivos de Uso Il�cito (PNIS), 
+                                         la terminaci�n de los beneficios otorgados y la imposibilidad de participar en futuros programas de sustituci�n promovidos por el Gobierno Nacional.`
                             }
                         </td>
                     </tr>
@@ -254,7 +254,7 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del titular:</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>{dataReport?.nombre}</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>C.C: {dataReport?.cedula}</td>
-                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del técnico:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Nombre del t�cnico:</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={3}>&nbsp;</td>
                     </tr>
                     <tr>
@@ -262,7 +262,7 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }} colSpan={2}>&nbsp;</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Tarjeta profesional:</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
-                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>Cédula del técnico:</td>
+                        <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>C�dula del t�cnico:</td>
                         <td style={{ width: '10%', textAlign: 'left', border: '1px solid black' }}>&nbsp;</td>
                     </tr>
                     </thead>
@@ -271,3 +271,4 @@ export const ConsolidatedPurchaseReport = ({dataReport}) => {
         </>
     )
 }
+

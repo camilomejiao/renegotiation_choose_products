@@ -1,8 +1,8 @@
-import { GlobalConnex } from "../GlobalConnex.jsx";
+﻿import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para la gestión de usuarios
+ * Servicio para la gesti�n de usuarios
  */
 class UserServices {
     constructor() {
@@ -23,10 +23,10 @@ class UserServices {
     // =============================
 
     /**
-     * Buscar un usuario por término de búsqueda.
-     * Puede ser nombre, cédula, número CUB u otro dato.
+     * Buscar un usuario por t�rmino de b�squeda.
+     * Puede ser nombre, c�dula, n�mero CUB u otro dato.
      *
-     * @param {string} data - Término de búsqueda.
+     * @param {string} data - T�rmino de b�squeda.
      * @returns {Promise<object>} - Promesa con la respuesta del servidor.
      */
     searchUser(data) {
@@ -35,7 +35,7 @@ class UserServices {
     }
 
     /**
-     * Obtener información detallada de un usuario por ID de CUB.
+     * Obtener informaci�n detallada de un usuario por ID de CUB.
      *
      * @param {number|string} cubId - ID del usuario (CUB).
      * @returns {Promise<object>} - Promesa con los datos del usuario.
@@ -117,3 +117,5 @@ class UserServices {
 }
 
 export const userServices = new UserServices();
+
+

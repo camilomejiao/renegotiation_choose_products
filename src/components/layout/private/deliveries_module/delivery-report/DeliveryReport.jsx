@@ -1,4 +1,4 @@
-
+﻿
 //Opciones para los productos a entregar
 const deliveryStatus = [
     { id: 0, label: "NO ENTREGADO" },
@@ -101,14 +101,14 @@ export const DeliveryReport = ({deliveryInformation}) => {
                                     <td style={{
                                         borderRight: '1px solid black',
                                         borderBottom: '1px solid black'
-                                    }}>Día
+                                    }}>D�a
                                     </td>
                                     <td style={{
                                         borderRight: '1px solid black',
                                         borderBottom: '1px solid black'
                                     }}>Mes
                                     </td>
-                                    <td style={{borderBottom: '1px solid black'}}>Año</td>
+                                    <td style={{borderBottom: '1px solid black'}}>A�o</td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -144,13 +144,13 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     </tr>
                     <tr>
                         <td colSpan="3" style={{textAlign: 'center', border: '1px solid black', padding: '10px'}}>
-                            El (La) abajo firmante en calidad de titular  del proyecto productivo en referencia CERTIFICO que he  recibido a satisfacción los bienes o servicios relacionados en la presente acta.
-                            NOTA: Incluir como anexos del Acta soporte fotográfico de la actividad de entrega a cada titular.
+                            El (La) abajo firmante en calidad de titular  del proyecto productivo en referencia CERTIFICO que he  recibido a satisfacci�n los bienes o servicios relacionados en la presente acta.
+                            NOTA: Incluir como anexos del Acta soporte fotogr�fico de la actividad de entrega a cada titular.
                         </td>
                     </tr>
                     <tr>
                         <td colSpan="3" style={{textAlign: 'center', border: '1px solid black', padding: '10px'}}>
-                            Titular que recibe los elementos o activos productivos se relaciona a continuación:
+                            Titular que recibe los elementos o activos productivos se relaciona a continuaci�n:
                         </td>
                     </tr>
                     </thead>
@@ -174,8 +174,8 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     <thead>
                         <tr>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Activo productivo adquirido</td>
-                            <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Descripción detallada</td>
-                            <td style={{textAlign: 'center', border: '1px solid black', width: '50px', fontSize: '9px'}}>Unidad de medida y/o presentación</td>
+                            <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Descripci�n detallada</td>
+                            <td style={{textAlign: 'center', border: '1px solid black', width: '50px', fontSize: '9px'}}>Unidad de medida y/o presentaci�n</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Estado</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Cantidad</td>
                             <td style={{textAlign: 'center', border: '1px solid black', fontSize: '9px'}}>Valor Total</td>
@@ -217,15 +217,15 @@ export const DeliveryReport = ({deliveryInformation}) => {
                     <thead>
                         <tr>
                             <td colSpan={5} style={{textAlign: 'left', borderLeft: '1px solid black', borderRight: '1px solid black', padding: '10px'}}>
-                                <b>Con la suscripción de la presente acta manifiesto que los elementos recibidos los voy
-                                    a utilizar única y exclusivamente para el desarrollo de mi proyecto productivo como
-                                    titular de la DSCI y que acepto que se realicen las labores de seguimiento y/o verificación
-                                    de su destinación y adecuada utilización.</b>
+                                <b>Con la suscripci�n de la presente acta manifiesto que los elementos recibidos los voy
+                                    a utilizar �nica y exclusivamente para el desarrollo de mi proyecto productivo como
+                                    titular de la DSCI y que acepto que se realicen las labores de seguimiento y/o verificaci�n
+                                    de su destinaci�n y adecuada utilizaci�n.</b>
                             </td>
                         </tr>
                         <tr>
                             <td style={{width: '25%', textAlign: 'center', border: '1px solid black', padding: '10px'}}>Nombre completo del titular</td>
-                            <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>Número de identificación</td>
+                            <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>N�mero de identificaci�n</td>
                             <td style={{width: '10%', textAlign: 'center', border: '1px solid black'}}>CUB</td>
                             <td style={{width: '25%', textAlign: 'center', border: '1px solid black'}}>firma</td>
                             <td style={{width: '20%', textAlign: 'center', border: '1px solid black'}}>huella</td>
@@ -239,7 +239,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         </tr>
                         <tr>
                             <td colSpan={5} style={{textAlign: 'center', border: '1px solid black'}}>
-                                <b>NOTA: En caso de que el titular no sepa o no pueda firmar, deberá adjuntar copia de su cédula de ciudadania</b>
+                                <b>NOTA: En caso de que el titular no sepa o no pueda firmar, deber� adjuntar copia de su c�dula de ciudadania</b>
                             </td>
                         </tr>
                     </thead>
@@ -277,7 +277,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                         </tr>
                         <tr>
                             <td style={{width: '33%', height: '33px', textAlign: 'center', border: '1px solid black'}}>Datos
-                                del profesional DSCI que acompaña la entrega (Profesional, técnico o Enlace municipal)
+                                del profesional DSCI que acompa�a la entrega (Profesional, t�cnico o Enlace municipal)
                             </td>
                             <td style={{width: '33%', textAlign: 'center', border: '1px solid black'}}>Datos proveedor que
                                 realiza la entrega
@@ -297,9 +297,9 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Nombre:</td>
                         </tr>
                         <tr>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Cédula:</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Nit o Cédula: {deliveryInformation?.proveedor?.nit}</td>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Cédula:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>C�dula:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>Nit o C�dula: {deliveryInformation?.proveedor?.nit}</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>C�dula:</td>
                         </tr>
                         <tr>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>Cargo:</td>
@@ -307,7 +307,7 @@ export const DeliveryReport = ({deliveryInformation}) => {
                             <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
                         <tr>
-                            <td style={{textAlign: 'left', border: '1px solid black'}}>Profesión:</td>
+                            <td style={{textAlign: 'left', border: '1px solid black'}}>Profesi�n:</td>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                             <td style={{textAlign: 'left', border: '1px solid black'}}>&nbsp;</td>
                         </tr>
@@ -322,3 +322,4 @@ export const DeliveryReport = ({deliveryInformation}) => {
         </>
     )
 }
+

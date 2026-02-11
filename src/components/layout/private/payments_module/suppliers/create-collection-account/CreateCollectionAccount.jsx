@@ -1,5 +1,5 @@
-﻿import {useEffect, useRef, useState} from "react";
-import {useNavigate, useOutletContext} from "react-router-dom";
+﻿import { useEffect, useRef, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FaFileAlt, FaSave, FaStepBackward } from "react-icons/fa";
@@ -17,12 +17,12 @@ import imgWorker from "../../../../../../assets/image/payments/worker.png";
 
 // Services
 import { paymentServices } from "../../../../../../helpers/services/PaymentServices";
-import {supplierServices} from "../../../../../../helpers/services/SupplierServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 // Enums
 import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
-import {filesServices} from "../../../../../../helpers/services/FilesServices";
+import { filesServices } from "../../../../../../helpers/services/FilesServices";
 
 //
 const canShowSelect = [
@@ -55,21 +55,21 @@ export const CreateCollectionAccount = () => {
     const [sendingData, setSendingData] = useState(false);
     const [showCertificate, setShowCertificate] = useState("");
 
-    //Para no recargar el catálogo mÃºltiples veces
+    //Para no recargar el cat�logo m�ltiples veces
     const loadRef = useRef(false);
 
     const statusCollectionAccountColumns = [
-        { field: "id", headerName: "N° Entrega", flex: 0.8 },
+        { field: "id", headerName: "N� Entrega", flex: 0.8 },
         { field: "cub_id", headerName: "Cub", flex: 0.4 },
         { field: "name", headerName: "Beneficiario", flex: 2.5 },
-        { field: "identification", headerName: "Identificación", flex: 1 },
+        { field: "identification", headerName: "Identificaci�n", flex: 1 },
         { field: "date", headerName: "Fecha", flex: 0.6 },
         { field: "unid", headerName: "Productos", flex: 0.6 },
         { field: "amount", headerName: "Cantidad de Productos", flex: 1.2 },
         { field: "amount_of_money", headerName: "Valor", flex: 1 },
     ];
 
-    //Carga catálogo (activos) una sola vez
+    //Carga cat�logo (activos) una sola vez
     const loadSuppliersOnce = async () => {
         if (loadRef.current) return;
         try {
@@ -85,7 +85,7 @@ export const CreateCollectionAccount = () => {
                 AlertComponent.info('No hay proveedores con cuentas pendientes!')
             }
         } catch (error) {
-            console.error("Error cargando proveedores (catálogo):", error);
+            console.error("Error cargando proveedores (cat�logo):", error);
             setDataDataSuppliers([]);
         } finally {
             setLoading(false);
@@ -97,7 +97,7 @@ export const CreateCollectionAccount = () => {
         const rows =  data?.data?.proveedores;
         return rows.map((row) => ({
             value: String(row.id),
-            label: `${row.nombre} â€” ${row.nit}`,
+            label: `${row.nombre} — ${row.nit}`,
         }));
     }
 
@@ -199,7 +199,7 @@ export const CreateCollectionAccount = () => {
                 id: row?.id,
                 cub_id: beneficiario?.cub_id,
                 name: `${beneficiario?.nombre ?? ""} ${beneficiario?.apellido ?? ""}`.trim(),
-                identification: beneficiario?.Identificación ?? "",
+                identification: beneficiario?.identificacion ?? "",
                 date: row.fecha_creacion.split("T")[0],
                 unid: row?.cantidad_productos ?? 0,
                 amount: row?.total_cantidad_productos ?? 0,
@@ -240,7 +240,7 @@ export const CreateCollectionAccount = () => {
             setLoading(true);
             const { status } = await paymentServices.createCollectionAccounts(payload, supplier);
             if (status === ResponseStatusEnum.CREATED) {
-                AlertComponent.success("Ã‰xito", "Cuenta de cobro creada exitosamente.");
+                AlertComponent.success("Éxito", "Cuenta de cobro creada exitosamente.");
                 navigate('/admin/payments-suppliers');
             }
         } catch (error) {
@@ -268,7 +268,7 @@ export const CreateCollectionAccount = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imÃ¡genes
+                // Solo PDF o im�genes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const fileURL = URL.createObjectURL(blob);
                     window.open(fileURL, '_blank');
@@ -311,7 +311,7 @@ export const CreateCollectionAccount = () => {
                 titleHeader={'Proceso de pago'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrÃ¡s revisar el estado de tus órdenes de pago.'}
+                bannerInformation={'Aqu� podr�s revisar el estado de tus �rdenes de pago.'}
                 backgroundInformationColor={'#F66D1F'}
             />
 
@@ -330,13 +330,13 @@ export const CreateCollectionAccount = () => {
                 <Card className="p-3 p-md-4 shadow-sm mb-2">
                     <SectionHeader
                         icon={FaFileAlt}
-                        title="Información para Cuenta de Cobro"
-                        subtitle="Complete la información requerida para generar la cuenta de cobro."
+                        title="Informaci�n para Cuenta de Cobro"
+                        subtitle="Complete la informaci�n requerida para generar la cuenta de cobro."
                     />
 
                     {!isCanShowSelect && (
                         <h6 className="mb-0 fw-semibold">
-                            Nota: El certificado bancario debe haber sido expedido dentro de los últimos 90 días al momento de generar la cuenta de cobro.
+                            Nota: El certificado bancario debe haber sido expedido dentro de los �ltimos 90 d�as al momento de generar la cuenta de cobro.
                         </h6>
                     )}
 
@@ -358,7 +358,7 @@ export const CreateCollectionAccount = () => {
                                             const q = input.toLowerCase();
                                             return (
                                                 option.label.toLowerCase().includes(q) || // nombre
-                                                option.label.toLowerCase().split("â€”")[1]?.includes(q) // NIT
+                                                option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
                                             );
                                         }}
                                         styles={{
@@ -506,6 +506,8 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
+
+
 
 
 

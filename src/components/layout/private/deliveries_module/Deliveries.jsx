@@ -74,7 +74,7 @@ const isValidPdf = (file) => {
 // ============================
 
 /**
- * Devuelve true si la fila tiene nÃºmero de factura electrÃ³nica (FE).
+ * Devuelve true si la fila tiene n�mero de factura electr�nica (FE).
  * @param {Object} row - Fila del DataGrid.
  */
 const hasFeNumber = (row) => row?.fe_number;
@@ -91,7 +91,7 @@ const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesE
 const hasPdfConsolidado = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl);
 
 /**
- * Devuelve la URL del archivo FE (factura electrÃ³nica) de la fila.
+ * Devuelve la URL del archivo FE (factura electr�nica) de la fila.
  * @param {Object} row - Fila del DataGrid.
  */
 const getFePdfUrl = (row) => row?.evidencePdf?.feFileUrl ?? null;
@@ -104,7 +104,7 @@ const getImagen1Url = (row) => row?.evidenceImg?.imgEvidence1Url ?? null;
 const getImagen2Url = (row) => row?.evidenceImg?.imgEvidence2Url ?? null;
 
 /**
- * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electrÃ³nica) de la fila.
+ * Devuelve la URL del archivo Imagen1 y Imagen2 (factura electr�nica) de la fila.
  * @param {Object} row - Fila del DataGrid.
  */
 const hasPdfOK = (row) => Boolean(row?.evidencePdf?.consolidatedFileUrl && row?.evidencePdf?.feFileUrl && row?.evidenceImg?.imgEvidence1Url && row?.evidenceImg?.imgEvidence2Url);
@@ -136,7 +136,7 @@ export const Deliveries = () => {
 
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
 
-    //Confirmación proveedor
+    //Confirmaci�n proveedor
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     //Aprobacion
@@ -149,8 +149,8 @@ export const Deliveries = () => {
 
     /**
      * Obtiene los proveedores asociados al usuario autenticado.
-     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION â†’ consulta todos los proveedores del titular.
-     * - Si el usuario es SUPPLIER â†’ consulta solo su proveedor.
+     * - Si el usuario es TERRITORIAL_LINKS, ADMIN o SUPERVISION → consulta todos los proveedores del titular.
+     * - Si el usuario es SUPPLIER → consulta solo su proveedor.
      */
     const getSuppliersFromWhomYouPurchased = async () => {
         try {
@@ -196,7 +196,7 @@ export const Deliveries = () => {
     /**
      * Obtiene las URLs de archivos (PDF consolidado y FE) y aprobaciones asociadas a una entrega.
      * @param {number} deliveryId - ID de la entrega.
-     * @returns {Object} InformaciÃ³n de archivos y estados de aprobación.
+     * @returns {Object} Informaci�n de archivos y estados de aprobaci�n.
      */
     const getDeliveryUrl = async (deliveryId) => {
         try {
@@ -255,7 +255,7 @@ export const Deliveries = () => {
     };
 
     /**
-     * Obtiene informaciÃ³n del titular (datos personales).
+     * Obtiene informaci�n del titular (datos personales).
      * @param {number} cubId - ID del titular.
      */
     const getUserInformation = async (cubId) => {
@@ -277,8 +277,8 @@ export const Deliveries = () => {
     }
 
     /**
-     * Determina si un botÃ³n debe estar deshabilitado según:
-     * - Estado de aprobación (territorial o tÃ©cnica).
+     * Determina si un bot�n debe estar deshabilitado seg�n:
+     * - Estado de aprobaci�n (territorial o t�cnica).
      * - Rol del usuario autenticado.
      */
     const isButtonDisabled = (row, rolId = userAuth?.rol_id) => {
@@ -303,7 +303,7 @@ export const Deliveries = () => {
         }
     };
 
-    /**  Determina si el botón técnico debe estar deshabilitado según aprobación. */
+    /**  Determina si el bot�n t�cnico debe estar deshabilitado seg�n aprobaci�n. */
     const isButtonDisabledTecnical = (row) => {
         const { aprobadoProveedor, approvedTechnical } = row.actions;
 
@@ -313,7 +313,7 @@ export const Deliveries = () => {
         return false;
     };
 
-    /** Renderiza el ícono de envío de entrega. */
+    /** Renderiza el �cono de env�o de entrega. */
     const renderSendSupplierIcon = (status) => {
         if (status === 1 || status === true) {
             return (
@@ -349,7 +349,7 @@ export const Deliveries = () => {
         );
     }
 
-    /** Renderiza el ícono de aprobación (aprobado, denegado o pendiente). */
+    /** Renderiza el �cono de aprobaci�n (aprobado, denegado o pendiente). */
     const renderApprovalIcon = (status) => {
         if (status === 1 || status === true) {
             return (
@@ -364,7 +364,7 @@ export const Deliveries = () => {
                         }}
                     >
                         <FaCheck />
-                        Enviada a supervisión
+                        Enviada a supervisi�n
                 </span>
             );
 
@@ -401,15 +401,15 @@ export const Deliveries = () => {
                 }}
             >
                     <FaClipboardCheck />
-                    Pendiente de aprobación
+                    Pendiente de aprobaci�n
                 </span>
         );
     }
 
 
-    /** Renderiza la celda de FE (cargar/ver/editar factura electrÃ³nica). */
+    /** Renderiza la celda de FE (cargar/ver/editar factura electr�nica). */
     
-    /** Renderiza el botón de generación de acta de entrega. */
+    /** Renderiza el bot�n de generaci�n de acta de entrega. */
     const renderGeneratePdfCell = (params) => (
         <div>
             <Button
@@ -455,9 +455,9 @@ const renderFeCell = (params) => {
         const fePdfUrl = getFePdfUrl(row);
 
         // 1) Sin consolidado -> no hacer nada
-        if (!hasPdfConsolidado(row)) return <span>â€”</span>;
+        if (!hasPdfConsolidado(row)) return <span>—</span>;
 
-        // 2) Con consolidado pero SIN FE -> botÃ³n para cargar FE (PDF + nÃºmero)
+        // 2) Con consolidado pero SIN FE -> bot�n para cargar FE (PDF + n�mero)
         if (!hasFeNumber(row)) {
             return (
                 <div>
@@ -465,7 +465,7 @@ const renderFeCell = (params) => {
                         variant="outline-info"
                         onClick={() => openFeModal(row.id)}
                         disabled={isButtonDisabled(row) || !canEdit}
-                        title="Adjuntar factura electrÃ³nica (PDF) y nÃºmero de FE"
+                        title="Adjuntar factura electr�nica (PDF) y n�mero de FE"
                     >
                         Subir FE
                     </Button>
@@ -473,7 +473,7 @@ const renderFeCell = (params) => {
             );
         }
 
-        // 3) Con FE -> mostrar "Ver FE" (si hay PDF FE) + nÃºmero + botÃ³n editar (si procede)
+        // 3) Con FE -> mostrar "Ver FE" (si hay PDF FE) + n�mero + bot�n editar (si procede)
         return (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span>{row.fe_number}</span>
@@ -526,7 +526,7 @@ const renderFeCell = (params) => {
                     </Button>
                 )}
 
-                {/* aprobación TÃ©cnica/Admin (solo si hay consolidado) */}
+                {/* aprobaci�n T�cnica/Admin (solo si hay consolidado) */}
                 {hasPdfOK(row) && isTechOrAdmin && row?.actions?.aprobadoProveedor && (
                     <Button
                         style={{ backgroundColor: "#FFF", marginRight: 10 }}
@@ -535,7 +535,7 @@ const renderFeCell = (params) => {
                             setOpenModal(true);
                         }}
                         disabled={isButtonDisabledTecnical(row)}
-                        title="aprobación tÃ©cnica"
+                        title="aprobaci�n t�cnica"
                     >
                         {renderApprovalIcon(row.actions?.approvedTechnical)}
                     </Button>
@@ -624,7 +624,7 @@ const renderFeCell = (params) => {
 
     //===== Columnas =====
     const deliveryColumns = [
-        { field: "id", headerName: "N° ENTREGA", width: 120 },
+        { field: "id", headerName: "N� ENTREGA", width: 120 },
         { field: "date", headerName: "FECHA", width: 100 },
         { field: "supplier", headerName: "PROVEEDOR", width: 350 },
         {
@@ -645,7 +645,7 @@ const renderFeCell = (params) => {
         },
         {
             field: "fe_number",
-            headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
+            headerName: "N�MERO FE O DOCUMENTO EQUIVALENTE",
             width: 400,
             renderCell: renderFeCell,
             sortable: false,
@@ -653,7 +653,7 @@ const renderFeCell = (params) => {
         },
         {
             field: "evidence_photo",
-            headerName: "EVIDENCIA FOTOGRÁFICA",
+            headerName: "EVIDENCIA FOTOGR�FICA",
             width: 550,
             renderCell: renderPhotoCell,
             sortable: false,
@@ -662,7 +662,7 @@ const renderFeCell = (params) => {
         { field: "statusDelivery", headerName: "ESTADO", width: 150 },
         {
             field: "observation",
-            headerName: "OBSERVACIÓN",
+            headerName: "OBSERVACI�N",
             flex: 1,
             minWidth: 250,
             renderCell: (params) => (
@@ -721,7 +721,7 @@ const renderFeCell = (params) => {
     };
 
     /**
-     * Descarga y abre un PDF en nueva pestaÃ±a.
+     * Descarga y abre un PDF en nueva pesta�a.
      * @param {string} pdfUrl - URL del archivo PDF.
      */
     const handleViewFile = async (pdfUrl) => {
@@ -739,7 +739,7 @@ const renderFeCell = (params) => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imÃ¡genes
+                // Solo PDF o im�genes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const url = URL.createObjectURL(blob);
                     window.open(url, '_blank', 'noopener,noreferrer');
@@ -779,7 +779,7 @@ const renderFeCell = (params) => {
         },
         {
             field: "description",
-            headerName: "DESCRIPCIÓN",
+            headerName: "DESCRIPCI�N",
             flex: 3,
             headerAlign: "left",
             renderCell: (params) => (
@@ -900,7 +900,7 @@ const renderFeCell = (params) => {
             }
 
             if (status === ResponseStatusEnum.BAD_REQUEST) {
-                showError("Error", "Error al obtener las Ã³rdenes de compra");
+                showError("Error", "Error al obtener las �rdenes de compra");
             }
         } catch (error) {
             console.error("Error obteniendo productos a entregar:", error);
@@ -919,12 +919,12 @@ const renderFeCell = (params) => {
         try {
             const { status} = await deliveriesServices.removeDelivery(id);
             if (status === ResponseStatusEnum.NO_CONTENT) {
-                showAlert('Ã‰xito', 'Entrega eliminada exitosamente');
+                showAlert('Éxito', 'Entrega eliminada exitosamente');
                 refreshPage();
             }
 
             if (status === ResponseStatusEnum.METHOD_NOT_ALLOWED) {
-                showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÃ“N');
+                showError('Error', 'NO TIENES PERMISO PARA ESTA ACCIÓN');
             }
 
             if (status === ResponseStatusEnum.FORBIDDEN) {
@@ -935,11 +935,11 @@ const renderFeCell = (params) => {
         }
     }
 
-    // Helper comÃºn para enviar al backend y manejar UX
+    // Helper com�n para enviar al backend y manejar UX
     const submitApproval = async ({deliveryId, payload, successMessage, handleClose}) => {
-        if (loading) return false; // evita doble envÃ­o
+        if (loading) return false; // evita doble env�o
         if (!deliveryId) {
-            showError("ValidaciÃ³n", "No se encontrÃ³ el ID de la entrega.");
+            showError("Validaci�n", "No se encontr� el ID de la entrega.");
             return false;
         }
 
@@ -965,9 +965,9 @@ const renderFeCell = (params) => {
         }
     };
 
-    //envío del porveedor
+    //env�o del porveedor
     const handleConfirmDelete = async () => {
-        // EnvÃ­o del proveedor (aprobado=1 con observaciÃ³n fija)
+        // Env�o del proveedor (aprobado=1 con observaci�n fija)
         const payload = {
             aprobado: 1,
             observacion: "Enviado por el proveedor",
@@ -981,13 +981,13 @@ const renderFeCell = (params) => {
         });
     };
 
-    //envío de aprobación del tecnico
+    //env�o de aprobaci�n del tecnico
     const handleApproveByAudit = async () => {
-        // EnvÃ­o de aprobación/denegaciÃ³n del tÃ©cnico (requiere acciÃ³n y comentario)
+        // Env�o de aprobaci�n/denegaci�n del t�cnico (requiere acci�n y comentario)
         const trimmed = (comment || "").trim();
 
         if (action === 'deny' && trimmed === "") {
-            showError("ValidaciÃ³n", "Debes escribir un comentario.");
+            showError("Validaci�n", "Debes escribir un comentario.");
             return;
         }
 
@@ -1015,11 +1015,11 @@ const renderFeCell = (params) => {
     };
 
     /**
-     * Maneja el envÃ­o de archivos al backend (consolidado o FE).
+     * Maneja el env�o de archivos al backend (consolidado o FE).
      * @param {File}   file
      * @param {number} deliveryId
-     * @param {string} fileName - "pdf" (consolidado) | "fe" (factura electrÃ³nica)
-     * @param {string} [numeroFE] - Solo se envÃ­a cuando fileName === "fe"
+     * @param {string} fileName - "pdf" (consolidado) | "fe" (factura electr�nica)
+     * @param {string} [numeroFE] - Solo se env�a cuando fileName === "fe"
      */
     const handleFileChange = async (file, deliveryId, fileName, numeroFE) => {
         if (file) {
@@ -1028,9 +1028,9 @@ const renderFeCell = (params) => {
             const valid = expectImage ? isValidImage(file) : isValidPdf(file);
             if (!valid) {
                 showError(
-                    'Archivo no vÃ¡lido',
+                    'Archivo no v�lido',
                     expectImage
-                        ? 'Solo se permiten imÃ¡genes (JPG, PNG).'
+                        ? 'Solo se permiten im�genes (JPG, PNG).'
                         : 'Solo se permite PDF.'
                 );
                 refreshPage();
@@ -1060,7 +1060,7 @@ const renderFeCell = (params) => {
                 const { data, status } = await deliveriesServices.evidenceOfDeliveries(deliveryId, formData);
 
                 if (status === ResponseStatusEnum.CREATED) {
-                    showAlert('Ã‰xito', 'Archivo enviado exitosamente');
+                    showAlert('Éxito', 'Archivo enviado exitosamente');
                     //refreshPage();
                     await getListDeliveriesToUser(params.id);
                 }
@@ -1161,7 +1161,7 @@ const renderFeCell = (params) => {
 
             const {data, status} = await deliveriesServices.saveProducts(dataSupplier, params.id, dataSaveProducts);
             if(status === ResponseStatusEnum.OK) {
-                showAlert('Ã‰xito', 'Productos entregados correctamente.')
+                showAlert('Éxito', 'Productos entregados correctamente.')
                 refreshPage();
             }
 
@@ -1193,11 +1193,11 @@ const renderFeCell = (params) => {
             setFeLoading(true);
 
             if(!feNumber) {
-                showError("Error", "Debe agregar el nÃºmero de Factura Ã³ Documento Equivalente.");
+                showError("Error", "Debe agregar el n�mero de Factura � Documento Equivalente.");
                 return;
             }
 
-            // Guardas FE (archivo + nÃºmero)
+            // Guardas FE (archivo + n�mero)
             await handleFileChange(feFile, feDeliveryId, UploadFileEnum.FE, feNumber);
 
             // Refrescas la tabla completa
@@ -1255,11 +1255,11 @@ const renderFeCell = (params) => {
                     titleHeader={'Entrega de productos'}
                     bannerIcon={imgAdd}
                     backgroundIconColor={'#2148C0'}
-                    bannerInformation={'Aquí podrás realizar la entrega de todos tus productos.'}
+                    bannerInformation={'Aqu� podr�s realizar la entrega de todos tus productos.'}
                     backgroundInformationColor={'#F66D1F'}
                 />
 
-                {/* Contenedor de la informaciÃ³n del usuario */}
+                {/* Contenedor de la informaci�n del usuario */}
                 <UserInformation userData={userData} />
 
                 <div className="deliveries-banner">
@@ -1285,7 +1285,7 @@ const renderFeCell = (params) => {
                                         value={selectedSupplier}
                                         onChange={(selectedOption) => setSelectedSupplier(selectedOption)}
                                         options={suppliers?.map((opt) => ({ value: opt.id, label: opt.nombre }))}
-                                        placeholder="Selecciona una compañía"
+                                        placeholder="Selecciona una compa��a"
                                         classNamePrefix="custom-select"
                                         className="custom-select flex-grow-1"
                                     />
@@ -1365,7 +1365,7 @@ const renderFeCell = (params) => {
                                         onClick={() => navigate(-1)}
                                         className="responsive-button deliveries-back-button deliveries-action-button deliveries-action-button--ghost mb-2 mb-md-0"
                                     >
-                                        <FaStepBackward /> ATRÁS
+                                        <FaStepBackward /> ATR�S
                                     </Button>
                                 </div>
                             </>
@@ -1391,10 +1391,10 @@ const renderFeCell = (params) => {
                                         componentsProps={{
                                             columnHeader: {
                                                 style: {
-                                                    textAlign: "left", // Alinea los tÃ­tulos a la izquierda
-                                                    fontWeight: "bold", // Opcional: Aplica un peso especÃ­fico
-                                                    fontSize: "14px", // Ajusta el tamaÃ±o de fuente
-                                                    wordWrap: "break-word", // Permite que el tÃ­tulo se divida en varias lÃ­neas
+                                                    textAlign: "left", // Alinea los t�tulos a la izquierda
+                                                    fontWeight: "bold", // Opcional: Aplica un peso espec�fico
+                                                    fontSize: "14px", // Ajusta el tama�o de fuente
+                                                    wordWrap: "break-word", // Permite que el t�tulo se divida en varias l�neas
                                                 },
                                             },
                                         }}
@@ -1433,7 +1433,7 @@ const renderFeCell = (params) => {
                                         onClick={() => navigate(refreshPage())}
                                         className="responsive-button deliveries-back-button deliveries-action-button deliveries-action-button--ghost mb-2 mb-md-0"
                                     >
-                                        <FaStepBackward /> ATRÁS
+                                        <FaStepBackward /> ATR�S
                                     </Button>
 
                                     <Button
@@ -1450,7 +1450,7 @@ const renderFeCell = (params) => {
                     </Container>
                 </div>
 
-                {/* Aquí renderizas el componente pero lo ocultas */}
+                {/* Aqu� renderizas el componente pero lo ocultas */}
                 <div style={{display: 'none'}}>
                     {isReadyToPrintDeliveryInformation && (
                         <div ref={deliveryReportRef}>
@@ -1467,16 +1467,16 @@ const renderFeCell = (params) => {
                     onSave={handleSaveFe}
                 />
 
-                {/* Confirmación Entregas */}
+                {/* Confirmaci�n Entregas */}
                 <ConfirmationModal
                     show={showConfirmationModal}
-                    title="Confirmación de envío"
-                    message="Â¿EstÃ¡s seguro de que deseas enviar esta entrega a revisiÃ³n?"
+                    title="Confirmaci�n de env�o"
+                    message="�Est�s seguro de que deseas enviar esta entrega a revisi�n?"
                     onConfirm={handleConfirmDelete}
                     onClose={handleCloseModalConfirm}
                 />
 
-                {/* Modal de aprobación/denegaciÃ³n */}
+                {/* Modal de aprobaci�n/denegaci�n */}
                 <ApprovedDeniedModal
                     open={openModal}
                     onClose={handleCloseModalApproved}
@@ -1491,6 +1491,8 @@ const renderFeCell = (params) => {
         </>
     )
 }
+
+
 
 
 

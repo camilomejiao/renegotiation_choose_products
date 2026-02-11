@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
@@ -195,3 +195,4 @@ export const SupplierList = () => {
         </>
     )
 }
+

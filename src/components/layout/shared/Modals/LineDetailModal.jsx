@@ -1,4 +1,4 @@
-import { Modal, Button } from "react-bootstrap";
+﻿import { Modal, Button } from "react-bootstrap";
 
 export const LineDetailModal = ({ show, handleClose, userData, planData }) => {
 
@@ -134,3 +134,4 @@ const styles = {
         padding: "8px",
     },
 };
+

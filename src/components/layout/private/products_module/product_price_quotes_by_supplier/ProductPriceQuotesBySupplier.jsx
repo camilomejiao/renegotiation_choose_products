@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import {Button, Col, Row} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
@@ -109,7 +109,7 @@ export const ProductPriceQuotesBySupplier = () => {
         },
         {
             field: "description",
-            headerName: "Descripción",
+            headerName: "Descripci�n",
             flex: 1,
             minWidth: 300,
             editable: true,
@@ -161,7 +161,7 @@ export const ProductPriceQuotesBySupplier = () => {
                         value={current ? formatPrice(current) : ""}
                         fullWidth
                         onChange={(e) => {
-                            // solo dígitos
+                            // solo d�gitos
                             const raw = e.target.value.replace(/[^\d]/g, "");
                             const value = raw ? Number(raw) : 0;
 
@@ -185,7 +185,7 @@ export const ProductPriceQuotesBySupplier = () => {
     const columns = [...baseColumns, ...statusProduct, ...observationsColumns];
 
     /**
-     * Carga los planes de una jornada específica (cuando se selecciona una Jornada).
+     * Carga los planes de una jornada espec�fica (cuando se selecciona una Jornada).
      */
     const getPlans = async () => {
         try {
@@ -240,7 +240,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
     /**
      * Convierte la lista cruda de productos al formato que usa el DataGrid.
-     * Incluye mapeo de campos visibles y los campos dinámicos ambientales.
+     * Incluye mapeo de campos visibles y los campos din�micos ambientales.
      * @param {Array<object>} data
      * @returns {Promise<Array<object>>}
      */
@@ -316,7 +316,7 @@ export const ProductPriceQuotesBySupplier = () => {
 
 
     /**
-     * MUI DataGrid: procesa la actualización de una fila completa (modo "row").
+     * MUI DataGrid: procesa la actualizaci�n de una fila completa (modo "row").
      * Guarda los cambios en `editedProducts` para enviar luego.
      * @param {object} newRow
      * @param {object} oldRow
@@ -367,7 +367,7 @@ export const ProductPriceQuotesBySupplier = () => {
             if (emptyFields) {
                 handleError(
                     "Revisa campos",
-                    `La descripción, marca y precio son obligatorios, por favor revisa algún producto modificado.`
+                    `La descripci�n, marca y precio son obligatorios, por favor revisa alg�n producto modificado.`
                 );
                 setLoading(false);
                 return;
@@ -387,7 +387,7 @@ export const ProductPriceQuotesBySupplier = () => {
             }
 
             if(status === ResponseStatusEnum.CREATED) {
-                showAlert('Bien hecho!', 'Productos actualizados con éxito.');
+                showAlert('Bien hecho!', 'Productos actualizados con �xito.');
                 getProductList(selectedPlan.value, onlyMine);
             }
         } catch (error) {
@@ -425,7 +425,7 @@ export const ProductPriceQuotesBySupplier = () => {
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgPeople}
-                    titleHeader={"¡Empieza a agregar tus productos!"}
+                    titleHeader={"�Empieza a agregar tus productos!"}
                     bannerIcon={''}
                     backgroundIconColor={''}
                     bannerInformation={''}
@@ -484,7 +484,7 @@ export const ProductPriceQuotesBySupplier = () => {
                             loading={loadingTable}
                             pageSize={100}
                             rowsPerPageOptions={[100, 500, 1000]}
-                            rowHeight={100}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                            rowHeight={100}// ↑ m�s alto para textos multil�nea (p.ej. 64, 72, 88)
                             headerHeight={88}
                             componentsProps={{
                                 columnHeader: {
@@ -536,7 +536,7 @@ export const ProductPriceQuotesBySupplier = () => {
                         />
                     </div>
 
-                    {/* Botón Guardar */}
+                    {/* Bot�n Guardar */}
                     <div className="d-flex align-items-end mt-3">
                         <Button
                             variant="outline-success"
@@ -554,3 +554,5 @@ export const ProductPriceQuotesBySupplier = () => {
         </>
     )
 }
+
+

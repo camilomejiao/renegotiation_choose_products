@@ -1,8 +1,8 @@
-import { GlobalConnex } from "../GlobalConnex";
+﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
- * Servicio para la gestión de proveedores (usuarios tipo proveedor).
+ * Servicio para la gesti�n de proveedores (usuarios tipo proveedor).
  */
 class SupplierServices {
 
@@ -127,3 +127,5 @@ class SupplierServices {
 }
 
 export const supplierServices = new SupplierServices();
+
+

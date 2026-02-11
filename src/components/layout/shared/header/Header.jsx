@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import logo1 from '../../../../assets/image/header/logo-DSCI.png';
 
 export const Header = () => {
@@ -18,4 +18,5 @@ export const Header = () => {
         </header>
     );
 };
+
 

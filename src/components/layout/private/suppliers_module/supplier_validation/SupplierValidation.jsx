@@ -1,4 +1,4 @@
-import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
+﻿import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 
 export const SupplierValidation = () => {

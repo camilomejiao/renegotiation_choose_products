@@ -1,4 +1,4 @@
-/* Sidebar cerrado */
+﻿/* Sidebar cerrado */
 .sidebar {
     width: 70px;
     position: fixed;
@@ -203,3 +203,4 @@
         font-size: 12px;
     }
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaBroom, FaSearch, FaTrash } from "react-icons/fa";
@@ -31,7 +31,7 @@ export const OrderReport = () => {
     const [paginationModel, setPaginationModel] = useState({
         page: 0,
         pageSize: PAGE_SIZE,
-    }); //Paginación
+    }); //Paginaci�n
     const [isLoading, setIsLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -39,7 +39,7 @@ export const OrderReport = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchActive, setIsSearchActive] = useState(false);
 
-    // Configuración de las columnas del DataGrid
+    // Configuraci�n de las columnas del DataGrid
     const columns = [
         { field: "id", headerName: "ORDER ID", flex: 1 },
         { field: "fecha_registro", headerName: "FECHA DE REGISTRO", flex: 1 },
@@ -70,7 +70,7 @@ export const OrderReport = () => {
         }
     ];
 
-    // Obtener órdenes de compra
+    // Obtener �rdenes de compra
     const getPurcharseOrder = async () => {
         setIsLoading(true);
         setInformationLoadingText('Cargando ordenes...');
@@ -84,10 +84,10 @@ export const OrderReport = () => {
             }
 
             if (status === ResponseStatusEnum.BAD_REQUEST || status === ResponseStatusEnum.INTERNAL_SERVER_ERROR) {
-                showError("Error", "Error al obtener las órdenes de compra");
+                showError("Error", "Error al obtener las �rdenes de compra");
             }
         } catch (error) {
-            console.error("Error obteniendo las órdenes de compra:", error);
+            console.error("Error obteniendo las �rdenes de compra:", error);
             showError("Error", "Error al comunicarse con el servidor");
         } finally {
             setIsLoading(false);
@@ -105,12 +105,12 @@ export const OrderReport = () => {
         return `?${params.toString()}`;
     };
 
-    // Función para llamar al servicio de órdenes de compra
+    // Funci�n para llamar al servicio de �rdenes de compra
     const fetchPurchaseOrders = async (url) => {
         return await purchaseOrderServices.getAll(url);
     };
 
-    // Actualizar los datos en el estado después de la respuesta exitosa
+    // Actualizar los datos en el estado despu�s de la respuesta exitosa
     const updateOrderData = (data) => {
         setPurcharseOrder(normalizeRows(data.results));
         setRowCountState(data.count);
@@ -139,24 +139,24 @@ export const OrderReport = () => {
         AlertComponent.error(title, message);
     };
 
-    // Maneja el clic en el ícono de eliminación
+    // Maneja el clic en el �cono de eliminaci�n
     const handleEditClick = (data) => {
         navigate(`/admin/edit-order/${data.id}/${data.cub_id}`)
     };
 
-    // Maneja el clic en el ícono de eliminación
+    // Maneja el clic en el �cono de eliminaci�n
     const handleDeleteClick = (id) => {
         setSelectedId(id);
         setShowModal(true);
     };
 
-    // Cierra el modal de confirmación
+    // Cierra el modal de confirmaci�n
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedId(null);
     };
 
-    // Confirma la eliminación de un registro
+    // Confirma la eliminaci�n de un registro
     const handleConfirmDelete = async () => {
         setIsLoading(true);
         setInformationLoadingText('Eliminando orden...');
@@ -180,20 +180,20 @@ export const OrderReport = () => {
         }
     };
 
-    // Actualiza el valor del campo de búsqueda
+    // Actualiza el valor del campo de b�squeda
     const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
 
-    // Realiza la búsqueda
+    // Realiza la b�squeda
     const handleSearch = () => {
         if (searchQuery.length >= 5) {
-            setPaginationModel({ ...paginationModel, page: 0 }); // Cambia la página
-            setIsSearchActive(true); // Marca como búsqueda activa
+            setPaginationModel({ ...paginationModel, page: 0 }); // Cambia la p�gina
+            setIsSearchActive(true); // Marca como b�squeda activa
         } else {
             showError("Error", "El valor a buscar debe tener al menos 5 caracteres");
         }
     };
 
-    // Limpia la búsqueda
+    // Limpia la b�squeda
     const handleClearSearch = () => {
         setSearchQuery("");
         setPaginationModel({ page: 0, pageSize: PAGE_SIZE });
@@ -210,7 +210,7 @@ export const OrderReport = () => {
                 <div className="header-image position-relative">
                     <img src={imgDCSIPeople} alt="Fondo" className="background-image w-100" />
                     <div className="overlay-text position-absolute w-100 text-center">
-                        <h1>¡Órdenes de Compra!</h1>
+                        <h1>�Órdenes de Compra!</h1>
                     </div>
                 </div>
 
@@ -285,8 +285,8 @@ export const OrderReport = () => {
 
                 <ConfirmationModal
                     show={showModal}
-                    title="Confirmación de Eliminación"
-                    message="¿Estás seguro de que deseas eliminar este elemento?"
+                    title="Confirmaci�n de Eliminaci�n"
+                    message="�Est�s seguro de que deseas eliminar este elemento?"
                     confirmLabel="Eliminar"
                     cancelLabel="Cancelar"
                     onConfirm={handleConfirmDelete}
@@ -297,3 +297,5 @@ export const OrderReport = () => {
         </>
     );
 };
+
+

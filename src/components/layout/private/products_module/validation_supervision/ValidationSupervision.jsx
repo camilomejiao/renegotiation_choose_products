@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
@@ -66,7 +66,7 @@ export const ValidationSupervision = () => {
     //
     const getBaseColumns = [
         { field: "id", headerName: "Id", width: 70 },
-        { field: "cod_id", headerName: "Código Producto", width: 110 },
+        { field: "cod_id", headerName: "C�digo Producto", width: 110 },
         {
             field: "category",
             headerName: "Categoria",
@@ -105,7 +105,7 @@ export const ValidationSupervision = () => {
         },
         {
             field: "description",
-            headerName: "Descripción",
+            headerName: "Descripci�n",
             flex: 1,
             minWidth: 300,
             renderCell: (params) => (
@@ -277,7 +277,7 @@ export const ValidationSupervision = () => {
             }
 
             if (status === ResponseStatusEnum.BAD_REQUEST) {
-                showInfo('Proveedor no ha llenado la cotización de los productos.');
+                showInfo('Proveedor no ha llenado la cotizaci�n de los productos.');
                 setProductList([]);
                 setFilteredData([]);
                 setRowCount(0);
@@ -380,7 +380,7 @@ export const ValidationSupervision = () => {
     };
 
 
-    //Manejar selección de filas
+    //Manejar selecci�n de filas
     const handleSelectionChange = (newSelection) => {
         setSelectedIds(newSelection);
     };
@@ -466,12 +466,12 @@ export const ValidationSupervision = () => {
         setFilteredData(filtered);
     };
 
-    //Aprobación o Denegación
+    //Aprobaci�n o Denegaci�n
     const handleApproveDenySubmit = async () => {
         try {
             await handleApproveByAudit(selectedIds, action, comment);
         } catch (error) {
-            console.error('Error en la aprobación:', error);
+            console.error('Error en la aprobaci�n:', error);
         }
     };
 
@@ -489,7 +489,7 @@ export const ValidationSupervision = () => {
                 <div className="main-container">
                     <HeaderImage
                         imageHeader={imgPeople}
-                        titleHeader="¡Listado de productos!"
+                        titleHeader="�Listado de productos!"
                     />
 
                     <div className="container mt-lg-3">
@@ -575,7 +575,7 @@ export const ValidationSupervision = () => {
                                     setPageSize(pageSize);
                                 }}
                                 rowsPerPageOptions={[10, 50, 100]}
-                                rowHeight={100}// ↑ más alto para textos multilínea (p.ej. 64, 72, 88)
+                                rowHeight={100}// ↑ m�s alto para textos multil�nea (p.ej. 64, 72, 88)
                                 headerHeight={88}
                                 getRowClassName={(params) => (params.row.isOutOfRange ? "row-out-range" : "")}
                                 componentsProps={{
@@ -633,7 +633,7 @@ export const ValidationSupervision = () => {
                                 }}
                             />
 
-                            {/* Modal de aprobación/denegación */}
+                            {/* Modal de aprobaci�n/denegaci�n */}
                             <ApprovedDeniedModal
                                 open={openModal}
                                 onClose={handleCloseModalApproved}
@@ -645,7 +645,7 @@ export const ValidationSupervision = () => {
                             />
                         </div>
 
-                        {/* Botón Guardar */}
+                        {/* Bot�n Guardar */}
                         <div className="d-flex justify-content-end gap-2 mt-3">
                             <>
                                 <Button
@@ -663,3 +663,5 @@ export const ValidationSupervision = () => {
             </>
         );
     };
+
+

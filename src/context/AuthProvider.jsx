@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+﻿import { createContext, useState, useEffect, useCallback } from "react";
 import { supplierServices } from "../helpers/services/SupplierServices";
 import { RolesEnum } from "../helpers/GlobalEnum";
 
@@ -7,7 +7,7 @@ const AuthContext = createContext();
 /**
  * TTL para evitar consumos excesivos:
  * - Si ya validamos documentos hace < 5 min, no volvemos a consultar.
- * - En navegación interna no pega a BD cada vez.
+ * - En navegaci�n interna no pega a BD cada vez.
  */
 const COMPLIANCE_TTL_MS = 5 * 60 * 1000; // 5 min
 
@@ -97,13 +97,13 @@ export const AuthProvider = ({ children }) => {
                 lastFetchedAt: Date.now(),
             });
         } catch (e) {
-            // Política de negocio recomendada:
+            // Pol�tica de negocio recomendada:
             // Si no puedo validar, bloqueo (para no permitir acciones sin cumplimiento).
             setSupplierCompliance({
                 loading: false,
                 isComplete: false,
                 missing: ["NO_SE_PUDO_VALIDAR_DOCUMENTOS"],
-                message: "No se pudo validar la documentación. Por favor intenta nuevamente.",
+                message: "No se pudo validar la documentaci�n. Por favor intenta nuevamente.",
                 supplierName: "",
                 lastFetchedAt: Date.now(),
             });
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
 
     /**
      * refreshSupplierCompliance:
-     * - Se expone por Context para que un módulo (ej: CreateSuppliers) lo llame después de subir/guardar documentos.
+     * - Se expone por Context para que un m�dulo (ej: CreateSuppliers) lo llame despu�s de subir/guardar documentos.
      * - useCallback para referencia estable (opcional pero recomendado).
      */
     const refreshSupplierCompliance = useCallback(() => {
@@ -122,9 +122,9 @@ export const AuthProvider = ({ children }) => {
     }, [auth?.id, auth?.rol_id, fetchSupplierCompliance]);
 
     /**
-     * Auto-validación con TTL:
+     * Auto-validaci�n con TTL:
      * - Solo corre para proveedor.
-     * - Solo consulta si el cache expiró.
+     * - Solo consulta si el cache expir�.
      */
     useEffect(() => {
         const isSupplier = auth?.rol_id === RolesEnum.SUPPLIER;
@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     }, [auth?.id, auth?.rol_id, supplierCompliance.lastFetchedAt, fetchSupplierCompliance]);
 
     /**
-     * Evento que ya venías usando: "authUpdated".
+     * Evento que ya ven�as usando: "authUpdated".
      * - Rehidrata auth
      * - Invalida compliance para recalcular al nuevo usuario
      */
@@ -171,3 +171,5 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
+
+

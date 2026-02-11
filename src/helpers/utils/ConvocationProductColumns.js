@@ -1,4 +1,4 @@
-import { MenuItem, Select, TextField } from "@mui/material";
+﻿import { MenuItem, Select, TextField } from "@mui/material";
 import { FaFile, FaRegEdit, FaTrash } from "react-icons/fa";
 import { formatPrice } from "./ValidateProductColumns";
 import { Button } from "react-bootstrap";
@@ -16,7 +16,7 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
             row.plans?.length ? row.plans.map(p => p.name).join(", ") : "—",
     },
     { field: "status", headerName: "ESTADO", width: 180 },
-    { field: "n_suppliers", headerName: "N° PROVEEDORES", width: 150 },
+    { field: "n_suppliers", headerName: "N� PROVEEDORES", width: 150 },
     {
         field: 'suppliersList',
         headerName: 'PROVEEDORES',
@@ -26,7 +26,7 @@ export const getConvocationColumns = (handleModalSuppliers, handleReport) => ([
                 <Button
                     variant="outline-warning"
                     onClick={() => handleModalSuppliers(params.row)}
-                    title="Mostrar usuarios que ya han llenado información"
+                    title="Mostrar usuarios que ya han llenado informaci�n"
                 >
                     <FaFile />
                 </Button>
@@ -42,7 +42,7 @@ export const getNewCatalogBaseColumns = (unitOptions, categoryOptions, handleRow
     { field: "id", headerName: "ID", width: 70 },
     {
         field: "category",
-        headerName: "Categoría",
+        headerName: "Categor�a",
         width: 200,
         renderCell: (params) => {
             const handleChange = (e) => {
@@ -178,3 +178,5 @@ export const getDeleteActionsColumns = (handleDeleteClick) => ([
         filterable: false,
     },
 ]);
+
+

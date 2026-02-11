@@ -1,4 +1,4 @@
-import {useNavigate, useOutletContext, useParams} from "react-router-dom";
+﻿import {useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import {Autocomplete, Checkbox, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
@@ -52,13 +52,13 @@ const initialValues = {
 
 //
 const validationSchema = yup.object().shape({
-    company_name: yup.string().required("El nombre de la compañia es requerido"),
+    company_name: yup.string().required("El nombre de la compa�ia es requerido"),
     nit: yup.string().required("El nit o cedula es requerido"),
     legal_representative: yup.string().required("El nombre del representante es requerido"),
     cellphone: yup.number().required("El telefono es requerido"),
     email: yup.string().email().required("El email es requerido"),
     active: yup.boolean().required("Activo o Inactivo"),
-    resolution: yup.string().optional("El número de resolución es opcional"),
+    resolution: yup.string().optional("El n�mero de resoluci�n es opcional"),
     depto: yup
         .object({ id: yup.number().required(), nombre: yup.string().required() })
         .nullable()
@@ -151,7 +151,7 @@ export const CreateSuppliers = () => {
             const list = muniCacheRef.current.get(selectedDept.id) || [];
             setMuniOptions(list);
 
-            // si el municipio seleccionado ya no pertenece al nuevo depto, límpialo
+            // si el municipio seleccionado ya no pertenece al nuevo depto, l�mpialo
             const current = formik.values.muni;
             if (!current || !list.some(m => m.id === current.id)) {
                 formik.setFieldValue("muni", null);
@@ -224,10 +224,10 @@ export const CreateSuppliers = () => {
         }
 
         try {
-            if (!window.confirm("¿Seguro que deseas eliminar esta cuenta bancaria?")) return;
+            if (!window.confirm("�Seguro que deseas eliminar esta cuenta bancaria?")) return;
 
             setLoading(true);
-            setInformationLoadingText("Validando eliminación de la cuenta bancaria...");
+            setInformationLoadingText("Validando eliminaci�n de la cuenta bancaria...");
 
             const { status, data } = await supplierServices.validateOrDeleteBankAccount(id, account.id);
 
@@ -239,12 +239,12 @@ export const CreateSuppliers = () => {
             } else {
                 AlertComponent.warning(
                     "No se puede eliminar la cuenta bancaria.",
-                    data?.message || "La cuenta está asociada a información de pagos."
+                    data?.message || "La cuenta est� asociada a informaci�n de pagos."
                 );
             }
         } catch (error) {
             console.error(error);
-            AlertComponent.error("Error al validar la eliminación de la cuenta bancaria.");
+            AlertComponent.error("Error al validar la eliminaci�n de la cuenta bancaria.");
         } finally {
             setLoading(false);
             setInformationLoadingText("");
@@ -338,13 +338,13 @@ export const CreateSuppliers = () => {
                         console.log("FORMDATA:", key, val);
                     }
 
-                    setInformationLoadingText('Enviando información');
+                    setInformationLoadingText('Enviando informaci�n');
 
                     response = await supplierServices.updateSupplier(id, formData);
                 }
 
                 if (response && [ResponseStatusEnum.OK, ResponseStatusEnum.CREATED].includes(response.status)) {
-                    AlertComponent.success("Operación realizada correctamente");
+                    AlertComponent.success("Operaci�n realizada correctamente");
 
                     if(userAuth?.rol_id === RolesEnum.SUPPLIER) {
                         window.location.reload()
@@ -361,7 +361,7 @@ export const CreateSuppliers = () => {
                 AlertComponent.error("Hubo un error al procesar la solicitud");
             } finally {
                 setLoading(false);
-                setInformationLoadingText('Información enviada');
+                setInformationLoadingText('Informaci�n enviada');
             }
         },
     });
@@ -370,7 +370,7 @@ export const CreateSuppliers = () => {
     const fetchSupplierData = async (id) => {
         try {
             setLoading(true);
-            setInformationLoadingText("Cargando Información...");
+            setInformationLoadingText("Cargando Informaci�n...");
             const {data, status} = await supplierServices.getSupplierById(id);
 
             if(status === ResponseStatusEnum.OK) {
@@ -432,7 +432,7 @@ export const CreateSuppliers = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imágenes
+                // Solo PDF o im�genes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const fileURL = URL.createObjectURL(blob);
                     window.open(fileURL, '_blank');
@@ -487,7 +487,7 @@ export const CreateSuppliers = () => {
             setOnlyOneFavorite(index);
 
             if (!account?.id) {
-                AlertComponent.success("", "Cuenta marcada como favorita, dale guardar para confirmar la selección.");
+                AlertComponent.success("", "Cuenta marcada como favorita, dale guardar para confirmar la selecci�n.");
 
             }
         } catch (error) {
@@ -514,7 +514,7 @@ export const CreateSuppliers = () => {
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgPeople}
-                    titleHeader={"¡Registra tus proveedores!"}
+                    titleHeader={"�Registra tus proveedores!"}
                     bannerIcon={''}
                     backgroundIconColor={''}
                     bannerInformation={''}
@@ -530,7 +530,7 @@ export const CreateSuppliers = () => {
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
-                                label="Nombre de la compañia"
+                                label="Nombre de la compa�ia"
                                 {...formik.getFieldProps("company_name")}
                                 error={formik.touched.company_name && Boolean(formik.errors.company_name)}
                                 helperText={formik.touched.company_name && formik.errors.company_name}
@@ -584,11 +584,11 @@ export const CreateSuppliers = () => {
                             />
                         </div>
 
-                        {/* Número de resolución */}
+                        {/* N�mero de resoluci�n */}
                         <div className="col-md-6">
                             <TextField
                                 fullWidth
-                                label="Número de resolución"
+                                label="N�mero de resoluci�n"
                                 {...formik.getFieldProps("resolution")}
                                 error={formik.touched.resolution && Boolean(formik.errors.resolution)}
                                 helperText={formik.touched.resolution && formik.errors.resolution}
@@ -596,7 +596,7 @@ export const CreateSuppliers = () => {
                             />
                         </div>
 
-                        {/* Departamentos (único) */}
+                        {/* Departamentos (�nico) */}
                         <div className="col-md-6">
                             <Autocomplete
                                 options={deptOptions}
@@ -627,7 +627,7 @@ export const CreateSuppliers = () => {
                             />
                         </div>
 
-                        {/* Municipios (único) */}
+                        {/* Municipios (�nico) */}
                         <div className="col-md-6">
                             <Autocomplete
                                 options={muniOptions}
@@ -675,11 +675,11 @@ export const CreateSuppliers = () => {
                         </div>
                     </div>
 
-                    {/* Campos nuevos SOLO en edición */}
+                    {/* Campos nuevos SOLO en edici�n */}
                     {isEdit && (
                         <>
                             <Card className="p-3 p-md-4 shadow-sm mb-4">
-                                <h4 className="text-primary fw-bold text-center text-md-start">Información para Cuenta de Cobro</h4>
+                                <h4 className="text-primary fw-bold text-center text-md-start">Informaci�n para Cuenta de Cobro</h4>
                                 <Card className="p-3 p-md-4 shadow-sm mb-4">
                                     <div className="row g-3 mt-2">
                                         {/* Archivos adjuntos RUT */}
@@ -708,7 +708,7 @@ export const CreateSuppliers = () => {
 
                                         {/* Archivos adjuntos CEDULA */}
                                         <div className="col-md-6 mt-3">
-                                            <label className="form-label d-block">Cédula representante (PDF/imagen)</label>
+                                            <label className="form-label d-block">C�dula representante (PDF/imagen)</label>
                                             <div className="d-flex gap-2 align-items-center">
                                                 <input
                                                     type="file"
@@ -799,14 +799,14 @@ export const CreateSuppliers = () => {
                                                     </TextField>
                                                 </div>
 
-                                                {/* Número de cuenta */}
+                                                {/* N�mero de cuenta */}
                                                 <div className="col-md-6">
                                                     <label className="form-label fw-semibold">
-                                                        Número de cuenta <span className="text-danger">*</span>
+                                                        N�mero de cuenta <span className="text-danger">*</span>
                                                     </label>
                                                     <TextField
                                                         fullWidth
-                                                        label="Número de cuenta"
+                                                        label="N�mero de cuenta"
                                                         value={account.account_number}
                                                         onChange={(e) =>
                                                             formik.setFieldValue(
@@ -882,13 +882,13 @@ export const CreateSuppliers = () => {
                                             </div>
 
                                             <h6 className="mb-0 fw-semibold mt-2">
-                                                Nota: El certificado bancario debe haber sido expedido dentro de los últimos 90 días al momento de generar la cuenta de cobro.
+                                                Nota: El certificado bancario debe haber sido expedido dentro de los �ltimos 90 d�as al momento de generar la cuenta de cobro.
                                             </h6>
                                         </Card>
                                     );
                                 })}
 
-                                {/* Botón para agregar nueva cuenta */}
+                                {/* Bot�n para agregar nueva cuenta */}
                                 <div className="d-flex justify-content-end">
                                     <Button
                                         variant="outline-primary"
@@ -937,12 +937,14 @@ export const CreateSuppliers = () => {
             <ConfirmationModal
                 show={showAccountDefaultModal}
                 title={"Confirmar cuenta por defecto"}
-                message={"¿Estás seguro de que deseas dejar esta cuenta como cuenta por defecto?"}
+                message={"�Est�s seguro de que deseas dejar esta cuenta como cuenta por defecto?"}
                 onConfirm={handleConfirmSetDefault}
                 onClose={handleCancelSetDefault}
                 cancelLabel={"Cancelar"}
-                confirmLabel={"Sí, dejar por defecto"}
+                confirmLabel={"S�, dejar por defecto"}
             />
         </>
     )
 }
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
 import { Loading } from "../../../../shared/loading/Loading";
@@ -39,7 +39,7 @@ export const ListCollectionAccount = () => {
 
     const getListCollectionAccount = async (pageToFetch = 1, sizeToFetch) => {
         setLoading(true);
-        setInformationLoadingText("Obteniendo información");
+        setInformationLoadingText("Obteniendo informaci�n");
         try {
             const { data, status } = await paymentServices.getCollectionAccounts(pageToFetch, sizeToFetch, Number(getSupplierId()), '');
             if (status === ResponseStatusEnum.OK) {
@@ -125,7 +125,7 @@ export const ListCollectionAccount = () => {
 
             <div className="d-flex justify-content-between align-items-center my-3">
                 <span><strong>Total cuentas de cobro:</strong> {pagination.count}</span>
-                <span><strong>Página:</strong> {pagination.currentPage} de {pagination.totalPages}</span>
+                <span><strong>P�gina:</strong> {pagination.currentPage} de {pagination.totalPages}</span>
             </div>
             <div className="accordion-outer-scroll">
                 <Accordion className="custom-accordion" onSelect={handleAccordionSelect}>
@@ -141,7 +141,7 @@ export const ListCollectionAccount = () => {
                                         <>
                                             <Row className="mb-3">
                                                 <Col md={6}>
-                                                    <strong>📅 Fecha de creación:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
+                                                    <strong>📅 Fecha de creaci�n:</strong> {new Date(detailCollectionAccounts[account.id]?.fcrea).toLocaleDateString()}
                                                 </Col>
                                                 <Col md={6}>
                                                     <strong>💰 Valor total:</strong> $
@@ -162,7 +162,7 @@ export const ListCollectionAccount = () => {
                                                         detailCollectionAccounts[account.id].entregas_asociadas.map((item, idx) => (
                                                             <li key={idx}>
                                                                 <strong>Beneficiario: </strong> {item?.entrega?.beneficiario?.nombre + ' ' + item?.entrega?.beneficiario?.apellido + ' - ' }
-                                                                <strong>Identificación: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
+                                                                <strong>Identificaci�n: </strong> {item?.entrega?.beneficiario?.identificacion} <br />
                                                                 📦 <strong>Productos: </strong> {item?.entrega?.cantidad_productos} –
                                                                 💰 Valor: $
                                                                 {(() => {
@@ -208,3 +208,5 @@ export const ListCollectionAccount = () => {
         </>
     );
 };
+
+

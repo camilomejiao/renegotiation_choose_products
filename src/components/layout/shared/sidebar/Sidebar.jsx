@@ -1,4 +1,4 @@
-import { createElement, useState } from 'react';
+﻿import { createElement, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     FaBars,
@@ -18,7 +18,7 @@ import {
     FaUserCog, FaRegAddressBook, FaBoxes, FaTools, FaLeaf, FaUserCheck, FaSearchPlus,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
-import {BsBank, BsCashStack, BsShieldCheck} from "react-icons/bs";
+import { BsBank, BsCashStack } from "react-icons/bs";
 
 //Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
@@ -28,16 +28,16 @@ const menuConfig = (role, id) => {
         [RolesEnum.ADMIN]: [
             { path: "/", icon: FaHouseUser, label: "Inicio" },
             {
-                label: "Administración Catálogo de productos",
+                label: "Administraci�n Cat�logo de productos",
                 icon: FaBoxes,
                 children: [
-                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo Técnica" },
-                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Ambiental" },
-                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validación de Supervisión" },
+                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administraci�n de Cat�logo T�cnica" },
+                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validaci�n de Ambiental" },
+                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validaci�n de Supervisi�n" },
                 ]
             },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociaci�n" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/management", icon: FaUserCog, label: "Control de Usuarios/Proveedores" },
             { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
@@ -48,9 +48,9 @@ const menuConfig = (role, id) => {
         ],
         [RolesEnum.SUPERVISION]: [
             //{ path: "/", icon: FaHouseUser, label: "Inicio" },
-            { path: "/admin/products-supervision", icon: FaUserCheck, label: "Catálogo de productos" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/products-supervision", icon: FaUserCheck, label: "Cat�logo de productos" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociaci�n" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
@@ -58,8 +58,9 @@ const menuConfig = (role, id) => {
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.PAYMENTS]: [
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
@@ -73,28 +74,28 @@ const menuConfig = (role, id) => {
         ],
         [RolesEnum.ENVIRONMENTAL]: [
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Catálogo de productos" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validaci�n de Cat�logo de productos" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociaci�n" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TECHNICAL]: [
-            { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo" },
+            { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administraci�n de Cat�logo" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TERRITORIAL_LINKS]: [
             { path: "/", icon: FaHouseUser, label: "Inicio" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociaci�n" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.SUPPLIER]: [
-            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Gestión del Proveedor" },
-            { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotización de catalogos" },
+            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Gesti�n del Proveedor" },
+            { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotizaci�n de catalogos" },
             { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
             { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
             { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
@@ -108,23 +109,23 @@ const menuConfig = (role, id) => {
             { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
             { path: "/admin/management", icon: MdPeople, label: "Control de Usuarios/Proveedores" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión De Beneficiarios" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociaci�n" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gesti�n De Beneficiarios" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
             {
-                label: "Administración Catálogo de productos",
+                label: "Administraci�n Cat�logo de productos",
                 icon: FaBoxes,
                 children: [
-                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo Técnica" },
-                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Ambiental" },
-                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validación de Supervisión" },
+                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administraci�n de Cat�logo T�cnica" },
+                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validaci�n de Ambiental" },
+                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validaci�n de Supervisi�n" },
                 ]
             },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.LEGAL]: [
-            { path: "/admin/management", icon: MdPeople, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/management", icon: MdPeople, label: "Gesti�n Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ]
@@ -135,12 +136,12 @@ const menuConfig = (role, id) => {
 const getRoleTitle = (role) => {
     const titles = {
         [RolesEnum.SUPPLIER]: 'Proveedor',
-        [RolesEnum.TERRITORIAL_LINKS]: 'Técnico Territorio',
-        [RolesEnum.TECHNICAL]: 'Implementación',
+        [RolesEnum.TERRITORIAL_LINKS]: 'T�cnico Territorio',
+        [RolesEnum.TECHNICAL]: 'Implementaci�n',
         [RolesEnum.PAYMENTS]: 'Pagos',
         [RolesEnum.TRUST_PAYMENTS]: 'Fiduciaria',
         [RolesEnum.ENVIRONMENTAL]: 'Ambiental',
-        [RolesEnum.LEGAL]: 'Jurídica',
+        [RolesEnum.LEGAL]: 'Jur�dica',
     };
 
     return titles[role] ?? 'Perfil';
@@ -253,3 +254,5 @@ export const Sidebar = ({ userAuth, onToggle }) => {
     );
 
 };
+
+

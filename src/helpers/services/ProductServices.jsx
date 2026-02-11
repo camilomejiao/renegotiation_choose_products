@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex";
+﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -127,3 +127,4 @@ class ProductServices {
 }
 
 export const productServices = new ProductServices();
+
