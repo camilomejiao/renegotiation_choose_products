@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {Button, Col, Form, Row} from "react-bootstrap";
 import magnifyingGlass from "../../../../assets/image/icons/magnifying_glass.png";
 import PropTypes from "prop-types";
@@ -142,3 +142,4 @@ SearchUserForm.propTypes = {
     component: PropTypes.string.isRequired,
     onSearchSuccess: PropTypes.func.isRequired,
 };
+

@@ -1,4 +1,4 @@
-/* Utilidades CSS para la aplicación gubernamental */
+﻿/* Utilidades CSS para la aplicación gubernamental */
 
 /* Colores de texto */
 .text-primary { color: var(--primary-color) !important; }
@@ -280,3 +280,4 @@
   .d-xl-block { display: block !important; }
   .d-xl-flex { display: flex !important; }
 }
+

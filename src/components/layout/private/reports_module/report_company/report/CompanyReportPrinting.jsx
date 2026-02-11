@@ -1,4 +1,4 @@
-
+﻿
 
 export const CompanyReportPrinting = ({titleReport, dataReport, userData, isCompanyReport}) => {
 
@@ -184,3 +184,4 @@ export const CompanyReportPrinting = ({titleReport, dataReport, userData, isComp
         </>
     )
 }
+

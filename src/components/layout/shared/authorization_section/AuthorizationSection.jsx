@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import Select from "react-select";
 import { Col, Container, Row } from "react-bootstrap";
 import printJS from "print-js";
@@ -128,3 +128,5 @@ export const AuthorizationSection = ({component, userData, wide}) => {
         </>
     )
 }
+
+

@@ -1,4 +1,4 @@
-import { MenuItem, Select, TextField } from "@mui/material";
+﻿import { MenuItem, Select, TextField } from "@mui/material";
 import { FaFile, FaRegEdit, FaTrash } from "react-icons/fa";
 import { formatPrice } from "./ValidateProductColumns";
 import { Button } from "react-bootstrap";
@@ -178,3 +178,4 @@ export const getDeleteActionsColumns = (handleDeleteClick) => ([
         filterable: false,
     },
 ]);
+

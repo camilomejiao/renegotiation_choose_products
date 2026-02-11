@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex.jsx";
+﻿import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -195,3 +195,4 @@ class DeliveriesServices {
 }
 
 export const deliveriesServices = new DeliveriesServices();
+

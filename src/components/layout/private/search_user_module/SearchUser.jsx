@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -58,3 +58,4 @@ export const SearchUser = () => {
         </div>
     );
 }
+

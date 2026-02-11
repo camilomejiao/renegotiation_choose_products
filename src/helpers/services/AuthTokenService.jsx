@@ -1,4 +1,4 @@
-
+﻿
 class AuthTokenService {
     // Función que maneja el fetch con autenticación
     async fetchWithAuth(url, options = {}) {
@@ -78,3 +78,4 @@ class AuthTokenService {
 }
 
 export const authTokenService = new AuthTokenService();
+

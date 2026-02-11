@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -104,3 +104,4 @@ export const PasswordChangeDialog = ({open, onClose, onSave, minLength = 8}) => 
         </Dialog>
     );
 }
+

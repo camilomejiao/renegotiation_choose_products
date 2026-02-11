@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../shared/loading/Loading";
@@ -215,3 +215,4 @@ export const ConvocationList = () => {
         </>
     )
 }
+

@@ -55,7 +55,7 @@ export const CreateCollectionAccount = () => {
     const [sendingData, setSendingData] = useState(false);
     const [showCertificate, setShowCertificate] = useState("");
 
-    //Para no recargar el catálogo mÃºltiples veces
+    //Para no recargar el catálogo múltiples veces
     const loadRef = useRef(false);
 
     const statusCollectionAccountColumns = [
@@ -97,7 +97,7 @@ export const CreateCollectionAccount = () => {
         const rows =  data?.data?.proveedores;
         return rows.map((row) => ({
             value: String(row.id),
-            label: `${row.nombre} â€” ${row.nit}`,
+            label: `${row.nombre} — ${row.nit}`,
         }));
     }
 
@@ -240,7 +240,7 @@ export const CreateCollectionAccount = () => {
             setLoading(true);
             const { status } = await paymentServices.createCollectionAccounts(payload, supplier);
             if (status === ResponseStatusEnum.CREATED) {
-                AlertComponent.success("Ã‰xito", "Cuenta de cobro creada exitosamente.");
+                AlertComponent.success("Éxito", "Cuenta de cobro creada exitosamente.");
                 navigate('/admin/payments-suppliers');
             }
         } catch (error) {
@@ -268,7 +268,7 @@ export const CreateCollectionAccount = () => {
             if (status === ResponseStatusEnum.OK && blob instanceof Blob) {
                 const mime = (type || blob.type || '').toLowerCase();
 
-                // Solo PDF o imÃ¡genes
+                // Solo PDF o imágenes
                 if (mime.includes('pdf') || mime.startsWith('image/')) {
                     const fileURL = URL.createObjectURL(blob);
                     window.open(fileURL, '_blank');
@@ -311,7 +311,7 @@ export const CreateCollectionAccount = () => {
                 titleHeader={'Proceso de pago'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrÃ¡s revisar el estado de tus órdenes de pago.'}
+                bannerInformation={'Aquí podrás revisar el estado de tus órdenes de pago.'}
                 backgroundInformationColor={'#F66D1F'}
             />
 
@@ -358,7 +358,7 @@ export const CreateCollectionAccount = () => {
                                             const q = input.toLowerCase();
                                             return (
                                                 option.label.toLowerCase().includes(q) || // nombre
-                                                option.label.toLowerCase().split("â€”")[1]?.includes(q) // NIT
+                                                option.label.toLowerCase().split("—")[1]?.includes(q) // NIT
                                             );
                                         }}
                                         styles={{
@@ -506,6 +506,8 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
+
+
 
 
 

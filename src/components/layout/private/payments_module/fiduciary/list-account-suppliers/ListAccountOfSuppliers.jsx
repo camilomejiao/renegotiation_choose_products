@@ -1,4 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
+﻿import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../../shared/loading/Loading";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -321,3 +321,4 @@ export const ListAccountOfSuppliers = () => {
         </>
     )
 }
+

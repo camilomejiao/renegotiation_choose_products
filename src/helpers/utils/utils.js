@@ -1,4 +1,4 @@
-import AlertComponent from "../alert/AlertComponent";
+﻿import AlertComponent from "../alert/AlertComponent";
 
 //Dividir un array en lotes
 export const chunkArray = (array, chunkSize) => {

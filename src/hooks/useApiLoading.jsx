@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+﻿import { useCallback, useState } from "react";
 
 /**
  * Hook personalizado para manejar el estado de loading en llamadas a API
@@ -62,3 +62,4 @@ export const useApiLoading = (initialLoading = false) => {
 };
 
 export default useApiLoading;
+

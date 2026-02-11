@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+﻿import {useNavigate, useParams} from "react-router-dom";
 import {Tab, Tabs} from "react-bootstrap";
 
 //Img
@@ -80,3 +80,4 @@ export const ConvocationMenuTab = () => {
         </>
     );
 };
+

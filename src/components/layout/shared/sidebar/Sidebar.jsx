@@ -1,4 +1,4 @@
-import { createElement, useState } from 'react';
+﻿import { createElement, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     FaBars,
@@ -58,6 +58,7 @@ const menuConfig = (role, id) => {
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.PAYMENTS]: [
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
@@ -253,3 +254,5 @@ export const Sidebar = ({ userAuth, onToggle }) => {
     );
 
 };
+
+

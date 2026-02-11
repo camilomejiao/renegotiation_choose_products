@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+﻿import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect } from "react";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
@@ -170,3 +170,4 @@ export const _Dashboard = () => {
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 /* Components */
 import { Conex } from "../components/layout/public/conex/Conex";
@@ -170,3 +170,4 @@ export const Routing = () => {
         </BrowserRouter>
     )
 }
+

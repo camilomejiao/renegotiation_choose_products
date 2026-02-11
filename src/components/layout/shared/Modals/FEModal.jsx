@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
 /**
@@ -69,3 +69,4 @@ export const FEModal = ({ show, onClose, onSave, loading, defaultNumber = "" }) 
         </Modal>
     );
 };
+

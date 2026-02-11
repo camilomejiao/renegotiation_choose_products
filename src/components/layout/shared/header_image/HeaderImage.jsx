@@ -1,4 +1,4 @@
-import { Col, Row } from "react-bootstrap";
+﻿import { Col, Row } from "react-bootstrap";
 
 
 export const HeaderImage = ({ imageHeader, titleHeader, bannerIcon, backgroundIconColor, bannerInformation, backgroundInformationColor }) => {
@@ -38,3 +38,4 @@ export const HeaderImage = ({ imageHeader, titleHeader, bannerIcon, backgroundIc
         </>
     );
 };
+

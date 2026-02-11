@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex";
+﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -170,3 +170,4 @@ class ConvocationProductsServices {
 }
 
 export const convocationProductsServices = new ConvocationProductsServices();
+

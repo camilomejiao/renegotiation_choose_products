@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 
 //Components
@@ -48,3 +48,4 @@ export const SearchUserForRenegociation = () => {
         </div>
     );
 }
+

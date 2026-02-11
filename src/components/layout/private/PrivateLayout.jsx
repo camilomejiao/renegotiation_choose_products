@@ -1,4 +1,4 @@
-import useAuth from "../../../hooks/useAuth";
+﻿import useAuth from "../../../hooks/useAuth";
 import { Navigate, Outlet } from "react-router-dom";
 import { useState } from "react";
 import { Sidebar } from "../shared/sidebar/Sidebar";
@@ -45,3 +45,4 @@ export const PrivateLayout = () => {
         </div>
     );
 }
+

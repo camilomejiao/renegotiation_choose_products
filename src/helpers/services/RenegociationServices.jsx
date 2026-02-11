@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex";
+﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -132,3 +132,5 @@ class RenegotiationServices {
 }
 
 export const renegotiationServices = new RenegotiationServices();
+
+

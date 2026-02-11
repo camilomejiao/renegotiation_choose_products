@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex.jsx";
+﻿import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -61,3 +61,4 @@ class ProductForPurchaseOrderServices {
 }
 
 export const productForPurchaseOrderServices = new ProductForPurchaseOrderServices();
+
