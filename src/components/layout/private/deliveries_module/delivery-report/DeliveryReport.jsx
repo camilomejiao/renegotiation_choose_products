@@ -1,4 +1,4 @@
-
+﻿
 //Opciones para los productos a entregar
 const deliveryStatus = [
     { id: 0, label: "NO ENTREGADO" },
@@ -322,3 +322,4 @@ export const DeliveryReport = ({deliveryInformation}) => {
         </>
     )
 }
+

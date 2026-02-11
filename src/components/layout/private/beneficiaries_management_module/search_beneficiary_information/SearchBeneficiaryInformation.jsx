@@ -97,10 +97,10 @@ export const SearchBeneficiaryInformation = () => {
      * - Estados de CUB
      * - Actividades CUB
      *
-     * Internamente usa una funciÃ³n `load` para estandarizar:
-     * - activaciÃ³n/desactivaciÃ³n del loader general
+     * Internamente usa una función `load` para estandarizar:
+     * - activación/desactivación del loader general
      * - manejo del texto informativo
-     * - asignaciÃ³n del resultado al estado correspondiente
+     * - asignación del resultado al estado correspondiente
      */
     const fetchOptions = async () => {
         const load = async (fn, set) => {
@@ -124,7 +124,7 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * ConfiguraciÃ³n de Formik:
+     * Configuración de Formik:
      * - initialValues: valores iniciales del formulario
      * - validationSchema: validaciones con Yup
      * - onSubmit:
@@ -150,7 +150,7 @@ export const SearchBeneficiaryInformation = () => {
                 activity,
             } = values;
 
-            // ValidaciÃ³n: al menos un campo / filtro diligenciado
+            // Validación: al menos un campo / filtro diligenciado
             const hasAnyValue =
                 (identification && identification.trim() !== "") ||
                 (cub && cub.trim() !== "") ||
@@ -189,24 +189,24 @@ export const SearchBeneficiaryInformation = () => {
     });
 
     /**
-     * Ejecuta la Búsqueda de Información básica del titular/beneficiario con paginaciÃ³n.
+     * Ejecuta la Búsqueda de Información básica del titular/beneficiario con paginación.
      *
-     * @param {number} pageSize - Cantidad de registros por pÃ¡gina.
-     * @param {number} page - PÃ¡gina (1-based) solicitada al backend.
+     * @param {number} pageSize - Cantidad de registros por página.
+     * @param {number} page - Página (1-based) solicitada al backend.
      * @param {string} cub - CUB (opcional).
      * @param {string} identification - Identificación (opcional).
      * @param {string} first_name - Nombres (opcional).
      * @param {string} last_name - Apellidos (opcional).
-     * @param {string|null} state - Estado CUB (en este caso se envÃ­a el nombre).
-     * @param {string|null} activity - Actividad CUB (en este caso se envÃ­a el nombre).
-     * @param {string|null} depto - Departamento (en este caso se envÃ­a el nombre).
-     * @param {number|null} muni - Municipio (en este caso se envÃ­a el id).
+     * @param {string|null} state - Estado CUB (en este caso se envía el nombre).
+     * @param {string|null} activity - Actividad CUB (en este caso se envía el nombre).
+     * @param {string|null} depto - Departamento (en este caso se envía el nombre).
+     * @param {number|null} muni - Municipio (en este caso se envía el id).
      *
      * Flujo:
      * - Activa loader general y texto "Buscando..."
      * - Llama al servicio `searchForUserOrCubInformation`
      * - Normaliza filas con `normalizeInitialInformationRows`
-     * - Actualiza `rowCount` para paginaciÃ³n server-side
+     * - Actualiza `rowCount` para paginación server-side
      */
     const getBeneficiaryInformation = async (
         pageSize = 100,
@@ -328,10 +328,10 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * ExportaciÃ³n (mock).
+     * Exportación (mock).
      * - Valida que exista Información cargada para exportar.
      * - Actualmente solo imprime por consola y muestra alerta.
-     * Nota: El botÃ³n estÃ¡ comentado en el UI.
+     * Nota: El botón está comentado en el UI.
      */
     const handleExport = () => {
         if (!beneficiaryInfo) {
@@ -340,14 +340,14 @@ export const SearchBeneficiaryInformation = () => {
         }
 
         console.log("Exportar Información de: ", beneficiaryInfo);
-        AlertComponent.success("ExportaciÃ³n generada (mock).");
+        AlertComponent.success("Exportación generada (mock).");
     };
 
     /**
-     * ExportaciÃ³n (mock).
+     * Exportación (mock).
      * - Valida que exista Información cargada para exportar.
      * - Actualmente solo imprime por consola y muestra alerta.
-     * Nota: El botÃ³n estÃ¡ comentado en el UI.
+     * Nota: El botón está comentado en el UI.
      */
     const showDetails = async (params) => {
         try {
@@ -372,7 +372,7 @@ export const SearchBeneficiaryInformation = () => {
 
     /**
      * Renderiza la celda de acciones en la tabla principal (info básica).
-     * - Incluye botÃ³n "Detalles" que dispara `showDetails(row)`
+     * - Incluye botón "Detalles" que dispara `showDetails(row)`
      */
     const renderActionsCell = (params) => {
         const row = params.row;
@@ -482,8 +482,8 @@ export const SearchBeneficiaryInformation = () => {
     };
 
     /**
-     * Normaliza el arreglo `estado_cuenta` y convierte valores numÃ©ricos a moneda COP.
-     * Adicionalmente conserva versiones numÃ©ricas (payNum, debtNum, totalNum) para cÃ¡lculos posteriores.
+     * Normaliza el arreglo `estado_cuenta` y convierte valores numéricos a moneda COP.
+     * Adicionalmente conserva versiones numéricas (payNum, debtNum, totalNum) para cálculos posteriores.
      *
      * @param {Array} data - Lista cruda de estado de cuenta.
      * @returns {Array} Filas normalizadas para DataGrid.
@@ -513,7 +513,7 @@ export const SearchBeneficiaryInformation = () => {
 
     /**
      * Agrega una fila adicional "TOTAL" al final del estado de cuenta.
-     * Suma los valores numÃ©ricos (payNum, debtNum, totalNum) de todas las filas.
+     * Suma los valores numéricos (payNum, debtNum, totalNum) de todas las filas.
      *
      * @param {Array} rows - Filas de estado de cuenta ya normalizadas.
      * @returns {Array} Filas + fila total al final.
@@ -562,7 +562,7 @@ export const SearchBeneficiaryInformation = () => {
             id: index + 1,
             agreement: row?.nombre_contrato ?? "",
             component: row?.componente ?? "",
-            secondary: row?.Secundario ?? "",
+            secondary: row?.secundario ?? "",
             payment_identification: row?.identificacion_pago ?? "",
             paid_holder: row?.titular_pago ?? "",
             paid: row?.es_pagado ?? "",
@@ -1080,6 +1080,7 @@ export const SearchBeneficiaryInformation = () => {
     </>
     );
 };
+
 
 
 

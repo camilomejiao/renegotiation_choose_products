@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaBackspace, FaBroom, FaSave } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
@@ -449,3 +449,4 @@ export const ProductUploadTechnical = () => {
         </div>
     )
 }
+

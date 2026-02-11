@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+﻿import {useEffect, useState} from "react";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -89,3 +89,4 @@ export const ConciliationDetail = () => {
         </>
     )
 }
+

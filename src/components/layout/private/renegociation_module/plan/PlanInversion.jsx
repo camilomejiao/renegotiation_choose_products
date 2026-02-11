@@ -1,4 +1,4 @@
-import {TypeActorEnum} from "../../../../../helpers/GlobalEnum";
+﻿import {TypeActorEnum} from "../../../../../helpers/GlobalEnum";
 
 export const PlanInversion = ({engagement}) => {
     console.log('engagement: ', engagement);
@@ -678,3 +678,4 @@ export const PlanInversion = ({engagement}) => {
         </div>
     )
 }
+

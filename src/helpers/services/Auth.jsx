@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex.jsx";
+﻿import { GlobalConnex } from "../GlobalConnex.jsx";
 import { jwtDecode } from "jwt-decode";
 import {RolesEnum} from "../GlobalEnum";
 
@@ -111,3 +111,4 @@ class AuthService {
 }
 
 export const authService = new AuthService();
+

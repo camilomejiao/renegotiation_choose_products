@@ -1,4 +1,4 @@
-import { Box } from "@mui/material"; // CRÍTICO: Box es necesario para las líneas 38 y 40
+﻿import { Box } from "@mui/material"; // CRÍTICO: Box es necesario para las líneas 38 y 40
 import { ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
@@ -379,3 +379,4 @@ export const StandardTable = ({
 };
 
 export default StandardTable;
+

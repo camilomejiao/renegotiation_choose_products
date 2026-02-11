@@ -1,4 +1,4 @@
-import { numeroALetras } from "../../../../../helpers/utils/CurrencyConverter";
+﻿import { numeroALetras } from "../../../../../helpers/utils/CurrencyConverter";
 
 
 export const BalanceInFavorReport = ({dataReport}) => {
@@ -270,3 +270,4 @@ export const BalanceInFavorReport = ({dataReport}) => {
         </>
     )
 }
+

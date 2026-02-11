@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Accordion, Col, Row } from "react-bootstrap";
 import { Loading } from "../../../../shared/loading/Loading";
@@ -208,3 +208,5 @@ export const ListCollectionAccount = () => {
         </>
     );
 };
+
+

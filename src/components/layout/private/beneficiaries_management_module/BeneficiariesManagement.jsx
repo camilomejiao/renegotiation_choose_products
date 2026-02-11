@@ -46,7 +46,7 @@ export const BeneficiariesManagement = () => {
     const [consolidated, setConsolidated] = useState("");
     const [balance, setBalance] = useState("");
 
-    //Obtiene la informaciÃ³n del usuario
+    //Obtiene la información del usuario
     const getUserInformation = async (cubId) => {
         try {
             const { data, status} = await userServices.userInformation(cubId);
@@ -95,7 +95,7 @@ export const BeneficiariesManagement = () => {
             // Validar el tipo de archivo
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(file.type)) {
-                handleError('Archivo no vÃ¡lido', 'Solo se permiten imÃ¡genes (PNG, JPEG, JPG) o archivos PDF.');
+                handleError('Archivo no válido', 'Solo se permiten imágenes (PNG, JPEG, JPG) o archivos PDF.');
                 return;
             }
 
@@ -108,7 +108,7 @@ export const BeneficiariesManagement = () => {
                 const { status } = await filesServices.uploadFileReport(cubId, formData);
 
                 if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
-                    showAlert('Ã‰xito', 'Archivo enviado exitosamente');
+                    showAlert('Éxito', 'Archivo enviado exitosamente');
                     window.location.reload();
                 }
 
@@ -232,7 +232,7 @@ export const BeneficiariesManagement = () => {
             <div className="main-container">
                 <HeaderImage
                     imageHeader={imgDCSIPeople}
-                    titleHeader={'Â¡Explora el banco de proveedores!'}
+                    titleHeader={'¡Explora el banco de proveedores!'}
                     bannerIcon={imgAdd}
                     backgroundIconColor={'#ff5722'}
                     bannerInformation={'Conoce los proyectos, compras y proveedores en un solo lugar.'}
@@ -369,11 +369,11 @@ export const BeneficiariesManagement = () => {
                     </div>
                     <div className="beneficiaries-side__deliveries">
                         <button onClick={() => handleDeliveries(params.id)} className="reporting-system-button deliveries">
-                            <img src={imgFrame2} alt="icono Ãºnico" className="button-icon" />
+                            <img src={imgFrame2} alt="icono único" className="button-icon" />
                             ENTREGAS
                         </button>
                         <p className="beneficiaries-side__hint">
-                            Accede al mÃ³dulo de entregas del beneficiario.
+                            Accede al módulo de entregas del beneficiario.
                         </p>
                     </div>
                 </div>
@@ -400,6 +400,8 @@ export const BeneficiariesManagement = () => {
         </>
     )
 }
+
+
 
 
 

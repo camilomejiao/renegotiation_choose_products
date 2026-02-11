@@ -1,4 +1,4 @@
-export const numeroALetras = (num) => {
+﻿export const numeroALetras = (num) => {
     num = Number(num) || 0;
     if (num === 0) return "cero";
 
@@ -48,3 +48,4 @@ export const numeroALetras = (num) => {
 
     return millones(num);
 };
+

@@ -85,7 +85,7 @@ export const CollectionAccountDetails = () => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaÃ±a:
+                // Si es PDF y quieres abrir en otra pestaña:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -227,5 +227,6 @@ export const CollectionAccountDetails = () => {
         </>
     );
 };
+
 
 

@@ -1,4 +1,4 @@
-.footer-image-container {
+﻿.footer-image-container {
     text-align: center;
     display: flex;
     justify-content: center;
@@ -23,3 +23,4 @@
         margin-left: 30px;
     }
 }
+

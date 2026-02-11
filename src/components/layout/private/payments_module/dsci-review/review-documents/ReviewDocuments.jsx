@@ -261,7 +261,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if ((vFactura > valorEntrega || vFactura < newValorEntrega) && (accion === DeliveryDocumentReviewAction.APPROVE)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) Ã³ menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es de' (${vFactura.toLocaleString('es-CO')}) debe ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
             return false;
         }
@@ -286,7 +286,7 @@ export const ReviewDocuments = () => {
         let newValorEntrega = valorEntrega - InvoiceValueRange.INVOICEVALUERANGE;
         if (vFactura && valorEntrega && (vFactura > valorEntrega || vFactura < newValorEntrega)) {
             AlertComponent.warning('Ojo!',
-                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) Ã³ menor hasta 1000 pesos por debajo del valor de la entrega.`
+                `El 'Valor de factura es' (${vFactura.toLocaleString('es-CO')}) y deberia ser IGUAL al 'Valor de la entrega' (${valorEntrega.toLocaleString('es-CO')}) ó menor hasta 1000 pesos por debajo del valor de la entrega.`
             );
         }
     };
@@ -339,7 +339,7 @@ export const ReviewDocuments = () => {
                             {beneficiaryInformation?.revisiones_pagos?.map((rev, idx) => (
                                 <div key={idx} className={`revision-box ${rev.aprobado ? 'approved' : 'denied'}`}>
                                     <div><strong>Usuario:</strong> {rev.correo}</div>
-                                    <div><strong>Estado:</strong> {rev.aprobado ? 'âœ… Aprobado' : 'âŒ Denegado'}</div>
+                                    <div><strong>Estado:</strong> {rev.aprobado ? '✅ Aprobado' : '❌ Denegado'}</div>
                                     <div><strong>Fecha:</strong> {new Date(rev.fecha_aprobacion).toLocaleString()}</div>
                                     <div><strong>Observación:</strong> {rev.observacion}</div>
                                 </div>
@@ -411,7 +411,7 @@ export const ReviewDocuments = () => {
                                         <img src={downloadImg} alt="" /> Historial planes de inversión
                                     </button>
 
-                                    {/* Card visual de la secciÃ³n */}
+                                    {/* Card visual de la sección */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Fechas */}
@@ -515,7 +515,7 @@ export const ReviewDocuments = () => {
                                 <Col md={4} xs={12} className="documents-download review-documents__card review-documents__download mt-4">
                                     <h5 className="section-title">Validaciones Pagos</h5>
 
-                                    {/* Card visual de la secciÃ³n */}
+                                    {/* Card visual de la sección */}
                                     <div className="supervision-card">
                                         <Form>
                                             {/* Valor */}
@@ -598,6 +598,8 @@ export const ReviewDocuments = () => {
         </>
     )
 }
+
+
 
 
 

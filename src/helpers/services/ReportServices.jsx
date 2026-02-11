@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex.jsx";
+﻿import { GlobalConnex } from "../GlobalConnex.jsx";
 import { authTokenService } from "./AuthTokenService";
 
 /**
@@ -56,3 +56,4 @@ class ReportServices {
 }
 
 export const reportServices = new ReportServices();
+

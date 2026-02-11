@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+﻿import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
@@ -847,3 +847,5 @@ export const ValidationEnvironmental = () => {
         </>
     );
 };
+
+

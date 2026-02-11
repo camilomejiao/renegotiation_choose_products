@@ -1,4 +1,4 @@
-import { GlobalConnex } from "../GlobalConnex";
+﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
 import { ReportTypePaymentsEnum } from "../GlobalEnum";
 
@@ -166,3 +166,5 @@ class PaymentServices {
 }
 
 export const paymentServices = new PaymentServices();
+
+

@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+﻿import PropTypes from "prop-types";
 import { Col, Row } from "react-bootstrap";
 
 export const ModernBanner = ({
@@ -64,3 +64,4 @@ ModernBanner.propTypes = {
   backgroundInformationColor: PropTypes.string,
   infoText: PropTypes.string,
 };
+

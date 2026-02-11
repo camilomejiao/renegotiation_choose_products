@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
+﻿import { Navigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import { RolesEnum } from "../helpers/GlobalEnum";
@@ -184,3 +184,5 @@ export const SupplierDocsGuard = () => {
      */
     return <Outlet context={outletCtx} />;
 };
+
+

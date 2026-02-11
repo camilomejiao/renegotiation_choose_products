@@ -960,7 +960,7 @@ body,
   }
 }
 
-/* Contenido de pÃ¡gina */
+/* Contenido de página */
 .page-content {
   padding: 24px;
 }
@@ -1486,7 +1486,7 @@ body,
   filter: brightness(0) invert(1) !important;
 }
 
-/* Todos los botones tienen el mismo color y tamaÃ±o */
+/* Todos los botones tienen el mismo color y tamaño */
 
 @media (max-width: 768px) {
   .search-banner-reports {
@@ -2802,8 +2802,8 @@ body,
 .documents-download {
   display: grid;
   gap: 10px;
-  align-items: start;       /* â† clave */
-  align-content: start;     /* â† ayuda a evitar repartir el alto disponible */
+  align-items: start;       /* ← clave */
+  align-content: start;     /* ← ayuda a evitar repartir el alto disponible */
   grid-auto-rows: max-content;
 }
 
@@ -3438,7 +3438,7 @@ body,
   z-index: 1050;
 }
 
-/* ConfiguraciÃ³n para menÃºs abiertos */
+/* Configuración para menús abiertos */
 .dropdown-menu.show {
   position: absolute !important;
   transform: translate3d(0, 0, 0) !important;
@@ -3447,7 +3447,7 @@ body,
   left: 0 !important;
 }
 
-/* BotÃ³n toggle del dropdown - Estilo normal */
+/* Botón toggle del dropdown - Estilo normal */
 .dropdown .dropdown-toggle {
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 4px !important;
@@ -3466,7 +3466,7 @@ body,
   box-shadow: none !important;
 }
 
-/* Estados del botÃ³n toggle */
+/* Estados del botón toggle */
 .dropdown .dropdown-toggle:hover {
   background: rgba(255, 255, 255, 0.1) !important;
   border-color: rgba(255, 255, 255, 0.5) !important;
@@ -3487,7 +3487,7 @@ body,
   transform: rotate(180deg) !important;
 }
 
-/* Icono en el botÃ³n */
+/* Icono en el botón */
 .dropdown .dropdown-toggle .button-icon {
   width: 24px !important;
   height: 24px !important;
@@ -3501,7 +3501,7 @@ body,
   transform: scale(1.05) !important;
 }
 
-/* MenÃº desplegable - Estilo profesional */
+/* Menú desplegable - Estilo profesional */
 .dropdown .dropdown-menu {
   border: 1px solid rgba(52, 152, 219, 0.2) !important;
   border-radius: 8px !important;
@@ -3521,7 +3521,7 @@ body,
   inset: unset !important;
 }
 
-/* AnimaciÃ³n de entrada del menÃº */
+/* Animación de entrada del menú */
 @keyframes dropdownFadeIn {
   from {
     opacity: 0;
@@ -3533,7 +3533,7 @@ body,
   }
 }
 
-/* Items del menÃº - Estilo gubernamental */
+/* Items del menú - Estilo gubernamental */
 .dropdown .dropdown-item {
   padding: 12px 16px !important;
   border-radius: 6px !important;
@@ -3853,7 +3853,7 @@ body,
   box-shadow: var(--shadow-md);
 }
 
-/* ===== ESTANDARIZACIÃ“N DE BOTONES ===== */
+/* ===== ESTANDARIZACIÓN DE BOTONES ===== */
 .reporting-system-button {
   height: 60px !important;
   padding: 15px 20px !important;
@@ -4041,7 +4041,7 @@ body,
   color: #2c3e50 !important;
 }
 
-/* MenÃº desplegable */
+/* Menú desplegable */
 .gov-select__menu {
   border: 1px solid rgba(52, 152, 219, 0.2) !important;
   border-radius: 8px !important;
@@ -4055,7 +4055,7 @@ body,
   z-index: 9999 !important;
 }
 
-/* Asegurar que los menÃºs de react-select se muestren por encima de tablas con scroll */
+/* Asegurar que los menús de react-select se muestren por encima de tablas con scroll */
 .custom-select__menu-list,
 .gov-select__menu-list {
   max-height: 300px !important;
@@ -4640,7 +4640,7 @@ a.button-pill {
   font-weight: 500;
 }
 
-/* Agrupa input + botÃ³n para que nunca se separen */
+/* Agrupa input + botón para que nunca se separen */
 .search-input-group {
   display: inline-flex;
   align-items: stretch;
@@ -4648,7 +4648,7 @@ a.button-pill {
   gap: 10px;
 }
 
-/* que visualmente se â€œunanâ€ */
+/* que visualmente se “unan” */
 .search-input-group__field {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -4658,7 +4658,7 @@ a.button-pill {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   height: 48px;            /* mismo alto que el input */
-  min-width: 52px;         /* cÃ³modo para el icono */
+  min-width: 52px;         /* cómodo para el icono */
   padding: 0;              /* ya es icon-only */
 }
 
@@ -5499,5 +5499,7 @@ a.button-pill {
   }
 
 }
+
+
 
 

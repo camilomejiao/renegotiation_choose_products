@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 
 //Img
 import imgPayments from "../../../../../../assets/image/payments/pay-supplier.png";
@@ -53,3 +53,4 @@ export const PaySuppliers = () => {
         </>
     )
 }
+

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+﻿import {useEffect, useRef, useState} from "react";
 import {Col, Container, Dropdown, Row} from "react-bootstrap";
 import printJS from "print-js";
 import DatePicker from "react-datepicker";
@@ -269,3 +269,4 @@ export const CompanyReport = () => {
         </>
     )
 }
+

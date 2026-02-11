@@ -1,4 +1,4 @@
-import {ComponentEnum, TypeActorEnum} from "../../../../../helpers/GlobalEnum";
+﻿import {ComponentEnum, TypeActorEnum} from "../../../../../helpers/GlobalEnum";
 
 export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
     console.log(userData);
@@ -226,3 +226,4 @@ export const Authorization = ({component, userData, opt1, opt2, opt3 }) => {
         </>
     )
 }
+

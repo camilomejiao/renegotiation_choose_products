@@ -1,7 +1,7 @@
-# Arquitectura del Proyecto
+﻿# Arquitectura del Proyecto
 
 ## 1) Resumen
-Este proyecto es una SPA (Single Page Application) construida en React 18 con enrutamiento client‑side, separación por módulos funcionales y un set de servicios para comunicación con el backend. La UI combina React‑Bootstrap, MUI (DataGrid), React‑Select y un sistema de estilos globales en `src/styles/index.css`.
+Este proyecto es una SPA (Single Page Application) construida en React 18 con enrutamiento client‘side, separación por módulos funcionales y un set de servicios para comunicación con el backend. La UI combina React‘Bootstrap, MUI (DataGrid), React‘Select y un sistema de estilos globales en `src/styles/index.css`.
 
 ## Diagrama (alto nivel)
 Diagrama exportado en imagen:
@@ -73,7 +73,7 @@ Ventajas:
 - **Estado local** en componentes (React `useState`)
 - **Estado global**: `AuthProvider` en `src/context`
 - **Forms**: `Formik` + `Yup`
-- **Tablas**: `MUI DataGrid` con paginación server‑side cuando aplica
+- **Tablas**: `MUI DataGrid` con paginación server‘side cuando aplica
 
 ## 8) UI/UX y estilos
 El styling sigue un enfoque híbrido:

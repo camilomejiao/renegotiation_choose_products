@@ -1,4 +1,4 @@
-import { Tab, Tabs } from "react-bootstrap";
+﻿import { Tab, Tabs } from "react-bootstrap";
 
 //Img
 import imgPayments from "../../../../assets/image/payments/pay-supplier.png";
@@ -37,7 +37,6 @@ export const MenuTab = () => {
                     </Tab>
                 </Tabs>
             </div>
-            );
         </>
     )
 }

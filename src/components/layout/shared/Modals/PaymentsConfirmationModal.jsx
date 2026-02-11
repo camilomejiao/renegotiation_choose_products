@@ -1,4 +1,4 @@
-import { Button, Modal, Form } from "react-bootstrap";
+﻿import { Button, Modal, Form } from "react-bootstrap";
 
 export const PaymentsConfirmationModal = ({
       show,
@@ -59,3 +59,4 @@ export const PaymentsConfirmationModal = ({
         </Modal>
     );
 };
+
