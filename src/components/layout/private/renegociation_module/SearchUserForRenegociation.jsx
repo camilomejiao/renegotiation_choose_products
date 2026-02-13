@@ -22,7 +22,7 @@ export const SearchUserForRenegociation = () => {
                         Bienvenido al Portal de <span>Proveedores</span>
                     </h1>
                     <p className="search-user-hero__subtitle">
-                        Sistema de gestión para proveedores de la DSCI - RenHacemos
+                        Sistema de gestión para proveedores de la DSCI - PNIS
                     </p>
                     <div className="search-user-hero__cta">
                         DA EL SIGUIENTE PASO EN TUS VENTAS AHORA

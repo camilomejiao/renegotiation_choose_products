@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Se han aplicado los estilos del sistema de diseño gubernamental del proyecto `proveedores_renhacemos` al proyecto actual `renegotiation_choose_products`. Los cambios incluyen una paleta de colores profesional, tipografía moderna y componentes estandarizados.
+Se han aplicado los estilos del sistema de diseño gubernamental del proyecto `proveedores_pnis` al proyecto actual `renegotiation_choose_products`. Los cambios incluyen una paleta de colores profesional, tipografía moderna y componentes estandarizados.
 
 ## Archivos Modificados
 
