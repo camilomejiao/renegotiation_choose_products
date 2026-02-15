@@ -215,7 +215,7 @@ export const OrderReport = () => {
                 </div>
 
                 <div className="container mt-lg-3">
-                    <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center mt-3 mb-3">
+                    <div className="table-toolbar mt-5">
                         <input
                             type="text"
                             placeholder="Buscar..."
@@ -224,7 +224,7 @@ export const OrderReport = () => {
                             onChange={handleSearchQueryChange}
                             className="input-responsive"
                         />
-                        <div className="d-flex flex-column flex-md-row w-100 w-md-auto">
+                        <div className="text-end d-flex">
                             <Button
                                 variant="outline-primary"
                                 onClick={handleSearch}

@@ -4362,7 +4362,37 @@ body,
 
 .table-toolbar .text-end {
   margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
+
+  @media (max-width: 576px) {
+    .table-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .table-toolbar .input-responsive,
+    .table-toolbar .search-input,
+    .table-toolbar .form-control {
+      width: min(360px, 100%);
+      margin-inline: auto;
+    }
+
+    .table-toolbar .text-end {
+      margin-left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    gap: var(--space-2);
+  }
+
+    .table-toolbar .btn,
+    .table-toolbar .button-order-responsive {
+      width: 100%;
+    }
+  }
 
 /* Payments toolbar (shared) */
 .payments-toolbar {
@@ -4425,19 +4455,21 @@ body,
   border-top: 2px solid var(--gray-200);
 }
 
-@media (max-width: 576px) {
-  .input-responsive {
-    font-size: 0.9rem;
-  }
+  @media (max-width: 576px) {
+    .input-responsive {
+      font-size: 0.9rem;
+      width: min(360px, 100%);
+      margin-inline: auto;
+    }
 
-  .button-order-responsive {
-    width: 50%;
-  }
+    .button-order-responsive {
+      width: 100%;
+    }
 
-  .responsive-container {
-    width: 90%;
+    .responsive-container {
+      width: 90%;
+    }
   }
-}
 
 /* Accordion styling */
 .custom-accordion .accordion-item {
