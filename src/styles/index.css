@@ -298,7 +298,7 @@ body,
   .content,
   .content.sidebar-collapsed {
     margin-left: 0;
-    width: 100vw;
+    width: 100%;
   }
 
   .page-wrapper {
@@ -553,6 +553,9 @@ body,
   display: grid;
   gap: var(--space-7);
   padding: var(--space-5) var(--space-6);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .page-header {
@@ -1289,6 +1292,7 @@ body,
   .content,
   .content.sidebar-collapsed {
     margin-left: 0;
+    width: 100%;
   }
 
   .header-image {
