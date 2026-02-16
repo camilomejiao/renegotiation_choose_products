@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import {useCallback, useEffect, useMemo, useState} from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
@@ -298,6 +298,7 @@ export const ValidationSupervision = () => {
                 const priceValue    = Number(row?.precio ?? 0);
 
                 const isOutOfRange = priceValue < priceMinValue || priceValue > priceMaxValue;
+                const isPriceMaxValue = priceValue > priceMaxValue;
 
                 return {
                     id: row?.id,
@@ -317,6 +318,7 @@ export const ValidationSupervision = () => {
                     priceMinValue,
                     priceMaxValue,
                     priceValue,
+                    isPriceMaxValue,
                     isOutOfRange,
 
                     state: getProductState(row?.fecha_aprobado, row?.aprobados),
@@ -432,6 +434,7 @@ export const ValidationSupervision = () => {
         }
     };
 
+    //
     const handleApproveByAudit = async (ids, accion, comment) => {
         setLoading(true);
 
@@ -466,9 +469,35 @@ export const ValidationSupervision = () => {
         setFilteredData(filtered);
     };
 
+    //
+    const rowsById = useMemo(() => {
+        const map = new Map();
+        for (const row of productList) map.set(row.id, row);
+        return map;
+    }, [productList]);
+
+    //
+    const getOutOfRangeSelectedIds = useCallback((ids) => {
+        return ids.filter((id) => rowsById.get(id)?.isPriceMaxValue);
+    }, [rowsById]);
+
     //Aprobación o Denegación
     const handleApproveDenySubmit = async () => {
         try {
+
+            // Solo aplica para aprobar
+            if (action === "approve") {
+                const outOfRangeIds = getOutOfRangeSelectedIds(selectedIds);
+
+                if (outOfRangeIds.length > 0) {
+                    showInfo(
+                        "No se puede aprobar",
+                        `Hay ${outOfRangeIds.length} producto(s) con precio superior del rango permitido. Debes corregirlos o denegarlos.`
+                    );
+                    return;
+                }
+            }
+
             await handleApproveByAudit(selectedIds, action, comment);
         } catch (error) {
             console.error('Error en la aprobación:', error);
