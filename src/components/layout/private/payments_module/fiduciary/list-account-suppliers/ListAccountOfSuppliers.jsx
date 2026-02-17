@@ -1,4 +1,4 @@
-ï»¿import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../../shared/loading/Loading";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -40,13 +40,13 @@ export const ListAccountOfSuppliers = () => {
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.2 },
-        { field: "collection_account", headerName: "NÂ° Cuenta de Cobro", flex: 0.3 },
+        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
         { field: "status", headerName: "Estado", flex: 0.3 },
-        { field: "date", headerName: "Fecha CreaciÃ³n", flex: 0.3 },
+        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
         { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
         { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
         { field: "total", headerName: "Valor Total", flex: 0.5 },
-        { field: "user", headerName: "RegistrÃ³", flex: 0.5 },
+        { field: "user", headerName: "Registró", flex: 0.5 },
     ];
 
     const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -85,7 +85,7 @@ export const ListAccountOfSuppliers = () => {
         });
     }
 
-    //Manejar selecciÃ³n de filas
+    //Manejar selección de filas
     const handleSelectionChange = (newSelectionModel) => {
         // Encuentra las filas seleccionadas, busca los id seleccionados para traer la informacion y luego la informacion que necesitamos
         const selectedAccounts = dataTable
@@ -105,11 +105,11 @@ export const ListAccountOfSuppliers = () => {
 
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
-        if (!canSearch) return; // no dispares la bÃºsqueda si 1â€“3 chars
-        // opcional: resetear pÃ¡gina si usas paginaciÃ³n
+        if (!canSearch) return; // no dispares la búsqueda si 1–3 chars
+        // opcional: resetear página si usas paginación
         setPage(0);
 
-        // Si quieres mantener un pequeÃ±o debounce para evitar doble click/enter rÃ¡pidos:
+        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
             getAccountOfSuppliers(1, pageSize, query);
         }, 150);
@@ -126,7 +126,7 @@ export const ListAccountOfSuppliers = () => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaÃ±a:
+                // Si es PDF y quieres abrir en otra pestaña:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -162,7 +162,7 @@ export const ListAccountOfSuppliers = () => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaÃ±a:
+                // Si es PDF y quieres abrir en otra pestaña:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -202,7 +202,7 @@ export const ListAccountOfSuppliers = () => {
                 titleHeader={'Fiduciara'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'AquÃ­ podrÃ¡s ver el listado de cuentas de cobro.'}
+                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
                 backgroundInformationColor={'#40A581'}
             />
 
@@ -262,7 +262,7 @@ export const ListAccountOfSuppliers = () => {
 
                 {loading && <Loading fullScreen text={informationLoadingText} />}
 
-                <div style={{ height: 600, width: "auto" }}>
+                <div style={{ height: 600, width: "100%" }}>
                     <DataGrid
                         rows={dataTable}
                         columns={columns}
@@ -321,4 +321,5 @@ export const ListAccountOfSuppliers = () => {
         </>
     )
 }
+
 
