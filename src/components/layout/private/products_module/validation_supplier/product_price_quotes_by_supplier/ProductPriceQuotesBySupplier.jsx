@@ -8,30 +8,30 @@ import Select from "react-select";
 import { TextField } from "@mui/material";
 
 //
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import { Loading } from "../../../shared/loading/Loading";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { Loading } from "../../../../shared/loading/Loading";
 
 //Services
-import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
-import { supplierServices } from "../../../../../helpers/services/SupplierServices";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
+import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
 
 //Enum
 import {
     GeneralStatusDeliveryProductEnum,
     ResponseStatusEnum, RolesEnum,
     StatusTeamProductEnum
-} from "../../../../../helpers/GlobalEnum";
+} from "../../../../../../helpers/GlobalEnum";
 
 //Utils
-import { handleError, showAlert } from "../../../../../helpers/utils/utils";
+import { handleError, showAlert } from "../../../../../../helpers/utils/utils";
 import {
     formatPrice,
     getObservationsSupervisionColumns,
     getStatusProduct
-} from "../../../../../helpers/utils/ValidateProductColumns";
+} from "../../../../../../helpers/utils/ValidateProductColumns";
 
 export const ProductPriceQuotesBySupplier = () => {
 

@@ -33,8 +33,6 @@ import { Renegociation } from "../components/layout/private/renegociation_module
 import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
 import { PaySuppliers } from "../components/layout/private/payments_module/suppliers/pay-suppliers/PaySuppliers";
 import { BeneficiaryDeliveryReview } from "../components/layout/private/payments_module/dsci-review/beneficiary-review.jsx/BeneficiaryDeliveryReview";
-import { CreateCallSuppliers } from "../components/layout/private/suppliers_module/convocation_suppliers/CreateCallSuppliers";
-import { SupplierValidation } from "../components/layout/private/suppliers_module/supplier_validation/SupplierValidation";
 import { ReviewDocuments } from "../components/layout/private/payments_module/dsci-review/review-documents/ReviewDocuments";
 import {
     CreateCollectionAccount
@@ -43,17 +41,17 @@ import {ListAccountOfSuppliers} from "../components/layout/private/payments_modu
 import {
     CollectionAccountDetails
 } from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
-import { ProductUploadTechnical } from "../components/layout/private/products_module/product_upload_technical/ProductUploadTechnical";
-import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
+import { ProductUploadTechnical } from "../components/layout/private/products_module/validation_technical/product_upload_technical/ProductUploadTechnical";
+import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/validation_supplier/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import {
     ListProductsByConvocation
-} from "../components/layout/private/products_module/list_products_by_convocation/ListProductsByConvocation";
+} from "../components/layout/private/products_module/validation_technical/list_products_by_convocation/ListProductsByConvocation";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
 import {
     EditProductsByConvocation
-} from "../components/layout/private/products_module/edit_products_by_convocation/EditProductsByConvocation";
+} from "../components/layout/private/products_module/validation_technical/edit_products_by_convocation/EditProductsByConvocation";
 import { ReportByConvocation } from "../components/layout/private/products_module/report/ReportByConvocation";
 import { CreateSuppliers } from "../components/layout/private/management_module/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management_module/convocation/ConvocationList";
@@ -148,14 +146,9 @@ export const Routing = () => {
                             <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
                             <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
                             <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
-                            {/*<Route path={ RouterEnum.EditSuppliers }  element={ <CreateSuppliers /> }  />*/}
                             <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
                             <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
                             <Route path={ RouterEnum.CreateConvocationEdit }  element={ <ConvocationMenuTab /> }  />
-
-                            {/* Convocation Suppliers */}
-                            <Route path={ RouterEnum.CreateCallsSuppliers }  element={ <CreateCallSuppliers /> }  />
-                            <Route path={ RouterEnum.SupplierValidation }  element={ <SupplierValidation /> }  />
 
                             {/* Reportes */}
                             <Route path={ RouterEnum.Reports }  element={ <BeneficiariesManagement /> }  />

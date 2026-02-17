@@ -4,18 +4,18 @@ import { useNavigate } from "react-router-dom";
 import {FaFileExcel, FaPlus} from "react-icons/fa";
 import { Button, Modal } from "react-bootstrap";
 
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import {
     getConvocationColumns,
     getEditActionsColumns
-} from "../../../../../helpers/utils/ConvocationProductColumns";
+} from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 export const ListProductsByConvocation = () => {
 
