@@ -298,7 +298,7 @@ body,
   .content,
   .content.sidebar-collapsed {
     margin-left: 0;
-    width: 100vw;
+    width: 100%;
   }
 
   .page-wrapper {
@@ -331,7 +331,9 @@ body,
   height: 100%;
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {
@@ -391,10 +393,12 @@ body,
 
 .MuiTableContainer-root {
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--gray-200);
   background: var(--white);
+  -webkit-overflow-scrolling: touch;
 }
 
 .MuiTableHead-root .MuiTableCell-root {
@@ -423,7 +427,9 @@ body,
   flex-direction: column;
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Row status classes for products tables */
@@ -553,6 +559,9 @@ body,
   display: grid;
   gap: var(--space-7);
   padding: var(--space-5) var(--space-6);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
 }
 
 .page-header {
@@ -1289,6 +1298,7 @@ body,
   .content,
   .content.sidebar-collapsed {
     margin-left: 0;
+    width: 100%;
   }
 
   .header-image {
@@ -2638,19 +2648,28 @@ body,
 
 @media (max-width: 576px) {
   .search-form2 {
-    margin-left: 130px;
+    margin-left: 0;
+    width: 100%;
+    justify-content: stretch;
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
   .search-input {
-    max-width: 47% !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
 
   .search-select {
-    width: 25% !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .search-button {
-    width: 15% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 10px !important;
+    height: 48px !important;
   }
 
   .search-helper-text {
@@ -5530,6 +5549,206 @@ a.button-pill {
     grid-template-columns: 1fr;
   }
 
+}
+
+/* =========================================================
+   Mobile Fixes: Forms + Tables
+   ========================================================= */
+@media (max-width: 992px) {
+  .page-wrapper input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .page-wrapper textarea,
+  .page-wrapper select,
+  .page-wrapper .form-control,
+  .page-wrapper .form-select,
+  .page-wrapper .gov-input,
+  .page-wrapper .input-field {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .page-wrapper .auth-select__control,
+  .page-wrapper .custom-select__control,
+  .page-wrapper .gov-select__control,
+  .page-wrapper .react-select__control,
+  .page-wrapper .select-container,
+  .page-wrapper .search-select,
+  .page-wrapper .search-panel__input,
+  .page-wrapper .search-input-with-icon,
+  .page-wrapper .search-form2,
+  .page-wrapper .search-form--renegotiation {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .page-wrapper .search-form2,
+  .page-wrapper .search-form--renegotiation {
+    margin-left: 0 !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px;
+  }
+
+  .page-wrapper .search-button,
+  .page-wrapper .btn-search,
+  .page-wrapper .button-order-responsive,
+  .page-wrapper .button-responsive,
+  .page-wrapper .btn-responsive,
+  .page-wrapper .btn-action-back,
+  .page-wrapper .responsive-button,
+  .page-wrapper .action-buttons .btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal;
+    justify-content: center;
+  }
+
+  .page-wrapper .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-wrapper .table-toolbar .text-end {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .page-wrapper .payments-toolbar__btn,
+  .page-wrapper .payments-toolbar__btn--right {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .page-wrapper .search-form2 .search-button {
+    margin-left: 0 !important;
+  }
+
+  .page-wrapper .search-form--renegotiation .search-input-with-icon {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .page-wrapper .table-wrapper,
+  .page-wrapper .table-container,
+  .page-wrapper .table-container-flex,
+  .page-wrapper .gov-table-container,
+  .page-wrapper .MuiTableContainer-root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-wrapper .table,
+  .page-wrapper .MuiTable-root {
+    min-width: 760px;
+  }
+
+  .page-wrapper .MuiDataGrid-root {
+    min-width: 760px;
+  }
+
+  .page-wrapper .MuiDataGrid-main,
+  .page-wrapper .MuiDataGrid-virtualScroller {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-wrapper .MuiDataGrid-columnHeadersInner,
+  .page-wrapper .MuiDataGrid-virtualScrollerContent {
+    min-width: max-content;
+  }
+
+  .page-wrapper .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-wrapper .table-responsive table {
+    min-width: 760px;
+  }
+}
+
+/* =========================================================
+   Module Fixes: Management + Product Tables
+   ========================================================= */
+.datagrid-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+  .datagrid-inner {
+  min-width: 1100px;
+  height: 100%;
+}
+
+.datagrid-inner--wide {
+  min-width: 1280px;
+}
+
+.datagrid-inner .MuiDataGrid-root {
+  height: 100%;
+  width: 100%;
+}
+
+.management-search-input {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 8px 12px !important;
+  font-size: 0.9rem !important;
+  line-height: 1.2 !important;
+}
+
+.management-tabs.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+}
+
+@media (max-width: 992px) {
+  .management-tabs.nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+
+  .management-tabs.nav-tabs .nav-item {
+    flex: 0 0 auto;
+  }
+
+  .management-tabs.nav-tabs .nav-link {
+    white-space: nowrap;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+  }
+
+  .datagrid-inner {
+    min-width: 900px;
+  }
+
+  .datagrid-inner--wide {
+    min-width: 1200px;
+  }
+
+  .management-search-input {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 7px 10px !important;
+    font-size: 0.85rem !important;
+  }
 }
 
 

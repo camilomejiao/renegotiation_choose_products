@@ -4,18 +4,18 @@ import { useNavigate } from "react-router-dom";
 import {FaFileExcel, FaPlus} from "react-icons/fa";
 import { Button, Modal } from "react-bootstrap";
 
-import { HeaderImage } from "../../../shared/header_image/HeaderImage";
-import imgPeople from "../../../../../assets/image/addProducts/people1.jpg";
+import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
 
 //
 import {
     getConvocationColumns,
     getEditActionsColumns
-} from "../../../../../helpers/utils/ConvocationProductColumns";
+} from "../../../../../../helpers/utils/ConvocationProductColumns";
 
 //Services
-import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-import { convocationProductsServices } from "../../../../../helpers/services/ConvocationProductsServices";
+import { ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { convocationProductsServices } from "../../../../../../helpers/services/ConvocationProductsServices";
 
 export const ListProductsByConvocation = () => {
 
@@ -129,7 +129,7 @@ export const ListProductsByConvocation = () => {
             />
 
             <div className="container mt-lg-3">
-                <div className="text-end">
+                <div className="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
                     <Button
                         variant="outline-primary"
                         size="md"
@@ -143,6 +143,7 @@ export const ListProductsByConvocation = () => {
                         variant="outline-success"
                         onClick={handleReport}
                         title="Generar reporte (Excel)"
+                        className="button-order-responsive"
                     >
                         <FaFileExcel /> Reporte
                     </Button>
@@ -157,13 +158,14 @@ export const ListProductsByConvocation = () => {
                             placeholder="Buscar..."
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            className="input-responsive me-2"
+                            className="input-responsive management-search-input me-2"
                         />
                     </div>
                 </div>
 
-                <div style={{height: 600, width: "100%"}}>
-                    <DataGrid
+                <div className="datagrid-scroll-wrapper" style={{ height: 600 }}>
+                    <div className="datagrid-inner datagrid-inner--wide">
+                        <DataGrid
                         rows={filteredRows}
                         columns={columns}
                         pagination
@@ -215,6 +217,7 @@ export const ListProductsByConvocation = () => {
                             "& .row-closed": { backgroundColor: "rgba(244,67,54,0.08)"  }, // rojo suave
                         }}
                     />
+                    </div>
                 </div>
             </div>
 
