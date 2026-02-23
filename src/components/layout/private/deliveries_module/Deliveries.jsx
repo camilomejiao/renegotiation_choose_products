@@ -356,7 +356,7 @@ export const Deliveries = () => {
                         display: "inline-flex",
                         alignItems: "center",
                         gap: "6px",
-                        color: "#6c757d",
+                        color: "#ffffff",
                         fontWeight: 500,
                     }}
                 >
@@ -548,7 +548,12 @@ const renderFeCell = (params) => {
                 {/* Enviar entrega */}
                 {hasPdfOK(row) && isSP && (
                     <Button
-                        style={{ backgroundColor: "#FFF", marginRight: 10 }}
+                        style={{
+                            backgroundColor: "#0d6efd",
+                            borderColor: "#0d6efd",
+                            color: "#fff",
+                            marginRight: 10,
+                        }}
                         onClick={() => {
                             setSelectedDeliveryId(row.id);
                             setShowConfirmationModal(true);
