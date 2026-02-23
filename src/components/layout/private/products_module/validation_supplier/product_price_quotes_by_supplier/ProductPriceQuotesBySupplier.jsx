@@ -49,6 +49,9 @@ export const ProductPriceQuotesBySupplier = () => {
     const [loadingTable, setLoadingTable] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const isApprovedBySupervision = (row) =>
+        String(row?.status_supervision || "").toLowerCase() ===
+        StatusTeamProductEnum.APPROVED.label.toLowerCase();
 
     //Columns
     const getProductsPriceQuotesColumns = [
@@ -154,12 +157,14 @@ export const ProductPriceQuotesBySupplier = () => {
                 //const min = Number(params.row.precio_min ?? 0);
                 //const max = Number(params.row.precio_max ?? Infinity);
                 const current = Number(params.row.price ?? 0);
+                const isApproved = isApprovedBySupervision(params.row);
 
                 return (
                     <TextField
                         type="text"
                         value={current ? formatPrice(current) : ""}
                         fullWidth
+                        disabled={isApproved}
                         onChange={(e) => {
                             // solo dígitos
                             const raw = e.target.value.replace(/[^\d]/g, "");
@@ -480,6 +485,7 @@ export const ProductPriceQuotesBySupplier = () => {
                             columns={columns}
                             processRowUpdate={handleRowUpdate}
                             editMode="row"
+                            isCellEditable={(params) => !isApprovedBySupervision(params.row)}
                             pagination
                             loading={loadingTable}
                             pageSize={100}
@@ -554,5 +560,4 @@ export const ProductPriceQuotesBySupplier = () => {
         </>
     )
 }
-
 

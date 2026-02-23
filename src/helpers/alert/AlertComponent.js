@@ -21,6 +21,16 @@ class AlertComponent {
         });
     }
 
+    static Error(title, html) {
+        Swal.fire({
+            title: title,
+            html: html,
+            icon: "error",
+            width: 360,
+            heightAuto: true,
+        });
+    }
+
     static info(title, message) {
         Swal.fire({
             title: title,
