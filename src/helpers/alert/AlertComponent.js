@@ -21,7 +21,7 @@ class AlertComponent {
         });
     }
 
-    static errorWithHtml(title, html) {
+    static Error(title, html) {
         Swal.fire({
             title: title,
             html: html,

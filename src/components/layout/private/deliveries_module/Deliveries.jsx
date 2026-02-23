@@ -203,6 +203,7 @@ export const Deliveries = () => {
             const { data, status} = await deliveriesServices.searchDeliveriesPDF(deliveryId);
             if(status === ResponseStatusEnum.OK) {
                 const archivos = Array.isArray(data?.archivos) ? data.archivos : [];
+                const reportError = data?.error || null;
 
                 return {
                     consolidatedFileUrl: pick(archivos, 'pdf'),
@@ -214,10 +215,23 @@ export const Deliveries = () => {
                     fe_number:           data?.numero_fe ?? null,
                     statusDelivery:      data?.estado ?? null,
                     observation:         data?.observacion ?? "",
+                    reportData:          reportError ? null : data,
+                    reportError:         reportError,
+                    reportProductosAlterados: data?.productos_alterados ?? [],
                 };
             }
+            return {
+                reportData: null,
+                reportError: data?.error || "Error obteniendo el reporte.",
+                reportProductosAlterados: data?.productos_alterados ?? [],
+            };
         } catch (error) {
             console.error("Error fetching deliveries:", error);
+            return {
+                reportData: null,
+                reportError: "Error obteniendo el reporte.",
+                reportProductosAlterados: [],
+            };
         }
     }
 
@@ -248,7 +262,10 @@ export const Deliveries = () => {
                         approvedTechnical: deliveryIdInfo?.approvedTechnical,
                         aprobadoProveedor: deliveryIdInfo?.aprobadoProveedor,
                     },
-                    observation: deliveryIdInfo?.observation
+                    observation: deliveryIdInfo?.observation,
+                    reportData: deliveryIdInfo?.reportData ?? null,
+                    reportError: deliveryIdInfo?.reportError ?? null,
+                    reportProductosAlterados: deliveryIdInfo?.reportProductosAlterados ?? [],
                 };
             })
         );
@@ -410,17 +427,34 @@ export const Deliveries = () => {
     /** Renderiza la celda de FE (cargar/ver/editar factura electrónica). */
     
     /** Renderiza el botón de generación de acta de entrega. */
-    const renderGeneratePdfCell = (params) => (
-        <div>
-            <Button
-                variant="outline-primary"
-                onClick={() => handleDeliveryInformationReport(params.row.id)}
-                title="Generar acta de entrega (PDF)"
-            >
-                <FaFilePdf />
-            </Button>
-        </div>
-    );
+    const renderGeneratePdfCell = (params) => {
+        const row = params.row;
+        const hasError = Boolean(row?.reportError);
+        const handleClick = () => {
+            if (hasError) {
+                showCreateDeliveryError(
+                    row.reportError,
+                    row.reportProductosAlterados,
+                    "No se puede generar acta de entrega"
+                );
+                return;
+            }
+            handleDeliveryInformationReport(row);
+        };
+
+        return (
+            <div onClick={handleClick} style={{ cursor: hasError ? "not-allowed" : "pointer" }}>
+                <Button
+                    variant="outline-primary"
+                    title={hasError ? "No disponible: hay productos con error" : "Generar acta de entrega (PDF)"}
+                    disabled={hasError}
+                    style={hasError ? { pointerEvents: "none" } : undefined}
+                >
+                    <FaFilePdf />
+                </Button>
+            </div>
+        );
+    };
 
     /** Renderiza botones de evidencia PDF (subir/ver consolidado). */
     const renderEvidenceCell = (params) => {
@@ -894,7 +928,7 @@ const renderFeCell = (params) => {
         `;
     };
 
-    const showCreateDeliveryError = (errorMessage, productosAlterados = []) => {
+    const showCreateDeliveryError = (errorMessage, productosAlterados = [], title = "Error") => {
         const productNames = Array.isArray(productosAlterados)
             ? productosAlterados
                 .map((product) => {
@@ -915,7 +949,7 @@ const renderFeCell = (params) => {
                 .filter(Boolean)
             : [];
 
-        AlertComponent.errorWithHtml("Error", buildCreateDeliveryErrorHtml(errorMessage, productNames));
+        AlertComponent.Error(title, buildCreateDeliveryErrorHtml(errorMessage, productNames));
     };
 
     //Crear entrega
@@ -1142,18 +1176,13 @@ const renderFeCell = (params) => {
         }
     };
 
-    const handleDeliveryInformationReport = async (deliveryId) => {
-        setLoading(true);
-        try {
-            const { data } = await deliveriesServices.deliveryReport(deliveryId);
-            setDeliveryInformation(data);
-            setIsReadyToPrintDeliveryInformation(true);
-        } catch (error) {
-            console.error("Error obteniendo el reporte:", error);
-            showError('Error', 'Error obteniendo el reporte:');
-        } finally {
-            setLoading(false);
+    const handleDeliveryInformationReport = (row) => {
+        if (!row?.reportData) {
+            showError("Error", "No hay información disponible para generar el acta.");
+            return;
         }
+        setDeliveryInformation(row.reportData);
+        setIsReadyToPrintDeliveryInformation(true);
     }
 
     const handlePDFPrint = () => {
@@ -1551,12 +1580,3 @@ const renderFeCell = (params) => {
         </>
     )
 }
-
-
-
-
-
-
-
-
-
