@@ -61,10 +61,9 @@ class UserServices {
         const params = new URLSearchParams();
         params.set("page", page);
         params.set("page_size", pageSize);
-        if (search) {
-            params.set("search", search);
-        }
-        const url = this.buildUrl(`usuarios/?${params.toString()}`);
+        const baseQuery = params.toString();
+        const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
+        const url = this.buildUrl(`usuarios/?${baseQuery}${searchQuery}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -123,4 +122,3 @@ class UserServices {
 }
 
 export const userServices = new UserServices();
-
