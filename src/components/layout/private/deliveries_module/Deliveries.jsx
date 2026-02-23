@@ -864,6 +864,60 @@ const renderFeCell = (params) => {
         }));
     }
 
+    const escapeHtml = (value) => (
+        String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")
+    );
+
+    const buildCreateDeliveryErrorHtml = (errorMessage, productNames) => {
+        const safeMessage = escapeHtml(errorMessage || "Hubo un error al intentar crear la entrega.");
+        if (!productNames?.length) {
+            return `<p style="margin: 0; text-align: left;">${safeMessage}</p>`;
+        }
+
+        const items = productNames
+            .map((name) => `<li style="margin: 0 0 4px 0;">${escapeHtml(name)}</li>`)
+            .join("");
+
+        return `
+            <div style="text-align: left;">
+                <p style="margin: 0 0 8px 0;">${safeMessage}</p>
+                <div style="margin: 0 0 6px 0; font-weight: 600;">Productos:</div>
+                <div style="max-height: 86px; overflow: auto; padding-right: 4px;">
+                    <ul style="margin: 0 0 0 16px; padding: 0;">${items}</ul>
+                </div>
+            </div>
+        `;
+    };
+
+    const showCreateDeliveryError = (errorMessage, productosAlterados = []) => {
+        const productNames = Array.isArray(productosAlterados)
+            ? productosAlterados
+                .map((product) => {
+                    if (typeof product === "string") return product;
+                    return (
+                        product?.nombre ||
+                        product?.name ||
+                        product?.producto?.nombre ||
+                        product?.producto?.name ||
+                        product?.producto ||
+                        product?.nombre_producto ||
+                        product?.producto_nombre ||
+                        product?.Producto ||
+                        product?.Producto_Nombre ||
+                        ""
+                    );
+                })
+                .filter(Boolean)
+            : [];
+
+        AlertComponent.errorWithHtml("Error", buildCreateDeliveryErrorHtml(errorMessage, productNames));
+    };
+
     //Crear entrega
     const handleCreateDeliveries = async () => {
         if (!selectedSupplier && userAuth.rol_id === RolesEnum.TERRITORIAL_LINKS) {
@@ -877,6 +931,12 @@ const renderFeCell = (params) => {
         setLoading(true);
         try {
             const { data, status} = await deliveriesServices.productsToBeDelivered(dataSupplier, params.id);
+
+            if (data?.error) {
+                showCreateDeliveryError(data?.error, data?.productos_alterados);
+                setShowDeliveryForm(false);
+                return;
+            }
 
             if (data.length <= 0) {
                 showInfo('', 'No tienes productos pendientes');
@@ -1491,13 +1551,6 @@ const renderFeCell = (params) => {
         </>
     )
 }
-
-
-
-
-
-
-
 
 
 
