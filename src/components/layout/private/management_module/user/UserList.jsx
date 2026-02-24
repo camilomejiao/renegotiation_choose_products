@@ -107,13 +107,14 @@ export const UserList = () => {
         <>
             <div className="container mt-lg-3">
 
-                <div className="table-toolbar mt-5">
+                <div className="table-toolbar management-toolbar mt-5">
                     <input
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="input-responsive"
+                        className="form-control form-control-sm"
+                        style={{ width: "100%", maxWidth: "420px", height: "34px", minHeight: "34px", padding: "4px 10px", fontSize: "13px" }}
                     />
                     <div className="text-end">
                         <Button
@@ -129,8 +130,8 @@ export const UserList = () => {
 
                 {loading && <Loading fullScreen text="Cargando Datos..." />}
 
-                <div style={{height: 600, width: "100%"}}>
-                    <DataGrid
+                <div style={{ height: 600, width: "100%" }}>
+                        <DataGrid
                         rows={filteredUsers}
                         columns={columns}
                         loading={loadingTable}
@@ -153,6 +154,19 @@ export const UserList = () => {
                             },
                         }}
                         sx={{
+                            width: "100%",
+                            minWidth: 0,
+                            "& .MuiDataGrid-main": {
+                                overflowX: "auto !important",
+                                overflowY: "hidden",
+                            },
+                            "& .MuiDataGrid-virtualScroller": {
+                                overflowX: "auto !important",
+                                overflowY: "auto",
+                            },
+                            "& .MuiDataGrid-columnHeadersInner, & .MuiDataGrid-virtualScrollerContent": {
+                                minWidth: "max-content",
+                            },
                             "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#2d3a4d",
                                 color: "white",

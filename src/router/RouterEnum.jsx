@@ -66,10 +66,6 @@ export const RouterEnum = {
     ListConciliation: 'conciliation/list-conciliation',
     ConciliationDetail: 'conciliation/conciliation-detail/:id',
 
-    //Managment Convocation Suppliers
-    CreateCallsSuppliers: 'create-calls-suppliers',
-    SupplierValidation: 'supplier-validation',
-
     //Reportes
     Reports: 'reports/:id',
     CompanyReport: 'company-reports',

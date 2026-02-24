@@ -581,15 +581,16 @@ export const ValidationSupervision = () => {
                                     placeholder="Buscar..."
                                     value={searchQuery}
                                     onChange={handleSearchQueryChange}
-                                    className="form-control"
+                                    className="form-control management-search-input"
                                 />
                             </Col>
                         </Row>
 
                         {loading && <Loading fullScreen text="Cargando..." />}
 
-                        <div className="grid-wrap" style={{height: 600, width: "100%"}}>
-                            <DataGrid
+                        <div className="grid-wrap datagrid-scroll-wrapper" style={{ height: 600 }}>
+                            <div className="datagrid-inner datagrid-inner--wide">
+                                <DataGrid
                                 loading={loadingTable}
                                 columns={columns}
                                 rows={filteredData}
@@ -661,6 +662,7 @@ export const ValidationSupervision = () => {
                                     },
                                 }}
                             />
+                            </div>
 
                             {/* Modal de aprobación/denegación */}
                             <ApprovedDeniedModal
@@ -682,6 +684,7 @@ export const ValidationSupervision = () => {
                                     color="primary"
                                     onClick={handleOpenModal}
                                     disabled={loading}
+                                    className="button-order-responsive"
                                 >
                                     <FaThumbsUp/> Aprobar / <FaThumbsDown/> Denegar
                                 </Button>

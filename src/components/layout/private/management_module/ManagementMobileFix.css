@@ -1,0 +1,68 @@
+@media (max-width: 992px) {
+  .management-tabs.nav-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+
+  .management-tabs.nav-tabs .nav-item {
+    flex: 0 0 auto;
+  }
+
+  .management-tabs.nav-tabs .nav-link {
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .management-toolbar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .management-toolbar .text-end {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .management-toolbar .input-responsive,
+  .management-toolbar .management-search-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+
+  .management-toolbar .button-order-responsive,
+  .management-toolbar .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .management-grid-scroll {
+    width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .management-grid-scroll .management-grid-inner {
+    min-width: 1100px;
+    height: 100%;
+  }
+
+  .management-grid-scroll .MuiDataGrid-root {
+    width: 1100px !important;
+    min-width: 1100px !important;
+    height: 100%;
+  }
+}

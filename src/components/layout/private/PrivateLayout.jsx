@@ -1,40 +1,87 @@
-Ôªøimport useAuth from "../../../hooks/useAuth";
+import useAuth from "../../../hooks/useAuth";
 import { Navigate, Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../shared/sidebar/Sidebar";
 import { Header } from "../shared/header/Header";
 import { Footer } from "../shared/footer/Footer";
 import { Loading } from "../shared/loading/Loading";
 
-
+const MOBILE_BREAKPOINT = 992;
 const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
 
 export const PrivateLayout = () => {
     const { auth, loading, logout } = useAuth();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
+    const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const handleUnauthorizedAccess = () => {
         logout(); // Limpiar datos residuales
         return <Navigate to="/login" replace />;
     };
 
-    // Mostrar un indicador de carga mientras se obtiene la autenticaci√≥n
+    const isSidebarOpen = isMobile ? isMobileSidebarOpen : isDesktopSidebarOpen;
+
+    const handleSidebarToggle = (nextOpen) => {
+        if (isMobile) {
+            setIsMobileSidebarOpen(nextOpen);
+            return;
+        }
+        setIsDesktopSidebarOpen(nextOpen);
+    };
+
+    const handleMobileMenuToggle = () => {
+        setIsMobileSidebarOpen((prev) => !prev);
+    };
+
+    const closeMobileSidebar = () => {
+        setIsMobileSidebarOpen(false);
+    };
+
+    // Mostrar un indicador de carga mientras se obtiene la autenticaciÛn
     if (loading) {
         return <LoadingIndicator />;
     }
 
-    //Si no est√° autenticado, redirigir al login
+    //Si no est· autenticado, redirigir al login
     if (!auth?.id) {
         return handleUnauthorizedAccess();
     }
 
-    // Renderizar el layout privado si el usuario est√° autenticado
+    // Renderizar el layout privado si el usuario est· autenticado
     return (
-        <div className={`app ${isSidebarOpen ? "sidebar-open" : "sidebar-collapsed"}`}>
-            <Header />
+        <div className={`app ${isDesktopSidebarOpen ? "sidebar-open" : "sidebar-collapsed"} ${isMobile ? "is-mobile" : ""}`}>
+            <Header
+                isMobile={isMobile}
+                isSidebarOpen={isSidebarOpen}
+                onMenuToggle={handleMobileMenuToggle}
+            />
+            {isMobile && isMobileSidebarOpen && (
+                <button
+                    type="button"
+                    aria-label="Cerrar menu lateral"
+                    className="sidebar-overlay"
+                    onClick={closeMobileSidebar}
+                />
+            )}
             <div className="layout-container">
-                <Sidebar userAuth={auth} onToggle={setIsSidebarOpen} />
-                <main className={`content ${isSidebarOpen ? "" : "sidebar-collapsed"}`}>
+                <Sidebar
+                    userAuth={auth}
+                    isOpen={isSidebarOpen}
+                    isMobile={isMobile}
+                    onToggle={handleSidebarToggle}
+                    onCloseMobile={closeMobileSidebar}
+                />
+                <main className={`content ${isDesktopSidebarOpen ? "" : "sidebar-collapsed"}`}>
                     <div className="page-wrapper">
                         <Outlet context={{ userAuth: auth }} />
                     </div>
@@ -44,5 +91,4 @@ export const PrivateLayout = () => {
             </div>
         </div>
     );
-}
-
+};

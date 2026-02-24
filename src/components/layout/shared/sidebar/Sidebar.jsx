@@ -1,4 +1,4 @@
-﻿import { createElement, useState } from 'react';
+import { createElement, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     FaBars,
@@ -15,42 +15,47 @@ import {
     FaBoxOpen,
     FaSearchDollar,
     FaRoute,
-    FaUserCog, FaRegAddressBook, FaBoxes, FaTools, FaLeaf, FaUserCheck, FaSearchPlus,
+    FaUserCog,
+    FaRegAddressBook,
+    FaBoxes,
+    FaTools,
+    FaLeaf,
+    FaUserCheck,
+    FaSearchPlus,
+    FaTimes,
 } from 'react-icons/fa';
 import { MdCampaign, MdPeople } from "react-icons/md";
-import {BsBank, BsCashStack, BsShieldCheck} from "react-icons/bs";
+import { BsBank, BsCashStack } from "react-icons/bs";
 
-//Enum
 import { RolesEnum } from "../../../../helpers/GlobalEnum";
 
 const menuConfig = (role, id) => {
-    const config  = {
+    const config = {
         [RolesEnum.ADMIN]: [
             { path: "/", icon: FaHouseUser, label: "Inicio" },
             {
-                label: "Administración Catálogo de productos",
+                label: "Administracion Catalogo de productos",
                 icon: FaBoxes,
                 children: [
-                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo Técnica" },
-                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Ambiental" },
-                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validación de Supervisión" },
+                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administracion de Catalogo Tecnica" },
+                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validacion de Ambiental" },
+                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validacion de Supervision" },
                 ]
             },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociacion" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/management", icon: FaUserCog, label: "Control de Usuarios/Proveedores" },
             { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
-            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.SUPERVISION]: [
-            //{ path: "/", icon: FaHouseUser, label: "Inicio" },
-            { path: "/admin/products-supervision", icon: FaUserCheck, label: "Catálogo de productos" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/products-supervision", icon: FaUserCheck, label: "Catalogo de productos" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociacion" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
@@ -58,44 +63,44 @@ const menuConfig = (role, id) => {
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.PAYMENTS]: [
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TRUST_PAYMENTS]: [
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
-            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago  " },
+            { path: "/admin/payments-suppliers/create-collection-account", icon: BsBank, label: "Solicitud de pago" },
             { path: "/admin/payments", icon: BsCashStack, label: "Modulo De Pagos" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.ENVIRONMENTAL]: [
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Catálogo de productos" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validacion de Catalogo de productos" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociacion" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TECHNICAL]: [
-            { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo" },
+            { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administracion de Catalogo" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.TERRITORIAL_LINKS]: [
             { path: "/", icon: FaHouseUser, label: "Inicio" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociacion" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.SUPPLIER]: [
-            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Gestión del Proveedor" },
-            { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotización de catalogos" },
+            { path: `/admin/edit-suppliers/${id}`, icon: BsBank, label: "Gestion del Proveedor" },
+            { path: "/admin/product-price-quotes", icon: FaBoxOpen, label: "Cotizacion de catalogos" },
             { path: "/admin/search-user", icon: FaShoppingCart, label: "Carrito de compras" },
             { path: "/admin/order-report", icon: FaFileInvoiceDollar, label: "Ordenes de compra" },
             { path: "/admin/search-user-for-deliveries", icon: FaShippingFast, label: "Entregas" },
@@ -109,23 +114,23 @@ const menuConfig = (role, id) => {
             { path: "/admin/list-convocation", icon: MdCampaign, label: "Jornadas" },
             { path: "/admin/management", icon: MdPeople, label: "Control de Usuarios/Proveedores" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
-            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociación" },
-            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestión De Beneficiarios" },
+            { path: "/admin/search-user-for-renegociation", icon: FaHandshake, label: "Renegociacion" },
+            { path: "/admin/search-user", icon: FaRegAddressBook, label: "Gestion De Beneficiarios" },
             { path: "/admin/delivery-information-and-tracking", icon: FaRoute, label: "Seguimiento de entregas" },
             { path: "/admin/fiduciary/search-sp", icon: FaSearchDollar, label: "Consulta de Solicitudes de Pago" },
             {
-                label: "Administración Catálogo de productos",
+                label: "Administracion Catalogo de productos",
                 icon: FaBoxes,
                 children: [
-                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administración de Catálogo Técnica" },
-                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validación de Ambiental" },
-                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validación de Supervisión" },
+                    { path: "/admin/list-products-by-convocation", icon: FaTools, label: "Administracion de Catalogo Tecnica" },
+                    { path: "/admin/products-enviromental", icon: FaLeaf, label: "Validacion de Ambiental" },
+                    { path: "/admin/products-supervision", icon: FaUserCheck, label: "Validacion de Supervision" },
                 ]
             },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ],
         [RolesEnum.LEGAL]: [
-            { path: "/admin/management", icon: MdPeople, label: "Gestión Integral del Beneficiario" },
+            { path: "/admin/management", icon: MdPeople, label: "Gestion Integral del Beneficiario" },
             { path: "/admin/search-beneficiary-information", icon: FaSearchPlus, label: "Consultar Titular" },
             { path: "/admin/logout", icon: FaSignOutAlt, label: "Salir" },
         ]
@@ -136,35 +141,37 @@ const menuConfig = (role, id) => {
 const getRoleTitle = (role) => {
     const titles = {
         [RolesEnum.SUPPLIER]: 'Proveedor',
-        [RolesEnum.TERRITORIAL_LINKS]: 'Técnico Territorio',
-        [RolesEnum.TECHNICAL]: 'Implementación',
+        [RolesEnum.TERRITORIAL_LINKS]: 'Tecnico Territorio',
+        [RolesEnum.TECHNICAL]: 'Implementacion',
         [RolesEnum.PAYMENTS]: 'Pagos',
         [RolesEnum.TRUST_PAYMENTS]: 'Fiduciaria',
         [RolesEnum.ENVIRONMENTAL]: 'Ambiental',
-        [RolesEnum.LEGAL]: 'Jurídica',
+        [RolesEnum.LEGAL]: 'Juridica',
     };
 
     return titles[role] ?? 'Perfil';
 };
 
-export const Sidebar = ({ userAuth, onToggle }) => {
+export const Sidebar = ({ userAuth, isOpen = true, isMobile = false, onToggle, onCloseMobile }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isOpen, setIsOpen] = useState(true);
     const [openSubmenus, setOpenSubmenus] = useState({});
 
     const toggleSidebar = () => {
-        setIsOpen((prev) => {
-            const next = !prev;
-            if (onToggle) {
-                onToggle(next);
-            }
-            return next;
-        });
+        if (onToggle) {
+            onToggle(!isOpen);
+        }
     };
 
     const toggleSubmenu = (label) => {
         setOpenSubmenus((prev) => ({ ...prev, [label]: !prev[label] }));
+    };
+
+    const handleNavigate = (path) => {
+        navigate(path);
+        if (isMobile && onCloseMobile) {
+            onCloseMobile();
+        }
     };
 
     const role = userAuth?.rol_id;
@@ -180,6 +187,15 @@ export const Sidebar = ({ userAuth, onToggle }) => {
 
     return (
         <div className={`gov-sidebar ${isOpen ? 'open' : ''}`}>
+            {isMobile && (
+                <div className="sidebar-mobile-header">
+                    <strong>Menu</strong>
+                    <button type="button" className="sidebar-mobile-close" onClick={toggleSidebar} aria-label="Cerrar menu">
+                        <FaTimes />
+                    </button>
+                </div>
+            )}
+
             <div className="nav-item">
                 <div className="nav-link" style={{ cursor: 'default' }}>
                     {titleIcon && createElement(titleIcon, { className: "sidebar-icon" })}
@@ -203,7 +219,7 @@ export const Sidebar = ({ userAuth, onToggle }) => {
                                     <>
                                         <span>{item.label}</span>
                                         <span style={{ marginLeft: 'auto', fontSize: '10px' }}>
-                                            {isSubmenuOpen ? "▲" : "▼"}
+                                            {isSubmenuOpen ? "-" : "+"}
                                         </span>
                                     </>
                                 )}
@@ -216,7 +232,7 @@ export const Sidebar = ({ userAuth, onToggle }) => {
                                                 type="button"
                                                 className={`nav-link ${isActive(subItem.path) ? 'active' : ''}`}
                                                 style={{ paddingLeft: isOpen ? '48px' : '24px' }}
-                                                onClick={() => navigate(subItem.path)}
+                                                onClick={() => handleNavigate(subItem.path)}
                                             >
                                                 {subItem?.icon && createElement(subItem.icon, { className: "sidebar-icon" })}
                                                 {isOpen && <span>{subItem.label}</span>}
@@ -235,7 +251,7 @@ export const Sidebar = ({ userAuth, onToggle }) => {
                         <button
                             type="button"
                             className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
-                            onClick={() => navigate(item.path)}
+                            onClick={() => handleNavigate(item.path)}
                         >
                             {Icon && <Icon className="sidebar-icon" />}
                             {isOpen && <span>{item.label}</span>}
@@ -247,12 +263,10 @@ export const Sidebar = ({ userAuth, onToggle }) => {
             <div className="nav-item" style={{ marginTop: 'auto' }}>
                 <button type="button" className="nav-link" onClick={toggleSidebar}>
                     <FaBars className="sidebar-icon" />
-                    {isOpen && <span>Contraer</span>}
+                    {isOpen && <span>{isMobile ? 'Cerrar menu' : 'Contraer'}</span>}
+                    {!isOpen && !isMobile && <span>Expandir</span>}
                 </button>
             </div>
         </div>
     );
-
 };
-
-

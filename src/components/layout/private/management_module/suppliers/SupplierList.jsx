@@ -118,13 +118,14 @@ export const SupplierList = () => {
         <>
             <div className="container mt-lg-3">
 
-                <div className="table-toolbar mt-5">
+                <div className="table-toolbar management-toolbar mt-5">
                     <input
                         type="text"
                         placeholder="Buscar..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        className="input-responsive"
+                        className="form-control form-control-sm"
+                        style={{ width: "100%", maxWidth: "420px", height: "34px", minHeight: "34px", padding: "4px 10px", fontSize: "13px" }}
                     />
                     <div className="text-end">
                         <Button
@@ -140,59 +141,71 @@ export const SupplierList = () => {
 
                 {loading && <Loading fullScreen text="Cargando Datos..." />}
 
-                <div style={{ height: 600, width: "auto" }}>
-                    <DataGrid
-                        rows={filteredSuppliers}
-                        columns={columns}
-                        loading={loadingTable}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
-                        }}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "10px",
-                                    wordWrap: "break-word",
+                <div style={{ height: 600, width: "100%" }}>
+                        <DataGrid
+                            rows={filteredSuppliers}
+                            columns={columns}
+                            loading={loadingTable}
+                            paginationMode="server"
+                            rowCount={rowCount}
+                            pageSizeOptions={[25, 50, 100]}
+                            paginationModel={{ page, pageSize }}
+                            onPaginationModelChange={({ page, pageSize }) => {
+                                setPage(page);
+                                setPageSize(pageSize);
+                            }}
+                            componentsProps={{
+                                columnHeader: {
+                                    style: {
+                                        textAlign: "left",
+                                        fontWeight: "bold",
+                                        fontSize: "10px",
+                                        wordWrap: "break-word",
+                                    },
                                 },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "14px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "14px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
-                    />
+                            }}
+                            sx={{
+                                width: "100%",
+                                minWidth: 0,
+                                "& .MuiDataGrid-main": {
+                                    overflowX: "auto !important",
+                                    overflowY: "hidden",
+                                },
+                                "& .MuiDataGrid-virtualScroller": {
+                                    overflowX: "auto !important",
+                                    overflowY: "auto",
+                                },
+                                "& .MuiDataGrid-columnHeadersInner, & .MuiDataGrid-virtualScrollerContent": {
+                                    minWidth: "max-content",
+                                },
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: "#2d3a4d",
+                                    color: "white",
+                                    fontSize: "14px",
+                                },
+                                "& .MuiDataGrid-columnHeader": {
+                                    textAlign: "center",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                },
+                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
+                                    backgroundColor: "#2d3a4d !important",
+                                    color: "white !important",
+                                },
+                                "& .MuiDataGrid-cell": {
+                                    fontSize: "14px",
+                                    textAlign: "center",
+                                    justifyContent: "center",
+                                    display: "flex",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    backgroundColor: "#E8F5E9",
+                                },
+                            }}
+                        />
                 </div>
             </div>
         </>
     )
 }
-
