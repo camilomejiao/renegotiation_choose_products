@@ -1,5 +1,5 @@
 ﻿import { useNavigate, useOutletContext } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { FaSave, FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
@@ -58,6 +58,7 @@ export const ValidationEnvironmental = () => {
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
     const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
+    const isSearchingRef = useRef(false);
 
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
@@ -256,10 +257,10 @@ export const ValidationEnvironmental = () => {
      * Obtiene los productos de un plan (para la tabla).
      * @param {number} planId
      */
-    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId) => {
+    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId, search = "") => {
         setLoadingTable(true);
         try {
-            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch,planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch, planId, search);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
@@ -654,16 +655,8 @@ export const ValidationEnvironmental = () => {
     const handleSearchChange = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
-
-        const filtered = productList.filter(
-            (product) =>
-                (product.name || "").toLowerCase().includes(query.toLowerCase()) ||
-                (product.description || "").toLowerCase().includes(query.toLowerCase()) ||
-                (product.brand || "").toLowerCase().includes(query.toLowerCase()) ||
-                (product.state || "").toLowerCase().includes(query.toLowerCase())
-        );
-
-        setFilteredData(filtered);
+        setPage(0);
+        isSearchingRef.current = true;
     };
 
     /**
@@ -685,8 +678,19 @@ export const ValidationEnvironmental = () => {
 
     useEffect(() => {
         if (!selectedPlan?.value) return;
-        getProductList(page + 1, pageSize, selectedPlan?.value);
-    }, [page, pageSize, selectedPlan]);
+        if (isSearchingRef.current) {
+            const timer = setTimeout(() => {
+                if (searchQuery.trim()) {
+                    getProductList(1, pageSize, selectedPlan.value, searchQuery);
+                } else {
+                    getProductList(1, pageSize, selectedPlan.value, "");
+                }
+                isSearchingRef.current = false;
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+        getProductList(page + 1, pageSize, selectedPlan.value, searchQuery);
+    }, [page, pageSize, selectedPlan, searchQuery]);
 
     return (
         <>
@@ -847,5 +851,4 @@ export const ValidationEnvironmental = () => {
         </>
     );
 };
-
 
