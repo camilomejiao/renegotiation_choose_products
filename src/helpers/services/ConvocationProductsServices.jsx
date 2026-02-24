@@ -116,8 +116,10 @@ class ConvocationProductsServices {
     /**
      *
      */
-    getProductByConvocationAndPlan(page = 1, pageSize = 100, ConvocationPlanId) {
-        const url = this.buildUrl(`productos-por-plan/?jornada_plan_id=${ConvocationPlanId}&page=${page}&page_size=${100}`);
+    getProductByConvocationAndPlan(page = 1, pageSize = 100, ConvocationPlanId, search = "") {
+        const baseQuery = `jornada_plan_id=${ConvocationPlanId}&page=${page}&page_size=${pageSize}`;
+        const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
+        const url = this.buildUrl(`productos-por-plan/?${baseQuery}${searchQuery}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -154,8 +156,10 @@ class ConvocationProductsServices {
     /**
      *
      */
-    convocationServices(page = 1, pageSize = 100, convocationPlanId, supplierId) {
-        const url = this.buildUrl(`productos-con-aprobaciones/?jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}&page=${page}&page_size=${100}`);
+    convocationServices(page = 1, pageSize = 100, convocationPlanId, supplierId, search = "") {
+        const baseQuery = `jornada_plan_id=${convocationPlanId}&proveedor_id=${supplierId}&page=${page}&page_size=${pageSize}`;
+        const searchQuery = search ? `&search=${encodeURIComponent(search)}` : "";
+        const url = this.buildUrl(`productos-con-aprobaciones/?${baseQuery}${searchQuery}`);
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
@@ -170,4 +174,3 @@ class ConvocationProductsServices {
 }
 
 export const convocationProductsServices = new ConvocationProductsServices();
-

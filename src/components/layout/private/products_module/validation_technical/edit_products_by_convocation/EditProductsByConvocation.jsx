@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import {FaFastBackward, FaPlus, FaSave} from "react-icons/fa";
@@ -49,6 +49,7 @@ export const EditProductsByConvocation = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
+    const isSearchingRef = useRef(false);
 
     const [unitOptions, setUnitOptions] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
@@ -103,10 +104,10 @@ export const EditProductsByConvocation = () => {
      * Obtiene los productos de un plan (para la tabla).
      * @param {number} planId
      */
-    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId) => {
+    const getProductList = async (pageToFetch = 1, sizeToFetch = PAGE_SIZE, planId, search = "") => {
         setLoading(true);
         try {
-            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch, planId);
+            const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(pageToFetch, sizeToFetch, planId, search);
             if (status === ResponseStatusEnum.OK) {
                 const products = await normalizeRows(data?.data?.productos || []);
                 setProductList(products);
@@ -189,16 +190,8 @@ export const EditProductsByConvocation = () => {
     const handleSearchChange = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
-
-        const filtered = productList.filter(
-            (product) =>
-                (product.name || "").toLowerCase().includes(query.toLowerCase()) ||
-                (product.price_max  || "").toLowerCase().includes(query.toLowerCase()) ||
-                (product.price_min || "").toLowerCase().includes(query.toLowerCase())
-        );
-
-        console.log(filtered);
-        setFilteredData(filtered);
+        setPage(0);
+        isSearchingRef.current = true;
     };
 
     const handleCreateProducts = () => navigate('/admin/product-upload');
@@ -283,8 +276,19 @@ export const EditProductsByConvocation = () => {
 
     useEffect(() => {
         if (!selectedPlan?.value) return;
-        getProductList(page + 1, pageSize, selectedPlan?.value);
-    }, [page, pageSize]);
+        if (isSearchingRef.current) {
+            const timer = setTimeout(() => {
+                if (searchQuery.trim()) {
+                    getProductList(1, pageSize, selectedPlan.value, searchQuery);
+                } else {
+                    getProductList(1, pageSize, selectedPlan.value, "");
+                }
+                isSearchingRef.current = false;
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+        getProductList(page + 1, pageSize, selectedPlan.value, searchQuery);
+    }, [page, pageSize, searchQuery, selectedPlan?.value]);
 
     return (
         <>
@@ -438,4 +442,3 @@ export const EditProductsByConvocation = () => {
         </>
     );
 };
-
