@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "../shared/sidebar/Sidebar";
 import { Header } from "../shared/header/Header";
 import { Footer } from "../shared/footer/Footer";
+import { AppShell } from "../../../shared/ui/layout/AppShell";
 import { Loading } from "../shared/loading/Loading";
 
 const MOBILE_BREAKPOINT = 992;
@@ -47,33 +48,33 @@ export const PrivateLayout = () => {
         setIsMobileSidebarOpen(false);
     };
 
-    // Mostrar un indicador de carga mientras se obtiene la autenticación
+    // Mostrar un indicador de carga mientras se obtiene la autenticaciï¿½n
     if (loading) {
         return <LoadingIndicator />;
     }
 
-    //Si no está autenticado, redirigir al login
+    //Si no estï¿½ autenticado, redirigir al login
     if (!auth?.id) {
         return handleUnauthorizedAccess();
     }
 
-    // Renderizar el layout privado si el usuario está autenticado
+    // Renderizar el layout privado si el usuario estï¿½ autenticado
     return (
-        <div className={`app ${isDesktopSidebarOpen ? "sidebar-open" : "sidebar-collapsed"} ${isMobile ? "is-mobile" : ""}`}>
-            <Header
-                isMobile={isMobile}
-                isSidebarOpen={isSidebarOpen}
-                onMenuToggle={handleMobileMenuToggle}
-            />
-            {isMobile && isMobileSidebarOpen && (
-                <button
-                    type="button"
-                    aria-label="Cerrar menu lateral"
-                    className="sidebar-overlay"
-                    onClick={closeMobileSidebar}
+        <AppShell
+            isDesktopSidebarOpen={isDesktopSidebarOpen}
+            isMobile={isMobile}
+            isMobileSidebarOpen={isMobileSidebarOpen}
+            onCloseMobile={closeMobileSidebar}
+            header={(
+                <Header
+                    isMobile={isMobile}
+                    isSidebarOpen={isSidebarOpen}
+                    onMenuToggle={handleMobileMenuToggle}
+                    userAuth={auth}
+                    onLogout={logout}
                 />
             )}
-            <div className="layout-container">
+            sidebar={(
                 <Sidebar
                     userAuth={auth}
                     isOpen={isSidebarOpen}
@@ -81,14 +82,10 @@ export const PrivateLayout = () => {
                     onToggle={handleSidebarToggle}
                     onCloseMobile={closeMobileSidebar}
                 />
-                <main className={`content ${isDesktopSidebarOpen ? "" : "sidebar-collapsed"}`}>
-                    <div className="page-wrapper">
-                        <Outlet context={{ userAuth: auth }} />
-                    </div>
-
-                    <Footer />
-                </main>
-            </div>
-        </div>
+            )}
+            footer={<Footer />}
+        >
+            <Outlet context={{ userAuth: auth }} />
+        </AppShell>
     );
 };

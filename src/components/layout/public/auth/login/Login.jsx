@@ -59,7 +59,7 @@ export const Login = () => {
 
     return (
         <>
-            <Header />
+            <Header withSidebar={false} showUserMenu={false} />
             <div className="auth-page">
                 <div className="auth-page__grid">
                     <div className="auth-page__card gov-form">
@@ -153,4 +153,3 @@ export const Login = () => {
         </>
     );
 };
-

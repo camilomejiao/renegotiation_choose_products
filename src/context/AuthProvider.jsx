@@ -1,4 +1,4 @@
-﻿import { createContext, useState, useEffect, useCallback } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import { supplierServices } from "../helpers/services/SupplierServices";
 import { RolesEnum } from "../helpers/GlobalEnum";
 
@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
             setAuth({
                 id: userObj?.proveedor ?? userObj?.user_id,
                 rol_id: userObj?.rol,
+                username: userObj?.username,
             });
         } catch (error) {
             console.error("Error parsing user data:", error);
