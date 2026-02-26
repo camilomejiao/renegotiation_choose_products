@@ -1,5 +1,5 @@
 import useAuth from "../../../hooks/useAuth";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sidebar } from "../shared/sidebar/Sidebar";
 import { Header } from "../shared/header/Header";
@@ -12,6 +12,7 @@ const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
 
 export const PrivateLayout = () => {
     const { auth, loading, logout } = useAuth();
+    const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
     const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -48,6 +49,10 @@ export const PrivateLayout = () => {
         setIsMobileSidebarOpen(false);
     };
 
+    const handleLogout = () => {
+        navigate("/admin/logout");
+    };
+
     // Mostrar un indicador de carga mientras se obtiene la autenticaci�n
     if (loading) {
         return <LoadingIndicator />;
@@ -71,7 +76,9 @@ export const PrivateLayout = () => {
                     isSidebarOpen={isSidebarOpen}
                     onMenuToggle={handleMobileMenuToggle}
                     userAuth={auth}
-                    onLogout={logout}
+                    onLogout={handleLogout}
+                    showUserMenu
+                    withSidebar
                 />
             )}
             sidebar={(

@@ -59,7 +59,7 @@ export const Login = () => {
 
     return (
         <>
-            <Header withSidebar={false} showUserMenu={false} />
+            <Header showBrand logoOnRight />
             <div className="auth-page">
                 <div className="auth-page__grid">
                     <div className="auth-page__card gov-form">
