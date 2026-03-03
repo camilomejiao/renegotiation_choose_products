@@ -37,9 +37,9 @@ export const SearchPaymentRequests = () => {
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.2 },
-        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
+        { field: "collection_account", headerName: "NÂ° Cuenta de Cobro", flex: 0.3 },
         { field: "status", headerName: "Estado", flex: 0.3 },
-        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
+        { field: "date", headerName: "Fecha CreaciÃ³n", flex: 0.3 },
         { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
         { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
         { field: "total", headerName: "Valor Total", flex: 0.5 },
@@ -89,10 +89,10 @@ export const SearchPaymentRequests = () => {
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return;
-        //opcional: resetear página si usas paginación
+        //opcional: resetear pï¿½gina si usas paginaciï¿½n
         setPage(0);
 
-        //Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
+        //Si quieres mantener un pequeï¿½o debounce para evitar doble click/enter rï¿½pidos:
         searchTimerRef.current = setTimeout(() => {
             getAccountOfSuppliers(1, pageSize, query, '');
         }, 150);
@@ -117,7 +117,7 @@ export const SearchPaymentRequests = () => {
                 titleHeader={'Fiduciara'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
+                bannerInformation={'Aquï¿½ podrï¿½s ver el listado de cuentas de cobro.'}
                 backgroundInformationColor={'#40A581'}
             />
 
