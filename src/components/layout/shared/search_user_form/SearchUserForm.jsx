@@ -80,7 +80,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
             <Form className="search-form" onSubmit={handleSearch}>
                 <Row className="g-2 justify-content-center align-items-center">
                     {component === ComponentEnum.RENEGOTIATION ? (
-                        <Col xs={12} sm={7} md={6} className="d-flex flex-column flex-md-row align-items-stretch align-items-md-start gap-2 search-form--renegotiation">
+                        <Col xs={12} sm={7} md={6} className="d-flex flex-row flex-md-row align-items-stretch align-items-md-start gap-2 search-form--renegotiation">
                             <Form.Select
                                 value={searchType}
                                 onChange={(e) => setSearchType(e.target.value)}
@@ -108,7 +108,7 @@ export const SearchUserForm = ({ component, onSearchSuccess }) => {
                             </Button>
                         </Col>
                     ) : (
-                        <Col xs={12} sm={7} md={6} className="search-form2 d-flex flex-column flex-md-row align-items-stretch align-items-md-end gap-2">
+                        <Col xs={12} sm={7} md={6} className="search-form2 d-flex flex-row flex-md-row align-items-stretch align-items-md-end gap-2">
                             <div className="search-input-with-icon">
                                 <img src={magnifyingGlass} alt="" className="search-input-with-icon__icon" />
                                 <Form.Control

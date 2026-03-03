@@ -25,7 +25,7 @@ export const SupplierList = () => {
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
 
-    const searchTimerRef = useRef(null);
+    const isSearchingRef = useRef(false);
 
     //
     const getSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -98,20 +98,24 @@ export const SupplierList = () => {
     const handleSearchChange = (event) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
-
-        // debounce
-        if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-
-        if (query.length >= 5 || query.length === 0) {
-            searchTimerRef.current = setTimeout(() => {
-                getSuppliers(page + 1, pageSize, query);
-            }, 300);
-        }
+        setPage(0);
+        isSearchingRef.current = true;
     };
 
     useEffect(() => {
-        getSuppliers(page + 1, pageSize, "");
-    }, [page, pageSize]);
+        if (isSearchingRef.current) {
+            const timer = setTimeout(() => {
+                if (searchQuery.trim()) {
+                    getSuppliers(page + 1, pageSize, searchQuery);
+                } else {
+                    getSuppliers(1, pageSize, "");
+                }
+                isSearchingRef.current = false;
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+        getSuppliers(page + 1, pageSize, searchQuery);
+    }, [page, pageSize, searchQuery]);
 
 
     return (

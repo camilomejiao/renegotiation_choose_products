@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../shared/loading/Loading";
 import { useNavigate } from "react-router-dom";
@@ -24,13 +24,14 @@ export const UserList = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
+    const isSearchingRef = useRef(false);
 
     //
-    const getUsersList = async (pageToFetch = 1, sizeToFetch = 100) => {
+    const getUsersList = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         try {
             setLoading(true);
             setLoadingTable(true);
-            const {data, status} = await userServices.getUsers(pageToFetch, sizeToFetch);
+            const {data, status} = await userServices.getUsers(pageToFetch, sizeToFetch, search);
             if(status=== ResponseStatusEnum.OK) {
                 const users = await normalizeRows(data);
                 setUsers(users);
@@ -89,19 +90,26 @@ export const UserList = () => {
 
     //
     const handleSearchChange = (event) => {
-        const query = event.target.value.toLowerCase();
+        const query = event.target.value;
         setSearchQuery(query);
-        const filteredData = users.filter((row) =>
-            Object.values(row).some((value) =>
-                value.toString().toLowerCase().includes(query)
-            )
-        );
-        setFilteredUsers(filteredData);
+        setPage(0);
+        isSearchingRef.current = true;
     };
 
     useEffect(() => {
-        getUsersList(page + 1, pageSize);
-    }, [page, pageSize])
+        if (isSearchingRef.current) {
+            const timer = setTimeout(() => {
+                if (searchQuery.trim()) {
+                    getUsersList(page + 1, pageSize, searchQuery);
+                } else {
+                    getUsersList(1, pageSize, "");
+                }
+                isSearchingRef.current = false;
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+        getUsersList(page + 1, pageSize, searchQuery);
+    }, [page, pageSize, searchQuery])
 
     return (
         <>
