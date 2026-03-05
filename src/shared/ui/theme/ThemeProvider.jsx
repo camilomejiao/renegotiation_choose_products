@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { ThemeProvider as EmotionThemeProvider } from "@emotion/react";
 import { ConfigProvider } from "antd";
+import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
 import { getAntdTheme } from "./antdTheme";
 import { themeTokens } from "./tokens";
 
@@ -27,15 +27,20 @@ export const ThemeProvider = ({ children }) => {
     setMode((prev) => (prev === "dark" ? "light" : "dark"));
   }, [setMode]);
 
-  const theme = useMemo(() => themeTokens[mode] || themeTokens.light, [mode]);
+  const themeTokensForMode = useMemo(() => themeTokens[mode] || themeTokens.light, [mode]);
   const antdTheme = useMemo(() => getAntdTheme(mode), [mode]);
+  const muiTheme = useMemo(() => {
+    const base = createTheme({ palette: { mode } });
+    base.colors = themeTokensForMode.colors;
+    return base;
+  }, [mode, themeTokensForMode]);
 
   const ctx = useMemo(() => ({ mode, setMode, toggleMode }), [mode, setMode, toggleMode]);
 
   return (
     <ThemeModeContext.Provider value={ctx}>
       <ConfigProvider theme={antdTheme}>
-        <EmotionThemeProvider theme={theme}>{children}</EmotionThemeProvider>
+        <MuiThemeProvider theme={muiTheme}>{children}</MuiThemeProvider>
       </ConfigProvider>
     </ThemeModeContext.Provider>
   );

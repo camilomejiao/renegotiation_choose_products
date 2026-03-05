@@ -1,10 +1,10 @@
 import useAuth from "../../../hooks/useAuth";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Sidebar } from "../shared/sidebar/Sidebar";
-import { Header } from "../shared/header/Header";
-import { Footer } from "../shared/footer/Footer";
-import { AppShell } from "../../../shared/ui/layout/AppShell";
+import { Sidebar } from "../../../widgets/layout/sidebar";
+import { Header } from "../../../widgets/layout/header";
+import { Footer } from "../../../widgets/layout/footer";
+import { AppShell } from "../../../widgets/layout/app-shell";
 import { Loading } from "../shared/loading/Loading";
 
 const MOBILE_BREAKPOINT = 992;
@@ -27,7 +27,7 @@ export const PrivateLayout = () => {
     }, []);
 
     const handleUnauthorizedAccess = () => {
-        logout(); // Limpiar datos residuales
+        logout();
         return <Navigate to="/login" replace />;
     };
 
@@ -53,17 +53,14 @@ export const PrivateLayout = () => {
         navigate("/admin/logout");
     };
 
-    // Mostrar un indicador de carga mientras se obtiene la autenticaci�n
     if (loading) {
         return <LoadingIndicator />;
     }
 
-    //Si no est� autenticado, redirigir al login
     if (!auth?.id) {
         return handleUnauthorizedAccess();
     }
 
-    // Renderizar el layout privado si el usuario est� autenticado
     return (
         <AppShell
             isDesktopSidebarOpen={isDesktopSidebarOpen}

@@ -17,7 +17,7 @@ import { SearchUser } from "../components/layout/private/search_user_module/Sear
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
-import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
+import { DashboardPage } from "../pages/dashboard";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
@@ -43,9 +43,7 @@ import {
 } from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
 import { ProductUploadTechnical } from "../components/layout/private/products_module/validation_technical/product_upload_technical/ProductUploadTechnical";
 import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/validation_supplier/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
-import {
-    ListProductsByConvocation
-} from "../components/layout/private/products_module/validation_technical/list_products_by_convocation/ListProductsByConvocation";
+import { ListProductsByConvocationPage } from "../pages/products/list-by-convocation";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
@@ -97,7 +95,7 @@ export const Routing = () => {
                         {/* Guard */}
                         <Route element={<SupplierDocsGuard />}>
                             {/* Dashboard */}
-                            <Route index element={ <Dashboard /> } />
+                            <Route index element={ <DashboardPage /> } />
 
                             {/* Buscar usuario */}
                             <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
@@ -117,7 +115,7 @@ export const Routing = () => {
                             <Route path={ RouterEnum.DeliveryInformationAndTracking } element={ <DeliveriesInformation /> }  />
 
                             {/* Productos */}
-                            <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
+                            <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocationPage /> }  />
                             <Route path={ RouterEnum.ProductUpload }  element={ <ProductUploadTechnical /> }  />
                             <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
                             <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />

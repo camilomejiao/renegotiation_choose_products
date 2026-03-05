@@ -1,7 +1,7 @@
-﻿import React, { useState } from 'react';
-import { Formik } from 'formik';
+﻿import React, {useState} from 'react';
+import {Formik} from 'formik';
 import * as yup from 'yup';
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 
 import imageLogin from '../../../../../assets/image/login/principal-image.png';
 import imageLoginForm from '../../../../../assets/image/login/login-image-1.png';
@@ -9,9 +9,9 @@ import userInput from '../../../../../assets/image/login/user.png';
 import lockInput from '../../../../../assets/image/login/lock.png';
 
 import useAuth from "../../../../../hooks/useAuth";
-import { authService } from "../../../../../helpers/services/Auth";
+import {authService} from "../../../../../helpers/services/Auth";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
-import { Header } from "../../../shared/header/Header";
+import { Header } from "../../../../../widgets/layout/header";
 
 const initialValues = {
     email: "",
@@ -32,9 +32,9 @@ export const Login = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-    const handleLogin = async (values, { resetForm }) => {
+    const handleLogin = async (values, {resetForm}) => {
         const informationToSend = {
-            'mail' : values.valueOf().email,
+            'mail': values.valueOf().email,
             'pass': values.valueOf().password
         }
 
@@ -43,7 +43,7 @@ export const Login = () => {
             return data;
         });
 
-        if(!respServicesLogin.access && !respServicesLogin.refresh) {
+        if (!respServicesLogin.access && !respServicesLogin.refresh) {
             AlertComponent.error('Oops...', respServicesLogin.error);
         } else {
             AlertComponent.success('Bien hecho!', respServicesLogin.message);
@@ -64,7 +64,7 @@ export const Login = () => {
                 <div className="auth-page__grid">
                     <div className="auth-page__card gov-form">
                         <div className="auth-page__headline">
-                            <img src={imageLoginForm} alt="Portal proveedores" />
+                            <img src={imageLoginForm} alt="Portal proveedores"/>
                             <h2 className="page-header__title">Bienvenido</h2>
                             <p className="text-muted">Ingrese sus credenciales para acceder</p>
                         </div>
@@ -74,12 +74,12 @@ export const Login = () => {
                             validationSchema={loginSchema}
                             onSubmit={handleLogin}
                         >
-                            {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+                            {({values, errors, touched, handleChange, handleBlur, handleSubmit}) => (
                                 <form onSubmit={handleSubmit} noValidate className="auth-form">
                                     <div className="auth-field">
                                         <label htmlFor="email" className="gov-label">Email</label>
                                         <div className="auth-field__control">
-                                            <img src={userInput} alt="" className="auth-field__icon" />
+                                            <img src={userInput} alt="" className="auth-field__icon"/>
                                             <input
                                                 id="email"
                                                 type="email"
@@ -101,7 +101,7 @@ export const Login = () => {
                                     <div className="auth-field">
                                         <label htmlFor="password" className="gov-label">Contraseña</label>
                                         <div className="auth-field__control">
-                                            <img src={lockInput} alt="" className="auth-field__icon" />
+                                            <img src={lockInput} alt="" className="auth-field__icon"/>
                                             <input
                                                 id="password"
                                                 type={showPassword ? "text" : "password"}
@@ -127,11 +127,12 @@ export const Login = () => {
                                                 aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                                                 className="auth-field__toggle"
                                             >
-                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                                {showPassword ? <FaEyeSlash/> : <FaEye/>}
                                             </span>
                                         </div>
                                         {errors.password && touched.password && (
-                                            <span id="password-error" className="auth-field__error">{errors.password}</span>
+                                            <span id="password-error"
+                                                  className="auth-field__error">{errors.password}</span>
                                         )}
                                     </div>
 
@@ -146,7 +147,7 @@ export const Login = () => {
                     </div>
 
                     <div className="auth-page__illustration">
-                        <img src={imageLogin} alt="Ilustración ingreso" />
+                        <img src={imageLogin} alt="Ilustración ingreso"/>
                     </div>
                 </div>
             </div>
