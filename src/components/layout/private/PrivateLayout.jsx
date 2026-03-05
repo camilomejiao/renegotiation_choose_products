@@ -1,5 +1,5 @@
 import useAuth from "../../../hooks/useAuth";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sidebar } from "../../../widgets/layout/sidebar";
 import { Header } from "../../../widgets/layout/header";
@@ -13,6 +13,7 @@ const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
 export const PrivateLayout = () => {
     const { auth, loading, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
     const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -53,6 +54,8 @@ export const PrivateLayout = () => {
         navigate("/admin/logout");
     };
 
+    const disablePageWrapper = location.pathname === "/admin/list-products-by-convocation";
+
     if (loading) {
         return <LoadingIndicator />;
     }
@@ -67,6 +70,7 @@ export const PrivateLayout = () => {
             isMobile={isMobile}
             isMobileSidebarOpen={isMobileSidebarOpen}
             onCloseMobile={closeMobileSidebar}
+            disablePageWrapper={disablePageWrapper}
             header={(
                 <Header
                     isMobile={isMobile}
