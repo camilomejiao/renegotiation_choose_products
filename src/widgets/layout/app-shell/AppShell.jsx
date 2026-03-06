@@ -9,8 +9,12 @@ export const AppShell = ({
     children,
     footer,
     onCloseMobile,
+    contentMode = "legacy",
     disablePageWrapper = false,
 }) => {
+    const resolvedContentMode = contentMode || (disablePageWrapper ? "fluid" : "legacy");
+    const shouldUsePageWrapper = resolvedContentMode !== "fluid";
+
     return (
         <div className={`app ${isDesktopSidebarOpen ? "sidebar-open" : "sidebar-collapsed"} ${isMobile ? "is-mobile" : ""}`}>
             {header}
@@ -25,11 +29,11 @@ export const AppShell = ({
             <div className="layout-container">
                 {sidebar}
                 <main className={`content ${isDesktopSidebarOpen ? "" : "sidebar-collapsed"}`}>
-                    {disablePageWrapper ? children : (
+                    {shouldUsePageWrapper ? (
                         <div className="page-wrapper">
                             {children}
                         </div>
-                    )}
+                    ) : children}
                     {footer}
                 </main>
             </div>

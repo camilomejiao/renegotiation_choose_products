@@ -6,6 +6,7 @@ import { Header } from "../../../widgets/layout/header";
 import { Footer } from "../../../widgets/layout/footer";
 import { AppShell } from "../../../widgets/layout/app-shell";
 import { Loading } from "../shared/loading/Loading";
+import { resolvePrivateLayoutRoute } from "./config/layoutRoutes";
 
 const MOBILE_BREAKPOINT = 992;
 const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
@@ -54,7 +55,28 @@ export const PrivateLayout = () => {
         navigate("/admin/logout");
     };
 
-    const disablePageWrapper = location.pathname === "/admin/list-products-by-convocation";
+    const routeLayout = resolvePrivateLayoutRoute(location.pathname);
+    const contentMode = routeLayout?.contentMode || "legacy";
+
+    const headerProps = {
+        isMobile,
+        isSidebarOpen,
+        onMenuToggle: handleMobileMenuToggle,
+        userAuth: auth,
+        onLogout: handleLogout,
+        showUserMenu: true,
+        withSidebar: true,
+    };
+
+    const headerNode =
+        typeof routeLayout?.renderHeader === "function"
+            ? routeLayout.renderHeader(headerProps)
+            : <Header {...headerProps} />;
+
+    const footerNode =
+        typeof routeLayout?.renderFooter === "function"
+            ? routeLayout.renderFooter({ userAuth: auth, isMobile })
+            : <Footer />;
 
     if (loading) {
         return <LoadingIndicator />;
@@ -70,18 +92,8 @@ export const PrivateLayout = () => {
             isMobile={isMobile}
             isMobileSidebarOpen={isMobileSidebarOpen}
             onCloseMobile={closeMobileSidebar}
-            disablePageWrapper={disablePageWrapper}
-            header={(
-                <Header
-                    isMobile={isMobile}
-                    isSidebarOpen={isSidebarOpen}
-                    onMenuToggle={handleMobileMenuToggle}
-                    userAuth={auth}
-                    onLogout={handleLogout}
-                    showUserMenu
-                    withSidebar
-                />
-            )}
+            contentMode={contentMode}
+            header={headerNode}
             sidebar={(
                 <Sidebar
                     userAuth={auth}
@@ -91,7 +103,7 @@ export const PrivateLayout = () => {
                     onCloseMobile={closeMobileSidebar}
                 />
             )}
-            footer={<Footer />}
+            footer={footerNode}
         >
             <Outlet context={{ userAuth: auth }} />
         </AppShell>
