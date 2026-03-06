@@ -50,8 +50,12 @@ export const Page = ({
 
 const PageRoot = styled.section`
   width: 100%;
+  max-width: 100%;
   min-height: ${({ $minHeight }) => $minHeight};
   background: transparent;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
 `;
 
 const PageHeader = styled.header`
@@ -72,8 +76,15 @@ const PageTitle = styled(Title)`
 
 const PageContent = styled.main`
   padding: ${({ $padding }) => $padding};
+  display: grid;
+  gap: var(--space-7, 32px);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+  flex: 1 0 auto;
 
   @media (max-width: 768px) {
     padding: 16px 12px;
+    gap: var(--space-5, 20px);
   }
 `;

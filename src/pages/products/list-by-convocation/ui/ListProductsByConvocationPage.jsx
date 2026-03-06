@@ -10,6 +10,7 @@ import {
   Layout,
   Row,
   Space,
+  Tag,
   Table,
   Typography,
 } from "antd";
@@ -144,8 +145,8 @@ export const ListProductsByConvocationPage = () => {
   }, [navigate]);
 
   const columns = useMemo(() => [
-      { title: "ID", dataIndex: "id", width: 80, sorter: true },
-      { title: "FECHA", dataIndex: "date", width: 140, sorter: true },
+      { title: "ID", dataIndex: "id", width: 80, sorter: true, align: "center" },
+      { title: "FECHA", dataIndex: "date", width: 140, sorter: true, align: "center" },
       {
         title: "NOMBRE CONVOCATORIA",
         dataIndex: "name",
@@ -159,17 +160,36 @@ export const ListProductsByConvocationPage = () => {
         render: (_value, record) =>
           record.plans?.length ? record.plans.map((plan) => plan.name).join(", ") : "—",
       },
-      { title: "ESTADO", dataIndex: "status", width: 140, sorter: true },
+      {
+        title: "ESTADO",
+        dataIndex: "status",
+        width: 140,
+        sorter: true,
+        align: "center",
+        render: (value) => {
+          const isOpen = value === "Abierto";
+          return (
+            <StatusPill
+              $bgColor={isOpen ? actionColors.statusOpenPillBg : actionColors.statusClosedPillBg}
+              $textColor={isOpen ? actionColors.statusOpenPillText : actionColors.statusClosedPillText}
+            >
+              {value}
+            </StatusPill>
+          );
+        },
+      },
       {
         title: "N° PROVEEDORES",
         dataIndex: "n_suppliers",
         width: 160,
         sorter: true,
+        align: "center",
       },
       {
         title: "PROVEEDORES",
         dataIndex: "suppliersList",
         width: 150,
+        align: "center",
         render: (_value, record) => (
           <SuppliersViewButton
             $borderColor={actionColors.actionWarningBorder}
@@ -187,6 +207,7 @@ export const ListProductsByConvocationPage = () => {
         title: "ACCIONES",
         dataIndex: "actions",
         width: 130,
+        align: "center",
         render: (_value, record) => (
           <EditActionButton
             $bgColor={actionColors.actionBlueBg}
@@ -237,14 +258,16 @@ export const ListProductsByConvocationPage = () => {
 
   return (
     <Page contentPadding="0" minHeight="calc(100vh - 220px)">
-      <HeaderImage
-        imageHeader={imgPeople}
-        titleHeader="¡Empieza a agregar tus productos!"
-        bannerIcon=""
-        backgroundIconColor=""
-        bannerInformation=""
-        backgroundInformationColor=""
-      />
+      <HeaderSection>
+        <HeaderImage
+          imageHeader={imgPeople}
+          titleHeader="¡Empieza a agregar tus productos!"
+          bannerIcon=""
+          backgroundIconColor=""
+          bannerInformation=""
+          backgroundInformationColor=""
+        />
+      </HeaderSection>
 
       <ContentSection>
         <Row gutter={[0, 16]}>
@@ -253,60 +276,69 @@ export const ListProductsByConvocationPage = () => {
           </Col>
 
           <Col span={24}>
+            <TableCard bordered>
+              <Row gutter={[12, 12]} align="middle" justify="space-between">
+                <Col xs={24} lg={10}>
+                  <SearchInput
+                    size="large"
+                    placeholder="Buscar..."
+                    prefix={<SearchOutlined />}
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                </Col>
+
+                <Col xs={24} lg={14}>
+                  <ActionsSpace>
+                    <Button
+                      icon={<PlusOutlined />}
+                      type="primary"
+                      onClick={handleCreateProducts}
+                    >
+                      Crear
+                    </Button>
+
+                    <Button
+                      icon={<FileExcelOutlined />}
+                      onClick={handleReport}
+                      title="Generar reporte (Excel)"
+                    >
+                      Reporte
+                    </Button>
+                  </ActionsSpace>
+                </Col>
+              </Row>
+
+              <ToolbarDivider />
+            </TableCard>
+          </Col>
+
+          <Col span={24}>
             <TableViewport vertical gap={0}>
-              <TableCard bordered>
-                <Row gutter={[12, 12]} align="middle" justify="space-between">
-                  <Col xs={24} lg={10}>
-                    <SearchInput
-                      size="large"
-                      placeholder="Buscar..."
-                      prefix={<SearchOutlined />}
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                    />
-                  </Col>
-
-                  <Col xs={24} lg={14}>
-                    <ActionsSpace>
-                      <Button
-                        icon={<PlusOutlined />}
-                        type="primary"
-                        onClick={handleCreateProducts}
-                      >
-                        Crear
-                      </Button>
-
-                      <Button
-                        icon={<FileExcelOutlined />}
-                        onClick={handleReport}
-                        title="Generar reporte (Excel)"
-                      >
-                        Reporte
-                      </Button>
-                    </ActionsSpace>
-                  </Col>
-                </Row>
-
-                <ToolbarDivider />
-
+              <SmartTableCard bordered>
                 <SmartTable
                   rowKey="id"
                   dataSource={filteredRows}
                   columns={columns}
                   loading={loading}
                   total={filteredRows.length}
+                  reload={getProductsByConvocation}
+                  download={{
+                    enable: true,
+                    fileName: "convocatorias",
+                  }}
                   showPagination
                   pageSizeOptions={["10", "20", "50", "100"]}
                   defaultPageSize="10"
                   enableRowSelection={false}
-                  showToolbar={false}
+                  showToolbar
                   showTableResize={false}
                   showColumnSettings={false}
                   dangerRowCondition={(record) => record?.status === "Cerrado"}
                   successRowCondition={(record) => record?.status === "Abierto"}
                   scroll={{ x: "max-content" }}
                 />
-              </TableCard>
+              </SmartTableCard>
             </TableViewport>
           </Col>
         </Row>
@@ -335,11 +367,18 @@ export const ListProductsByConvocationPage = () => {
 };
 
 const ContentSection = styled(Layout.Content)`
-  padding: 12px 12px 0;
+  position: relative;
+  z-index: 1;
+  padding: 12px 12px 24px;
 
   @media (min-width: 992px) {
-    padding: 12px 24px 0;
+    padding: 12px 24px 32px;
   }
+`;
+
+const HeaderSection = styled.section`
+  position: relative;
+  z-index: 2;
 `;
 
 const StyledDivider = styled(Divider)`
@@ -371,6 +410,10 @@ const TableViewport = styled(Flex)`
 const TableCard = styled(Card)`
   width: 100%;
   border-radius: 12px;
+`;
+
+const SmartTableCard = styled(TableCard)`
+  height: auto;
 `;
 
 const ModalTitle = styled(Typography.Title)`
@@ -407,5 +450,19 @@ const EditActionButton = styled(Button, {
     border-color: ${({ $hoverBg }) => $hoverBg} !important;
     background: ${({ $hoverBg }) => $hoverBg} !important;
     color: ${({ $textColor }) => $textColor} !important;
+  }
+`;
+
+const StatusPill = styled(Tag, {
+  shouldForwardProp: (prop) => !["$bgColor", "$textColor"].includes(prop),
+})`
+  && {
+    margin-inline-end: 0;
+    border: none;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-weight: 600;
+    background: ${({ $bgColor }) => $bgColor};
+    color: ${({ $textColor }) => $textColor};
   }
 `;

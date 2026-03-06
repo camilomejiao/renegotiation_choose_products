@@ -49,6 +49,10 @@ export const lightTheme = {
     tableSuccessRowBorder: "rgba(64, 165, 129, 0.24)",
     tableSuccessRowHoverBg: "rgba(64, 165, 129, 0.16)",
     tableSuccessRowAccent: "#16a34a",
+    statusOpenPillBg: "rgba(22, 163, 74, 0.22)",
+    statusOpenPillText: "#166534",
+    statusClosedPillBg: "rgba(220, 38, 38, 0.2)",
+    statusClosedPillText: "#991b1b",
   },
 };
 
@@ -84,6 +88,10 @@ export const darkTheme = {
     tableSuccessRowBorder: "rgba(74, 222, 128, 0.35)",
     tableSuccessRowHoverBg: "rgba(74, 222, 128, 0.26)",
     tableSuccessRowAccent: "#4ade80",
+    statusOpenPillBg: "rgba(74, 222, 128, 0.44)",
+    statusOpenPillText: "#052e16",
+    statusClosedPillBg: "rgba(248, 113, 113, 0.46)",
+    statusClosedPillText: "#450a0a",
   },
 };
 
