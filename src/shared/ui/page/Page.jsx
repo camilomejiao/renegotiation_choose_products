@@ -11,6 +11,8 @@ export const Page = ({
   children,
   minHeight = "calc(100vh - 290px)",
   contentPadding = "24px",
+  headerPaddingTop = "24px",
+  headerMarginBottom = "-12px",
 }) => {
   const { appName = "", title, subTitle, breadcrumbs = [], extra } = header;
 
@@ -27,7 +29,10 @@ export const Page = ({
   return (
     <PageRoot $minHeight={minHeight}>
       {showPageHeader && (
-        <PageHeader>
+        <PageHeader
+          $paddingTop={headerPaddingTop}
+          $marginBottom={headerMarginBottom}
+        >
           <Row justify="space-between" align="middle" gutter={[12, 12]}>
             <Col flex="auto">
               <Space direction="vertical" size={2}>
@@ -59,8 +64,8 @@ const PageRoot = styled.section`
 `;
 
 const PageHeader = styled.header`
-  padding: 24px 24px 0;
-  margin-bottom: -12px;
+  padding: ${({ $paddingTop }) => $paddingTop} 24px 0;
+  margin-bottom: ${({ $marginBottom }) => $marginBottom};
 
   @media (max-width: 768px) {
     padding: 16px 12px 0;

@@ -1,4 +1,5 @@
 import React from "react";
+import { Layout } from "../../../shared/ui/layout";
 
 export const AppShell = ({
     isDesktopSidebarOpen,
@@ -13,30 +14,22 @@ export const AppShell = ({
     disablePageWrapper = false,
 }) => {
     const resolvedContentMode = contentMode || (disablePageWrapper ? "fluid" : "legacy");
-    const shouldUsePageWrapper = resolvedContentMode !== "fluid";
 
     return (
-        <div className={`app ${isDesktopSidebarOpen ? "sidebar-open" : "sidebar-collapsed"} ${isMobile ? "is-mobile" : ""}`}>
-            {header}
-            {isMobile && isMobileSidebarOpen && (
-                <button
-                    type="button"
-                    aria-label="Cerrar menu lateral"
-                    className="sidebar-overlay"
-                    onClick={onCloseMobile}
-                />
-            )}
-            <div className="layout-container">
-                {sidebar}
-                <main className={`content ${isDesktopSidebarOpen ? "" : "sidebar-collapsed"}`}>
-                    {shouldUsePageWrapper ? (
-                        <div className="page-wrapper">
-                            {children}
-                        </div>
-                    ) : children}
-                    {footer}
-                </main>
-            </div>
-        </div>
+        <Layout
+            rootClassName="app"
+            rootStateClassName={isDesktopSidebarOpen ? "sidebar-open" : "sidebar-collapsed"}
+            isMobile={isMobile}
+            isMobileSidebarOpen={isMobileSidebarOpen}
+            onCloseMobile={onCloseMobile}
+            header={header}
+            sidebar={sidebar}
+            footer={footer}
+            contentMode={resolvedContentMode}
+            contentClassName="content"
+            contentStateClassName={isDesktopSidebarOpen ? "" : "sidebar-collapsed"}
+        >
+            {children}
+        </Layout>
     );
 };

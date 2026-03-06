@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Col, Row } from "antd";
+import { Link } from "react-router-dom";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
 import { HeaderImage } from "../../../components/layout/shared/header_image/HeaderImage";
@@ -59,8 +60,26 @@ export const CatalogManagementPage = () => {
     [actionColors, handleEditCatalogItem, openSuppliersModal]
   );
 
+  const pageHeader = useMemo(
+    () => ({
+      title: "Administración de Catálogo",
+      breadcrumbs: [
+        { title: <Link to="/admin">Inicio</Link> },
+        { title: "Administración de Catálogo" },
+      ],
+    }),
+    []
+  );
+
   return (
-    <Page contentPadding="0" minHeight="auto">
+    <Page
+      showPageHeader
+      header={pageHeader}
+      contentPadding="0"
+      minHeight="auto"
+      headerPaddingTop="36px"
+      headerMarginBottom="12px"
+    >
       <HeaderSection>
         <HeaderImage
           imageHeader={imgPeople}
