@@ -13,6 +13,10 @@ export const privateLayoutRoutes = [
     path: "/admin/list-products-by-convocation",
     contentMode: "fluid",
   },
+  {
+    path: "/admin/report-by-convocation",
+    contentMode: "fluid",
+  },
 ];
 
 export const resolvePrivateLayoutRoute = (pathname) => {

@@ -50,7 +50,7 @@ import {
 import {
     EditProductsByConvocation
 } from "../components/layout/private/products_module/validation_technical/edit_products_by_convocation/EditProductsByConvocation";
-import { ReportByConvocation } from "../components/layout/private/products_module/report/ReportByConvocation";
+import { ReportByConvocation } from "../pages/catalog-report";
 import { CreateSuppliers } from "../components/layout/private/management_module/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management_module/convocation/ConvocationList";
 import { ConvocationMenuTab } from "../components/layout/private/management_module/convocation/ConvocationMenuTab";

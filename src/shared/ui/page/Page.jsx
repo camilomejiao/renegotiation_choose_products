@@ -81,7 +81,8 @@ const PageTitle = styled(Title)`
 
 const PageContent = styled.main`
   padding: ${({ $padding }) => $padding};
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-7, 32px);
   width: 100%;
   max-width: 100%;

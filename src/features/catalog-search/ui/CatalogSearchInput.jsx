@@ -1,19 +1,5 @@
-import { Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import styled from "@emotion/styled";
+import { AppSearchInput } from "../../../shared/ui/search-input";
 
 export const CatalogSearchInput = ({ value, onChange }) => {
-  return (
-    <SearchInput
-      size="large"
-      placeholder="Buscar..."
-      prefix={<SearchOutlined />}
-      value={value}
-      onChange={onChange}
-    />
-  );
+  return <AppSearchInput value={value} onChange={onChange} placeholder="Buscar..." />;
 };
-
-const SearchInput = styled(Input)`
-  width: 100%;
-`;
