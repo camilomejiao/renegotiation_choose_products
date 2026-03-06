@@ -25,6 +25,10 @@ export const privateLayoutRoutes = [
     path: "/admin/product-upload",
     contentMode: "fluid",
   },
+  {
+    path: "/admin/products-enviromental",
+    contentMode: "fluid",
+  },
 ];
 
 export const resolvePrivateLayoutRoute = (pathname) => {
