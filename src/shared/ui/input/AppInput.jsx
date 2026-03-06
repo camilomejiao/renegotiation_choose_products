@@ -1,13 +1,13 @@
-import { Input } from "antd";
+import { StyledInput } from "./AppInput.styles";
 
-export const AppInput = ({ value, onChange, placeholder, size = "middle", style, ...rest }) => {
+export const AppInput = ({ value, onChange, placeholder, size = "middle", className, ...rest }) => {
   return (
-    <Input
+    <StyledInput
+      className={className}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       size={size}
-      style={{ width: "100%", ...style }}
       {...rest}
     />
   );

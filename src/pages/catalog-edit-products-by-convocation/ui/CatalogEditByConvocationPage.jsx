@@ -21,6 +21,9 @@ import {
   StyledDivider,
   TableContainer,
   TableCard,
+  ToolbarSkeletonButtonPrimary,
+  ToolbarSkeletonButtonSecondary,
+  ToolbarSkeletonInput,
   ToolbarCard,
   ToolbarDivider,
 } from "./CatalogEditByConvocationPage.styles";
@@ -102,19 +105,19 @@ export const CatalogEditByConvocationPage = () => {
               {loading ? (
                 <Row gutter={[12, 12]}>
                   <Col xs={24} sm={12} lg={8}>
-                    <Skeleton.Input active block style={{ height: 44 }} />
+                    <ToolbarSkeletonInput active block />
                   </Col>
                   <Col xs={24} sm={12} lg={16}>
                     <Space>
-                      <Skeleton.Button active style={{ height: 44, width: 150 }} />
-                      <Skeleton.Button active style={{ height: 44, width: 160 }} />
+                      <ToolbarSkeletonButtonPrimary active />
+                      <ToolbarSkeletonButtonSecondary active />
                     </Space>
                   </Col>
                   <Col span={24}>
                     <ToolbarDivider />
                   </Col>
                   <Col xs={24} sm={12} lg={8}>
-                    <Skeleton.Input active block style={{ height: 44 }} />
+                    <ToolbarSkeletonInput active block />
                   </Col>
                 </Row>
               ) : (
