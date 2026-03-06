@@ -43,7 +43,7 @@ import {
 } from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
 import { ProductUploadTechnical } from "../components/layout/private/products_module/validation_technical/product_upload_technical/ProductUploadTechnical";
 import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/validation_supplier/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
-import { ListProductsByConvocationPage } from "../pages/products/list-by-convocation";
+import { ListProductsByConvocationPage } from "../pages/catalog-management";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
@@ -161,4 +161,3 @@ export const Routing = () => {
         </BrowserRouter>
     )
 }
-

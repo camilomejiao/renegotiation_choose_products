@@ -1,1 +1,1 @@
-export { ListProductsByConvocationPage } from "./ui/ListProductsByConvocationPage";
+export { ListProductsByConvocationPage } from "../../catalog-management";
