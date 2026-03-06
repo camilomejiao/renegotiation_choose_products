@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, Card, Divider, Skeleton, Space } from "antd";
+import { Button, Card, Divider, Space } from "antd";
 import { CONTROL_HEIGHT } from "../../../shared/ui/lib/controlMetrics";
 
 export const HeaderSection = styled.div`
@@ -59,19 +59,4 @@ export const SaveSection = styled.div`
 
 export const TableContainer = styled.div`
   width: 100%;
-`;
-
-export const ToolbarSkeletonInput = styled(Skeleton.Input)`
-  width: 100%;
-  height: ${CONTROL_HEIGHT}px !important;
-`;
-
-export const ToolbarSkeletonButtonPrimary = styled(Skeleton.Button)`
-  height: ${CONTROL_HEIGHT}px !important;
-  width: 150px !important;
-`;
-
-export const ToolbarSkeletonButtonSecondary = styled(Skeleton.Button)`
-  height: ${CONTROL_HEIGHT}px !important;
-  width: 160px !important;
 `;

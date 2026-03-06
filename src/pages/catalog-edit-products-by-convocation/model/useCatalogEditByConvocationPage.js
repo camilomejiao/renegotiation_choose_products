@@ -19,13 +19,17 @@ export const useCatalogEditByConvocationPage = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [loadingTable, setLoadingTable] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [unitOptions, setUnitOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [rowCount, setRowCount] = useState(0);
@@ -45,7 +49,7 @@ export const useCatalogEditByConvocationPage = () => {
     }
 
     try {
-      setLoading(true);
+      setLoadingPlans(true);
       const [dependencies, planRows] = await Promise.all([
         loadCatalogEditDependencies(),
         getPlansByConvocation(params.id),
@@ -57,7 +61,7 @@ export const useCatalogEditByConvocationPage = () => {
     } catch (error) {
       handleError(error, "Error cargando datos iniciales");
     } finally {
-      setLoading(false);
+      setLoadingPlans(false);
     }
   }, [params.id]);
 
@@ -70,7 +74,7 @@ export const useCatalogEditByConvocationPage = () => {
       }
 
       try {
-        setLoading(true);
+        setLoadingTable(true);
         const response = await getProductsByPlan({
           page: nextPage + 1,
           pageSize: nextPageSize,
@@ -83,21 +87,18 @@ export const useCatalogEditByConvocationPage = () => {
       } catch (error) {
         handleError(error, "Error al obtener productos");
       } finally {
-        setLoading(false);
+        setLoadingTable(false);
       }
     },
     []
   );
 
-  const handleSelectedPlan = useCallback(
-    async (option) => {
-      setSelectedPlan(option);
-      setPage(0);
-      setSearchQuery("");
-      await loadProducts({ planId: option?.value });
-    },
-    [loadProducts]
-  );
+  const handleSelectedPlan = useCallback((option) => {
+    setSelectedPlan(option);
+    setPage(0);
+    setSearchQuery("");
+    setDebouncedSearchQuery("");
+  }, []);
 
   const handleRowChange = useCallback((rowId, patch) => {
     setRows((currentRows) =>
@@ -122,7 +123,7 @@ export const useCatalogEditByConvocationPage = () => {
     }
 
     try {
-      setLoading(true);
+      setDeleting(true);
       const { status } = await deleteCatalogProduct(selectedRowId);
 
       if (status === ResponseStatusEnum.OK) {
@@ -139,7 +140,7 @@ export const useCatalogEditByConvocationPage = () => {
     } catch (error) {
       handleError(error, "Error al eliminar el producto");
     } finally {
-      setLoading(false);
+      setDeleting(false);
     }
   }, [
     closeDeleteModal,
@@ -164,7 +165,7 @@ export const useCatalogEditByConvocationPage = () => {
     }
 
     try {
-      setLoading(true);
+      setSaving(true);
       const environmentalKeys = await getEnvironmentalCategoryKeys();
       const productsPayload = transformCatalogEditRows({ rows, environmentalKeys });
 
@@ -180,7 +181,7 @@ export const useCatalogEditByConvocationPage = () => {
     } catch (error) {
       handleError(error, "Error al guardar los productos");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   }, [navigate, rows, selectedPlan?.value]);
 
@@ -198,6 +199,8 @@ export const useCatalogEditByConvocationPage = () => {
   }, [navigate]);
 
   const handleTablePageChange = useCallback((nextPage, nextPageSize) => {
+    setLoadingTable(true);
+    setRows([]);
     setPage((nextPage || 1) - 1);
     setPageSize(nextPageSize || PAGE_SIZE);
   }, []);
@@ -207,24 +210,31 @@ export const useCatalogEditByConvocationPage = () => {
   }, [loadPlans]);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
     if (!selectedPlan?.value) {
       return;
     }
 
-    const timer = setTimeout(() => {
-      loadProducts({
-        nextPage: page,
-        nextPageSize: pageSize,
-        nextSearch: searchQuery,
-        planId: selectedPlan.value,
-      });
-    }, 400);
-
-    return () => clearTimeout(timer);
-  }, [loadProducts, page, pageSize, searchQuery, selectedPlan?.value]);
+    loadProducts({
+      nextPage: page,
+      nextPageSize: pageSize,
+      nextSearch: debouncedSearchQuery,
+      planId: selectedPlan.value,
+    });
+  }, [debouncedSearchQuery, loadProducts, page, pageSize, selectedPlan?.value]);
 
   return {
-    loading,
+    loadingPlans,
+    loadingTable,
+    saving,
+    deleting,
     planOptions,
     selectedPlan,
     unitOptions,

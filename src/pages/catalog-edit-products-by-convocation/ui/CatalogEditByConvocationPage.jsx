@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { ArrowLeftOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Skeleton, Space } from "antd";
+import { Button, Col, Row, Space } from "antd";
 import { Link } from "react-router-dom";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
@@ -21,16 +21,16 @@ import {
   StyledDivider,
   TableContainer,
   TableCard,
-  ToolbarSkeletonButtonPrimary,
-  ToolbarSkeletonButtonSecondary,
-  ToolbarSkeletonInput,
   ToolbarCard,
   ToolbarDivider,
 } from "./CatalogEditByConvocationPage.styles";
 
 export const CatalogEditByConvocationPage = () => {
   const {
-    loading,
+    loadingPlans,
+    loadingTable,
+    saving,
+    deleting,
     planOptions,
     selectedPlan,
     unitOptions,
@@ -102,94 +102,74 @@ export const CatalogEditByConvocationPage = () => {
 
           <Col span={24}>
             <ToolbarCard bordered>
-              {loading ? (
-                <Row gutter={[12, 12]}>
-                  <Col xs={24} sm={12} lg={8}>
-                    <ToolbarSkeletonInput active block />
-                  </Col>
-                  <Col xs={24} sm={12} lg={16}>
-                    <Space>
-                      <ToolbarSkeletonButtonPrimary active />
-                      <ToolbarSkeletonButtonSecondary active />
-                    </Space>
-                  </Col>
-                  <Col span={24}>
-                    <ToolbarDivider />
-                  </Col>
-                  <Col xs={24} sm={12} lg={8}>
-                    <ToolbarSkeletonInput active block />
-                  </Col>
-                </Row>
-              ) : (
-                <>
-                  <Row gutter={[12, 12]} align="middle">
-                    <Col xs={24} sm={12} lg={8}>
-                      <AppSelect
-                        value={selectedPlan}
-                        options={planOptions}
-                        placeholder="Selecciona un Plan"
-                        onChange={handleSelectedPlan}
-                        isLoading={loading}
-                      />
-                    </Col>
+              <Row gutter={[12, 12]} align="middle">
+                <Col xs={24} sm={12} lg={8}>
+                  <AppSelect
+                    value={selectedPlan}
+                    options={planOptions}
+                    placeholder="Selecciona un Plan"
+                    onChange={handleSelectedPlan}
+                    isLoading={loadingPlans}
+                  />
+                </Col>
 
-                    <Col xs={24} sm={12} lg={16}>
-                      <ActionsSpace>
-                        <ActionButton icon={<PlusOutlined />} onClick={handleCreateProducts}>
-                          Crear Jornada
-                        </ActionButton>
-                        <ActionButton icon={<ArrowLeftOutlined />} onClick={handleBack}>
-                          Volver al listado
-                        </ActionButton>
-                      </ActionsSpace>
-                    </Col>
-                  </Row>
+                <Col xs={24} sm={12} lg={16}>
+                  <ActionsSpace>
+                    <ActionButton icon={<PlusOutlined />} onClick={handleCreateProducts}>
+                      Crear Jornada
+                    </ActionButton>
+                    <ActionButton icon={<ArrowLeftOutlined />} onClick={handleBack}>
+                      Volver al listado
+                    </ActionButton>
+                  </ActionsSpace>
+                </Col>
+              </Row>
 
-                  <ToolbarDivider />
+              <ToolbarDivider />
 
-                  <Row>
-                    <Col xs={24} sm={12} lg={8}>
-                      <AppSearchInput
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                      />
-                    </Col>
-                  </Row>
-                </>
-              )}
+              <Row>
+                <Col xs={24} sm={12} lg={8}>
+                  <AppSearchInput
+                    placeholder="Buscar..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                </Col>
+              </Row>
             </ToolbarCard>
           </Col>
 
           <Col span={24}>
             <TableCard bordered>
               <TableContainer>
-                {loading ? (
-                  <Skeleton active paragraph={{ rows: 8 }} />
-                ) : (
-                  <SmartTable
-                    rowKey="id"
-                    columns={columns}
-                    columnWidthMode="adaptive"
-                    dataSource={rows}
-                    loading={false}
-                    total={rowCount}
-                    currentPage={page + 1}
-                    onPageChange={handleTablePageChange}
-                    showPagination
-                    pageSizeOptions={["10", "50", "100"]}
-                    defaultPageSize={String(pageSize)}
-                    enableRowSelection={false}
-                    showToolbar={false}
-                    showColumnSettings={false}
-                    showTableResize={false}
-                    scroll={{ x: "max-content" }}
-                  />
-                )}
+                <SmartTable
+                  rowKey="id"
+                  columns={columns}
+                  columnWidthMode="adaptive"
+                  dataSource={rows}
+                  loading={loadingTable}
+                  total={rowCount}
+                  currentPage={page + 1}
+                  onPageChange={handleTablePageChange}
+                  showPagination
+                  pageSizeOptions={["10", "50", "100"]}
+                  defaultPageSize={String(pageSize)}
+                  enableRowSelection={false}
+                  showToolbar={false}
+                  showColumnSettings={false}
+                  showTableResize={false}
+                  scroll={{ x: "max-content" }}
+                />
               </TableContainer>
 
               <SaveSection>
-                <ActionButton type="primary" icon={<SaveOutlined />} onClick={handleSave}>
+                <ActionButton
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  onClick={handleSave}
+                  loading={saving}
+                  disabled={loadingPlans || deleting}
+                >
                   Guardar Productos
                 </ActionButton>
               </SaveSection>
@@ -205,7 +185,7 @@ export const CatalogEditByConvocationPage = () => {
         footer={
           <Space>
             <Button onClick={closeDeleteModal}>Cancelar</Button>
-            <Button danger type="primary" onClick={confirmDelete}>
+            <Button danger type="primary" onClick={confirmDelete} loading={deleting}>
               Eliminar
             </Button>
           </Space>
