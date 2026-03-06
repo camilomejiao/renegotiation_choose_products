@@ -1,13 +1,13 @@
 import { Button, Input, Space } from "antd";
-import { Modal } from "../../../shared/ui/modal";
-import { FullWidthSelect, ModalFields } from "./EnvironmentalApprovalModal.styles";
+import { Modal } from "../modal";
+import { FullWidthSelect, ModalFields } from "./ApprovalActionModal.styles";
 
 const ACTION_OPTIONS = [
   { value: "approve", label: "Aprobar" },
   { value: "deny", label: "Denegar" },
 ];
 
-export const EnvironmentalApprovalModal = ({
+export const ApprovalActionModal = ({
   isOpen,
   action,
   comment,

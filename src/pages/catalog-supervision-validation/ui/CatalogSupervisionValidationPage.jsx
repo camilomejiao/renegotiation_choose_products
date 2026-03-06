@@ -1,5 +1,4 @@
 import {useMemo} from "react";
-import {SaveOutlined} from "@ant-design/icons";
 import {Col, Row} from "antd";
 import {Link} from "react-router-dom";
 
@@ -9,12 +8,11 @@ import {AppSearchInput} from "../../../shared/ui/search-input";
 import {AppSelect} from "../../../shared/ui/select";
 import {Page} from "../../../shared/ui/page";
 import {SmartTable} from "../../../shared/ui/smart-table";
-import { ApproveDenyButton } from "../../../shared/ui/approve-deny-button";
+import {ApproveDenyButton} from "../../../shared/ui/approve-deny-button";
 import { ApprovalActionModal } from "../../../shared/ui/approval-action-modal";
-import {getCatalogEnvironmentalColumns} from "../model/getCatalogEnvironmentalColumns";
-import {useCatalogEnvironmentalValidationPage} from "../model/useCatalogEnvironmentalValidationPage";
+import {getCatalogSupervisionColumns} from "../model/getCatalogSupervisionColumns";
+import {useCatalogSupervisionValidationPage} from "../model/useCatalogSupervisionValidationPage";
 import {
-    ActionButton,
     BottomActions,
     ContentSection,
     HeaderSection,
@@ -23,20 +21,21 @@ import {
     TableContainer,
     ToolbarCard,
     ToolbarDivider,
-} from "./CatalogEnvironmentalValidationPage.styles";
+} from "./CatalogSupervisionValidationPage.styles";
 
-export const CatalogEnvironmentalValidationPage = () => {
+export const CatalogSupervisionValidationPage = () => {
     const {
         loadingInitial,
         loadingPlans,
+        loadingSuppliers,
         loadingTable,
-        saving,
         approving,
         convocationOptions,
         planOptions,
+        supplierOptions,
         selectedConvocation,
         selectedPlan,
-        environmentalCategories,
+        selectedSupplier,
         rows,
         rowCount,
         page,
@@ -47,34 +46,26 @@ export const CatalogEnvironmentalValidationPage = () => {
         approvalComment,
         handleSelectedConvocation,
         handleSelectedPlan,
+        handleSelectedSupplier,
         handleSearchChange,
-        handleTablePageChange,
+        handlePageChange,
         handleRowSelectionChange,
-        handleRowFieldChange,
         openApprovalModal,
         closeApprovalModal,
         setApprovalAction,
         setApprovalComment,
         handleApproveSubmit,
-        handleSaveProducts,
         reloadProducts,
-    } = useCatalogEnvironmentalValidationPage();
+    } = useCatalogSupervisionValidationPage();
 
-    const columns = useMemo(
-        () =>
-            getCatalogEnvironmentalColumns({
-                environmentalCategories,
-                onRowFieldChange: handleRowFieldChange,
-            }),
-        [environmentalCategories, handleRowFieldChange]
-    );
+    const columns = useMemo(() => getCatalogSupervisionColumns(), []);
 
     const pageHeader = useMemo(
         () => ({
-            title: "Validacion Ambiental",
+            title: "Validación de Supervision",
             breadcrumbs: [
                 {title: <Link to="/admin">Inicio</Link>},
-                {title: <Link to="/admin/products-enviromental">Validacion Ambiental</Link>}
+                {title: <Link to="/admin/products-supervision">Validación de Supervision</Link>},
             ],
         }),
         []
@@ -103,14 +94,6 @@ export const CatalogEnvironmentalValidationPage = () => {
                         <ToolbarCard bordered>
                             <Row gutter={[12, 12]}>
                                 <Col xs={24} md={8} lg={6}>
-                                    <AppSearchInput
-                                        placeholder="Buscar..."
-                                        value={searchQuery}
-                                        onChange={handleSearchChange}
-                                    />
-                                </Col>
-
-                                <Col xs={24} md={8} lg={6}>
                                     <AppSelect
                                         value={selectedConvocation}
                                         options={convocationOptions}
@@ -126,14 +109,35 @@ export const CatalogEnvironmentalValidationPage = () => {
                                         options={planOptions}
                                         placeholder="Selecciona un Plan"
                                         onChange={handleSelectedPlan}
-                                        isDisabled={!selectedConvocation || loadingInitial}
                                         isLoading={loadingPlans}
+                                        isDisabled={!selectedConvocation || loadingInitial}
                                         noOptionsMessage={() =>
                                             selectedConvocation ? "Sin planes" : "Selecciona una jornada"
                                         }
                                     />
                                 </Col>
 
+                                <Col xs={24} md={8} lg={6}>
+                                    <AppSelect
+                                        value={selectedSupplier}
+                                        options={supplierOptions}
+                                        placeholder="Selecciona un Proveedor"
+                                        onChange={handleSelectedSupplier}
+                                        isLoading={loadingSuppliers}
+                                        isDisabled={!selectedPlan || loadingPlans}
+                                        noOptionsMessage={() =>
+                                            selectedConvocation ? "Sin proveedores" : "Selecciona una jornada"
+                                        }
+                                    />
+                                </Col>
+
+                                <Col xs={24} md={8} lg={6}>
+                                    <AppSearchInput
+                                        placeholder="Buscar..."
+                                        value={searchQuery}
+                                        onChange={handleSearchChange}
+                                    />
+                                </Col>
                             </Row>
 
                             <ToolbarDivider/>
@@ -150,7 +154,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                                     loading={loadingTable}
                                     total={rowCount}
                                     currentPage={page + 1}
-                                    onPageChange={handleTablePageChange}
+                                    onPageChange={handlePageChange}
                                     showPagination
                                     pageSizeOptions={["10", "50", "100"]}
                                     defaultPageSize={String(pageSize)}
@@ -160,6 +164,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                                     reload={reloadProducts}
                                     showColumnSettings={false}
                                     showTableResize={false}
+                                    dangerRowCondition={(record) => record?.isOutOfRange}
                                     scroll={{x: "max-content"}}
                                 />
                             </TableContainer>
@@ -168,20 +173,10 @@ export const CatalogEnvironmentalValidationPage = () => {
                                 <ApproveDenyButton
                                     onClick={openApprovalModal}
                                     loading={approving}
-                                    disabled={loadingInitial || loadingPlans}
+                                    disabled={loadingInitial || loadingPlans || loadingSuppliers}
                                 >
                                     Aprobar / Denegar
                                 </ApproveDenyButton>
-
-                                <ActionButton
-                                    type="primary"
-                                    icon={<SaveOutlined/>}
-                                    onClick={handleSaveProducts}
-                                    loading={saving}
-                                    disabled={loadingInitial || loadingPlans}
-                                >
-                                    Guardar Productos
-                                </ActionButton>
                             </BottomActions>
                         </TableCard>
                     </Col>
