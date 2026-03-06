@@ -59,7 +59,7 @@ export const mapToAntdColumns = ({
       ...column,
       key: column.key || dataIndexToKey(column.dataIndex),
       width: resolvedWidth,
-      ellipsis: true,
+      ellipsis: column.ellipsis ?? true,
       render: createRenderer(column, defaultText),
     };
   });
