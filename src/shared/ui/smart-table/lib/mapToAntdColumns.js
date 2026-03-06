@@ -42,14 +42,23 @@ const createRenderer = (column, defaultText) => {
   };
 };
 
-export const mapToAntdColumns = ({ columns = [], defaultText = "---" }) => {
+export const mapToAntdColumns = ({
+  columns = [],
+  defaultText = "---",
+  columnWidthMode = "fixed",
+}) => {
   return columns.map((column) => {
-    const width = Number(column?.width) > 0 ? column.width : 120;
+    const resolvedWidth =
+      columnWidthMode === "adaptive"
+        ? undefined
+        : Number(column?.width) > 0
+          ? column.width
+          : 120;
 
     return {
       ...column,
       key: column.key || dataIndexToKey(column.dataIndex),
-      width,
+      width: resolvedWidth,
       ellipsis: true,
       render: createRenderer(column, defaultText),
     };

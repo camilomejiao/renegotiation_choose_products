@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Global, css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { CloseCircleFilled, DownOutlined } from "@ant-design/icons";
@@ -20,10 +20,26 @@ export const AppAutocomplete = ({
   placeholder,
   isDisabled = false,
   isLoading = false,
+  showAllOnOpen = false,
   style,
 }) => {
   const [inputValue, setInputValue] = useState(value?.label ?? "");
-  const resolvedOptions = toAutoCompleteOptions(options);
+  const [searchText, setSearchText] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const ignoreNextSearchRef = useRef(false);
+
+  const resolvedOptions = useMemo(() => {
+    const mappedOptions = toAutoCompleteOptions(options);
+
+    if (!searchText.trim()) {
+      return mappedOptions;
+    }
+
+    const normalizedQuery = searchText.toLowerCase().trim();
+    return mappedOptions.filter((option) =>
+      String(option?.label ?? "").toLowerCase().includes(normalizedQuery)
+    );
+  }, [options, searchText]);
 
   useEffect(() => {
     setInputValue(value?.label ?? "");
@@ -31,6 +47,8 @@ export const AppAutocomplete = ({
 
   const handleSelect = (_text, option) => {
     setInputValue(option?.label ?? "");
+    setSearchText("");
+    setIsOpen(false);
     if (!onChange) {
       return;
     }
@@ -39,7 +57,13 @@ export const AppAutocomplete = ({
   };
 
   const handleSearch = (text) => {
+    if (ignoreNextSearchRef.current) {
+      ignoreNextSearchRef.current = false;
+      return;
+    }
+
     setInputValue(text);
+    setSearchText(text);
     if (onSearch) {
       onSearch(text);
     }
@@ -47,8 +71,19 @@ export const AppAutocomplete = ({
 
   const handleClear = () => {
     setInputValue("");
+    setSearchText("");
     if (onChange) {
       onChange(null);
+    }
+  };
+
+  const handleOpenChange = (nextOpen) => {
+    setIsOpen(nextOpen);
+
+    if (nextOpen && showAllOnOpen) {
+      // Always show full list on dropdown open (arrow click).
+      ignoreNextSearchRef.current = true;
+      setSearchText("");
     }
   };
 
@@ -63,10 +98,12 @@ export const AppAutocomplete = ({
       />
       <StyledAutoComplete
         value={inputValue}
+        open={isOpen}
         options={resolvedOptions}
         onSelect={handleSelect}
         onSearch={handleSearch}
         onChange={setInputValue}
+        onDropdownVisibleChange={handleOpenChange}
         onClear={handleClear}
         allowClear={{
           clearIcon: <CloseCircleFilled className="app-autocomplete-clear-icon" />,
@@ -78,11 +115,7 @@ export const AppAutocomplete = ({
         style={{ width: "100%", ...style }}
         popupClassName="app-autocomplete-dropdown"
         notFoundContent={isLoading ? "Cargando..." : "Sin opciones"}
-        filterOption={(inputValue, option) =>
-          String(option?.label ?? "")
-            .toLowerCase()
-            .includes(String(inputValue).toLowerCase())
-        }
+        filterOption={false}
       />
     </>
   );

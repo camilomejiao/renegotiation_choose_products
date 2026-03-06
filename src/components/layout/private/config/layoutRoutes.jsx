@@ -17,6 +17,10 @@ export const privateLayoutRoutes = [
     path: "/admin/report-by-convocation",
     contentMode: "fluid",
   },
+  {
+    path: "/admin/edit-products-by-convocation/:id",
+    contentMode: "fluid",
+  },
 ];
 
 export const resolvePrivateLayoutRoute = (pathname) => {

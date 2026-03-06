@@ -111,6 +111,7 @@ export const CatalogReportPage = () => {
                     onChange={handleSupplierChange}
                     isDisabled={!selectedConvocation || loading}
                     isLoading={loading}
+                    showAllOnOpen
                   />
                 </Col>
 

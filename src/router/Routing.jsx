@@ -44,12 +44,10 @@ import {
 import { ProductUploadTechnical } from "../components/layout/private/products_module/validation_technical/product_upload_technical/ProductUploadTechnical";
 import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/validation_supplier/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
 import { ListProductsByConvocationPage } from "../pages/catalog-management";
+import { EditProductsByConvocation } from "../pages/catalog-edit-products-by-convocation";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
-import {
-    EditProductsByConvocation
-} from "../components/layout/private/products_module/validation_technical/edit_products_by_convocation/EditProductsByConvocation";
 import { ReportByConvocation } from "../pages/catalog-report";
 import { CreateSuppliers } from "../components/layout/private/management_module/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management_module/convocation/ConvocationList";

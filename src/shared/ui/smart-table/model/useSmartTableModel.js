@@ -3,6 +3,7 @@ import { mapToAntdColumns } from "../lib/mapToAntdColumns";
 
 export const useSmartTableModel = ({
   columns = [],
+  columnWidthMode = "fixed",
   defaultText = "---",
   onSortChange,
   onPageChange,
@@ -83,8 +84,8 @@ export const useSmartTableModel = ({
   }, [enableRowSelection, onSelectChange, rowSelectionType, selectedRowKeys]);
 
   const antdColumns = useMemo(
-    () => mapToAntdColumns({ columns: columnConfig, defaultText }),
-    [columnConfig, defaultText]
+    () => mapToAntdColumns({ columns: columnConfig, defaultText, columnWidthMode }),
+    [columnConfig, defaultText, columnWidthMode]
   );
 
   const visibleColumns = useMemo(

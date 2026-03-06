@@ -9,6 +9,7 @@ import { themeTokens } from "../../theme/tokens";
 export const SmartTableView = ({
   rowKey,
   columns = [],
+  columnWidthMode = "fixed",
   dataSource = [],
   allData,
   loading = false,
@@ -58,6 +59,7 @@ export const SmartTableView = ({
     pagination,
   } = useSmartTableModel({
     columns,
+    columnWidthMode,
     defaultText,
     onSortChange,
     onPageChange,
