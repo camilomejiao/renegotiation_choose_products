@@ -211,28 +211,46 @@ export const useUserFormScreen = () => {
           passwordUpdated = passwordResponse?.status === ResponseStatusEnum.OK;
         }
 
-        if (passwordUpdated) {
-          AlertComponent.success(
-            isEdit ? "Usuario actualizado correctamente" : "Usuario creado correctamente"
-          );
-        } else {
-          AlertComponent.warning(
-            "Actualización parcial",
-            "Los datos se guardaron, pero la contraseña no pudo actualizarse."
-          );
-        }
-
         if (isSelfEditRoute) {
           if (pendingPassword && passwordUpdated) {
+            setLoadingUser(false);
+            await AlertComponent.success(
+              "Contraseña actualizada",
+              "Tu contraseña se actualizó correctamente. Cerraremos tu sesión para que vuelvas a ingresar."
+            );
             logout();
             navigate("/login", { replace: true });
             return;
+          }
+
+          if (passwordUpdated) {
+            setLoadingUser(false);
+            await AlertComponent.success("Usuario actualizado correctamente");
+          } else {
+            setLoadingUser(false);
+            await AlertComponent.warning(
+              "Actualización parcial",
+              "Los datos se guardaron, pero la contraseña no pudo actualizarse."
+            );
           }
 
           setPendingPassword("");
           formik.setFieldValue("password", "", false);
           await fetchUserData(targetUserId);
           return;
+        }
+
+        if (passwordUpdated) {
+          setLoadingUser(false);
+          await AlertComponent.success(
+            isEdit ? "Usuario actualizado correctamente" : "Usuario creado correctamente"
+          );
+        } else {
+          setLoadingUser(false);
+          await AlertComponent.warning(
+            "Actualización parcial",
+            "Los datos se guardaron, pero la contraseña no pudo actualizarse."
+          );
         }
 
         navigate("/admin/management");
