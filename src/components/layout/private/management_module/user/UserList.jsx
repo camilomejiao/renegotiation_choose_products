@@ -1,47 +1,38 @@
 import { useEffect, useRef, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import { Loading } from "../../../shared/loading/Loading";
 import { useNavigate } from "react-router-dom";
-import { Button } from "react-bootstrap";
-import { FaPlus} from "react-icons/fa";
 
-//Utils
-import { getAccionColumns, getSystemUsersColumns } from "../../../../../helpers/utils/ManagementColumns";
 import {userServices} from "../../../../../helpers/services/UserServices";
 import {ResponseStatusEnum} from "../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { ManagementTableSection } from "../ui/ManagementTableSection";
+import { createUsersManagementColumns } from "../ui/managementTableColumns";
 
 
 export const UserList = () => {
 
     const navigate = useNavigate();
 
-    const [users, setUsers] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
     const isSearchingRef = useRef(false);
 
     //
     const getUsersList = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         try {
-            setLoading(true);
             setLoadingTable(true);
             const {data, status} = await userServices.getUsers(pageToFetch, sizeToFetch, search);
             if(status=== ResponseStatusEnum.OK) {
                 const users = await normalizeRows(data);
-                setUsers(users);
                 setFilteredUsers(users);
                 setRowCount(data?.data?.paginacion?.total);
             }
         } catch (error) {
             console.error("Error al obtener la lista de usuarios:", error);
         } finally {
-            setLoading(false);
             setLoadingTable(false);
         }
     };
@@ -63,19 +54,19 @@ export const UserList = () => {
 
     const handleActiveAndInactive = async (user) => {
         try {
-            setLoading(true);
+            setLoadingTable(true);
             const payload = {
                 activo: !user.status
             }
             const { status} = await userServices.updateStatus(user.id, payload);
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success("Usuario actualizado correctamente");
-                getUsersList(page + 1, pageSize);
+                getUsersList(page, pageSize);
             }
         } catch (error) {
             console.error("Error al obtener la lista de usuarios:", error);
         } finally {
-            setLoading(false);
+            setLoadingTable(false);
         }
     }
 
@@ -83,16 +74,37 @@ export const UserList = () => {
         navigate(`/admin/edit-users/${userId}`);
     }
 
-    //
-    const baseColumns = getSystemUsersColumns();
-    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, "");
-    const columns = [...baseColumns, ...accions];
+    const handleDeleteClick = async (userId) => {
+        try {
+            setLoadingTable(true);
+            const { status } = await userServices.deleteUser(userId);
+
+            if (status === ResponseStatusEnum.OK || status === ResponseStatusEnum.NO_CONTENT) {
+                AlertComponent.success("Usuario eliminado correctamente");
+                getUsersList(page, pageSize, searchQuery);
+                return;
+            }
+
+            AlertComponent.error("No se pudo eliminar el usuario");
+        } catch (error) {
+            console.error("Error al eliminar el usuario:", error);
+            AlertComponent.error("No se pudo eliminar el usuario");
+        } finally {
+            setLoadingTable(false);
+        }
+    }
+
+    const columns = createUsersManagementColumns({
+        onToggleStatus: handleActiveAndInactive,
+        onEdit: handleEditClick,
+        onDelete: handleDeleteClick,
+    });
 
     //
     const handleSearchChange = (event) => {
         const query = event.target.value;
         setSearchQuery(query);
-        setPage(0);
+        setPage(1);
         isSearchingRef.current = true;
     };
 
@@ -100,7 +112,7 @@ export const UserList = () => {
         if (isSearchingRef.current) {
             const timer = setTimeout(() => {
                 if (searchQuery.trim()) {
-                    getUsersList(page + 1, pageSize, searchQuery);
+                    getUsersList(page, pageSize, searchQuery);
                 } else {
                     getUsersList(1, pageSize, "");
                 }
@@ -108,101 +120,29 @@ export const UserList = () => {
             }, 500);
             return () => clearTimeout(timer);
         }
-        getUsersList(page + 1, pageSize, searchQuery);
+        getUsersList(page, pageSize, searchQuery);
     }, [page, pageSize, searchQuery])
+
+    const handlePageChange = (nextPage, nextPageSize) => {
+        setPage(nextPage);
+        setPageSize(nextPageSize);
+    };
 
     return (
         <>
-            <div className="container mt-lg-3">
-
-                <div className="table-toolbar management-toolbar mt-5">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="form-control form-control-sm"
-                        style={{ width: "100%", maxWidth: "420px", height: "34px", minHeight: "34px", padding: "4px 10px", fontSize: "13px" }}
-                    />
-                    <div className="text-end">
-                        <Button
-                            variant="outline-success"
-                            size="md"
-                            onClick={() => navigate('/admin/create-users')}
-                            className="button-order-responsive"
-                        >
-                            <FaPlus/> Crear Usuario
-                        </Button>
-                    </div>
-                </div>
-
-                {loading && <Loading fullScreen text="Cargando Datos..." />}
-
-                <div style={{ height: 600, width: "100%" }}>
-                        <DataGrid
-                        rows={filteredUsers}
-                        columns={columns}
-                        loading={loadingTable}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
-                        }}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "10px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            width: "100%",
-                            minWidth: 0,
-                            "& .MuiDataGrid-main": {
-                                overflowX: "auto !important",
-                                overflowY: "hidden",
-                            },
-                            "& .MuiDataGrid-virtualScroller": {
-                                overflowX: "auto !important",
-                                overflowY: "auto",
-                            },
-                            "& .MuiDataGrid-columnHeadersInner, & .MuiDataGrid-virtualScrollerContent": {
-                                minWidth: "max-content",
-                            },
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "14px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "14px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
-                    />
-                </div>
-            </div>
+            <ManagementTableSection
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                createLabel="Crear Usuario"
+                onCreate={() => navigate('/admin/create-users')}
+                columns={columns}
+                dataSource={filteredUsers}
+                loading={loadingTable}
+                total={rowCount}
+                currentPage={page}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+            />
         </>
     )
 }

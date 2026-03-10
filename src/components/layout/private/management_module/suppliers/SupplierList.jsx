@@ -1,28 +1,23 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa";
-import { DataGrid } from "@mui/x-data-grid";
-import { Loading } from "../../../shared/loading/Loading";
 
-//Utils
-import {getAccionColumns, getSuppliersColumns} from "../../../../../helpers/utils/ManagementColumns";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 //Services
 import { supplierServices } from "../../../../../helpers/services/SupplierServices";
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
+import { ManagementTableSection } from "../ui/ManagementTableSection";
+import { createSuppliersManagementColumns } from "../ui/managementTableColumns";
 
 export const SupplierList = () => {
 
     const navigate = useNavigate();
 
     const [filteredSuppliers, setFilteredSuppliers] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
 
     const isSearchingRef = useRef(false);
@@ -30,7 +25,6 @@ export const SupplierList = () => {
     //
     const getSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
         try {
-            setLoading(true);
             setLoadingTable(true);
             const {data, status} =  await supplierServices.getSuppliersByPage(sizeToFetch, pageToFetch, search);
             if(status === ResponseStatusEnum.OK) {
@@ -41,7 +35,6 @@ export const SupplierList = () => {
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
         } finally {
-            setLoading(false);
             setLoadingTable(false);
         }
     }
@@ -62,8 +55,8 @@ export const SupplierList = () => {
         }));
     };
 
-    const handleActiveAndInactive = (SupplierId) => {
-        console.log(SupplierId);
+    const handleActiveAndInactive = (supplier) => {
+        console.log(supplier);
     }
 
     const handleEditClick = (SupplierId) => {
@@ -72,11 +65,11 @@ export const SupplierList = () => {
 
     const handleDeleteClick = async (SupplierId) => {
         try {
-            setLoading(true);
+            setLoadingTable(true);
             const { status} = await supplierServices.deleteSupplier(SupplierId);
             if(status === ResponseStatusEnum.OK) {
                 AlertComponent.success("Operación realizada correctamente!");
-                getSuppliers(page + 1, pageSize, "");
+                getSuppliers(page, pageSize, "");
             }
 
             if(status !== ResponseStatusEnum.OK) {
@@ -85,20 +78,21 @@ export const SupplierList = () => {
         } catch (error) {
             console.error("Error al obtener la lista de proveedores:", error);
         } finally {
-            setLoading(false);
+            setLoadingTable(false);
         }
     }
 
-    //
-    const baseColumns = getSuppliersColumns();
-    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, handleDeleteClick);
-    const columns = [...baseColumns, ...accions];
+    const columns = createSuppliersManagementColumns({
+        onToggleStatus: handleActiveAndInactive,
+        onEdit: handleEditClick,
+        onDelete: handleDeleteClick,
+    });
 
     //
     const handleSearchChange = (event) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
-        setPage(0);
+        setPage(1);
         isSearchingRef.current = true;
     };
 
@@ -106,7 +100,7 @@ export const SupplierList = () => {
         if (isSearchingRef.current) {
             const timer = setTimeout(() => {
                 if (searchQuery.trim()) {
-                    getSuppliers(page + 1, pageSize, searchQuery);
+                    getSuppliers(page, pageSize, searchQuery);
                 } else {
                     getSuppliers(1, pageSize, "");
                 }
@@ -114,102 +108,30 @@ export const SupplierList = () => {
             }, 500);
             return () => clearTimeout(timer);
         }
-        getSuppliers(page + 1, pageSize, searchQuery);
+        getSuppliers(page, pageSize, searchQuery);
     }, [page, pageSize, searchQuery]);
+
+    const handlePageChange = (nextPage, nextPageSize) => {
+        setPage(nextPage);
+        setPageSize(nextPageSize);
+    };
 
 
     return (
         <>
-            <div className="container mt-lg-3">
-
-                <div className="table-toolbar management-toolbar mt-5">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="form-control form-control-sm"
-                        style={{ width: "100%", maxWidth: "420px", height: "34px", minHeight: "34px", padding: "4px 10px", fontSize: "13px" }}
-                    />
-                    <div className="text-end">
-                        <Button
-                            variant="outline-success"
-                            size="md"
-                            onClick={() => navigate('/admin/create-suppliers')}
-                            className="button-order-responsive"
-                        >
-                            <FaPlus/> Crear Proveedor
-                        </Button>
-                    </div>
-                </div>
-
-                {loading && <Loading fullScreen text="Cargando Datos..." />}
-
-                <div style={{ height: 600, width: "100%" }}>
-                        <DataGrid
-                            rows={filteredSuppliers}
-                            columns={columns}
-                            loading={loadingTable}
-                            paginationMode="server"
-                            rowCount={rowCount}
-                            pageSizeOptions={[25, 50, 100]}
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={({ page, pageSize }) => {
-                                setPage(page);
-                                setPageSize(pageSize);
-                            }}
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left",
-                                        fontWeight: "bold",
-                                        fontSize: "10px",
-                                        wordWrap: "break-word",
-                                    },
-                                },
-                            }}
-                            sx={{
-                                width: "100%",
-                                minWidth: 0,
-                                "& .MuiDataGrid-main": {
-                                    overflowX: "auto !important",
-                                    overflowY: "hidden",
-                                },
-                                "& .MuiDataGrid-virtualScroller": {
-                                    overflowX: "auto !important",
-                                    overflowY: "auto",
-                                },
-                                "& .MuiDataGrid-columnHeadersInner, & .MuiDataGrid-virtualScrollerContent": {
-                                    minWidth: "max-content",
-                                },
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#2d3a4d",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#2d3a4d !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
-                        />
-                </div>
-            </div>
+            <ManagementTableSection
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                createLabel="Crear Proveedor"
+                onCreate={() => navigate('/admin/create-suppliers')}
+                columns={columns}
+                dataSource={filteredSuppliers}
+                loading={loadingTable}
+                total={rowCount}
+                currentPage={page}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+            />
         </>
     )
 }
