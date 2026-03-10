@@ -11,6 +11,9 @@ import { supplierServices } from "../../../helpers/services/SupplierServices";
 import { userServices } from "../../../helpers/services/UserServices";
 import useAuth from "../../../hooks/useAuth";
 import {
+  hasPasswordValidityWarning,
+} from "../../../shared/auth/lib/authSession";
+import {
   buildRoleOptions,
   buildSupplierOptions,
   mapSupplierToFormOption,
@@ -28,7 +31,12 @@ export const useUserFormScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const { auth, loading: authLoading, logout } = useAuth();
+  const {
+    auth,
+    loading: authLoading,
+    logout,
+    markPasswordChangeComplete,
+  } = useAuth();
 
   const isSelfEditRoute = location.pathname.endsWith("/edit-user");
   const isEdit = Boolean(id) || isSelfEditRoute;
@@ -101,6 +109,7 @@ export const useUserFormScreen = () => {
 
         if (isSelfEditRoute) {
           if (pendingPassword && passwordUpdated) {
+            markPasswordChangeComplete();
             setLoadingUser(false);
             await AlertComponent.success(
               "Contraseña actualizada",
@@ -377,7 +386,11 @@ export const useUserFormScreen = () => {
     loadingRoles,
     loadingSuppliers,
     loadingUser,
+    mustChangePassword: auth?.must_change_password === true,
     pendingPassword,
+    passwordValidity: auth?.password_validity,
+    showPasswordValidityWarning:
+      auth?.must_change_password !== true && hasPasswordValidityWarning(auth),
     pwdOpen,
     roleOptions,
     selectedRoleOption,

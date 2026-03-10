@@ -3,6 +3,7 @@ import { supplierServices } from "../helpers/services/SupplierServices";
 import { RolesEnum } from "../helpers/GlobalEnum";
 import {
     clearAuthSession,
+    normalizeAuthSession,
 } from "../shared/auth/lib/authSession";
 import { resolveSession } from "../shared/auth/lib/resolveSession";
 
@@ -16,7 +17,7 @@ const AuthContext = createContext();
 const COMPLIANCE_TTL_MS = 5 * 60 * 1000; // 5 min
 
 export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState({});
+    const [auth, setAuthState] = useState({});
     const [loading, setLoading] = useState(true);
 
     // -----------------------------
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     /** Limpia storage y reinicia estados. */
     const logout = () => {
         clearAuthSession();
-        setAuth({});
+        setAuthState({});
         setSupplierCompliance({
             loading: false,
             isComplete: true,
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }) => {
                 return;
             }
 
-            setAuth(nextAuth);
+            setAuthState(nextAuth);
         } catch (error) {
             console.error("Error parsing user data:", error);
             logout();
@@ -144,6 +145,18 @@ export const AuthProvider = ({ children }) => {
         setSupplierCompliance((s) => ({ ...s, lastFetchedAt: 0 }));
     };
 
+    const setAuth = useCallback((nextAuth) => {
+        const normalizedAuth = normalizeAuthSession(nextAuth);
+        setAuthState(normalizedAuth);
+    }, []);
+
+    const markPasswordChangeComplete = useCallback(() => {
+        setAuthState((previous) => ({
+            ...previous,
+            must_change_password: false,
+        }));
+    }, []);
+
     useEffect(() => {
         authUser();
         window.addEventListener("authUpdated", handleAuthUpdate);
@@ -157,6 +170,7 @@ export const AuthProvider = ({ children }) => {
                 setAuth,
                 loading,
                 logout,
+                markPasswordChangeComplete,
                 supplierCompliance,
                 refreshSupplierCompliance,
             }}

@@ -9,9 +9,16 @@ import { Loading } from "../shared/loading/Loading";
 import { resolvePrivateLayoutRoute } from "./config/layoutRoutes";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 import { getRoleTitle } from "../../../entities/user/model/getRoleTitle";
+import {
+    hasForcedPasswordChange,
+    hasPasswordValidityWarning,
+} from "../../../shared/auth/lib/authSession";
+import { PasswordValidityNoticeModal } from "../shared/Modals/PasswordValidityNoticeModal";
 
 const MOBILE_BREAKPOINT = 992;
 const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
+const PROFILE_ROUTE = "/admin/edit-user";
+const LOGOUT_ROUTE = "/admin/logout";
 
 export const PrivateLayout = () => {
     const { auth, loading, logout } = useAuth();
@@ -20,6 +27,7 @@ export const PrivateLayout = () => {
     const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
     const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+    const [isPasswordValidityModalOpen, setIsPasswordValidityModalOpen] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -61,12 +69,41 @@ export const PrivateLayout = () => {
         navigate("/admin/edit-user");
     };
 
+    const handleGoToProfileFromModal = () => {
+        setIsPasswordValidityModalOpen(false);
+        navigate(PROFILE_ROUTE);
+    };
+
     const handleEditAnyUser = () => {
         navigate("/admin/management");
     };
 
     const routeLayout = resolvePrivateLayoutRoute(location.pathname);
     const contentMode = routeLayout?.contentMode || "legacy";
+    const mustChangePassword = hasForcedPasswordChange(auth);
+    const shouldWarnPasswordValidity =
+        !mustChangePassword && hasPasswordValidityWarning(auth);
+    const isAllowedForcedPasswordPath =
+        location.pathname === PROFILE_ROUTE || location.pathname === LOGOUT_ROUTE;
+
+    useEffect(() => {
+        const shouldOpenModal =
+            shouldWarnPasswordValidity &&
+            location.state?.showPasswordValidityNotice === true;
+
+        if (!shouldOpenModal) {
+            return;
+        }
+
+        setIsPasswordValidityModalOpen(true);
+        navigate(`${location.pathname}${location.search}`, { replace: true });
+    }, [
+        location.pathname,
+        location.search,
+        location.state,
+        navigate,
+        shouldWarnPasswordValidity,
+    ]);
 
     const headerProps = {
         isMobile,
@@ -76,7 +113,10 @@ export const PrivateLayout = () => {
         userRoleLabel: getRoleTitle(auth?.rol_id),
         onLogout: handleLogout,
         onEditProfile: handleEditProfile,
-        onEditAnyUser: auth?.rol_id === RolesEnum.ADMIN ? handleEditAnyUser : undefined,
+        onEditAnyUser:
+            auth?.rol_id === RolesEnum.ADMIN && !mustChangePassword
+                ? handleEditAnyUser
+                : undefined,
         showUserMenu: true,
         withSidebar: true,
     };
@@ -99,6 +139,10 @@ export const PrivateLayout = () => {
         return handleUnauthorizedAccess();
     }
 
+    if (mustChangePassword && !isAllowedForcedPasswordPath) {
+        return <Navigate to={PROFILE_ROUTE} replace state={{ from: location.pathname }} />;
+    }
+
     return (
         <AppShell
             isDesktopSidebarOpen={isDesktopSidebarOpen}
@@ -119,6 +163,12 @@ export const PrivateLayout = () => {
             footer={footerNode}
         >
             <Outlet context={{ userAuth: auth }} />
+            <PasswordValidityNoticeModal
+                open={isPasswordValidityModalOpen}
+                daysRemaining={auth?.password_validity}
+                onClose={() => setIsPasswordValidityModalOpen(false)}
+                onGoToProfile={handleGoToProfileFromModal}
+            />
         </AppShell>
     );
 };

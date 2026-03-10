@@ -1,11 +1,9 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-/* Components */
-import { Conex } from "../components/layout/public/conex/Conex";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 //Public
 import { PublicLayout } from "../components/layout/public/PublicLayout.jsx";
-import { Login } from "../components/layout/public/auth/login/Login.jsx";
+import { LoginPage } from "../pages/login";
+import { ConexPage } from "../pages/conex";
 import { SupplierRegistration } from "../components/layout/public/suppliers/SupplierRegistration";
 
 //Enum
@@ -16,7 +14,7 @@ import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
 import { SearchUser } from "../components/layout/private/search_user_module/SearchUser.jsx";
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
-import { Logout } from "../components/layout/public/auth/logout/Logout";
+import { LogoutPage } from "../pages/logout";
 import { DashboardPage } from "../pages/dashboard";
 import { UserCreatePage } from "../pages/user-create";
 import { UserEditPage } from "../pages/user-edit";
@@ -78,11 +76,11 @@ export const Routing = () => {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route path={RouterEnum.Conex } element={ <Conex /> } />
+                    <Route path={RouterEnum.Conex } element={ <ConexPage /> } />
 
                     <Route path="/" element={ <PublicLayout /> }>
-                        <Route index element={ <Login /> } />
-                        <Route path={ RouterEnum.Login } element={ <Login /> } />
+                        <Route index element={ <LoginPage /> } />
+                        <Route path={ RouterEnum.Login } element={ <LoginPage /> } />
                         <Route path={ RouterEnum.SupplierRegistration } element={ <SupplierRegistration /> } />
                     </Route>
 
@@ -90,7 +88,7 @@ export const Routing = () => {
 
                         {/* WHITELIST, lo que no necesita validación */}
                         <Route path={RouterEnum.EditSuppliers} element={<CreateSuppliers />} />
-                        <Route path={ RouterEnum.Logout } element={ <Logout /> }         />
+                        <Route path={ RouterEnum.Logout } element={ <LogoutPage /> }         />
 
                         {/* Guard */}
                         <Route element={<SupplierDocsGuard />}>

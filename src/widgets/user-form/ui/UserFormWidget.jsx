@@ -27,6 +27,7 @@ import {
   MainContainer,
   PasswordStatus,
   SectionTitle,
+  WarningAlertWrapper,
 } from "./UserFormWidget.styles";
 
 const { Title } = Typography;
@@ -47,12 +48,15 @@ export const UserFormWidget = () => {
     loadingRoles,
     loadingSuppliers,
     loadingUser,
+    mustChangePassword,
     pendingPassword,
+    passwordValidity,
     pwdOpen,
     roleOptions,
     selectedRoleOption,
     selectedSupplierOption,
     setPwdOpen,
+    showPasswordValidityWarning,
     showManagementActions,
     supplierOptions,
   } = useUserFormScreen();
@@ -141,6 +145,32 @@ export const UserFormWidget = () => {
 
             {!loadError && (
               <form onSubmit={handleSubmit}>
+                {mustChangePassword && !showManagementActions && (
+                  <WarningAlertWrapper>
+                    <Alert
+                      type="warning"
+                      showIcon
+                      message="Debes cambiar tu contraseña para continuar"
+                      description={
+                        passwordValidity
+                          ? `Tu sesión indica cambio obligatorio de contraseña. Vigencia recibida en token: ${passwordValidity} días.`
+                          : "Tu sesión indica que debes actualizar la contraseña antes de continuar usando el sistema."
+                      }
+                    />
+                  </WarningAlertWrapper>
+                )}
+
+                {showPasswordValidityWarning && !showManagementActions && (
+                  <WarningAlertWrapper>
+                    <Alert
+                      type="warning"
+                      showIcon
+                      message="Debes cambiar la contraseña para continuar"
+                      description={`Tu sesión indica cambio obligatorio de contraseña en ${passwordValidity} días.`}
+                    />
+                  </WarningAlertWrapper>
+                )}
+
                 {!shouldHideRestrictedProfileSections && (
                   <FormSection>
                     <SectionTitle>Configuración general</SectionTitle>
@@ -365,22 +395,16 @@ export const UserFormWidget = () => {
                   </Row>
                 </FormSection>
 
-                <Row gutter={[12, 12]} justify="end">
-                  <Col xs={24} sm={12} md="auto" lg="auto" xl="auto" xxl="auto">
-                    <ActionsRow>
-                      <AppButton variant="secondary" onClick={handleCancel}>
-                        Cancelar
-                      </AppButton>
-                    </ActionsRow>
-                  </Col>
-                  <Col xs={24} sm={12} md="auto" lg="auto" xl="auto" xxl="auto">
-                    <ActionsRow>
-                      <AppButton htmlType="submit" loading={loadingUser}>
-                        {isEdit ? "Actualizar" : "Guardar"}
-                      </AppButton>
-                    </ActionsRow>
-                  </Col>
-                </Row>
+                <ActionsRow>
+                  {!mustChangePassword && (
+                    <AppButton variant="secondary" onClick={handleCancel}>
+                      Cancelar
+                    </AppButton>
+                  )}
+                  <AppButton htmlType="submit" loading={loadingUser}>
+                    {isEdit ? "Actualizar" : "Guardar"}
+                  </AppButton>
+                </ActionsRow>
               </form>
             )}
           </FormCard>

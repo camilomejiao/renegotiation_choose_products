@@ -1,8 +1,9 @@
-﻿import { Navigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import useAuth from "../hooks/useAuth";
 import { RolesEnum } from "../helpers/GlobalEnum";
 import AlertComponent from "../helpers/alert/AlertComponent";
+import { hasForcedPasswordChange } from "../shared/auth/lib/authSession";
 
 /**
  * SupplierDocsGuard
@@ -96,6 +97,7 @@ export const SupplierDocsGuard = () => {
      * - Si en el futuro cambias el módulo donde se completan docs, cambia esto.
      */
     const docsPath = auth?.id ? `/admin/edit-suppliers/${auth.id}` : "/admin";
+    const profilePath = "/admin/edit-user";
 
     /**
      * alreadyOnDocs
@@ -103,6 +105,8 @@ export const SupplierDocsGuard = () => {
      *   si ya está en la pantalla de docs, no redirigir a la misma pantalla.
      */
     const alreadyOnDocs = location.pathname.startsWith("/admin/edit-suppliers/");
+    const alreadyOnForcedPasswordRoute = location.pathname === profilePath;
+    const mustChangePassword = hasForcedPasswordChange(auth);
 
     /**
      * mustRedirect
@@ -116,7 +120,8 @@ export const SupplierDocsGuard = () => {
         isSupplier &&
         !isLoading &&
         supplierCompliance?.isComplete === false &&
-        !alreadyOnDocs;
+        !alreadyOnDocs &&
+        !(mustChangePassword && alreadyOnForcedPasswordRoute);
 
     // -------------------------
     // EFECTO
@@ -142,6 +147,10 @@ export const SupplierDocsGuard = () => {
      * - dejamos pasar a las rutas hijas reenviando outletCtx
      */
     if (!isSupplier) {
+        return <Outlet context={outletCtx} />;
+    }
+
+    if (mustChangePassword && alreadyOnForcedPasswordRoute) {
         return <Outlet context={outletCtx} />;
     }
 
@@ -184,5 +193,3 @@ export const SupplierDocsGuard = () => {
      */
     return <Outlet context={outletCtx} />;
 };
-
-

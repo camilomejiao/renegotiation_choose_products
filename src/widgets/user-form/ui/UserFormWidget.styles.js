@@ -59,6 +59,10 @@ export const FormSection = styled.section`
   margin-bottom: 28px;
 `;
 
+export const WarningAlertWrapper = styled.div`
+  margin-bottom: 24px;
+`;
+
 export const SectionTitle = styled.h2`
   margin: 0;
   color: #0f172a;
