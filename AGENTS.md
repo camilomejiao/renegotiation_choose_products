@@ -597,3 +597,4 @@ export const COLUMNS_BANKS_TABLE = (translateBanks, editBank, deleteBank) => [
 # uses
 
 Always read ./.codex/agents/refactor.md before answering refactor-related requests
+Always read ./.codex/agents/auth.md before making authentication or session changes
