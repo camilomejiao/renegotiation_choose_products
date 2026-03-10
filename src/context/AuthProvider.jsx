@@ -2,11 +2,9 @@ import { createContext, useState, useEffect, useCallback } from "react";
 import { supplierServices } from "../helpers/services/SupplierServices";
 import { RolesEnum } from "../helpers/GlobalEnum";
 import {
-    buildAuthFromClaims,
     clearAuthSession,
-    decodeAccessToken,
-    getAccessToken,
 } from "../shared/auth/lib/authSession";
+import { resolveSession } from "../shared/auth/lib/resolveSession";
 
 const AuthContext = createContext();
 
@@ -48,23 +46,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     /**
-     * Lee el token persistido y arma auth en memoria.
-     * No consulta BD: solo hidrata el estado desde claims confiables del token.
+     * Hidrata la sesión desde la estrategia activa de resolución.
+     * Hoy usa claims del token; mañana puede usar `/me` sin cambiar consumidores.
      */
     const authUser = async () => {
-        const token = getAccessToken();
-
-        if (!token) {
-            logout();
-            setLoading(false);
-            return;
-        }
-
         try {
-            const userObj = decodeAccessToken(token);
-            const nextAuth = buildAuthFromClaims(userObj);
+            const nextAuth = await resolveSession();
 
-            if (!nextAuth?.rol_id || (!nextAuth?.id && !nextAuth?.seg_usuario)) {
+            if (!nextAuth) {
                 logout();
                 return;
             }
