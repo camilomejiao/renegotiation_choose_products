@@ -26,11 +26,11 @@ import {
   MainContainer,
   PasswordStatus,
   SectionTitle,
-} from "./UserFormScreen.styles";
+} from "./UserFormWidget.styles";
 
 const { Title } = Typography;
 
-export const UserFormScreen = () => {
+export const UserFormWidget = () => {
   const {
     canEditAllFields,
     formik,
@@ -73,17 +73,17 @@ export const UserFormScreen = () => {
       <FormCard>
         <FormHeader>
           <div>
-            <Title level={3}>{isEdit ? "Configuracion del usuario" : "Nuevo usuario"}</Title>
+            <Title level={3}>{isEdit ? "Configuración del usuario" : "Nuevo usuario"}</Title>
             <FormMeta>
               {isEdit
-                ? "Aqui puedes actualizar tu informacion personal y cambiar tu contraseña."
-                : "Crea un usuario nuevo con la configuracion requerida."}
+                ? "Aquí puedes actualizar tu información personal y cambiar tu contraseña."
+                : "Crea un usuario nuevo con la configuración requerida."}
             </FormMeta>
           </div>
 
           {isEdit && !canEditAllFields && (
             <LockedFieldHint>
-              Puedes editar solo tu Nombre, Apellido, telefono y contraseña.
+              Puedes editar solo tu nombre, apellido, teléfono y contraseña.
             </LockedFieldHint>
           )}
         </FormHeader>
@@ -106,7 +106,7 @@ export const UserFormScreen = () => {
           <form onSubmit={handleSubmit}>
             {!shouldHideRestrictedProfileSections && (
               <FormSection>
-                <SectionTitle>Configuracion general</SectionTitle>
+                <SectionTitle>Configuración general</SectionTitle>
                 <FieldGrid>
                   <FieldControl>
                     <FormSwitchRow>
@@ -195,7 +195,7 @@ export const UserFormScreen = () => {
                 </FieldControl>
 
                 <FieldControl>
-                  <FieldLabel>Numero de identificacion</FieldLabel>
+                  <FieldLabel>Número de identificación</FieldLabel>
                   <AppInput
                     name="identification_number"
                     value={formik.values.identification_number}
@@ -226,7 +226,7 @@ export const UserFormScreen = () => {
                 </FieldControl>
 
                 <FieldControl>
-                  <FieldLabel>Telefono</FieldLabel>
+                  <FieldLabel>Teléfono</FieldLabel>
                   <AppInput
                     name="cellphone"
                     value={formik.values.cellphone}

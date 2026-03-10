@@ -1,1 +1,1 @@
-export { UserFormScreen } from "./ui/UserFormScreen";
+export { UserFormWidget } from "./ui/UserFormWidget";

@@ -51,10 +51,10 @@ const buildValidationSchema = ({ isEdit }) =>
       .when("isSupplier", {
         is: true,
         then: (schema) =>
-          schema.matches(/^[0-9-]+$/, "Solo digitos o guiones").notRequired(),
+          schema.matches(/^[0-9-]+$/, "Solo dígitos o guiones").notRequired(),
         otherwise: (schema) =>
           schema
-            .matches(/^\d+$/, "Solo digitos")
+            .matches(/^\d+$/, "Solo dígitos")
             .required("La cédula/NIT es requerida"),
       }),
     name: yup.string().trim().when("isSupplier", {
@@ -67,12 +67,12 @@ const buildValidationSchema = ({ isEdit }) =>
       then: (schema) => schema.notRequired(),
       otherwise: (schema) => schema.required("El apellido es requerido"),
     }),
-    email: yup.string().trim().email("Email invalido").when("isSupplier", {
+    email: yup.string().trim().email("Email inválido").when("isSupplier", {
       is: true,
       then: (schema) => schema.notRequired(),
       otherwise: (schema) => schema.required("El email es requerido"),
     }),
-    cellphone: yup.string().trim().matches(/^\d+$/, "Solo digitos").when("isSupplier", {
+    cellphone: yup.string().trim().matches(/^\d+$/, "Solo dígitos").when("isSupplier", {
       is: true,
       then: (schema) => schema.notRequired(),
       otherwise: (schema) => schema.required("El telefono es requerido"),
@@ -84,7 +84,7 @@ const buildValidationSchema = ({ isEdit }) =>
       )
       .typeError("Selecciona un rol")
       .required("Selecciona un rol"),
-    active: yup.boolean().required("Activo o Inactivo"),
+    active: yup.boolean().required("Activo o inactivo"),
   });
 
 const parseStoredUser = () => {
@@ -217,7 +217,7 @@ export const useUserFormScreen = () => {
           );
         } else {
           AlertComponent.warning(
-            "Actualizacion parcial",
+            "Actualización parcial",
             "Los datos se guardaron, pero la contraseña no pudo actualizarse."
           );
         }

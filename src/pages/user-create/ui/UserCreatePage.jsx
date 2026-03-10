@@ -1,3 +1,3 @@
 import { UserFormWidget } from "../../../widgets/user-form";
 
-export const UserEditPage = () => <UserFormWidget />;
+export const UserCreatePage = () => <UserFormWidget />;

@@ -1,3 +1,3 @@
-import { UserFormScreen } from "../../../widgets/user-form";
+import { UserFormWidget } from "../../../widgets/user-form";
 
-export const UserProfilePage = () => <UserFormScreen />;
+export const UserProfilePage = () => <UserFormWidget />;

@@ -18,9 +18,9 @@ import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
 import { DashboardPage } from "../pages/dashboard";
+import { UserCreatePage } from "../pages/user-create";
 import { UserEditPage } from "../pages/user-edit";
 import { UserProfilePage } from "../pages/user-profile";
-import { UserFormScreen } from "../widgets/user-form";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
@@ -141,7 +141,7 @@ export const Routing = () => {
 
                             {/* Management */}
                             <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
-                            <Route path={ RouterEnum.CreateUsers }  element={ <UserFormScreen /> }  />
+                            <Route path={ RouterEnum.CreateUsers }  element={ <UserCreatePage /> }  />
                             <Route path={ RouterEnum.EditUsers }  element={ <UserEditPage /> }  />
                             <Route path={ RouterEnum.EditUser }  element={ <UserProfilePage /> }  />
                             <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />

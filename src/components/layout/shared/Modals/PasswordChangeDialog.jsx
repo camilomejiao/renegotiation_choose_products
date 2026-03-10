@@ -41,7 +41,7 @@ export const PasswordChangeDialog = ({
     if (!pwd) {
       nextErrors.pwd = "La contraseña es requerida";
     } else if (pwd.length < minLength) {
-      nextErrors.pwd = `Minimo ${minLength} caracteres`;
+      nextErrors.pwd = `Mínimo ${minLength} caracteres`;
     }
 
     if (!confirm) {
