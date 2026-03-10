@@ -68,7 +68,7 @@ export const UserFormSkeleton = ({
           <Skeleton.Input active size="small" style={{ width: 180 }} />
           <Row gutter={[18, 18]}>
             {Array.from({ length: 6 }).map((_, index) => (
-              <Col key={index} xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+              <Col key={index} xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                 <SkeletonFieldBlock
                   active
                   paragraph={{ rows: 1 }}

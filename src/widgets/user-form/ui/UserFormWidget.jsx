@@ -241,7 +241,7 @@ export const UserFormWidget = () => {
                 <FormSection>
                   <SectionTitle>Datos principales</SectionTitle>
                   <Row gutter={[18, 18]}>
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Nombre</FieldLabel>
                         <AppInput
@@ -257,7 +257,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Apellido</FieldLabel>
                         <AppInput
@@ -273,7 +273,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Número de identificación</FieldLabel>
                         <AppInput
@@ -291,7 +291,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Email</FieldLabel>
                         <AppInput
@@ -308,7 +308,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Teléfono</FieldLabel>
                         <AppInput
@@ -324,7 +324,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Usuario</FieldLabel>
                         <AppInput
@@ -341,7 +341,7 @@ export const UserFormWidget = () => {
                       </FieldControl>
                     </Col>
 
-                    <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                    <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                       <FieldControl>
                         <FieldLabel>Selecciona rol</FieldLabel>
                         <AppSelect
@@ -359,7 +359,7 @@ export const UserFormWidget = () => {
                     </Col>
 
                     {!isEdit && (
-                      <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                      <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                         <FieldControl>
                           <FieldLabel>Contraseña</FieldLabel>
                           <AppInput
@@ -378,7 +378,7 @@ export const UserFormWidget = () => {
                     )}
 
                     {isEdit && (
-                      <Col xs={24} sm={24} md={12} lg={12} xl={8} xxl={8}>
+                      <Col xs={24} sm={24} md={24} lg={12} xl={8} xxl={8}>
                         <FieldControl>
                           <FieldLabel>Cambiar contraseña</FieldLabel>
                           <PasswordStatus>

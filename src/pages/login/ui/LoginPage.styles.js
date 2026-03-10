@@ -12,6 +12,14 @@ export const LoginPageLayout = styled.div`
   background:
     radial-gradient(circle at top left, rgba(30, 58, 138, 0.08), transparent 32%),
     linear-gradient(180deg, #f8fbff 0%, #eef5fb 100%);
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+  }
+
+  @media (max-width: 576px) {
+    padding: 16px 12px;
+  }
 `;
 
 export const LoginPageGrid = styled.div`
@@ -20,6 +28,21 @@ export const LoginPageGrid = styled.div`
   grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
   gap: 32px;
   align-items: stretch;
+
+  @media (max-width: 1600px) {
+    width: min(1080px, 100%);
+  }
+
+  @media (max-width: 1400px) {
+    width: min(1024px, 100%);
+    grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  @media (max-width: 1200px) {
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    gap: 24px;
+  }
 
   @media (max-width: 992px) {
     grid-template-columns: 1fr;
@@ -148,6 +171,10 @@ export const LoginIllustrationPanel = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
+
+  @media (max-width: 1200px) {
+    min-height: 520px;
+  }
 
   @media (max-width: 992px) {
     display: none;
