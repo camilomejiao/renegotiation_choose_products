@@ -40,6 +40,7 @@ export const useUserFormScreen = () => {
 
   const [initialValues, setInitialValues] = useState(baseInitialValues);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingFormData, setLoadingFormData] = useState(false);
   const [loadingSuppliers, setLoadingSuppliers] = useState(false);
   const [suppliersOptions, setSuppliersOptions] = useState([]);
   const [roleOptions, setRoleOptions] = useState([]);
@@ -246,7 +247,7 @@ export const useUserFormScreen = () => {
     }
 
     try {
-      setLoadingUser(true);
+      setLoadingFormData(true);
       setLoadError("");
       const response = await userServices.getUserById(userId);
       const user = response?.data?.data?.usuario;
@@ -284,7 +285,7 @@ export const useUserFormScreen = () => {
       console.error("Error cargando usuario:", error);
       setLoadError("No fue posible cargar la información del usuario.");
     } finally {
-      setLoadingUser(false);
+      setLoadingFormData(false);
     }
   };
 
@@ -372,6 +373,7 @@ export const useUserFormScreen = () => {
     handleToggleSupplier,
     isEdit,
     loadError,
+    loadingFormData,
     loadingRoles,
     loadingSuppliers,
     loadingUser,

@@ -29,18 +29,10 @@ export const FormCard = styled(Card)`
 `;
 
 export const FormHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
   margin-bottom: 24px;
 
   .ant-typography {
     margin-bottom: 0;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
   }
 `;
 
@@ -142,4 +134,31 @@ export const ActionsRow = styled.div`
   gap: 12px;
   margin-top: 8px;
   flex-wrap: wrap;
+`;
+
+export const SkeletonFieldGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const SkeletonFieldBlock = styled.div`
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+`;
+
+export const SkeletonSwitchRow = styled(SkeletonFieldBlock)`
+  min-height: 88px;
+`;
+
+export const SkeletonActions = styled(ActionsRow)`
+  margin-top: 20px;
 `;

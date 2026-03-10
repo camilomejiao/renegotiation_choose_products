@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Card, Space } from "antd";
+import { Card } from "antd";
 
 export const ManagementSectionCard = styled(Card)`
   && {
@@ -9,22 +9,8 @@ export const ManagementSectionCard = styled(Card)`
   }
 `;
 
-export const ManagementToolbar = styled(Space)`
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-`;
-
 export const ManagementSearchSlot = styled.div`
-  width: min(100%, 420px);
-  min-width: 240px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    min-width: 0;
-  }
+  width: 100%;
 `;
 
 export const ManagementTableWrapper = styled.div`

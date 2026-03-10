@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState } from "react";
-import { Card, Tabs } from "antd";
+import { Card, Col, Row, Tabs } from "antd";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 
@@ -47,24 +47,28 @@ export const MenuTab = () => {
             />
 
             <TabsContainer>
-                <TabsCard>
-                    <Tabs
-                        activeKey={activeKey}
-                        onChange={(key) => setActiveKey(key)}
-                        items={[
-                            {
-                                key: "users",
-                                label: "USUARIOS DEL SISTEMA",
-                                children: <UserList />,
-                            },
-                            {
-                                key: "suppliers",
-                                label: "PROVEEDORES",
-                                children: <SupplierList />,
-                            },
-                        ]}
-                    />
-                </TabsCard>
+                <Row gutter={[0, 16]}>
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24} xxl={24}>
+                        <TabsCard>
+                            <Tabs
+                                activeKey={activeKey}
+                                onChange={(key) => setActiveKey(key)}
+                                items={[
+                                    {
+                                        key: "users",
+                                        label: "USUARIOS DEL SISTEMA",
+                                        children: <UserList />,
+                                    },
+                                    {
+                                        key: "suppliers",
+                                        label: "PROVEEDORES",
+                                        children: <SupplierList />,
+                                    },
+                                ]}
+                            />
+                        </TabsCard>
+                    </Col>
+                </Row>
             </TabsContainer>
         </Page>
     )
