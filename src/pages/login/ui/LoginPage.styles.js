@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Typography } from "antd";
+import { Row, Typography } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -8,59 +8,27 @@ export const LoginPageLayout = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  padding: clamp(12px, 3vw, 32px);
   background:
     radial-gradient(circle at top left, rgba(30, 58, 138, 0.08), transparent 32%),
     linear-gradient(180deg, #f8fbff 0%, #eef5fb 100%);
-
-  @media (max-width: 768px) {
-    padding: 24px 16px;
-  }
-
-  @media (max-width: 576px) {
-    padding: 16px 12px;
-  }
 `;
 
-export const LoginPageGrid = styled.div`
+export const LoginPageRow = styled(Row)`
   width: min(1120px, 100%);
-  display: grid;
-  grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
-  gap: 32px;
-  align-items: stretch;
-
-  @media (max-width: 1600px) {
-    width: min(1080px, 100%);
-  }
-
-  @media (max-width: 1400px) {
-    width: min(1024px, 100%);
-    grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
-    gap: 28px;
-  }
-
-  @media (max-width: 1200px) {
-    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
-    gap: 24px;
-  }
-
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
+  .ant-col {
+    display: flex;
   }
 `;
 
 export const LoginCard = styled.div`
+  width: 100%;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(148, 163, 184, 0.24);
   border-radius: 24px;
-  padding: 32px;
+  padding: clamp(18px, 3vw, 32px);
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
   backdrop-filter: blur(8px);
-
-  @media (max-width: 576px) {
-    padding: 24px 18px;
-    border-radius: 20px;
-  }
 `;
 
 export const LoginHeader = styled.div`
@@ -168,17 +136,10 @@ export const LoginSubmitButton = styled.div`
 `;
 
 export const LoginIllustrationPanel = styled.div`
+  width: 100%;
   display: flex;
   align-items: stretch;
   justify-content: center;
-
-  @media (max-width: 1200px) {
-    min-height: 520px;
-  }
-
-  @media (max-width: 992px) {
-    display: none;
-  }
 `;
 
 export const LoginIllustrationImage = styled.img`
