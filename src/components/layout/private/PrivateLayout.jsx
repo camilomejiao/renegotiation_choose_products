@@ -7,6 +7,7 @@ import { Footer } from "../../../widgets/layout/footer";
 import { AppShell } from "../../../widgets/layout/app-shell";
 import { Loading } from "../shared/loading/Loading";
 import { resolvePrivateLayoutRoute } from "./config/layoutRoutes";
+import { RolesEnum } from "../../../helpers/GlobalEnum";
 
 const MOBILE_BREAKPOINT = 992;
 const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
@@ -55,6 +56,14 @@ export const PrivateLayout = () => {
         navigate("/admin/logout");
     };
 
+    const handleEditProfile = () => {
+        navigate("/admin/edit-user");
+    };
+
+    const handleEditAnyUser = () => {
+        navigate("/admin/management");
+    };
+
     const routeLayout = resolvePrivateLayoutRoute(location.pathname);
     const contentMode = routeLayout?.contentMode || "legacy";
 
@@ -64,6 +73,8 @@ export const PrivateLayout = () => {
         onMenuToggle: handleMobileMenuToggle,
         userAuth: auth,
         onLogout: handleLogout,
+        onEditProfile: handleEditProfile,
+        onEditAnyUser: auth?.rol_id === RolesEnum.ADMIN ? handleEditAnyUser : undefined,
         showUserMenu: true,
         withSidebar: true,
     };

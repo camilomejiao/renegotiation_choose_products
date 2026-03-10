@@ -471,6 +471,17 @@ A generated table feature is valid if:
 - architecture follows FSD
 
 ---
+
+# 16.1 UI And Styling Rule
+
+When refactoring or creating UI:
+
+- keep business logic and styles in separate files
+- use `@emotion/styled` for component styling
+- prefer shared reusable controls in `src/shared/ui` before creating page-local controls
+- avoid inline style objects except for trivial one-off cases that are not part of the component design system
+
+---
 # 17. Commit Rule Integration
 
 When the user asks to create a commit, use the local commit agent first:

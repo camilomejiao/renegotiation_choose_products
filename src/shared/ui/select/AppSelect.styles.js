@@ -8,6 +8,8 @@ export const SelectWrapper = styled.div`
 
 export const StyledSelect = styled(Select)`
   width: 100%;
+  background: #ffffff;
+  border-radius: 8px;
 
   .ant-select-selector {
     min-height: ${CONTROL_HEIGHT}px !important;
@@ -74,6 +76,12 @@ export const StyledSelect = styled(Select)`
   .ant-select-selection-item {
     font-weight: 600;
     line-height: ${CONTROL_HEIGHT}px !important;
+  }
+
+  &.ant-select-disabled .ant-select-selector {
+    background: #f8fafc !important;
+    border-color: #dbe4f0 !important;
+    color: #475569 !important;
   }
 
   &:hover .ant-select-selector {

@@ -18,6 +18,8 @@ export const Header = ({
                            onMenuToggle,
                            userAuth,
                            onLogout,
+                           onEditProfile,
+                           onEditAnyUser,
                            showUserMenu,
                            withSidebar,
                            showBrand,
@@ -78,6 +80,8 @@ export const Header = ({
                 <ProfileMenu
                     displayName={displayName}
                     onLogout={onLogout}
+                    onEditProfile={onEditProfile}
+                    onEditAnyUser={onEditAnyUser}
                     showUserMenu={shouldShowUserMenu}
                 />
             </HeaderRight>

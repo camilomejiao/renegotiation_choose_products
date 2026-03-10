@@ -1,13 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Switch } from "antd";
-import { FaUserCircle } from "react-icons/fa";
+import {
+  LogoutOutlined,
+  MoonOutlined,
+  ProfileOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { AppSwitch } from "../../../shared/ui/switch";
 import { useThemeMode } from "../../../shared/ui/theme/ThemeProvider";
 import {
+  MenuActionContent,
+  MenuActionIcon,
+  MenuDivider,
+  MenuHeader,
+  MenuHeaderAvatar,
+  MenuHeaderName,
   ProfileWrapper,
+  UserMenuAction,
   UserMenuTrigger,
+  UserTriggerAvatar,
   UserName,
   UserMenu,
-  UserMenuItem,
   UserMenuLabel,
   UserMenuRow,
 } from "./ProfileMenu.styles";
@@ -15,6 +28,8 @@ import {
 export const ProfileMenu = ({
   displayName = "test user",
   onLogout,
+  onEditProfile,
+  onEditAnyUser,
   showUserMenu,
 }) => {
   const { mode, toggleMode } = useThemeMode();
@@ -39,6 +54,8 @@ export const ProfileMenu = ({
   }, [isMenuOpen]);
 
   const menuItems = [
+    { id: "profile", label: "Mi perfil", onClick: onEditProfile },
+    { id: "edit-user", label: "Editar un usuario", onClick: onEditAnyUser },
     { id: "logout", label: "Cerrar sesión", onClick: onLogout },
   ].filter((item) => item.onClick);
 
@@ -54,28 +71,53 @@ export const ProfileMenu = ({
         aria-haspopup="menu"
         aria-expanded={isMenuOpen}
       >
-        <FaUserCircle aria-hidden="true" />
+        <UserTriggerAvatar size="small" icon={<UserOutlined />} aria-hidden="true" />
         <UserName>{displayName}</UserName>
       </UserMenuTrigger>
       {isMenuOpen && (
         <UserMenu role="menu">
+          <MenuHeader>
+            <MenuHeaderAvatar size={52} icon={<UserOutlined />} />
+            <MenuHeaderName>{displayName}</MenuHeaderName>
+          </MenuHeader>
+
+          <MenuDivider />
+
           <UserMenuRow>
-            <UserMenuLabel>Modo oscuro</UserMenuLabel>
-            <Switch
+            <MenuActionContent>
+              <MenuActionIcon aria-hidden="true">
+                <MoonOutlined />
+              </MenuActionIcon>
+              <UserMenuLabel>Modo oscuro</UserMenuLabel>
+            </MenuActionContent>
+            <AppSwitch
               size="small"
               checked={mode === "dark"}
               onChange={toggleMode}
             />
           </UserMenuRow>
+
+          <MenuDivider />
+
           {menuItems.map((item) => (
-            <UserMenuItem
+            <UserMenuAction
               key={item.id}
               type="button"
-              onClick={item.onClick}
+              onClick={() => {
+                setIsMenuOpen(false);
+                item.onClick();
+              }}
               role="menuitem"
             >
-              {item.label}
-            </UserMenuItem>
+              <MenuActionContent>
+                <MenuActionIcon aria-hidden="true">
+                  {item.id === "profile" && <ProfileOutlined />}
+                  {item.id === "edit-user" && <TeamOutlined />}
+                  {item.id === "logout" && <LogoutOutlined />}
+                </MenuActionIcon>
+                <span>{item.label}</span>
+              </MenuActionContent>
+            </UserMenuAction>
           ))}
         </UserMenu>
       )}

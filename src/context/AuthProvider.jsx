@@ -61,6 +61,9 @@ export const AuthProvider = ({ children }) => {
 
             setAuth({
                 id: userObj?.proveedor ?? userObj?.user_id,
+                user_id: userObj?.user_id,
+                seg_usuario: userObj?.seg_usuario,
+                supplier_id: userObj?.proveedor,
                 rol_id: userObj?.rol,
                 username: userObj?.username,
             });
@@ -172,5 +175,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
-
-
