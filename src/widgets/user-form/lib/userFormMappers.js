@@ -1,18 +1,7 @@
-export const parseStoredUser = () => {
-  try {
-    return JSON.parse(localStorage.getItem("user") || "{}");
-  } catch (error) {
-    return {};
-  }
-};
-
-export const resolveCurrentUserId = ({ auth, storedUser }) =>
+export const resolveCurrentUserId = ({ auth }) =>
   auth?.seg_usuario ??
-  storedUser?.seg_usuario ??
   auth?.id ??
-  storedUser?.id ??
   auth?.user_id ??
-  storedUser?.user_id ??
   null;
 
 export const normalizeSuppliersRows = (payload) => {

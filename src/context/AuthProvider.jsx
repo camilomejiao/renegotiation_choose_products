@@ -1,6 +1,12 @@
 import { createContext, useState, useEffect, useCallback } from "react";
 import { supplierServices } from "../helpers/services/SupplierServices";
 import { RolesEnum } from "../helpers/GlobalEnum";
+import {
+    buildAuthFromClaims,
+    clearAuthSession,
+    decodeAccessToken,
+    getAccessToken,
+} from "../shared/auth/lib/authSession";
 
 const AuthContext = createContext();
 
@@ -29,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     /** Limpia storage y reinicia estados. */
     const logout = () => {
-        localStorage.clear();
+        clearAuthSession();
         setAuth({});
         setSupplierCompliance({
             loading: false,
@@ -42,31 +48,28 @@ export const AuthProvider = ({ children }) => {
     };
 
     /**
-     * Lee token/user del localStorage y arma auth.
-     * No consulta BD: solo hidrata el estado desde storage.
+     * Lee el token persistido y arma auth en memoria.
+     * No consulta BD: solo hidrata el estado desde claims confiables del token.
      */
     const authUser = async () => {
-        const token = localStorage.getItem("token");
-        const user_id = localStorage.getItem("id");
-        const user = localStorage.getItem("user");
+        const token = getAccessToken();
 
-        if (!token || !user_id) {
+        if (!token) {
             logout();
             setLoading(false);
             return;
         }
 
         try {
-            const userObj = JSON.parse(user);
+            const userObj = decodeAccessToken(token);
+            const nextAuth = buildAuthFromClaims(userObj);
 
-            setAuth({
-                id: userObj?.proveedor ?? userObj?.user_id,
-                user_id: userObj?.user_id,
-                seg_usuario: userObj?.seg_usuario,
-                supplier_id: userObj?.proveedor,
-                rol_id: userObj?.rol,
-                username: userObj?.username,
-            });
+            if (!nextAuth?.rol_id || (!nextAuth?.id && !nextAuth?.seg_usuario)) {
+                logout();
+                return;
+            }
+
+            setAuth(nextAuth);
         } catch (error) {
             console.error("Error parsing user data:", error);
             logout();

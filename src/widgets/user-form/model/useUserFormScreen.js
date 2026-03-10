@@ -17,7 +17,6 @@ import {
   mapUserToFormValues,
   normalizeRolesRows,
   normalizeSuppliersRows,
-  parseStoredUser,
   resolveCurrentUserId,
 } from "../lib/userFormMappers";
 import {
@@ -34,8 +33,7 @@ export const useUserFormScreen = () => {
   const isSelfEditRoute = location.pathname.endsWith("/edit-user");
   const isEdit = Boolean(id) || isSelfEditRoute;
   const isAdmin = auth?.rol_id === RolesEnum.ADMIN;
-  const storedUser = useMemo(() => parseStoredUser(), []);
-  const currentUserId = resolveCurrentUserId({ auth, storedUser });
+  const currentUserId = resolveCurrentUserId({ auth });
   const targetUserId = id || (isSelfEditRoute ? currentUserId : null);
   const canEditAllFields = !isEdit || isAdmin;
   const showManagementActions = !isSelfEditRoute;
