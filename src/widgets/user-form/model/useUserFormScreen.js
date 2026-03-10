@@ -3,14 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import AlertComponent from "../../../helpers/alert/AlertComponent";
 import {
   ResponseStatusEnum,
   RolesEnum,
-} from "../../../../../../helpers/GlobalEnum";
-import { supplierServices } from "../../../../../../helpers/services/SupplierServices";
-import { userServices } from "../../../../../../helpers/services/UserServices";
-import useAuth from "../../../../../../hooks/useAuth";
+} from "../../../helpers/GlobalEnum";
+import { supplierServices } from "../../../helpers/services/SupplierServices";
+import { userServices } from "../../../helpers/services/UserServices";
+import useAuth from "../../../hooks/useAuth";
 
 const baseInitialValues = {
   isSupplier: false,
@@ -129,11 +129,11 @@ const buildSupplierOptions = (suppliers) =>
     supplier,
   }));
 
-export const useCreateUserForm = () => {
+export const useUserFormScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const { auth, logout } = useAuth();
+  const { auth, loading: authLoading, logout } = useAuth();
 
   const isSelfEditRoute = location.pathname.endsWith("/edit-user");
   const isEdit = Boolean(id) || isSelfEditRoute;
@@ -142,6 +142,8 @@ export const useCreateUserForm = () => {
   const currentUserId =
     auth?.seg_usuario ??
     storedUser?.seg_usuario ??
+    auth?.id ??
+    storedUser?.id ??
     auth?.user_id ??
     storedUser?.user_id ??
     null;
@@ -260,7 +262,7 @@ export const useCreateUserForm = () => {
       return null;
     }
 
-    return roleOptions.find((role) => role.value === formik.values.role) || null;
+    return roleOptions.find((option) => Number(option.value) === Number(formik.values.role)) ?? null;
   }, [formik.values.role, roleOptions]);
 
   const upsertSupplierOption = (supplier) => {
@@ -269,56 +271,64 @@ export const useCreateUserForm = () => {
     }
 
     setSuppliersOptions((previous) => {
-      const exists = previous.some((item) => Number(item.id) === Number(supplier.id));
-      return exists ? previous : [...previous, supplier];
+      const exists = previous.some((item) => Number(item.value) === Number(supplier.id));
+      if (exists) {
+        return previous;
+      }
+
+      return [
+        ...previous,
+        {
+          value: supplier.id,
+          label: supplier.nombre,
+          supplier,
+        },
+      ];
     });
   };
 
-  const validateBeforeSubmit = async () => {
-    const errors = await formik.validateForm();
-
-    if (!Object.keys(errors).length) {
-      return false;
+  const hydrateSupplierFields = (supplier) => {
+    if (!supplier) {
+      return;
     }
 
-    formik.setTouched(Object.fromEntries(Object.keys(errors).map((key) => [key, true])));
-    AlertComponent.warning("Validacion", "Revisa los campos obligatorios.");
-    return true;
+    formik.setValues((prev) => ({
+      ...prev,
+      supplier,
+      supplier_id: supplier.id,
+      name: supplier.nombre || "",
+      last_name: "",
+      identification_number: supplier.identificacion || "",
+      email: supplier.email || "",
+      cellphone: supplier.telefono || "",
+      username: prev.username,
+      role: Number(RolesEnum.SUPPLIER),
+    }));
   };
 
-  const loadSuppliers = async () => {
+  const fetchSuppliers = async () => {
     try {
       setLoadingSuppliers(true);
-      const { data, status } = await supplierServices.getSuppliers();
-
-      if (status !== ResponseStatusEnum.OK) {
-        setSuppliersOptions([]);
-        return;
-      }
-
-      setSuppliersOptions(normalizeSuppliersRows(data));
+      const response = await supplierServices.getSuppliers(1, 1000);
+      const rows = normalizeSuppliersRows(response?.data);
+      setSuppliersOptions(buildSupplierOptions(rows));
     } catch (error) {
       console.error("Error cargando proveedores:", error);
-      setSuppliersOptions([]);
+      AlertComponent.error("Error", "No fue posible cargar los proveedores");
     } finally {
       setLoadingSuppliers(false);
     }
   };
 
-  const getRoles = async () => {
+  const fetchRoles = async () => {
     try {
       setLoadingRoles(true);
-      const { data, status } = await userServices.getRoles();
-
-      if (status !== ResponseStatusEnum.OK) {
-        setRoleOptions([]);
-        return;
-      }
-
-      setRoleOptions(buildRoleOptions(normalizeRolesRows(data)));
+      const response = await userServices.getRoles();
+      const rows = normalizeRolesRows(response?.data);
+      setRoleOptions(buildRoleOptions(rows));
     } catch (error) {
       console.error("Error cargando roles:", error);
-      setRoleOptions([]);
+      AlertComponent.error("Error", "No fue posible cargar los roles");
     } finally {
       setLoadingRoles(false);
     }
@@ -326,23 +336,22 @@ export const useCreateUserForm = () => {
 
   const fetchUserData = async (userId) => {
     if (!userId) {
-      setLoadError("No se encontro el usuario autenticado para editar.");
+      setLoadError("No se encontró el usuario autenticado para editar.");
       return;
     }
 
     try {
       setLoadingUser(true);
       setLoadError("");
+      const response = await userServices.getUserById(userId);
+      const user = response?.data?.data?.usuario;
 
-      const { data, status } = await userServices.getUserById(userId);
-      const user = data?.data?.usuario;
-
-      if (status !== ResponseStatusEnum.OK || !user) {
-        setLoadError("No fue posible cargar la informacion del usuario.");
+      if (response?.status !== ResponseStatusEnum.OK || !user) {
+        setLoadError("No fue posible cargar la información del usuario.");
         return;
       }
 
-      setInitialValues({
+      const nextValues = {
         isSupplier: Boolean(user?.proveedor_id),
         supplier: null,
         supplier_id: user?.proveedor_id ? String(user.proveedor_id) : "",
@@ -351,146 +360,115 @@ export const useCreateUserForm = () => {
         identification_number: user?.numero_identificacion || user?.proveedor_nit || "",
         cellphone: user?.telefono ? String(user.telefono) : "",
         email: user?.email ?? "",
+        role: user?.rol_id ? Number(user.rol_id) : null,
         username: user?.usuario ?? "",
         password: "",
-        role: user?.rol_id ?? null,
         active: Boolean(user?.activo),
-      });
+      };
 
+      setInitialValues(nextValues);
       setPendingPassword("");
 
       if (!user?.proveedor_id) {
-        formik.setFieldValue("supplier", null, false);
-        formik.setFieldValue("supplier_id", "", false);
         return;
       }
 
-      const { data: supplierData, status: supplierStatus } =
-        await supplierServices.getSupplierById(user.proveedor_id);
+      const supplierResponse = await supplierServices.getSupplierById(user.proveedor_id);
+      const supplierData = supplierResponse?.data?.data?.proveedor;
 
-      if (supplierStatus !== ResponseStatusEnum.OK || !supplierData?.data?.proveedor) {
+      if (supplierResponse?.status !== ResponseStatusEnum.OK || !supplierData) {
         return;
       }
 
       const supplier = {
-        id: Number(supplierData.data.proveedor.id),
-        nombre: supplierData.data.proveedor.nombre ?? "",
-        identificacion: supplierData.data.proveedor.nit ?? "",
-        email: supplierData.data.proveedor.correo ?? "",
-        telefono: supplierData.data.proveedor.telefono
-          ? String(supplierData.data.proveedor.telefono)
-          : "",
+        id: Number(supplierData.id),
+        nombre: supplierData?.nombre ?? "",
+        identificacion: supplierData?.nit ?? "",
+        email: supplierData?.correo ?? "",
+        telefono: supplierData?.telefono ? String(supplierData.telefono) : "",
       };
 
       upsertSupplierOption(supplier);
-      formik.setFieldValue("supplier", supplier, false);
-      formik.setFieldValue("supplier_id", String(supplier.id), false);
+      setInitialValues((previous) => ({
+        ...previous,
+        supplier,
+        supplier_id: String(supplier.id),
+      }));
     } catch (error) {
-      console.error(error);
-      setLoadError("Error cargando usuario.");
-      AlertComponent.error("Error", "Error cargando usuario");
+      console.error("Error cargando usuario:", error);
+      setLoadError("No fue posible cargar la información del usuario.");
     } finally {
       setLoadingUser(false);
     }
   };
 
-  const handleSelectSupplier = (option) => {
-    const supplier = option?.supplier || null;
+  useEffect(() => {
+    fetchRoles();
+    fetchSuppliers();
+  }, []);
 
-    formik.setFieldValue("supplier", supplier);
-    formik.setFieldValue("supplier_id", supplier ? String(supplier.id) : "");
-    formik.setFieldTouched("supplier_id", true, false);
-
-    if (!supplier) {
-      formik.setFieldValue("role", null);
+  useEffect(() => {
+    if (authLoading) {
       return;
     }
 
-    formik.setFieldValue("identification_number", supplier.identificacion || "");
-    formik.setFieldValue("name", supplier.nombre || "");
-    formik.setFieldValue("last_name", supplier.nombre || "");
-    formik.setFieldValue("email", supplier.email || "");
-    formik.setFieldValue("cellphone", supplier.telefono || "");
-    formik.setFieldValue("role", Number(RolesEnum.SUPPLIER));
-    AlertComponent.info("", "Proveedor seleccionado. Completa usuario y contraseña.");
-  };
+    if (isEdit) {
+      fetchUserData(targetUserId);
+      return;
+    }
 
-  const handleToggleSupplier = async (checked) => {
+    setInitialValues(baseInitialValues);
+    setLoadError("");
+    setPendingPassword("");
+  }, [authLoading, isEdit, targetUserId]);
+
+  const handleToggleSupplier = (checked) => {
     formik.setFieldValue("isSupplier", checked);
 
-    if (checked) {
-      if (suppliersOptions.length === 0) {
-        await loadSuppliers();
-      }
-
-      handleSelectSupplier(null);
+    if (!checked) {
+      formik.setValues((prev) => ({
+        ...prev,
+        supplier: null,
+        supplier_id: "",
+        role: canEditAllFields ? prev.role : Number(RolesEnum.SUPPLIER),
+      }));
       return;
     }
 
-    formik.setFieldValue("supplier", null);
-    formik.setFieldValue("supplier_id", "");
-    formik.setFieldTouched("supplier_id", false);
-    formik.setFieldError("supplier_id", undefined);
-    formik.setFieldValue("identification_number", "");
-    formik.setFieldValue("name", "");
-    formik.setFieldValue("last_name", "");
-    formik.setFieldValue("email", "");
-    formik.setFieldValue("cellphone", "");
+    formik.setFieldValue("role", Number(RolesEnum.SUPPLIER));
   };
 
-  const handlePasswordSaved = (newPassword) => {
-    setPendingPassword(newPassword);
-    formik.setFieldValue("password", newPassword, false);
+  const handleSelectSupplier = (option) => {
+    const supplier = option?.supplier ?? null;
+    formik.setFieldValue("supplier", supplier);
+    formik.setFieldValue("supplier_id", option?.value ?? "");
+
+    if (supplier) {
+      hydrateSupplierFields(supplier);
+    }
+  };
+
+  const handlePasswordSaved = (password) => {
+    setPendingPassword(password);
     setPwdOpen(false);
   };
 
   const handleCancel = () => {
-    if (showManagementActions) {
-      navigate("/admin/management");
+    if (isSelfEditRoute) {
+      navigate("/admin");
       return;
     }
 
-    navigate("/admin");
+    navigate("/admin/management");
   };
 
-  const getFieldStatus = (fieldName) =>
-    formik.touched[fieldName] && formik.errors[fieldName] ? "error" : undefined;
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const hasErrors = await validateBeforeSubmit();
-
-    if (hasErrors) {
-      return;
+  const getFieldStatus = (fieldName) => {
+    if (!formik.touched[fieldName]) {
+      return "";
     }
 
-    formik.handleSubmit(event);
+    return formik.errors[fieldName] ? "error" : "";
   };
-
-  useEffect(() => {
-    if (id && !isAdmin) {
-      navigate("/admin/edit-user", { replace: true });
-    }
-  }, [id, isAdmin, navigate]);
-
-  useEffect(() => {
-    getRoles();
-  }, []);
-
-  useEffect(() => {
-    if (!isEdit) {
-      setLoadError("");
-      setInitialValues(baseInitialValues);
-      setPendingPassword("");
-      return;
-    }
-
-    if (id && !isAdmin) {
-      return;
-    }
-
-    fetchUserData(targetUserId);
-  }, [id, isAdmin, isEdit, targetUserId]);
 
   return {
     canEditAllFields,
@@ -499,7 +477,7 @@ export const useCreateUserForm = () => {
     handleCancel,
     handlePasswordSaved,
     handleSelectSupplier,
-    handleSubmit,
+    handleSubmit: formik.handleSubmit,
     handleToggleSupplier,
     isEdit,
     loadError,
@@ -513,6 +491,6 @@ export const useCreateUserForm = () => {
     selectedSupplierOption,
     setPwdOpen,
     showManagementActions,
-    supplierOptions: buildSupplierOptions(suppliersOptions),
+    supplierOptions: suppliersOptions,
   };
 };

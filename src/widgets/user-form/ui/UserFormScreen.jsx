@@ -1,13 +1,14 @@
 import { Alert, Tag, Typography } from "antd";
 
-import imgPeople from "../../../../../../assets/image/addProducts/people1.jpg";
-import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
-import { PasswordChangeDialog } from "../../../../shared/Modals/PasswordChangeDialog";
-import { Loading } from "../../../../shared/loading/Loading";
-import { AppButton } from "../../../../../../shared/ui/button";
-import { AppInput } from "../../../../../../shared/ui/input";
-import { AppSelect } from "../../../../../../shared/ui/select";
-import { AppSwitch } from "../../../../../../shared/ui/switch";
+import imgPeople from "../../../assets/image/addProducts/people1.jpg";
+import { AppButton } from "../../../shared/ui/button";
+import { AppInput } from "../../../shared/ui/input";
+import { AppSelect } from "../../../shared/ui/select";
+import { AppSwitch } from "../../../shared/ui/switch";
+import { HeaderImage } from "../../../components/layout/shared/header_image/HeaderImage";
+import { PasswordChangeDialog } from "../../../components/layout/shared/Modals/PasswordChangeDialog";
+import { Loading } from "../../../components/layout/shared/loading/Loading";
+import { useUserFormScreen } from "../model/useUserFormScreen";
 import {
   ActionsRow,
   FieldContent,
@@ -25,33 +26,35 @@ import {
   MainContainer,
   PasswordStatus,
   SectionTitle,
-} from "./CreateUserView.styles";
+} from "./UserFormScreen.styles";
 
 const { Title } = Typography;
 
-export const CreateUserView = ({
-  canEditAllFields,
-  formik,
-  getFieldStatus,
-  handleCancel,
-  handlePasswordSaved,
-  handleSelectSupplier,
-  handleSubmit,
-  handleToggleSupplier,
-  isEdit,
-  loadError,
-  loadingRoles,
-  loadingSuppliers,
-  loadingUser,
-  pendingPassword,
-  pwdOpen,
-  roleOptions,
-  selectedRoleOption,
-  selectedSupplierOption,
-  setPwdOpen,
-  showManagementActions,
-  supplierOptions,
-}) => {
+export const UserFormScreen = () => {
+  const {
+    canEditAllFields,
+    formik,
+    getFieldStatus,
+    handleCancel,
+    handlePasswordSaved,
+    handleSelectSupplier,
+    handleSubmit,
+    handleToggleSupplier,
+    isEdit,
+    loadError,
+    loadingRoles,
+    loadingSuppliers,
+    loadingUser,
+    pendingPassword,
+    pwdOpen,
+    roleOptions,
+    selectedRoleOption,
+    selectedSupplierOption,
+    setPwdOpen,
+    showManagementActions,
+    supplierOptions,
+  } = useUserFormScreen();
+
   const shouldHideRestrictedProfileSections = isEdit && !canEditAllFields && !showManagementActions;
 
   return (

@@ -18,6 +18,9 @@ import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { Logout } from "../components/layout/public/auth/logout/Logout";
 import { DashboardPage } from "../pages/dashboard";
+import { UserEditPage } from "../pages/user-edit";
+import { UserProfilePage } from "../pages/user-profile";
+import { UserFormScreen } from "../widgets/user-form";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
@@ -27,7 +30,6 @@ import { SearchUserForDeliveries } from "../components/layout/private/deliveries
 import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
 import { ValidationSupervision } from "../components/layout/private/products_module/validation_supervision/ValidationSupervision";
 import { MenuTab } from "../components/layout/private/management_module/MenuTab";
-import { CreateUser } from "../components/layout/private/management_module/user/CreateUser";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation_module/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
@@ -139,9 +141,9 @@ export const Routing = () => {
 
                             {/* Management */}
                             <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
-                            <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
-                            <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
-                            <Route path={ RouterEnum.EditUser }  element={ <CreateUser /> }  />
+                            <Route path={ RouterEnum.CreateUsers }  element={ <UserFormScreen /> }  />
+                            <Route path={ RouterEnum.EditUsers }  element={ <UserEditPage /> }  />
+                            <Route path={ RouterEnum.EditUser }  element={ <UserProfilePage /> }  />
                             <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
                             <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
                             <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
