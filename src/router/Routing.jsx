@@ -29,7 +29,7 @@ import { Deliveries } from "../components/layout/private/deliveries_module/Deliv
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries_module/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
 import { ValidationSupervision } from "../components/layout/private/products_module/validation_supervision/ValidationSupervision";
-import { MenuTab } from "../components/layout/private/management_module/MenuTab";
+import { AdminManagementPage } from "../pages/admin-management";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation_module/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
@@ -140,7 +140,7 @@ export const Routing = () => {
                             <Route path={ RouterEnum.ConciliationDetail }  element={ <ConciliationDetail /> }  />
 
                             {/* Management */}
-                            <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
+                            <Route path={ RouterEnum.Management } element={ <AdminManagementPage /> }  />
                             <Route path={ RouterEnum.CreateUsers }  element={ <UserCreatePage /> }  />
                             <Route path={ RouterEnum.EditUsers }  element={ <UserEditPage /> }  />
                             <Route path={ RouterEnum.EditUser }  element={ <UserProfilePage /> }  />
