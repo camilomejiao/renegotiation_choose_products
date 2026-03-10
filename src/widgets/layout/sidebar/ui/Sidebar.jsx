@@ -24,7 +24,7 @@ import {
 import { MdCampaign, MdPeople } from "react-icons/md";
 import { BsBank, BsCashStack } from "react-icons/bs";
 
-import { getRoleIconKey, getRoleTitle, getSidebarMenu } from "../../../../entities/user/model/sidebarMenu";
+import { getSidebarMenu } from "../../../../entities/user/model/sidebarMenu";
 import { SidebarShell } from "./Sidebar.styles";
 import { SidebarBrandBlock } from "./SidebarBrand";
 import { SidebarMobileHeader } from "./SidebarMobileHeader";
@@ -71,9 +71,6 @@ export const Sidebar = ({
 
   const role = userAuth?.rol_id;
   const items = useMemo(() => getSidebarMenu(role, userAuth?.id), [role, userAuth?.id]);
-  const title = getRoleTitle(role);
-  const roleIconKey = getRoleIconKey(role);
-  const titleIcon = iconMap[roleIconKey] || FaUser;
 
   const toggleSidebar = () => {
     if (onToggle) {
@@ -106,8 +103,6 @@ export const Sidebar = ({
       <SidebarBrandBlock isOpen={isOpen} isMobile={isMobile} />
 
       {isMobile && <SidebarMobileHeader onClose={toggleSidebar} />}
-
-      <SidebarItem label={title} icon={titleIcon} isOpen={isOpen} dataStatic />
 
       {items.map((item) => {
         if (item.children && Array.isArray(item.children)) {

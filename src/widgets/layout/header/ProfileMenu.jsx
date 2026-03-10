@@ -15,6 +15,7 @@ import {
   MenuHeader,
   MenuHeaderAvatar,
   MenuHeaderName,
+  MenuHeaderRole,
   ProfileWrapper,
   UserMenuAction,
   UserMenuTrigger,
@@ -27,6 +28,7 @@ import {
 
 export const ProfileMenu = ({
   displayName = "test user",
+  roleLabel,
   onLogout,
   onEditProfile,
   onEditAnyUser,
@@ -79,6 +81,7 @@ export const ProfileMenu = ({
           <MenuHeader>
             <MenuHeaderAvatar size={52} icon={<UserOutlined />} />
             <MenuHeaderName>{displayName}</MenuHeaderName>
+            {roleLabel && <MenuHeaderRole>{roleLabel}</MenuHeaderRole>}
           </MenuHeader>
 
           <MenuDivider />

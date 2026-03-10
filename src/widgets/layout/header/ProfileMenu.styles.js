@@ -75,6 +75,14 @@ export const MenuHeaderName = styled.span({
   wordBreak: "break-word",
 });
 
+export const MenuHeaderRole = styled.span({
+  fontSize: 13,
+  fontWeight: 500,
+  color: "#64748b",
+  textAlign: "center",
+  wordBreak: "break-word",
+});
+
 export const MenuDivider = styled.div({
   height: 1,
   background: "#e2e8f0",

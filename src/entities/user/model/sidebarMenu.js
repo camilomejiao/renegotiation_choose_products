@@ -100,20 +100,6 @@ export const getSidebarMenu = (role, id) => {
   return config[role] || [];
 };
 
-export const getRoleTitle = (role) => {
-  const titles = {
-    [RolesEnum.SUPPLIER]: "Proveedor",
-    [RolesEnum.TERRITORIAL_LINKS]: "Tecnico Territorio",
-    [RolesEnum.TECHNICAL]: "Implementacion",
-    [RolesEnum.PAYMENTS]: "Pagos",
-    [RolesEnum.TRUST_PAYMENTS]: "Fiduciaria",
-    [RolesEnum.ENVIRONMENTAL]: "Ambiental",
-    [RolesEnum.LEGAL]: "Juridica",
-  };
-
-  return titles[role] ?? "Perfil";
-};
-
 export const getRoleIconKey = (role) => {
   if (role === RolesEnum.SUPPLIER) return "building";
   if (role === RolesEnum.TERRITORIAL_LINKS) return "hardHat";

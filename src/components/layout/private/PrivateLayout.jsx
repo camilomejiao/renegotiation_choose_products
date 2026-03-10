@@ -8,6 +8,7 @@ import { AppShell } from "../../../widgets/layout/app-shell";
 import { Loading } from "../shared/loading/Loading";
 import { resolvePrivateLayoutRoute } from "./config/layoutRoutes";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
+import { getRoleTitle } from "../../../entities/user/model/getRoleTitle";
 
 const MOBILE_BREAKPOINT = 992;
 const LoadingIndicator = () => <Loading fullScreen text="Cargando..." />;
@@ -72,6 +73,7 @@ export const PrivateLayout = () => {
         isSidebarOpen,
         onMenuToggle: handleMobileMenuToggle,
         userAuth: auth,
+        userRoleLabel: getRoleTitle(auth?.rol_id),
         onLogout: handleLogout,
         onEditProfile: handleEditProfile,
         onEditAnyUser: auth?.rol_id === RolesEnum.ADMIN ? handleEditAnyUser : undefined,
