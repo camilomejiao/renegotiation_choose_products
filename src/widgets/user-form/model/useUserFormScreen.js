@@ -1,4 +1,3 @@
-import * as yup from "yup";
 import { useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -11,123 +10,20 @@ import {
 import { supplierServices } from "../../../helpers/services/SupplierServices";
 import { userServices } from "../../../helpers/services/UserServices";
 import useAuth from "../../../hooks/useAuth";
-
-const baseInitialValues = {
-  isSupplier: false,
-  supplier: null,
-  supplier_id: "",
-  name: "",
-  last_name: "",
-  identification_number: "",
-  cellphone: "",
-  email: "",
-  role: null,
-  username: "",
-  password: "",
-  active: true,
-};
-
-const buildValidationSchema = ({ isEdit }) =>
-  yup.object().shape({
-    isSupplier: yup.boolean().optional(),
-    supplier_id: yup
-      .string()
-      .transform((value, originalValue) => (originalValue === "" ? undefined : value))
-      .when("isSupplier", {
-        is: true,
-        then: (schema) => schema.required("Selecciona un proveedor"),
-        otherwise: (schema) => schema.notRequired().strip(),
-      }),
-    username: yup.string().trim().required("El usuario es requerido"),
-    password: yup
-      .string()
-      .trim()
-      .when([], (_, schema) =>
-        isEdit ? schema.notRequired() : schema.required("La contraseña es requerida")
-      ),
-    identification_number: yup
-      .string()
-      .trim()
-      .when("isSupplier", {
-        is: true,
-        then: (schema) =>
-          schema.matches(/^[0-9-]+$/, "Solo dígitos o guiones").notRequired(),
-        otherwise: (schema) =>
-          schema
-            .matches(/^\d+$/, "Solo dígitos")
-            .required("La cédula/NIT es requerida"),
-      }),
-    name: yup.string().trim().when("isSupplier", {
-      is: true,
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.required("El nombre es requerido"),
-    }),
-    last_name: yup.string().trim().when("isSupplier", {
-      is: true,
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.required("El apellido es requerido"),
-    }),
-    email: yup.string().trim().email("Email inválido").when("isSupplier", {
-      is: true,
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.required("El email es requerido"),
-    }),
-    cellphone: yup.string().trim().matches(/^\d+$/, "Solo dígitos").when("isSupplier", {
-      is: true,
-      then: (schema) => schema.notRequired(),
-      otherwise: (schema) => schema.required("El telefono es requerido"),
-    }),
-    role: yup
-      .number()
-      .transform((value, originalValue) =>
-        originalValue === "" || originalValue == null ? NaN : Number(originalValue)
-      )
-      .typeError("Selecciona un rol")
-      .required("Selecciona un rol"),
-    active: yup.boolean().required("Activo o inactivo"),
-  });
-
-const parseStoredUser = () => {
-  try {
-    return JSON.parse(localStorage.getItem("user") || "{}");
-  } catch (error) {
-    return {};
-  }
-};
-
-const normalizeSuppliersRows = (payload) => {
-  const rows = payload?.data?.proveedores || [];
-
-  return rows.map((row) => ({
-    id: Number(row?.id),
-    nombre: `${row?.nombre ?? ""} ${row?.nit ?? ""}`.trim(),
-    identificacion: row?.nit ?? "",
-    email: row?.correo ?? "",
-    telefono: row?.telefono ? String(row.telefono) : "",
-  }));
-};
-
-const normalizeRolesRows = (payload) => {
-  const rows = payload?.data?.roles || [];
-
-  return rows.map((row) => ({
-    id: Number(row?.id),
-    nombre: row?.nombre ?? "",
-  }));
-};
-
-const buildRoleOptions = (roles) =>
-  roles.map((role) => ({
-    value: role.id,
-    label: role.nombre,
-  }));
-
-const buildSupplierOptions = (suppliers) =>
-  suppliers.map((supplier) => ({
-    value: supplier.id,
-    label: supplier.nombre,
-    supplier,
-  }));
+import {
+  buildRoleOptions,
+  buildSupplierOptions,
+  mapSupplierToFormOption,
+  mapUserToFormValues,
+  normalizeRolesRows,
+  normalizeSuppliersRows,
+  parseStoredUser,
+  resolveCurrentUserId,
+} from "../lib/userFormMappers";
+import {
+  baseInitialValues,
+  buildUserFormValidationSchema,
+} from "../lib/userFormSchema";
 
 export const useUserFormScreen = () => {
   const navigate = useNavigate();
@@ -139,14 +35,7 @@ export const useUserFormScreen = () => {
   const isEdit = Boolean(id) || isSelfEditRoute;
   const isAdmin = auth?.rol_id === RolesEnum.ADMIN;
   const storedUser = useMemo(() => parseStoredUser(), []);
-  const currentUserId =
-    auth?.seg_usuario ??
-    storedUser?.seg_usuario ??
-    auth?.id ??
-    storedUser?.id ??
-    auth?.user_id ??
-    storedUser?.user_id ??
-    null;
+  const currentUserId = resolveCurrentUserId({ auth, storedUser });
   const targetUserId = id || (isSelfEditRoute ? currentUserId : null);
   const canEditAllFields = !isEdit || isAdmin;
   const showManagementActions = !isSelfEditRoute;
@@ -162,7 +51,7 @@ export const useUserFormScreen = () => {
   const [pendingPassword, setPendingPassword] = useState("");
 
   const validationSchema = useMemo(
-    () => buildValidationSchema({ isEdit }),
+    () => buildUserFormValidationSchema({ isEdit }),
     [isEdit]
   );
 
@@ -369,20 +258,7 @@ export const useUserFormScreen = () => {
         return;
       }
 
-      const nextValues = {
-        isSupplier: Boolean(user?.proveedor_id),
-        supplier: null,
-        supplier_id: user?.proveedor_id ? String(user.proveedor_id) : "",
-        name: user?.nombre ?? "",
-        last_name: user?.apellido ?? "",
-        identification_number: user?.numero_identificacion || user?.proveedor_nit || "",
-        cellphone: user?.telefono ? String(user.telefono) : "",
-        email: user?.email ?? "",
-        role: user?.rol_id ? Number(user.rol_id) : null,
-        username: user?.usuario ?? "",
-        password: "",
-        active: Boolean(user?.activo),
-      };
+      const nextValues = mapUserToFormValues(user);
 
       setInitialValues(nextValues);
       setPendingPassword("");
@@ -398,13 +274,7 @@ export const useUserFormScreen = () => {
         return;
       }
 
-      const supplier = {
-        id: Number(supplierData.id),
-        nombre: supplierData?.nombre ?? "",
-        identificacion: supplierData?.nit ?? "",
-        email: supplierData?.correo ?? "",
-        telefono: supplierData?.telefono ? String(supplierData.telefono) : "",
-      };
+      const supplier = mapSupplierToFormOption(supplierData);
 
       upsertSupplierOption(supplier);
       setInitialValues((previous) => ({
