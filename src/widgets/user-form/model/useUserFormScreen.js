@@ -423,19 +423,24 @@ export const useUserFormScreen = () => {
   }, [authLoading, isEdit, targetUserId]);
 
   const handleToggleSupplier = (checked) => {
-    formik.setFieldValue("isSupplier", checked);
+    const nextValues = {
+      ...formik.values,
+      isSupplier: checked,
+    };
 
     if (!checked) {
-      formik.setValues((prev) => ({
-        ...prev,
+      formik.setValues({
+        ...nextValues,
         supplier: null,
         supplier_id: "",
-        role: canEditAllFields ? prev.role : Number(RolesEnum.SUPPLIER),
-      }));
+      });
       return;
     }
 
-    formik.setFieldValue("role", Number(RolesEnum.SUPPLIER));
+    formik.setValues({
+      ...nextValues,
+      role: Number(RolesEnum.SUPPLIER),
+    });
   };
 
   const handleSelectSupplier = (option) => {
