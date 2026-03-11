@@ -15,6 +15,7 @@ export const PasswordChangeDialog = ({
   open,
   onClose,
   onSave,
+  loading = false,
   minLength = 8,
 }) => {
   const [pwd, setPwd] = useState("");
@@ -54,28 +55,33 @@ export const PasswordChangeDialog = ({
     return !nextErrors.pwd && !nextErrors.confirm;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) {
       return;
     }
 
-    onSave?.(pwd);
+    await onSave?.(pwd);
   };
 
   return (
     <Modal
       title="Cambiar contraseña"
-      subTitle="La nueva contraseña se aplicará cuando guardes el formulario."
+      subTitle="La nueva contraseña se aplicará cuando confirmes esta operación."
       isOpen={open}
       onCloseModal={onClose}
       centered
       destroyOnClose
       footer={(
         <PasswordModalFooter>
-          <AppButton variant="secondary" onClick={onClose}>
+          <AppButton variant="secondary" onClick={onClose} disabled={loading}>
             Cancelar
           </AppButton>
-          <AppButton variant="primary" onClick={handleSave} disabled={isSubmitDisabled}>
+          <AppButton
+            variant="primary"
+            onClick={handleSave}
+            disabled={isSubmitDisabled}
+            loading={loading}
+          >
             Guardar contraseña
           </AppButton>
         </PasswordModalFooter>

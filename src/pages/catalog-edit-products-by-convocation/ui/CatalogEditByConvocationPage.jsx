@@ -87,8 +87,6 @@ export const CatalogEditByConvocationPage = () => {
       header={pageHeader}
       contentPadding="0"
       minHeight="auto"
-      headerPaddingTop="36px"
-      headerMarginBottom="12px"
     >
       <HeaderSection>
         <HeaderImage imageHeader={imgPeople} titleHeader="¡Empieza a agregar tus productos!" />

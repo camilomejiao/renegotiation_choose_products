@@ -11,8 +11,8 @@ export const Page = ({
   children,
   minHeight = "calc(100vh - 290px)",
   contentPadding = "24px",
-  headerPaddingTop = "24px",
-  headerMarginBottom = "-12px",
+  headerPaddingTop = "36px",
+  headerMarginBottom = "12px",
 }) => {
   const { appName = "", title, subTitle, breadcrumbs = [], extra } = header;
 

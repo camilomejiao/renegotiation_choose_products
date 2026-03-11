@@ -62,8 +62,6 @@ export const CatalogReportPage = () => {
       header={pageHeader}
       contentPadding="0"
       minHeight="auto"
-      headerPaddingTop="36px"
-      headerMarginBottom="12px"
     >
       <HeaderSection>
         <HeaderImage imageHeader={imgPeople} titleHeader="¡Reporte de productos!" />

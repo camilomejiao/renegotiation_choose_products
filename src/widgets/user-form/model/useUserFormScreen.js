@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -13,6 +13,7 @@ import useAuth from "../../../hooks/useAuth";
 import {
   hasPasswordValidityWarning,
 } from "../../../shared/auth/lib/authSession";
+import { getClientPublicIp } from "../../../shared/lib/network";
 import {
   buildRoleOptions,
   buildSupplierOptions,
@@ -26,6 +27,7 @@ import {
   baseInitialValues,
   buildUserFormValidationSchema,
 } from "../lib/userFormSchema";
+import { buildPasswordUpdatePayload } from "./buildPasswordUpdatePayload";
 
 export const useUserFormScreen = () => {
   const navigate = useNavigate();
@@ -43,8 +45,10 @@ export const useUserFormScreen = () => {
   const isAdmin = auth?.rol_id === RolesEnum.ADMIN;
   const currentUserId = resolveCurrentUserId({ auth });
   const targetUserId = id || (isSelfEditRoute ? currentUserId : null);
-  const canEditAllFields = !isEdit || isAdmin;
+  const canEditAllFields = !isEdit || (isAdmin && !isSelfEditRoute);
   const showManagementActions = !isSelfEditRoute;
+  const mustChangePassword = auth?.must_change_password === true;
+  const shouldForcePasswordScreen = isSelfEditRoute && mustChangePassword;
 
   const [initialValues, setInitialValues] = useState(baseInitialValues);
   const [loadingUser, setLoadingUser] = useState(false);
@@ -54,8 +58,9 @@ export const useUserFormScreen = () => {
   const [roleOptions, setRoleOptions] = useState([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
   const [pwdOpen, setPwdOpen] = useState(false);
+  const [loadingPasswordUpdate, setLoadingPasswordUpdate] = useState(false);
   const [loadError, setLoadError] = useState("");
-  const [pendingPassword, setPendingPassword] = useState("");
+  const [activeProfileTab, setActiveProfileTab] = useState("personal");
 
   const validationSchema = useMemo(
     () => buildUserFormValidationSchema({ isEdit }),
@@ -97,58 +102,17 @@ export const useUserFormScreen = () => {
           return;
         }
 
-        let passwordUpdated = true;
-        if (isEdit && pendingPassword) {
-          const passwordResponse = await userServices.updatePassword(targetUserId, {
-            password_nueva: pendingPassword,
-            password_confirmacion: pendingPassword,
-          });
-
-          passwordUpdated = passwordResponse?.status === ResponseStatusEnum.OK;
-        }
-
         if (isSelfEditRoute) {
-          if (pendingPassword && passwordUpdated) {
-            markPasswordChangeComplete();
-            setLoadingUser(false);
-            await AlertComponent.success(
-              "Contraseña actualizada",
-              "Tu contraseña se actualizó correctamente. Cerraremos tu sesión para que vuelvas a ingresar."
-            );
-            logout();
-            navigate("/login", { replace: true });
-            return;
-          }
-
-          if (passwordUpdated) {
-            setLoadingUser(false);
-            await AlertComponent.success("Usuario actualizado correctamente");
-          } else {
-            setLoadingUser(false);
-            await AlertComponent.warning(
-              "Actualización parcial",
-              "Los datos se guardaron, pero la contraseña no pudo actualizarse."
-            );
-          }
-
-          setPendingPassword("");
-          formik.setFieldValue("password", "", false);
+          setLoadingUser(false);
+          await AlertComponent.success("Usuario actualizado correctamente");
           await fetchUserData(targetUserId);
           return;
         }
 
-        if (passwordUpdated) {
-          setLoadingUser(false);
-          await AlertComponent.success(
-            isEdit ? "Usuario actualizado correctamente" : "Usuario creado correctamente"
-          );
-        } else {
-          setLoadingUser(false);
-          await AlertComponent.warning(
-            "Actualización parcial",
-            "Los datos se guardaron, pero la contraseña no pudo actualizarse."
-          );
-        }
+        setLoadingUser(false);
+        await AlertComponent.success(
+          isEdit ? "Usuario actualizado correctamente" : "Usuario creado correctamente"
+        );
 
         navigate("/admin/management");
       } catch (error) {
@@ -180,7 +144,7 @@ export const useUserFormScreen = () => {
     return roleOptions.find((option) => Number(option.value) === Number(formik.values.role)) ?? null;
   }, [formik.values.role, roleOptions]);
 
-  const upsertSupplierOption = (supplier) => {
+  const upsertSupplierOption = useCallback((supplier) => {
     if (!supplier) {
       return;
     }
@@ -200,7 +164,7 @@ export const useUserFormScreen = () => {
         },
       ];
     });
-  };
+  }, []);
 
   const hydrateSupplierFields = (supplier) => {
     if (!supplier) {
@@ -249,7 +213,7 @@ export const useUserFormScreen = () => {
     }
   };
 
-  const fetchUserData = async (userId) => {
+  const fetchUserData = useCallback(async (userId) => {
     if (!userId) {
       setLoadError("No se encontró el usuario autenticado para editar.");
       return;
@@ -269,7 +233,6 @@ export const useUserFormScreen = () => {
       const nextValues = mapUserToFormValues(user);
 
       setInitialValues(nextValues);
-      setPendingPassword("");
 
       if (!user?.proveedor_id) {
         return;
@@ -296,15 +259,26 @@ export const useUserFormScreen = () => {
     } finally {
       setLoadingFormData(false);
     }
-  };
+  }, [upsertSupplierOption]);
 
   useEffect(() => {
+    if (shouldForcePasswordScreen) {
+      return;
+    }
+
     fetchRoles();
     fetchSuppliers();
-  }, []);
+  }, [shouldForcePasswordScreen]);
 
   useEffect(() => {
     if (authLoading) {
+      return;
+    }
+
+    if (shouldForcePasswordScreen) {
+      setInitialValues(baseInitialValues);
+      setLoadError("");
+      setLoadingFormData(false);
       return;
     }
 
@@ -315,8 +289,18 @@ export const useUserFormScreen = () => {
 
     setInitialValues(baseInitialValues);
     setLoadError("");
-    setPendingPassword("");
-  }, [authLoading, isEdit, targetUserId]);
+  }, [authLoading, fetchUserData, isEdit, shouldForcePasswordScreen, targetUserId]);
+
+  useEffect(() => {
+    if (!shouldForcePasswordScreen) {
+      return;
+    }
+
+    setActiveProfileTab((currentTab) =>
+      currentTab === "personal" ? "security" : currentTab
+    );
+    setPwdOpen(true);
+  }, [shouldForcePasswordScreen]);
 
   const handleToggleSupplier = (checked) => {
     const nextValues = {
@@ -349,9 +333,62 @@ export const useUserFormScreen = () => {
     }
   };
 
-  const handlePasswordSaved = (password) => {
-    setPendingPassword(password);
-    setPwdOpen(false);
+  const handlePasswordSaved = async (password) => {
+    if (!targetUserId) {
+      AlertComponent.warning(
+        "Usuario no disponible",
+        "No fue posible determinar el usuario para actualizar la contraseña."
+      );
+      return;
+    }
+
+    try {
+      setLoadingPasswordUpdate(true);
+      const clientIp = await getClientPublicIp();
+      const response = await userServices.updatePassword(
+        targetUserId,
+        buildPasswordUpdatePayload({
+          nextPassword: password,
+          clientIp,
+        })
+      );
+
+      if (response?.status !== ResponseStatusEnum.OK) {
+        AlertComponent.warning(
+          "Error",
+          response?.data?.errors?.[0]?.title ?? "No se pudo actualizar la contraseña"
+        );
+        return;
+      }
+
+      setPwdOpen(false);
+
+      if (isSelfEditRoute) {
+        markPasswordChangeComplete();
+        await AlertComponent.success(
+          "Contraseña actualizada",
+          "Tu contraseña se actualizó correctamente. Cerraremos tu sesión para que vuelvas a ingresar."
+        );
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      await AlertComponent.success("Contraseña actualizada correctamente");
+    } catch (error) {
+      console.error("Error actualizando contraseña:", error);
+      AlertComponent.error("Error", "Hubo un error al actualizar la contraseña");
+    } finally {
+      setLoadingPasswordUpdate(false);
+    }
+  };
+
+  const handleOpenPasswordDialog = () => {
+    setPwdOpen(true);
+  };
+
+  const handleProfileTabChange = (activeKey) => {
+    setActiveProfileTab(activeKey);
   };
 
   const handleCancel = () => {
@@ -376,6 +413,8 @@ export const useUserFormScreen = () => {
     formik,
     getFieldStatus,
     handleCancel,
+    handleOpenPasswordDialog,
+    handleProfileTabChange,
     handlePasswordSaved,
     handleSelectSupplier,
     handleSubmit: formik.handleSubmit,
@@ -386,11 +425,13 @@ export const useUserFormScreen = () => {
     loadingRoles,
     loadingSuppliers,
     loadingUser,
-    mustChangePassword: auth?.must_change_password === true,
-    pendingPassword,
+    loadingPasswordUpdate,
+    mustChangePassword,
     passwordValidity: auth?.password_validity,
     showPasswordValidityWarning:
-      auth?.must_change_password !== true && hasPasswordValidityWarning(auth),
+      !mustChangePassword && hasPasswordValidityWarning(auth),
+    shouldForcePasswordScreen,
+    activeProfileTab,
     pwdOpen,
     roleOptions,
     selectedRoleOption,

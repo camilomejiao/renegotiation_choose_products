@@ -125,19 +125,51 @@ export const FormSwitchRow = styled.div`
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 `;
 
-export const PasswordStatus = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-`;
-
 export const ActionsRow = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 8px;
   flex-wrap: wrap;
+`;
+
+export const TabPanelContent = styled.div`
+  display: grid;
+  gap: 24px;
+`;
+
+export const TabSectionHeader = styled.div`
+  display: grid;
+  gap: 8px;
+`;
+
+export const SecurityPanel = styled.section`
+  display: grid;
+  gap: 20px;
+`;
+
+export const SecurityCard = styled.div`
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #dbe4f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+`;
+
+export const SecurityDescription = styled(Text)`
+  && {
+    color: #475569;
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+`;
+
+export const SecurityActionRow = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
 `;
 
 export const SkeletonFieldGrid = styled.div`
