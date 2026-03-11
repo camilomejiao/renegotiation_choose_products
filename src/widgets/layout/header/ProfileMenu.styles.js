@@ -33,10 +33,12 @@ export const UserTriggerAvatar = styled(Avatar)({
 });
 
 export const UserName = styled.span({
+  display: "inline-block",
   maxWidth: 160,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
+  textAlign: "left",
 });
 
 export const UserMenu = styled.div({
@@ -68,10 +70,15 @@ export const MenuHeaderAvatar = styled(Avatar)({
 });
 
 export const MenuHeaderName = styled.span({
+  width: "100%",
+  maxWidth: 240,
   fontWeight: 700,
   fontSize: 15,
   color: "#0f172a",
   textAlign: "center",
+  lineHeight: 1.35,
+  whiteSpace: "normal",
+  overflowWrap: "anywhere",
   wordBreak: "break-word",
 });
 

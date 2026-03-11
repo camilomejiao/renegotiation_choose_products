@@ -67,6 +67,14 @@ const coerceNumberClaim = (value) => {
   return Number.isFinite(nextValue) ? nextValue : null;
 };
 
+const coerceTextClaim = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim();
+};
+
 export const buildAuthFromClaims = (claims) => {
   if (!claims) {
     return {};
@@ -86,6 +94,8 @@ export const buildAuthFromClaims = (claims) => {
     supplier_id: claims?.proveedor,
     rol_id: claims?.rol,
     username: claims?.username,
+    name: coerceTextClaim(claims?.name),
+    last_name: coerceTextClaim(claims?.last_name),
     jornada_id: claims?.jornada_id,
     must_change_password: mustChangePassword,
     password_validity: passwordValidity,
@@ -104,6 +114,11 @@ export const hasPasswordValidityWarning = (auth) => {
 
   return passwordValidity <= 10;
 };
+
+export const getAuthDisplayName = (auth) =>
+  [coerceTextClaim(auth?.name), coerceTextClaim(auth?.last_name)]
+    .filter(Boolean)
+    .join(" ");
 
 export const normalizeAuthSession = (payload) => {
   if (!payload || Object.keys(payload).length === 0) {

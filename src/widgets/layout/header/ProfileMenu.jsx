@@ -27,7 +27,7 @@ import {
 } from "./ProfileMenu.styles";
 
 export const ProfileMenu = ({
-  displayName = "test user",
+  displayName = "",
   roleLabel,
   onLogout,
   onEditProfile,
@@ -74,13 +74,13 @@ export const ProfileMenu = ({
         aria-expanded={isMenuOpen}
       >
         <UserTriggerAvatar size="small" icon={<UserOutlined />} aria-hidden="true" />
-        <UserName>{displayName}</UserName>
+        {displayName && <UserName title={displayName}>{displayName}</UserName>}
       </UserMenuTrigger>
       {isMenuOpen && (
         <UserMenu role="menu">
           <MenuHeader>
             <MenuHeaderAvatar size={52} icon={<UserOutlined />} />
-            <MenuHeaderName>{displayName}</MenuHeaderName>
+            <MenuHeaderName title={displayName}>{displayName}</MenuHeaderName>
             {roleLabel && <MenuHeaderRole>{roleLabel}</MenuHeaderRole>}
           </MenuHeader>
 

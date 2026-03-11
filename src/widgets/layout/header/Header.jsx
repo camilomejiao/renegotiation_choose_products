@@ -11,6 +11,7 @@ import {
     HeaderBrandAccent,
     MenuToggle,
 } from "./Header.styles";
+import { getAuthDisplayName } from "../../../shared/auth/lib/authSession";
 
 export const Header = ({
                            isMobile = false,
@@ -24,16 +25,13 @@ export const Header = ({
                            showUserMenu,
                            withSidebar,
                            showBrand,
-                           logoOnRight,
+                       logoOnRight,
                        }) => {
     const hasSidebar = Boolean(withSidebar);
     const shouldShowBrand = Boolean(showBrand);
     const shouldShowUserMenu = Boolean(showUserMenu);
     const shouldShowLogoOnRight = Boolean(logoOnRight);
-    const displayName =
-        userAuth?.username && String(userAuth.username).trim()
-            ? String(userAuth.username).trim()
-            : "test user";
+    const displayName = getAuthDisplayName(userAuth);
 
     return (
         <HeaderShell isSidebarOpen={isSidebarOpen} isMobile={isMobile} withSidebar={hasSidebar}>
