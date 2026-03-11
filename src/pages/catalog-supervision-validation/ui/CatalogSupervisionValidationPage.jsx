@@ -93,7 +93,7 @@ export const CatalogSupervisionValidationPage = () => {
                     <Col span={24}>
                         <ToolbarCard bordered>
                             <Row gutter={[12, 12]}>
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedConvocation}
                                         options={convocationOptions}
@@ -103,7 +103,7 @@ export const CatalogSupervisionValidationPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedPlan}
                                         options={planOptions}
@@ -117,7 +117,7 @@ export const CatalogSupervisionValidationPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedSupplier}
                                         options={supplierOptions}
@@ -131,7 +131,7 @@ export const CatalogSupervisionValidationPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSearchInput
                                         placeholder="Buscar..."
                                         value={searchQuery}

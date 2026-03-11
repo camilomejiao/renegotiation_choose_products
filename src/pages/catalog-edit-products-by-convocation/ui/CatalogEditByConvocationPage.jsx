@@ -103,7 +103,7 @@ export const CatalogEditByConvocationPage = () => {
           <Col span={24}>
             <ToolbarCard bordered>
               <Row gutter={[12, 12]} align="middle">
-                <Col xs={24} sm={12} lg={8}>
+                <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
                   <AppSelect
                     value={selectedPlan}
                     options={planOptions}
@@ -113,7 +113,7 @@ export const CatalogEditByConvocationPage = () => {
                   />
                 </Col>
 
-                <Col xs={24} sm={12} lg={16}>
+                <Col xs={24} sm={12} md={12} lg={16} xl={16} xxl={16}>
                   <ActionsSpace>
                     <ActionButton icon={<PlusOutlined />} onClick={handleCreateProducts}>
                       Crear Jornada
@@ -128,7 +128,7 @@ export const CatalogEditByConvocationPage = () => {
               <ToolbarDivider />
 
               <Row>
-                <Col xs={24} sm={12} lg={8}>
+                <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
                   <AppSearchInput
                     placeholder="Buscar..."
                     value={searchQuery}

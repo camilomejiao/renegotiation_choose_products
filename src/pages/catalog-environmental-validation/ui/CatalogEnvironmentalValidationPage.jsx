@@ -102,7 +102,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                     <Col span={24}>
                         <ToolbarCard bordered>
                             <Row gutter={[12, 12]}>
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSearchInput
                                         placeholder="Buscar..."
                                         value={searchQuery}
@@ -110,7 +110,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedConvocation}
                                         options={convocationOptions}
@@ -120,7 +120,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} md={8} lg={6}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedPlan}
                                         options={planOptions}

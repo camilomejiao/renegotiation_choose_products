@@ -27,6 +27,7 @@ export const ToolbarDivider = styled(Divider)`
 export const ActionsSpace = styled(Space)`
   width: 100%;
   justify-content: flex-start;
+  flex-wrap: wrap;
 
   @media (min-width: 992px) {
     justify-content: flex-end;

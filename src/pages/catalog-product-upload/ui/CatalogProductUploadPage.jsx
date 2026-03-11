@@ -85,7 +85,7 @@ export const CatalogProductUploadPage = () => {
                     <Col span={24}>
                         <ToolbarCard bordered>
                             <Row gutter={[12, 12]}>
-                                <Col xs={24} sm={12} lg={6}>
+                                <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedConvocation}
                                         options={convocationOptions}
@@ -96,7 +96,7 @@ export const CatalogProductUploadPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} sm={12} lg={6}>
+                                <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
                                     <AppSelect
                                         value={selectedPlan}
                                         options={planOptions}
@@ -110,7 +110,7 @@ export const CatalogProductUploadPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} sm={12} lg={6}>
+                                <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
                                     <AppSearchInput
                                         placeholder="Buscar..."
                                         value={searchQuery}
@@ -118,7 +118,7 @@ export const CatalogProductUploadPage = () => {
                                     />
                                 </Col>
 
-                                <Col xs={24} sm={12} lg={6}>
+                                <Col xs={24} sm={12} md={24} lg={6} xl={6} xxl={6}>
                                     <ActionsSpace>
                                         <ActionButton icon={<ReloadOutlined/>} onClick={handleResetTable}>
                                             Reiniciar tabla

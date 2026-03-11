@@ -78,7 +78,7 @@ export const CatalogReportPage = () => {
           <Col span={24}>
             <ToolbarCard bordered>
               <Row gutter={[12, 12]}>
-                <Col xs={24} sm={12} lg={6}>
+                <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
                   <AppSelect
                     value={selectedConvocation}
                     options={convocationOptions}
@@ -89,7 +89,7 @@ export const CatalogReportPage = () => {
                   />
                 </Col>
 
-                <Col xs={24} sm={12} lg={6}>
+                <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
                   <AppSelect
                     value={selectedPlan}
                     options={planOptions}
@@ -103,7 +103,7 @@ export const CatalogReportPage = () => {
                   />
                 </Col>
 
-                <Col xs={24} sm={12} lg={8}>
+                <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
                   <AppAutocomplete
                     value={selectedSupplier}
                     options={supplierOptions}
@@ -115,7 +115,7 @@ export const CatalogReportPage = () => {
                   />
                 </Col>
 
-                <SearchButtonCol xs={24} sm={12} lg={4}>
+                <SearchButtonCol xs={24} sm={12} md={12} lg={4} xl={4} xxl={4}>
                   <SearchButton
                     icon={<SearchOutlined />}
                     onClick={loadReport}
@@ -129,7 +129,7 @@ export const CatalogReportPage = () => {
               <ToolbarDivider />
 
               <Row>
-                <Col xs={24} sm={12} lg={8}>
+                <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
                   <AppSearchInput
                     placeholder="Buscar en la tabla..."
                     value={searchQuery}

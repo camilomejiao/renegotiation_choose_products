@@ -38,6 +38,7 @@ export const TableCard = styled(Card)`
 export const ActionsSpace = styled(Space)`
   width: 100%;
   justify-content: flex-start;
+  flex-wrap: wrap;
 
   @media (min-width: 992px) {
     justify-content: flex-end;
@@ -54,6 +55,8 @@ export const ActionButton = styled(Button)`
 export const SaveSection = styled.div`
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 16px;
 `;
 

@@ -100,11 +100,11 @@ export const CatalogManagementPage = () => {
           <Col span={24}>
             <ToolbarCard bordered>
               <Row gutter={[12, 12]} align="middle" justify="space-between">
-                <Col xs={24} lg={10}>
+                <Col xs={24} sm={24} md={24} lg={10} xl={10} xxl={10}>
                   <CatalogSearchInput value={searchQuery} onChange={handleSearchChange} />
                 </Col>
 
-                <Col xs={24} lg={14}>
+                <Col xs={24} sm={24} md={24} lg={14} xl={14} xxl={14}>
                   <ActionsSpace>
                     <CreateCatalogItemButton onClick={handleCreateCatalogItem} />
                     <ExportCatalogReportButton onClick={handleExportReport} />

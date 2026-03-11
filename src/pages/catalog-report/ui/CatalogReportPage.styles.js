@@ -66,4 +66,9 @@ export const SearchButton = styled(Button)`
 export const SearchButtonCol = styled(Col)`
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+
+  @media (min-width: 992px) {
+    justify-content: flex-end;
+  }
 `;

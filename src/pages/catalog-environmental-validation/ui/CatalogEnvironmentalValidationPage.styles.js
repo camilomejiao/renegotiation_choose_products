@@ -45,6 +45,7 @@ export const ActionButton = styled(Button)`
 export const BottomActions = styled.div`
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 16px;
 `;
