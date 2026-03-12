@@ -16,13 +16,13 @@ import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { LogoutPage } from "../pages/logout";
 import { DashboardPage } from "../pages/dashboard";
+import { OrderReportPage } from "../pages/order-report";
 import { UserCreatePage } from "../pages/user-create";
 import { UserEditPage } from "../pages/user-edit";
 import { UserProfilePage } from "../pages/user-profile";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
-import { OrderReport } from "../components/layout/private/purchase_orders_module/order_report/OrderReport";
 import { Deliveries } from "../components/layout/private/deliveries_module/Deliveries";
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries_module/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
@@ -150,7 +150,7 @@ export const Routing = () => {
                             {/* Reportes */}
                             <Route path={ RouterEnum.Reports }  element={ <BeneficiariesManagement /> }  />
                             <Route path={ RouterEnum.CompanyReport }  element={ <CompanyReport /> }  />
-                            <Route path={ RouterEnum.OrderReport }  element={ <OrderReport /> }  />
+                            <Route path={ RouterEnum.OrderReport }  element={ <OrderReportPage /> }  />
                         </Route>
                     </Route>
 

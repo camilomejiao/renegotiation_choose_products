@@ -35,6 +35,14 @@ const variantStyles = {
     hoverBorder: "#93c5fd",
     hoverColor: "#0f172a",
   },
+  danger: {
+    background: "#ffffff",
+    border: "#dc2626",
+    color: "#dc2626",
+    hoverBackground: "#fef2f2",
+    hoverBorder: "#b91c1c",
+    hoverColor: "#b91c1c",
+  },
 };
 
 export const StyledAppButton = styled(Button)`
