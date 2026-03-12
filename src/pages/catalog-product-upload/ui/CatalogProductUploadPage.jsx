@@ -32,24 +32,35 @@ export const CatalogProductUploadPage = () => {
     const {
         loadingInitial,
         loadingPlans,
-        loadingTable,
         saving,
         convocationOptions,
         planOptions,
         selectedConvocation,
         selectedPlan,
-        rows,
+        unitOptions,
+        categoryOptions,
+        filteredRows,
         searchQuery,
         handleSelectedConvocation,
         handleSelectedPlan,
-        handleRowSelectionChange,
+        handleRowChange,
+        handleDeleteRow,
         handleSearchChange,
         handleResetTable,
         handleBack,
         handleSaveProducts,
     } = useCatalogProductUploadPage();
 
-    const columns = useMemo(() => getCatalogProductUploadColumns(), []);
+    const columns = useMemo(
+        () =>
+            getCatalogProductUploadColumns({
+                unitOptions,
+                categoryOptions,
+                onRowChange: handleRowChange,
+                onDelete: handleDeleteRow,
+            }),
+        [categoryOptions, handleDeleteRow, handleRowChange, unitOptions]
+    );
 
     const pageHeader = useMemo(
         () => ({
@@ -139,14 +150,13 @@ export const CatalogProductUploadPage = () => {
                                     rowKey="rowKey"
                                     columns={columns}
                                     columnWidthMode="fixed"
-                                    dataSource={rows}
-                                    loading={loadingInitial || loadingTable}
-                                    total={rows.length}
+                                    dataSource={filteredRows}
+                                    loading={loadingInitial}
+                                    total={filteredRows.length}
                                     showPagination
                                     pageSizeOptions={["100", "500", "1000"]}
                                     defaultPageSize="100"
-                                    enableRowSelection
-                                    onRowSelectionChange={handleRowSelectionChange}
+                                    enableRowSelection={false}
                                     showToolbar={false}
                                     showColumnSettings={false}
                                     showTableResize={false}

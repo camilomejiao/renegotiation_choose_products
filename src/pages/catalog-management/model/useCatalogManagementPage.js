@@ -51,7 +51,7 @@ export const useCatalogManagementPage = () => {
 
   const handleEditCatalogItem = useCallback(
     (id) => {
-      navigate(`/admin/edit-products-by-convocation/${id}`);
+      navigate(`/admin/product-upload?convocationId=${id}`);
     },
     [navigate]
   );
