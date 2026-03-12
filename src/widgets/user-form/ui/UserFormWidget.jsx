@@ -396,3 +396,5 @@ export const UserFormWidget = () => {
     </Page>
   );
 };
+
+export default UserFormWidget;

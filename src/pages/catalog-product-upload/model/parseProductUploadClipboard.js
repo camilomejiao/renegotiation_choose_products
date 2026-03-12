@@ -47,8 +47,8 @@ export const parseProductUploadClipboard = ({ clipboardText, unitOptions = [], c
 
   const parsedRows = rawRows.map((cells, index) => {
     const [rawId, rawCategory, rawName, rawUnit, rawPriceMin, rawPriceMax] = cells;
-
-    const idValue = rawId && rawId !== "-" ? rawId : `${Date.now()}-${index + 1}`;
+    const rowKey = `${Date.now()}-${index + 1}`;
+    const idValue = rawId && rawId !== "-" ? rawId : "";
 
     const categoryId = resolveSelectValue({
       options: categoryOptions,
@@ -62,7 +62,7 @@ export const parseProductUploadClipboard = ({ clipboardText, unitOptions = [], c
     });
 
     return {
-      rowKey: `${Date.now()}-${index + 1}`,
+      rowKey,
       id: idValue,
       category: categoryId,
       categoryLabel: resolveSelectLabel({

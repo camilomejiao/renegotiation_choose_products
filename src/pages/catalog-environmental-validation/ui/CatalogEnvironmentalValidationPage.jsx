@@ -41,6 +41,8 @@ export const CatalogEnvironmentalValidationPage = () => {
         rowCount,
         page,
         pageSize,
+        selectedRowKeys,
+        selectedRows,
         searchQuery,
         showApprovalModal,
         approvalAction,
@@ -147,6 +149,7 @@ export const CatalogEnvironmentalValidationPage = () => {
                                     rowKey="rowKey"
                                     columns={columns}
                                     dataSource={rows}
+                                    defaultSelectedRows={{ keys: selectedRowKeys, records: selectedRows }}
                                     loading={loadingTable}
                                     total={rowCount}
                                     currentPage={page + 1}

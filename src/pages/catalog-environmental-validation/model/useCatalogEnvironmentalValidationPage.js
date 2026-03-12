@@ -55,6 +55,7 @@ export const useCatalogEnvironmentalValidationPage = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [editedRowsMap, setEditedRowsMap] = useState({});
 
@@ -131,6 +132,7 @@ export const useCatalogEnvironmentalValidationPage = () => {
     setRows([]);
     setRowCount(0);
     setPage(0);
+    setSelectedRowKeys([]);
     setSelectedRows([]);
     setEditedRowsMap({});
 
@@ -153,6 +155,7 @@ export const useCatalogEnvironmentalValidationPage = () => {
   const handleSelectedPlan = useCallback((option) => {
     setSelectedPlan(option ?? null);
     setPage(0);
+    setSelectedRowKeys([]);
     setSelectedRows([]);
     setEditedRowsMap({});
     setSearchQuery("");
@@ -167,10 +170,12 @@ export const useCatalogEnvironmentalValidationPage = () => {
   const handleTablePageChange = useCallback((nextPage, nextPageSize) => {
     setPage((nextPage || 1) - 1);
     setPageSize(nextPageSize || PAGE_SIZE);
+    setSelectedRowKeys([]);
     setSelectedRows([]);
   }, []);
 
   const handleRowSelectionChange = useCallback((_keys, records) => {
+    setSelectedRowKeys(_keys || []);
     setSelectedRows(records || []);
   }, []);
 
@@ -237,6 +242,7 @@ export const useCatalogEnvironmentalValidationPage = () => {
       await processBatches(ids, estado, approvalComment);
       showAlert("Bien hecho!", `Producto ${label} exitosamente!`);
       closeApprovalModal();
+      setSelectedRowKeys([]);
       setSelectedRows([]);
       await loadProducts({
         nextPage: page,
@@ -354,6 +360,8 @@ export const useCatalogEnvironmentalValidationPage = () => {
     rowCount,
     page,
     pageSize,
+    selectedRowKeys,
+    selectedRows,
     searchQuery,
     showApprovalModal,
     approvalAction,
