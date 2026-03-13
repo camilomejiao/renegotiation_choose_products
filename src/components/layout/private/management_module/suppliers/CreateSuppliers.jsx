@@ -1,4 +1,4 @@
-﻿import {useNavigate, useOutletContext, useParams} from "react-router-dom";
+﻿import {Navigate, useNavigate, useOutletContext, useParams} from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
 import {Autocomplete, Checkbox, CircularProgress, FormControlLabel, Switch, TextField} from "@mui/material";
@@ -23,6 +23,7 @@ import { supplierServices } from "../../../../../helpers/services/SupplierServic
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { filesServices } from "../../../../../helpers/services/FilesServices";
 import { ConfirmationModal } from "../../../shared/Modals/ConfirmationModal";
+import { hasForcedPasswordChange } from "../../../../../shared/auth/lib/authSession";
 
 
 //
@@ -90,6 +91,8 @@ export const CreateSuppliers = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEdit = Boolean(id);
+    const mustChangePassword = hasForcedPasswordChange(userAuth);
+    const shouldBlockSupplierForm = userAuth?.rol_id === RolesEnum.SUPPLIER && mustChangePassword;
 
     const [loading, setLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
@@ -502,12 +505,20 @@ export const CreateSuppliers = () => {
     };
 
     useEffect(() => {
+        if (shouldBlockSupplierForm) {
+            return;
+        }
+
         loadAcountsType();
         loadBanks();
         if (id) {
             fetchSupplierData(id);
         }
-    }, []);
+    }, [id, shouldBlockSupplierForm]);
+
+    if (shouldBlockSupplierForm) {
+        return <Navigate to="/admin/edit-user" replace state={{ from: `/admin/edit-suppliers/${id}` }} />;
+    }
 
     return(
         <>
@@ -946,5 +957,4 @@ export const CreateSuppliers = () => {
         </>
     )
 }
-
 
