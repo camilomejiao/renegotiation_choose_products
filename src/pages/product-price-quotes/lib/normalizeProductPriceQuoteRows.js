@@ -78,7 +78,7 @@ export const normalizeProductPriceQuoteRows = (payload) => {
   const rows = payload?.data?.productos ?? [];
 
   return rows.map((row) => {
-    const maximoReintentos = row?.maximo_reintentos === true;
+    const maximoReintentos = row?.producto_aprobaciones[0]?.maximo_reintentos === true;
 
     return {
       key: row?.id,
