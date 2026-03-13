@@ -2,9 +2,14 @@ import { ObservationText, StatusTag, WrappedText } from "./ReviewTableCells.styl
 
 const STATUS_COLORS = {
   Aprobado: "success",
+  APROBADO: "success",
   Denegado: "error",
+  DENEGADO: "error",
   Pendiente: "warning",
+  PENDIENTE: "warning",
+  RECHAZADO: "error",
   "Sin revisar": "default",
+  "SIN REVISAR": "default",
 };
 
 const currencyFormatter = new Intl.NumberFormat("es-CO", {

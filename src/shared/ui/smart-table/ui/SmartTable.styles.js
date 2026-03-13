@@ -16,6 +16,10 @@ export const LeftToolbar = styled(Flex)`
   flex: 1;
 `;
 
+export const RightToolbar = styled(Flex)`
+  margin-left: auto;
+`;
+
 export const ToolbarDivider = styled(Divider)`
   margin: 0;
 `;

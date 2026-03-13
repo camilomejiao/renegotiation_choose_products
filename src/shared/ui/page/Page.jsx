@@ -8,11 +8,13 @@ export const Page = ({
   showPageHeader = false,
   header = {},
   content,
+  footer = null,
   children,
   minHeight = "calc(100vh - 290px)",
   contentPadding = "24px",
   headerPaddingTop = "36px",
   headerMarginBottom = "12px",
+  footerPadding = "0 24px 24px",
 }) => {
   const { appName = "", title, subTitle, breadcrumbs = [], extra } = header;
 
@@ -49,6 +51,7 @@ export const Page = ({
       )}
 
       <PageContent $padding={contentPadding}>{resolvedContent}</PageContent>
+      {footer ? <PageFooter $padding={footerPadding}>{footer}</PageFooter> : null}
     </PageRoot>
   );
 };
@@ -92,5 +95,14 @@ const PageContent = styled.main`
   @media (max-width: 768px) {
     padding: 16px 12px;
     gap: var(--space-5, 20px);
+  }
+`;
+
+const PageFooter = styled.footer`
+  padding: ${({ $padding }) => $padding};
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 0 12px 16px;
   }
 `;

@@ -482,6 +482,16 @@ When refactoring or creating UI:
 - avoid inline style objects except for trivial one-off cases that are not part of the component design system
 
 ---
+# 16.2 Private Layout Refactor Rule
+
+When a private admin view is refactored from legacy components to `src/pages/*`:
+
+- remove the legacy view component once the new page is wired
+- remove legacy CSS that existed only for that old view
+- register the route in `src/components/layout/private/config/layoutRoutes.jsx` with `contentMode: "fluid"` when it should no longer use the legacy `.page-wrapper`
+- validate that the refactored page is rendered outside the legacy private layout container before considering the task complete
+
+---
 # 17. Commit Rule Integration
 
 When the user asks to create a commit, use the local commit agent first:

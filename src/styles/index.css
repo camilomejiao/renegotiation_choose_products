@@ -2551,28 +2551,6 @@ body,
   padding: 50px 0;
 }
 
-/* =========================================================
-   Private: Product Price Quotes By Supplier
-   Used by: src/components/layout/private/products_module/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier.jsx
-   Classes: .form-switch.form-switch-lg .form-check-input,
-            .form-switch.form-switch-lg .form-check-label
-   ========================================================= */
-.form-switch.form-switch-lg .form-check-input {
-  transform: scale(1.9);
-  transform-origin: center;
-  margin-top: 5px;
-}
-
-.form-switch.form-switch-lg .form-check-label {
-  font-size: 18px;
-  margin-right: 25px;
-}
-
-.form-switch.form-switch-lg .form-check-input:checked {
-  background-color: #40a581;
-  border-color: #40a581;
-}
-
 .dashboard-title {
   font-size: 48px;
   font-weight: 700;
