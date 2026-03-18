@@ -33,11 +33,11 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "N° Entrega", width: 100 },
-        { field: "approval_date", headerName: "Fecha Aprobación", width: 80 },
+        { field: "id", headerName: "NÂ° Entrega", width: 100 },
+        { field: "approval_date", headerName: "Fecha AprobaciÃ³n", width: 80 },
         { field: "cub_id", headerName: "CUB", width: 80 },
         { field: "name", headerName: "Beneficiario", width: 350 },
-        { field: "identification", headerName: "Identificación", width: 100 },
+        { field: "identification", headerName: "IdentificaciÃ³n", width: 100 },
         { field: "supplier_name", headerName: "Proveedor", width: 350 },
         { field: "supplier_nit", headerName: "Nit", width: 150 },
     ];
@@ -88,12 +88,12 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
-        if (!canSearch) return; // no dispares la búsqueda si 1–3 chars
+        if (!canSearch) return; // no dispares la busqueda si 1-3 caracteres
 
-        // opcional: resetear página si usas paginación
+        // opcional: resetear pÃ¡gina si usas paginaciÃ³n
         setPage(0);
 
-        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
+        // Si quieres mantener un pequeÃ±o debounce para evitar doble click/enter rÃ¡pidos:
         searchTimerRef.current = setTimeout(() => {
             getDeliveryList(1, pageSize, query);
         }, 150);
@@ -110,7 +110,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaña:
+                // Si es PDF y quieres abrir en otra pestaÃ±a:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
