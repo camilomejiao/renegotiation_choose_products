@@ -1,11 +1,12 @@
-﻿
+﻿import { clearAuthSession, getAccessToken } from "../../shared/auth/lib/authSession";
+
 class AuthTokenService {
     // Función que maneja el fetch con autenticación
     async fetchWithAuth(url, options = {}) {
-        const token = localStorage.getItem('token');
+        const token = getAccessToken();
 
         if (!token) {
-            localStorage.clear();
+            clearAuthSession();
             window.location.href = '/login';
             return {status: 401, message: "No token available" };
         }
@@ -23,7 +24,7 @@ class AuthTokenService {
 
         if (response.status === 401) {
             // Limpiar el token y redirigir al login si hay un error de autenticación
-            localStorage.clear();
+            clearAuthSession();
             window.location.href = '/login';
             return {status: 401, message: "No token available" };
         }
@@ -78,4 +79,3 @@ class AuthTokenService {
 }
 
 export const authTokenService = new AuthTokenService();
-

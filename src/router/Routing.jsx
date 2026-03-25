@@ -1,11 +1,9 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-/* Components */
-import { Conex } from "../components/layout/public/conex/Conex";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 //Public
 import { PublicLayout } from "../components/layout/public/PublicLayout.jsx";
-import { Login } from "../components/layout/public/auth/login/Login.jsx";
+import { LoginPage } from "../pages/login";
+import { ConexPage } from "../pages/conex";
 import { SupplierRegistration } from "../components/layout/public/suppliers/SupplierRegistration";
 
 //Enum
@@ -16,8 +14,11 @@ import { PrivateLayout } from "../components/layout/private/PrivateLayout.jsx";
 import { SearchUser } from "../components/layout/private/search_user_module/SearchUser.jsx";
 import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
-import { Logout } from "../components/layout/public/auth/logout/Logout";
-import { Dashboard } from "../components/layout/private/dashboard/Dashboard";
+import { LogoutPage } from "../pages/logout";
+import { DashboardPage } from "../pages/dashboard";
+import { UserCreatePage } from "../pages/user-create";
+import { UserEditPage } from "../pages/user-edit";
+import { UserProfilePage } from "../pages/user-profile";
 import { CreateOrder } from "../components/layout/private/purchase_orders_module/create_order/CreateOrder";
 import { BeneficiariesManagement } from "../components/layout/private/beneficiaries_management_module/BeneficiariesManagement";
 import { CompanyReport } from "../components/layout/private/reports_module/report_company/CompanyReport";
@@ -26,8 +27,7 @@ import { Deliveries } from "../components/layout/private/deliveries_module/Deliv
 import { SearchUserForDeliveries } from "../components/layout/private/deliveries_module/SearchUserForDeliveries";
 import { EditDeliveryOrder } from "../components/layout/private/deliveries_module/EditDeliveryOrder";
 import { ValidationSupervision } from "../components/layout/private/products_module/validation_supervision/ValidationSupervision";
-import { MenuTab } from "../components/layout/private/management_module/MenuTab";
-import { CreateUser } from "../components/layout/private/management_module/user/CreateUser";
+import { AdminManagementPage } from "../pages/admin-management";
 import { SearchUserForRenegociation } from "../components/layout/private/renegociation_module/SearchUserForRenegociation";
 import { Renegociation } from "../components/layout/private/renegociation_module/Renegociation";
 import { PaymentsMenu } from "../components/layout/private/payments_module/dsci-review/payments-menu/PaymentsMenu";
@@ -42,17 +42,13 @@ import {
     CollectionAccountDetails
 } from "../components/layout/private/payments_module/fiduciary/collection-account-details/CollectionAccountDetails";
 import { ProductUploadTechnical } from "../components/layout/private/products_module/validation_technical/product_upload_technical/ProductUploadTechnical";
-import { ProductPriceQuotesBySupplier } from "../components/layout/private/products_module/validation_supplier/product_price_quotes_by_supplier/ProductPriceQuotesBySupplier";
-import {
-    ListProductsByConvocation
-} from "../components/layout/private/products_module/validation_technical/list_products_by_convocation/ListProductsByConvocation";
+import { ListProductsByConvocationPage } from "../pages/catalog-management";
+import { EditProductsByConvocation } from "../pages/catalog-edit-products-by-convocation";
+import { ProductPriceQuotesPage } from "../pages/product-price-quotes";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
-import {
-    EditProductsByConvocation
-} from "../components/layout/private/products_module/validation_technical/edit_products_by_convocation/EditProductsByConvocation";
-import { ReportByConvocation } from "../components/layout/private/products_module/report/ReportByConvocation";
+import { ReportByConvocation } from "../pages/catalog-report";
 import { CreateSuppliers } from "../components/layout/private/management_module/suppliers/CreateSuppliers";
 import { ConvocationList } from "../components/layout/private/management_module/convocation/ConvocationList";
 import { ConvocationMenuTab } from "../components/layout/private/management_module/convocation/ConvocationMenuTab";
@@ -80,11 +76,11 @@ export const Routing = () => {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route path={RouterEnum.Conex } element={ <Conex /> } />
+                    <Route path={RouterEnum.Conex } element={ <ConexPage /> } />
 
                     <Route path="/" element={ <PublicLayout /> }>
-                        <Route index element={ <Login /> } />
-                        <Route path={ RouterEnum.Login } element={ <Login /> } />
+                        <Route index element={ <LoginPage /> } />
+                        <Route path={ RouterEnum.Login } element={ <LoginPage /> } />
                         <Route path={ RouterEnum.SupplierRegistration } element={ <SupplierRegistration /> } />
                     </Route>
 
@@ -92,12 +88,12 @@ export const Routing = () => {
 
                         {/* WHITELIST, lo que no necesita validación */}
                         <Route path={RouterEnum.EditSuppliers} element={<CreateSuppliers />} />
-                        <Route path={ RouterEnum.Logout } element={ <Logout /> }         />
+                        <Route path={ RouterEnum.Logout } element={ <LogoutPage /> }         />
 
                         {/* Guard */}
                         <Route element={<SupplierDocsGuard />}>
                             {/* Dashboard */}
-                            <Route index element={ <Dashboard /> } />
+                            <Route index element={ <DashboardPage /> } />
 
                             {/* Buscar usuario */}
                             <Route path={ RouterEnum.SearchUser }  element={ <SearchUser /> }  />
@@ -117,10 +113,10 @@ export const Routing = () => {
                             <Route path={ RouterEnum.DeliveryInformationAndTracking } element={ <DeliveriesInformation /> }  />
 
                             {/* Productos */}
-                            <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocation /> }  />
+                            <Route path={ RouterEnum.ListProductsByConvocation }  element={ <ListProductsByConvocationPage /> }  />
                             <Route path={ RouterEnum.ProductUpload }  element={ <ProductUploadTechnical /> }  />
                             <Route path={ RouterEnum.ProductsEnviromental }  element={ <ValidationEnvironmental /> }  />
-                            <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesBySupplier /> }  />
+                            <Route path={ RouterEnum.ProductPriceQuotes }  element={ <ProductPriceQuotesPage /> }  />
                             <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
                             <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
                             <Route path={ RouterEnum.ReportByConvocation }  element={ <ReportByConvocation /> }  />
@@ -142,9 +138,10 @@ export const Routing = () => {
                             <Route path={ RouterEnum.ConciliationDetail }  element={ <ConciliationDetail /> }  />
 
                             {/* Management */}
-                            <Route path={ RouterEnum.Management } element={ <MenuTab /> }  />
-                            <Route path={ RouterEnum.CreateUsers }  element={ <CreateUser /> }  />
-                            <Route path={ RouterEnum.EditUsers }  element={ <CreateUser /> }  />
+                            <Route path={ RouterEnum.Management } element={ <AdminManagementPage /> }  />
+                            <Route path={ RouterEnum.CreateUsers }  element={ <UserCreatePage /> }  />
+                            <Route path={ RouterEnum.EditUsers }  element={ <UserEditPage /> }  />
+                            <Route path={ RouterEnum.EditUser }  element={ <UserProfilePage /> }  />
                             <Route path={ RouterEnum.CreateSuppliers }  element={ <CreateSuppliers /> }  />
                             <Route path={ RouterEnum.ConvocationList }  element={ <ConvocationList /> }  />
                             <Route path={ RouterEnum.CreateConvocation }  element={ <ConvocationMenuTab /> }  />
@@ -163,4 +160,3 @@ export const Routing = () => {
         </BrowserRouter>
     )
 }
-

@@ -1,5 +1,6 @@
 ﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
+import { decodeAccessToken } from "../../shared/auth/lib/authSession";
 
 /**
  * Servicio para la gestión de proveedores (usuarios tipo proveedor).
@@ -95,16 +96,22 @@ class SupplierServices {
     // GESTIÓN DE LOCALSTORAGE
     // =============================
 
+    getDecodedToken() {
+        return decodeAccessToken();
+    }
+
     /**
      * Obtener el ID del proveedor almacenado en localStorage.
      * @returns {string|null} - ID del proveedor.
      */
     getSupplierId() {
-        return localStorage.getItem("id");
+        const tokenPayload = this.getDecodedToken();
+        return tokenPayload?.proveedor ?? tokenPayload?.user_id ?? null;
     }
 
     getIdActiveConvocationOfSupplier() {
-        return localStorage.getItem("jornada_id");
+        const tokenPayload = this.getDecodedToken();
+        return tokenPayload?.jornada_id ?? null;
     }
 
 
@@ -127,5 +134,3 @@ class SupplierServices {
 }
 
 export const supplierServices = new SupplierServices();
-
-

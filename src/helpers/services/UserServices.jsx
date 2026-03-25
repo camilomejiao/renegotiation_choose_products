@@ -119,6 +119,14 @@ class UserServices {
         });
     }
 
+    /**
+     *
+     */
+    deleteUser(id) {
+        const url = this.buildUrl(`usuarios/${id}/eliminar/`);
+        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+    }
+
 }
 
 export const userServices = new UserServices();

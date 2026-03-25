@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 
 class AlertComponent {
     static success(title, message) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             text: message,
             icon: "success",
@@ -12,7 +12,7 @@ class AlertComponent {
     }
 
     static error(title, message) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             text: message,
             icon: "error",
@@ -22,7 +22,7 @@ class AlertComponent {
     }
 
     static Error(title, html) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             html: html,
             icon: "error",
@@ -32,7 +32,7 @@ class AlertComponent {
     }
 
     static info(title, message) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             text: message,
             icon: "info",
@@ -42,7 +42,7 @@ class AlertComponent {
     }
 
     static warning(title, message) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             text: message,
             icon: "warning",
