@@ -1,0 +1,7 @@
+[agents.refactor]
+description = "refactor: refactor."
+config_file = "agents/refactor.md"
+
+[agents.commit]
+description = "commit: conventional commit rules and workflow."
+config_file = "agents/commit.md"

@@ -89,10 +89,10 @@ export const SearchPaymentRequests = () => {
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return;
-        //opcional: resetear p�gina si usas paginaci�n
+        //opcional: resetear página si usas paginación
         setPage(0);
 
-        //Si quieres mantener un peque�o debounce para evitar doble click/enter r�pidos:
+        //Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
             getAccountOfSuppliers(1, pageSize, query, '');
         }, 150);
@@ -117,7 +117,7 @@ export const SearchPaymentRequests = () => {
                 titleHeader={'Fiduciara'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aqu� podr�s ver el listado de cuentas de cobro.'}
+                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
                 backgroundInformationColor={'#40A581'}
             />
 

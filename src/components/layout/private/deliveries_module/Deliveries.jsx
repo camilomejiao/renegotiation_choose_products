@@ -26,6 +26,7 @@ import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 //Util
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { escapeHtml } from "../../../../shared/lib/escapeHtml";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -902,15 +903,6 @@ const renderFeCell = (params) => {
             state: row?.estado,
         }));
     }
-
-    const escapeHtml = (value) => (
-        String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;")
-    );
 
     const buildCreateDeliveryErrorHtml = (errorMessage, productNames) => {
         const safeMessage = escapeHtml(errorMessage || "Hubo un error al intentar crear la entrega.");

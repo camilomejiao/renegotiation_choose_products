@@ -1,6 +1,5 @@
 ﻿import { GlobalConnex } from "../GlobalConnex.jsx";
-import { jwtDecode } from "jwt-decode";
-import {RolesEnum} from "../GlobalEnum";
+import { decodeAccessToken, saveAuthTokens } from "../../shared/auth/lib/authSession";
 
 class AuthService {
     constructor() {
@@ -85,12 +84,7 @@ class AuthService {
      * @returns {object} - Datos decodificados del token.
      */
     decodeToken(token) {
-        try {
-            return jwtDecode(token);
-        } catch (error) {
-            console.error("Error al decodificar el token:", error);
-            return null;
-        }
+        return decodeAccessToken(token);
     }
 
     /**
@@ -99,16 +93,11 @@ class AuthService {
      * @param {object} decodeToken - Datos decodificados del token.
      */
     saveToLocalStorage(tokens, decodeToken) {
-        localStorage.setItem("id", decodeToken?.proveedor || null);
-        localStorage.setItem("token", tokens?.access || "");
-        localStorage.setItem("refresh", tokens?.refresh || "");
-        localStorage.setItem("user", JSON.stringify(decodeToken || {}));
-        localStorage.setItem("rol_id", decodeToken?.rol || "");
-        if(decodeToken?.rol === RolesEnum.SUPPLIER) {
-            localStorage.setItem("jornada_id", decodeToken?.jornada_id || "");
-        }
+        saveAuthTokens({
+            accessToken: tokens?.access,
+            refreshToken: tokens?.refresh,
+        });
     }
 }
 
 export const authService = new AuthService();
-

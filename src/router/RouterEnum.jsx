@@ -42,6 +42,7 @@ export const RouterEnum = {
     //Managment Users
     CreateUsers: 'create-users',
     EditUsers: 'edit-users/:id',
+    EditUser: 'edit-user',
     //Managment Suppliers
     CreateSuppliers: 'create-suppliers',
     EditSuppliers: 'edit-suppliers/:id',
