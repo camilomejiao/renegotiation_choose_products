@@ -1,12 +1,15 @@
-import { FileTextOutlined } from "@ant-design/icons";
+import { EditOutlined, FileTextOutlined, PlusOutlined } from "@ant-design/icons";
+import { Tooltip } from "antd";
 
 export const getCatalogManagementColumns = ({
   actionColors,
   onOpenSuppliers,
+  onAddProducts,
   onEditCatalogItem,
   CatalogStatusPill,
-  EditCatalogItemButton,
   SuppliersViewButton,
+  CatalogActionIconButton,
+  RowActions,
 }) => [
   { title: "ID", dataIndex: "id", width: 80, sorter: false, align: "center" },
   { title: "FECHA", dataIndex: "date", width: 140, sorter: false, align: "center" },
@@ -58,10 +61,35 @@ export const getCatalogManagementColumns = ({
   {
     title: "ACCIONES",
     dataIndex: "actions",
-    width: 130,
+    width: 240,
     align: "center",
     render: (_value, record) => (
-      <EditCatalogItemButton onClick={() => onEditCatalogItem(record.id)} />
+      <RowActions size={8}>
+        <Tooltip title="Adicionar producto al catalogo">
+          <CatalogActionIconButton
+            icon={<PlusOutlined />}
+            onClick={() => onAddProducts(record.id)}
+            $borderColor={actionColors.actionBlueBg}
+            $textColor={actionColors.actionBlueBg}
+            $hoverBg={actionColors.actionBlueBg}
+            $hoverText={actionColors.actionBlueText}
+          >
+            Adicionar
+          </CatalogActionIconButton>
+        </Tooltip>
+        <Tooltip title="Editar Catalogo">
+          <CatalogActionIconButton
+            icon={<EditOutlined />}
+            onClick={() => onEditCatalogItem(record.id)}
+            $borderColor={actionColors.actionWarningBorder}
+            $textColor={actionColors.actionWarningText}
+            $hoverBg={actionColors.actionWarningHoverBg}
+            $hoverText={actionColors.actionWarningHoverText}
+          >
+            Editar
+          </CatalogActionIconButton>
+        </Tooltip>
+      </RowActions>
     ),
   },
 ];

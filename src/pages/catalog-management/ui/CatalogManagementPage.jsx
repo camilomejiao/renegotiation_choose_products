@@ -7,7 +7,6 @@ import { HeaderImage } from "../../../components/layout/shared/header_image/Head
 import { CatalogStatusPill, isCatalogItemClosed, isCatalogItemOpen } from "../../../entities/catalog-item";
 import { CatalogSearchInput } from "../../../features/catalog-search";
 import { CreateCatalogItemButton } from "../../../features/create-catalog-item";
-import { EditCatalogItemButton } from "../../../features/edit-catalog-item";
 import { ExportCatalogReportButton } from "../../../features/export-catalog-report";
 import { Page } from "../../../shared/ui/page";
 import { SmartTable } from "../../../shared/ui/smart-table";
@@ -23,6 +22,8 @@ import {
   SmartTableCard,
   StyledDivider,
   SuppliersViewButton,
+  CatalogActionIconButton,
+  RowActions,
   ToolbarCard,
   ToolbarDivider,
 } from "./CatalogManagementPage.styles";
@@ -38,6 +39,7 @@ export const CatalogManagementPage = () => {
     handleSearchChange,
     handleCreateCatalogItem,
     handleExportReport,
+    handleAddProducts,
     handleEditCatalogItem,
     openSuppliersModal,
     closeSuppliersModal,
@@ -52,12 +54,14 @@ export const CatalogManagementPage = () => {
       getCatalogManagementColumns({
         actionColors,
         onOpenSuppliers: openSuppliersModal,
+        onAddProducts: handleAddProducts,
         onEditCatalogItem: handleEditCatalogItem,
         CatalogStatusPill,
-        EditCatalogItemButton,
         SuppliersViewButton,
+        CatalogActionIconButton,
+        RowActions,
       }),
-    [actionColors, handleEditCatalogItem, openSuppliersModal]
+    [actionColors, handleAddProducts, handleEditCatalogItem, openSuppliersModal]
   );
 
   const pageHeader = useMemo(
