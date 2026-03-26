@@ -75,22 +75,7 @@ export const getProductPriceQuotesColumns = ({ onRowChange }) => [
       />
     ),
   },
-  {
-    title: "PRECIO MIN",
-    dataIndex: "price_min",
-    key: "price_min",
-    width: 140,
-    align: "right",
-    render: (value) => <CurrencyCell value={value} />,
-  },
-  {
-    title: "PRECIO MAX",
-    dataIndex: "price_max",
-    key: "price_max",
-    width: 140,
-    align: "right",
-    render: (value) => <CurrencyCell value={value} />,
-  },
+
   {
     title: "VALOR",
     dataIndex: "price",

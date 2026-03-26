@@ -1036,13 +1036,19 @@ const renderFeCell = (params) => {
 
         try {
             setLoading(true);
-            const { status } = await deliveriesServices.approveDelivery(deliveryId, payload);
+            const { status, data } = await deliveriesServices.approveDelivery(deliveryId, payload);
 
             if (status === ResponseStatusEnum.OK) {
                 await getListDeliveriesToUser(params.id);
                 showAlert("Bien hecho!", successMessage);
                 handleClose();
                 return true;
+            }
+
+            if (status !== ResponseStatusEnum.OK && data?.error) {
+                showCreateDeliveryError(data?.error, data?.productos_alterados);
+                handleClose();
+                return false;
             }
 
             showError("Error", "No se pudo procesar la solicitud.");
