@@ -1,8 +1,8 @@
-﻿/* Estilos específicos para componentes de la aplicación */
+/* Estilos específicos para componentes de la aplicación */
 
 /* Header gubernamental */
 .gov-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #99abe6 100%);
+  background: linear-gradient(135deg, #99abe6 0%, #1e3a8a 100%);
   color: white;
   padding: 0 24px;
   display: flex;
@@ -49,6 +49,155 @@
   font-size: 14px;
 }
 
+.gov-header {
+  position: relative;
+  z-index: 1100;
+}
+
+.header-left {
+  min-width: 64px;
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.header-right {
+  min-width: 160px;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.header-right svg {
+  font-size: 20px;
+}
+
+.header-right span {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.user-menu-trigger:hover,
+.user-menu-trigger:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  outline: none;
+}
+
+.user-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+  padding: 6px;
+  min-width: 180px;
+  z-index: 1300;
+}
+
+.user-menu-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-menu-item:hover,
+.user-menu-item:focus-visible {
+  background: #e2e8f0;
+  outline: none;
+}
+
+.sidebar-brand {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 80px;
+  width: var(--sidebar-w);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #99abe6 0%, #1e3a8a 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 1250;
+}
+
+.gov-sidebar:not(.open) .sidebar-brand {
+  width: var(--sidebar-w-collapsed);
+}
+
+.sidebar-brand__text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff;
+}
+
+.sidebar-toggle-row {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 20px;
+}
+
+.sidebar-toggle-btn {
+  justify-content: center;
+  gap: 10px;
+}
+
+@media (max-width: 992px) {
+  .header-center {
+    pointer-events: auto;
+  }
+
+  .header-right {
+    min-width: 120px;
+  }
+
+  .sidebar-brand {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 14px 20px;
+    font-size: 14px;
+    background: transparent;
+    justify-content: center;
+  }
+}
+
 /* Sidebar gubernamental */
 .gov-sidebar {
   background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
@@ -63,6 +212,7 @@
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease, transform 0.3s ease;
+  z-index: 1200;
 }
 
 .gov-sidebar:not(.open) {

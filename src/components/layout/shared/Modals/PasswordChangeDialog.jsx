@@ -1,107 +1,119 @@
-﻿import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Typography } from "antd";
+import { AppInput } from "../../../../shared/ui/input";
+import { Modal } from "../../../../shared/ui/modal";
+import { AppButton } from "../../../../shared/ui/button";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    IconButton,
-    InputAdornment,
-    Button,
-} from "@mui/material";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+  PasswordField,
+  PasswordFieldsStack,
+  PasswordModalFooter,
+} from "./PasswordChangeDialog.styles";
 
-export const PasswordChangeDialog = ({open, onClose, onSave, minLength = 8}) => {
-    const [pwd, setPwd] = useState("");
-    const [confirm, setConfirm] = useState("");
-    const [showPwd, setShowPwd] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [errors, setErrors] = useState({ pwd: "", confirm: "" });
+const { Text } = Typography;
 
-    useEffect(() => {
-        if (open) {
-            setPwd("");
-            setConfirm("");
-            setErrors({ pwd: "", confirm: "" });
-            setShowPwd(false);
-            setShowConfirm(false);
-        }
-    }, [open]);
+export const PasswordChangeDialog = ({
+  open,
+  onClose,
+  onSave,
+  loading = false,
+  minLength = 8,
+}) => {
+  const [pwd, setPwd] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [errors, setErrors] = useState({ pwd: "", confirm: "" });
 
-    const validate = () => {
-        const e = { pwd: "", confirm: "" };
-        if (!pwd) e.pwd = "La contraseña es requerida";
-        else if (pwd.length < minLength) e.pwd = `Mínimo ${minLength} caracteres`;
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
 
-        if (!confirm) e.confirm = "Confirma la contraseña";
-        else if (confirm !== pwd) e.confirm = "Las contraseñas no coinciden";
+    setPwd("");
+    setConfirm("");
+    setErrors({ pwd: "", confirm: "" });
+  }, [open]);
 
-        setErrors(e);
-        return !e.pwd && !e.confirm;
-    };
+  const isSubmitDisabled = useMemo(() => {
+    return !pwd || !confirm || pwd !== confirm || pwd.length < minLength;
+  }, [confirm, minLength, pwd]);
 
-    const handleSave = () => {
-        if (!validate()) return;
-        onSave(pwd);
-    };
+  const validate = () => {
+    const nextErrors = { pwd: "", confirm: "" };
 
-    return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-            <DialogTitle>Cambiar contraseña</DialogTitle>
+    if (!pwd) {
+      nextErrors.pwd = "La contraseña es requerida";
+    } else if (pwd.length < minLength) {
+      nextErrors.pwd = `Mínimo ${minLength} caracteres`;
+    }
 
-            <DialogContent dividers>
-                <TextField
-                    margin="dense"
-                    label="Nueva contraseña"
-                    type={showPwd ? "text" : "password"}
-                    value={pwd}
-                    onChange={(e) => setPwd(e.target.value)}
-                    fullWidth
-                    error={Boolean(errors.pwd)}
-                    helperText={errors.pwd}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPwd((s) => !s)} edge="end">
-                                    {showPwd ? <FaEyeSlash /> : <FaEye />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+    if (!confirm) {
+      nextErrors.confirm = "Confirma la contraseña";
+    } else if (confirm !== pwd) {
+      nextErrors.confirm = "Las contraseñas no coinciden";
+    }
 
-                <TextField
-                    margin="dense"
-                    label="Confirmar contraseña"
-                    type={showConfirm ? "text" : "password"}
-                    value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                    fullWidth
-                    error={Boolean(errors.confirm)}
-                    helperText={errors.confirm}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowConfirm((s) => !s)} edge="end">
-                                    {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-            </DialogContent>
+    setErrors(nextErrors);
+    return !nextErrors.pwd && !nextErrors.confirm;
+  };
 
-            <DialogActions>
-                <Button onClick={onClose} className="btn-action-back">Cancelar</Button>
-                <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    disabled={!pwd || !confirm || pwd !== confirm || pwd.length < minLength}
-                >
-                    Guardar
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-}
+  const handleSave = async () => {
+    if (!validate()) {
+      return;
+    }
 
+    await onSave?.(pwd);
+  };
+
+  return (
+    <Modal
+      title="Cambiar contraseña"
+      subTitle="La nueva contraseña se aplicará cuando confirmes esta operación."
+      isOpen={open}
+      onCloseModal={onClose}
+      centered
+      destroyOnClose
+      footer={(
+        <PasswordModalFooter>
+          <AppButton variant="secondary" onClick={onClose} disabled={loading}>
+            Cancelar
+          </AppButton>
+          <AppButton
+            variant="primary"
+            onClick={handleSave}
+            disabled={isSubmitDisabled}
+            loading={loading}
+          >
+            Guardar contraseña
+          </AppButton>
+        </PasswordModalFooter>
+      )}
+    >
+      <PasswordFieldsStack>
+        <Text type="secondary">
+          Debe contener al menos {minLength} caracteres.
+        </Text>
+
+        <PasswordField>
+          <AppInput
+            type="password"
+            value={pwd}
+            onChange={(event) => setPwd(event.target.value)}
+            placeholder="Nueva contraseña"
+            status={errors.pwd ? "error" : undefined}
+          />
+          {errors.pwd && <Text type="danger">{errors.pwd}</Text>}
+        </PasswordField>
+
+        <PasswordField>
+          <AppInput
+            type="password"
+            value={confirm}
+            onChange={(event) => setConfirm(event.target.value)}
+            placeholder="Confirmar contraseña"
+            status={errors.confirm ? "error" : undefined}
+          />
+          {errors.confirm && <Text type="danger">{errors.confirm}</Text>}
+        </PasswordField>
+      </PasswordFieldsStack>
+    </Modal>
+  );
+};

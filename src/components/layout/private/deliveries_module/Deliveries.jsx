@@ -26,6 +26,7 @@ import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
 
 //Util
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
+import { escapeHtml } from "../../../../shared/lib/escapeHtml";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -903,15 +904,6 @@ const renderFeCell = (params) => {
         }));
     }
 
-    const escapeHtml = (value) => (
-        String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;")
-    );
-
     const buildCreateDeliveryErrorHtml = (errorMessage, productNames) => {
         const safeMessage = escapeHtml(errorMessage || "Hubo un error al intentar crear la entrega.");
         if (!productNames?.length) {
@@ -1044,13 +1036,19 @@ const renderFeCell = (params) => {
 
         try {
             setLoading(true);
-            const { status } = await deliveriesServices.approveDelivery(deliveryId, payload);
+            const { status, data } = await deliveriesServices.approveDelivery(deliveryId, payload);
 
             if (status === ResponseStatusEnum.OK) {
                 await getListDeliveriesToUser(params.id);
                 showAlert("Bien hecho!", successMessage);
                 handleClose();
                 return true;
+            }
+
+            if (status !== ResponseStatusEnum.OK && data?.error) {
+                showCreateDeliveryError(data?.error, data?.productos_alterados);
+                handleClose();
+                return false;
             }
 
             showError("Error", "No se pudo procesar la solicitud.");

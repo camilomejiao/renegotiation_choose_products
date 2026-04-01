@@ -18,6 +18,7 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
 import { Loading } from "../../../shared/loading/Loading";
+import { escapeHtml } from "../../../../../shared/lib/escapeHtml";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
@@ -43,6 +44,57 @@ export const CreateOrder = () => {
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [isReportLoading, setIsReportLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const getProductDisplayName = (product) => {
+        if (typeof product === "string") return product;
+
+        return (
+            product?.nombre ||
+            product?.name ||
+            product?.producto?.nombre ||
+            product?.producto?.name ||
+            product?.producto ||
+            product?.nombre_producto ||
+            product?.producto_nombre ||
+            product?.Producto ||
+            product?.Producto_Nombre ||
+            ""
+        );
+    };
+
+    const buildProductMarketErrorHtml = (errorMessage, productNames) => {
+        const safeMessage = escapeHtml(errorMessage || "Hubo un error al intentar agregar el producto.");
+        if (!productNames?.length) {
+            return `<p style="margin: 0; text-align: left;">${safeMessage}</p>`;
+        }
+
+        const items = productNames
+            .map((name) => `<li style="margin: 0 0 4px 0;">${escapeHtml(name)}</li>`)
+            .join("");
+
+        return `
+            <div style="text-align: left;">
+                <p style="margin: 0 0 8px 0;">${safeMessage}</p>
+                <div style="margin: 0 0 6px 0; font-weight: 600;">Productos:</div>
+                <div style="max-height: 86px; overflow: auto; padding-right: 4px;">
+                    <ul style="margin: 0 0 0 16px; padding: 0;">${items}</ul>
+                </div>
+            </div>
+        `;
+    };
+
+    const showProductMarketError = (errorMessage, productosAlterados = [], fallbackProductName = "", title = "Error") => {
+        const normalizedProducts = Array.isArray(productosAlterados) ? productosAlterados : [];
+        const productNames = normalizedProducts
+            .map(getProductDisplayName)
+            .filter(Boolean);
+
+        if (!productNames.length && fallbackProductName) {
+            productNames.push(fallbackProductName);
+        }
+
+        AlertComponent.Error(title, buildProductMarketErrorHtml(errorMessage, productNames));
+    };
 
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
@@ -87,7 +139,24 @@ export const CreateOrder = () => {
         if (selectedItem) {
             try {
                 //Obtenemos los datos completos del producto desde el servicio
-                const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
+                const { data, status } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
+
+                const productErrorMessage =
+                    data?.error ||
+                    data?.message ||
+                    data?.detail ||
+                    data?.errors?.[0]?.title ||
+                    data?.errors?.[0]?.detail ||
+                    null;
+
+                if (status === ResponseStatusEnum.BAD_REQUEST || productErrorMessage) {
+                    showProductMarketError(
+                        productErrorMessage || "No fue posible agregar el producto.",
+                        data?.productos_alterados,
+                        selectedItem?.label
+                    );
+                    return;
+                }
 
                 if(!data) {
                     AlertComponent.error('Error', 'El producto no tiene valor total configurado!');
@@ -485,4 +554,3 @@ export const CreateOrder = () => {
         </>
     )
 }
-
