@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conventional Commit"
+  short_description: "Create clean Conventional Commits"
+  default_prompt: "Use this skill when creating a commit so the message follows Conventional Commits, the scope reflects the main module, and unrelated changes stay out of the commit."

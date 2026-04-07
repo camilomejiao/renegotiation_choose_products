@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pages-First Refactor"
+  short_description: "Refactor legacy screens toward pages-first FSD"
+  default_prompt: "Use this skill to refactor an existing React screen into a pages-first FSD structure, keeping extraction conservative and moving code only when the boundary is justified."
