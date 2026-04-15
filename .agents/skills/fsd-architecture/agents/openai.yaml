@@ -1,0 +1,4 @@
+interface:
+  display_name: "FSD Architecture"
+  short_description: "Expert FSD placement and architecture review"
+  default_prompt: "Use this skill to decide where code belongs in FSD-based frontend projects, review architectural violations, and explain layer, slice, and segment boundaries."

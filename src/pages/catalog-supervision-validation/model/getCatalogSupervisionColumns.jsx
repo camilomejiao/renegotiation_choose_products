@@ -55,12 +55,21 @@ export const getCatalogSupervisionColumns = () => [
     render: (value) => <ReadOnlyCell value={value} />,
   },
   {
+    title: "ESTUDIO MERCADO",
+    dataIndex: "market_study",
+    key: "market_study",
+    width: 180,
+    align: "center",
+    render: (value) => <ReadOnlyCell value={value} />,
+  },
+  {
     title: "PRECIO MIN",
     dataIndex: "price_min",
     key: "price_min",
     width: 150,
     align: "right",
-    render: (value) => <CurrencyCell value={value} />,
+    render: (value, record) =>
+      record?.market_study === "NO" ? <ReadOnlyCell value="---" /> : <CurrencyCell value={value} />,
   },
   {
     title: "PRECIO MAX",
@@ -68,7 +77,8 @@ export const getCatalogSupervisionColumns = () => [
     key: "price_max",
     width: 150,
     align: "right",
-    render: (value) => <CurrencyCell value={value} />,
+    render: (value, record) =>
+      record?.market_study === "NO" ? <ReadOnlyCell value="---" /> : <CurrencyCell value={value} />,
   },
   {
     title: "PRECIO PROVEEDOR",

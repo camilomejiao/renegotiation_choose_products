@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auth Session Boundary"
+  short_description: "Centralized frontend auth and session rules"
+  default_prompt: "Use this skill to implement or review frontend authentication so identity comes from a single trusted source, auth consumers read shared session state, and only tokens are persisted."

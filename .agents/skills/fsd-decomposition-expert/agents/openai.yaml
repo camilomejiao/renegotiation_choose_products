@@ -1,0 +1,4 @@
+interface:
+  display_name: "FSD Decomposition"
+  short_description: "Expert decisions on layers, slices, and segments"
+  default_prompt: "Use this skill when deciding whether code should become a new layer, slice, or segment in an FSD-based frontend architecture."
