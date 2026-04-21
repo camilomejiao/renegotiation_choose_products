@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Button, Col, Container, Row } from "react-bootstrap";
 
 //Img
@@ -15,27 +14,29 @@ import { CollectionAccountStatusEnum, ResponseStatusEnum} from "../../../../../.
 
 //components
 import { HeaderImage } from "../../../../shared/header_image/HeaderImage";
+import { SmartTable } from "../../../../../../shared/ui/smart-table";
 
 export const ListConciliation = () => {
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
+    const [appliedSearch, setAppliedSearch] = useState("");
 
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "ID", flex: 0.2 },
-        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
-        { field: "status", headerName: "Estado", flex: 0.3 },
-        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
-        { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
-        { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
-        { field: "total", headerName: "Valor Total", flex: 0.5 },
+        { title: "ID", dataIndex: "id", key: "id", width: 90 },
+        { title: "N° Cuenta de Cobro", dataIndex: "collection_account", key: "collection_account", width: 180 },
+        { title: "Estado", dataIndex: "status", key: "status", width: 160 },
+        { title: "Fecha Creación", dataIndex: "date", key: "date", width: 150 },
+        { title: "Nit", dataIndex: "supplier_nit", key: "supplier_nit", width: 140 },
+        { title: "Proveedor", dataIndex: "supplier_name", key: "supplier_name", width: 320 },
+        { title: "Valor Total", dataIndex: "total", key: "total", width: 160 },
     ];
 
     const getAccountOfIssuedForPayment = async (pageToFetch = 1, sizeToFetch, search = "") => {
@@ -85,22 +86,20 @@ export const ListConciliation = () => {
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return; // no dispares la búsqueda si 1-3 chars
-        // opcional: resetear página si usas paginación
-        setPage(0);
+        setPage(1);
 
-        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getAccountOfIssuedForPayment(1, pageSize, query);
+            setAppliedSearch(query);
         }, 150);
     };
 
-    const handleRowClick = (params) => {
-        navigate(`/admin/conciliation/conciliation-detail/${params.id}`);
+    const handleRowClick = (record) => {
+        navigate(`/admin/conciliation/conciliation-detail/${record.id}`);
     }
 
     useEffect(() => {
-        getAccountOfIssuedForPayment(page + 1, pageSize, "");
-    }, [page, pageSize]);
+        getAccountOfIssuedForPayment(page, pageSize, appliedSearch);
+    }, [page, pageSize, appliedSearch]);
 
     return (
         <>
@@ -151,55 +150,29 @@ export const ListConciliation = () => {
                 </Row>
 
                 <div style={{ height: 600, width: "100%" }}>
-                    <DataGrid
-                        rows={dataTable}
+                    <SmartTable
+                        rowKey="id"
                         columns={columns}
+                        dataSource={dataTable}
                         loading={loading}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
+                        total={rowCount}
+                        currentPage={page}
+                        defaultPageSize={pageSize}
+                        pageSizeOptions={["25", "50", "100"]}
+                        onPageChange={(nextPage, nextPageSize) => {
+                            setPage(nextPage);
+                            setPageSize(nextPageSize);
                         }}
-                        onRowClick={handleRowClick}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "9px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "12px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "12px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
+                        onRow={(record) => ({
+                            onClick: () => handleRowClick(record),
+                        })}
+                        defaultText="---"
+                        emptyText="No hay cuentas de cobro registradas."
+                        enableRowSelection={false}
+                        showToolbar={false}
+                        showTableResize={false}
+                        showColumnSettings={false}
+                        scroll={{ x: 1200 }}
                     />
                 </div>
             </Container>
@@ -207,4 +180,3 @@ export const ListConciliation = () => {
         </>
     )
 }
-

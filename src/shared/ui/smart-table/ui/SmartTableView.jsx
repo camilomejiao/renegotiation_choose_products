@@ -18,6 +18,7 @@ export const SmartTableView = ({
   total,
   currentPage,
   defaultText = "---",
+  emptyText,
   defaultSelectedRows,
   rowSelectionType = "checkbox",
   enableRowSelection = true,
@@ -166,6 +167,7 @@ export const SmartTableView = ({
             scroll={scroll}
             showHeader={showHeader}
             rowClassName={rowClassName}
+            locale={emptyText ? { emptyText } : undefined}
           />
         </TableContainer>
       )}
