@@ -5,7 +5,7 @@ import { Card, Row, Col, Button, Container } from "react-bootstrap";
 import { FaFileAlt, FaListAlt, FaMoneyCheckAlt, FaUsers, FaUserTag } from "react-icons/fa";
 import { SectionHeader } from "../../../shared/section_header/SectionHeader";
 import { Autocomplete, TextField } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 
 //Components
 import { HeaderImage } from "../../../shared/header_image/HeaderImage";
@@ -374,8 +374,7 @@ export const SearchBeneficiaryInformation = () => {
      * Renderiza la celda de acciones en la tabla principal (info básica).
      * - Incluye botón "Detalles" que dispara `showDetails(row)`
      */
-    const renderActionsCell = (params) => {
-        const row = params.row;
+    const renderActionsCell = (_, row) => {
         return (
             <div>
                 {/* Detalles */}
@@ -395,21 +394,20 @@ export const SearchBeneficiaryInformation = () => {
 
     //
     const ColumnsInitialInformationTable  = [
-        { field: "id", headerName: "N°", width: 80 },
-        { field: "cub", headerName: "Cub", width: 100 },
-        { field: "cub_state", headerName: "Estado Cub", width: 100 },
-        { field: "identification", headerName: "Identificación", width: 150 },
-        { field: "name", headerName: "Nombre completo", width: 270 },
-        { field: "depto", headerName: "Departamento", width: 130 },
-        { field: "muni", headerName: "Municipio", width: 200 },
-        { field: "village", headerName: "Vereda", width: 150 },
+        { title: "N°", dataIndex: "id", key: "id", width: 80 },
+        { title: "Cub", dataIndex: "cub", key: "cub", width: 100 },
+        { title: "Estado Cub", dataIndex: "cub_state", key: "cub_state", width: 140 },
+        { title: "Identificación", dataIndex: "identification", key: "identification", width: 150 },
+        { title: "Nombre completo", dataIndex: "name", key: "name", width: 270 },
+        { title: "Departamento", dataIndex: "depto", key: "depto", width: 130 },
+        { title: "Municipio", dataIndex: "muni", key: "muni", width: 200 },
+        { title: "Vereda", dataIndex: "village", key: "village", width: 150 },
         {
-            field: "actions",
-            headerName: "Detalles",
+            title: "Detalles",
+            dataIndex: "actions",
+            key: "actions",
             width: 150,
-            renderCell: renderActionsCell,
-            sortable: false,
-            filterable: false,
+            render: renderActionsCell,
         },
     ];
 
@@ -433,23 +431,31 @@ export const SearchBeneficiaryInformation = () => {
         }));
     };
 
+    const totalRowRenderer = (value, record) => {
+        if (record?.id === "TOTAL") {
+            return <strong>{value}</strong>;
+        }
+
+        return value;
+    };
+
     const AccountStatementColumns = [
-        { field: "id", headerName: "N°", width: 120 },
-        { field: "component", headerName: "Componente", width: 270 },
-        { field: "pay", headerName: "Pago", width: 270 },
-        { field: "debt", headerName: "Saldo", width: 270 },
-        { field: "total", headerName: "Total", width: 270 },
+        { title: "N°", dataIndex: "id", key: "id", width: 120, render: totalRowRenderer },
+        { title: "Componente", dataIndex: "component", key: "component", width: 270, render: totalRowRenderer },
+        { title: "Pago", dataIndex: "pay", key: "pay", width: 270, render: totalRowRenderer },
+        { title: "Saldo", dataIndex: "debt", key: "debt", width: 270, render: totalRowRenderer },
+        { title: "Total", dataIndex: "total", key: "total", width: 270, render: totalRowRenderer },
     ];
 
     const PaymentSummaryColumns = [
-        { field: "id", headerName: "N°", width: 80 },
-        { field: "agreement", headerName: "Contrato", width: 180 },
-        { field: "component", headerName: "Componente", width: 250 },
-        { field: "secondary", headerName: "Secundario", width: 200 },
-        { field: "payment_identification", headerName: "Identificación pago", width: 150 },
-        { field: "paid_holder", headerName: "Titular pago", width: 300 },
-        { field: "paid", headerName: "Pagado", width: 90 },
-        { field: "pay", headerName: "Pago", width: 170 },
+        { title: "N°", dataIndex: "id", key: "id", width: 80 },
+        { title: "Contrato", dataIndex: "agreement", key: "agreement", width: 180 },
+        { title: "Componente", dataIndex: "component", key: "component", width: 250 },
+        { title: "Secundario", dataIndex: "secondary", key: "secondary", width: 200 },
+        { title: "Identificación pago", dataIndex: "payment_identification", key: "payment_identification", width: 180 },
+        { title: "Titular pago", dataIndex: "paid_holder", key: "paid_holder", width: 300 },
+        { title: "Pagado", dataIndex: "paid", key: "paid", width: 90 },
+        { title: "Pago", dataIndex: "pay", key: "pay", width: 170 },
     ];
 
     /**
@@ -545,7 +551,7 @@ export const SearchBeneficiaryInformation = () => {
         ];
     };
 
-    const rows = addTotalRow(movements?.estado_cuenta || []);
+    const accountStatementRows = addTotalRow(movements?.estado_cuenta || []);
 
 
     /**
@@ -839,54 +845,25 @@ export const SearchBeneficiaryInformation = () => {
                                 title="Información básica del Titular"
                                 subtitle="Datos generales del beneficiario según los filtros aplicados."
                             />
-                            <DataGrid
-                                rows={beneficiaryInfo}
+                            <SmartTable
+                                rowKey="id"
                                 columns={ColumnsInitialInformationTable}
-                                paginationMode="server"
-                                rowCount={rowCount}
-                                pageSizeOptions={[25, 50, 100]}
-                                rowHeight={40}
-                                paginationModel={{ page, pageSize }}
-                                onPaginationModelChange={({ page, pageSize }) => {
-                                    setPage(page);
-                                    setPageSize(pageSize);
+                                dataSource={beneficiaryInfo}
+                                total={rowCount}
+                                currentPage={page + 1}
+                                defaultPageSize={pageSize}
+                                pageSizeOptions={["25", "50", "100"]}
+                                onPageChange={(nextPage, nextPageSize) => {
+                                    setPage(nextPage - 1);
+                                    setPageSize(nextPageSize);
                                 }}
-                                componentsProps={{
-                                    columnHeader: {
-                                        style: {
-                                            textAlign: "left",
-                                            fontWeight: "bold",
-                                            fontSize: "10px",
-                                            wordWrap: "break-word",
-                                        },
-                                    },
-                                }}
-                                sx={{
-                                    "& .MuiDataGrid-columnHeaders": {
-                                        backgroundColor: "#2d3a4d",
-                                        color: "white",
-                                        fontSize: "14px",
-                                    },
-                                    "& .MuiDataGrid-columnHeader": {
-                                        textAlign: "center",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    },
-                                    "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                        backgroundColor: "#2d3a4d !important",
-                                        color: "white !important",
-                                    },
-                                    "& .MuiDataGrid-cell": {
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                        justifyContent: "center",
-                                        display: "flex",
-                                    },
-                                    "& .MuiDataGrid-row:hover": {
-                                        backgroundColor: "#E8F5E9",
-                                    },
-                                }}
+                                defaultText="---"
+                                emptyText="No se encontraron registros."
+                                enableRowSelection={false}
+                                showTableResize={false}
+                                showColumnSettings={false}
+                                showToolbar={false}
+                                scroll={{ x: 1500 }}
                             />
                         </Card.Body>
                     </Card>
@@ -965,53 +942,20 @@ export const SearchBeneficiaryInformation = () => {
                         {movements?.estado_cuenta?.length > 0 && (
                             <div className="mt-3">
                                 <Card className="mb-2 border-0">
-                                    <DataGrid
-                                        rows={rows}
+                                    <SmartTable
+                                        rowKey="id"
                                         columns={AccountStatementColumns}
-                                        pageSize={25}
-                                        rowHeight={35}
-                                        rowsPerPageOptions={[5, 10, 20]}
-                                        getRowClassName={(params) => (params.id === "TOTAL" ? "row-total" : "")}
-                                        componentsProps={{
-                                            columnHeader: {
-                                                style: {
-                                                    textAlign: "left",
-                                                    fontWeight: "bold",
-                                                    fontSize: "10px",
-                                                    wordWrap: "break-word",
-                                                },
-                                            },
-                                        }}
-                                        sx={{
-                                            "& .row-total": {
-                                                fontWeight: "bold",
-                                                backgroundColor: "#f5f5f5",
-                                            },
-                                            "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#2d3a4d",
-                                                color: "white",
-                                                fontSize: "14px",
-                                            },
-                                            "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "left",
-                                                display: "flex",
-                                                justifyContent: "left",
-                                                alignItems: "left",
-                                            },
-                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#2d3a4d !important",
-                                                color: "white !important",
-                                            },
-                                            "& .MuiDataGrid-cell": {
-                                                fontSize: "14px",
-                                                textAlign: "left",
-                                                justifyContent: "left",
-                                                display: "flex",
-                                            },
-                                            "& .MuiDataGrid-row:hover": {
-                                                backgroundColor: "#E8F5E9",
-                                            },
-                                        }}
+                                        dataSource={accountStatementRows}
+                                        total={accountStatementRows.length}
+                                        currentPage={1}
+                                        defaultPageSize={25}
+                                        pageSizeOptions={["5", "10", "20", "25"]}
+                                        defaultText="---"
+                                        enableRowSelection={false}
+                                        showTableResize={false}
+                                        showColumnSettings={false}
+                                        showToolbar={false}
+                                        scroll={{ x: 1200 }}
                                     />
                                 </Card>
                             </div>
@@ -1025,48 +969,20 @@ export const SearchBeneficiaryInformation = () => {
                                         title="Resumen de pagos"
                                         subtitle="Detalle de pagos registrados para el titular."
                                     />
-                                    <DataGrid
-                                        rows={movements.resumen_pagos}
+                                    <SmartTable
+                                        rowKey="id"
                                         columns={PaymentSummaryColumns}
-                                        pageSize={10}
-                                        rowsPerPageOptions={[5, 10, 20]}
-                                        rowHeight={35}
-                                        componentsProps={{
-                                            columnHeader: {
-                                                style: {
-                                                    textAlign: "left",
-                                                    fontWeight: "bold",
-                                                    fontSize: "10px",
-                                                    wordWrap: "break-word",
-                                                },
-                                            },
-                                        }}
-                                        sx={{
-                                            "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#2d3a4d",
-                                                color: "white",
-                                                fontSize: "14px",
-                                            },
-                                            "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "left",
-                                                display: "flex",
-                                                justifyContent: "left",
-                                                alignItems: "left",
-                                            },
-                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#2d3a4d !important",
-                                                color: "white !important",
-                                            },
-                                            "& .MuiDataGrid-cell": {
-                                                fontSize: "14px",
-                                                textAlign: "left",
-                                                justifyContent: "left",
-                                                display: "flex",
-                                            },
-                                            "& .MuiDataGrid-row:hover": {
-                                                backgroundColor: "#E8F5E9",
-                                            },
-                                        }}
+                                        dataSource={movements.resumen_pagos}
+                                        total={movements.resumen_pagos.length}
+                                        currentPage={1}
+                                        defaultPageSize={10}
+                                        pageSizeOptions={["5", "10", "20"]}
+                                        defaultText="---"
+                                        enableRowSelection={false}
+                                        showTableResize={false}
+                                        showColumnSettings={false}
+                                        showToolbar={false}
+                                        scroll={{ x: 1500 }}
                                     />
                                 </Card>
                             </div>
@@ -1080,8 +996,6 @@ export const SearchBeneficiaryInformation = () => {
     </>
     );
 };
-
-
 
 
 

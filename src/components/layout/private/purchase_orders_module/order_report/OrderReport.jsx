@@ -2,8 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { FaBroom, FaSearch, FaTrash } from "react-icons/fa";
-import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../shared/loading/Loading";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 
 // Image
 import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -28,10 +28,8 @@ export const OrderReport = () => {
 
     const [purcharseOrder, setPurcharseOrder] = useState([]);
     const [rowCountState, setRowCountState] = useState(0);
-    const [paginationModel, setPaginationModel] = useState({
-        page: 0,
-        pageSize: PAGE_SIZE,
-    }); //Paginación
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(PAGE_SIZE);
     const [isLoading, setIsLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -41,32 +39,35 @@ export const OrderReport = () => {
 
     // Configuración de las columnas del DataGrid
     const columns = [
-        { field: "id", headerName: "ORDER ID", flex: 1 },
-        { field: "fecha_registro", headerName: "FECHA DE REGISTRO", flex: 1 },
-        { field: "cub_id", headerName: "CUB", flex: 1 },
-        { field: "cub_identificacion", headerName: "DOCUMENTO", flex: 1 },
-        { field: "valor_total", headerName: "VALOR TOTAL", flex: 1,
-          valueFormatter: (params) => `$${params.toLocaleString("es-CO")}`,
+        { title: "ORDER ID", dataIndex: "id", key: "id", width: 120 },
+        { title: "FECHA DE REGISTRO", dataIndex: "fecha_registro", key: "fecha_registro", width: 180 },
+        { title: "CUB", dataIndex: "cub_id", key: "cub_id", width: 120 },
+        { title: "DOCUMENTO", dataIndex: "cub_identificacion", key: "cub_identificacion", width: 160 },
+        {
+          title: "VALOR TOTAL",
+          dataIndex: "valor_total",
+          key: "valor_total",
+          width: 160,
+          render: (value) => `$${Number(value || 0).toLocaleString("es-CO")}`,
         },
         {
-            field: "actions",
-            headerName: "ACCIONES",
-            flex: 1,
-            renderCell: (params) => {
+            title: "ACCIONES",
+            dataIndex: "actions",
+            key: "actions",
+            width: 120,
+            render: (_, record) => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                         {/*<FaPencilAlt*/}
                         {/*    style={{ cursor: "pointer", color: "#0d6efd", marginRight: "10px" }}*/}
-                        {/*    onClick={() => handleEditClick(params.row)}*/}
+                        {/*    onClick={() => handleEditClick(record)}*/}
                         {/*/>*/}
                         <FaTrash
                             style={{ cursor: "pointer", color: "red" }}
-                            onClick={() => handleDeleteClick(params.row.id)}
+                            onClick={() => handleDeleteClick(record.id)}
                         />
                     </div>
                 )},
-            sortable: false,
-            filterable: false,
         }
     ];
 
@@ -75,8 +76,7 @@ export const OrderReport = () => {
         setIsLoading(true);
         setInformationLoadingText('Cargando ordenes...');
         try {
-            const { page, pageSize } = paginationModel;
-            const url = buildUrl(page + 1, pageSize, isSearchActive ? searchQuery : "");
+            const url = buildUrl(page, pageSize, isSearchActive ? searchQuery : "");
 
             const { data, status } = await fetchPurchaseOrders(url);
             if (status === ResponseStatusEnum.OK) {
@@ -186,7 +186,7 @@ export const OrderReport = () => {
     // Realiza la búsqueda
     const handleSearch = () => {
         if (searchQuery.length >= 5) {
-            setPaginationModel({ ...paginationModel, page: 0 }); // Cambia la página
+            setPage(1);
             setIsSearchActive(true); // Marca como búsqueda activa
         } else {
             showError("Error", "El valor a buscar debe tener al menos 5 caracteres");
@@ -196,13 +196,14 @@ export const OrderReport = () => {
     // Limpia la búsqueda
     const handleClearSearch = () => {
         setSearchQuery("");
-        setPaginationModel({ page: 0, pageSize: PAGE_SIZE });
+        setPage(1);
+        setPageSize(PAGE_SIZE);
     };
 
     // Ejecuta la consulta inicial al cargar el componente
     useEffect(() => {
         getPurcharseOrder();
-    }, [paginationModel]);
+    }, [page, pageSize]);
 
     return (
         <>
@@ -245,40 +246,26 @@ export const OrderReport = () => {
                     {isLoading && <Loading fullScreen text={informationLoadingText} />}
 
                     <div style={{ height: 500, width: "100%" }}>
-                        <DataGrid
+                        <SmartTable
+                            rowKey="id"
                             columns={columns}
-                            rows={purcharseOrder}
-                            rowCount={rowCountState}
+                            dataSource={purcharseOrder}
+                            total={rowCountState}
                             loading={isLoading}
-                            paginationModel={paginationModel}
-                            onPaginationModelChange={setPaginationModel}
-                            paginationMode="server"
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#2d3a4d",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#2d3a4d !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
+                            currentPage={page}
+                            defaultPageSize={pageSize}
+                            pageSizeOptions={["25", "50", "100"]}
+                            onPageChange={(nextPage, nextPageSize) => {
+                                setPage(nextPage);
+                                setPageSize(nextPageSize);
                             }}
+                            defaultText="---"
+                            emptyText="No hay órdenes de compra registradas."
+                            enableRowSelection={false}
+                            showToolbar={false}
+                            showTableResize={false}
+                            showColumnSettings={false}
+                            scroll={{ x: 1000 }}
                         />
                     </div>
                 </div>
@@ -297,5 +284,4 @@ export const OrderReport = () => {
         </>
     );
 };
-
 
