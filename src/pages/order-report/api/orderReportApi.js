@@ -30,8 +30,8 @@ export const getOrderReportPage = async ({
   return response?.data ?? { count: 0, results: [] };
 };
 
-export const deleteOrderReportItem = async (orderId) => {
-  const response = await purchaseOrderServices.removeOrder(orderId);
+export const deleteOrderReportItem = async (orderId, payload = {}) => {
+  const response = await purchaseOrderServices.removeOrder(orderId, payload);
 
   if (
     response?.status !== ResponseStatusEnum.NO_CONTENT &&

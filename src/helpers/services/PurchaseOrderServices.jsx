@@ -42,12 +42,18 @@ class PurchaseOrderServices {
      * @param {number|string} orderId - ID de la orden de compra a eliminar.
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
-    removeOrder(orderId) {
+    removeOrder(orderId, payload = {}) {
         const url = this.buildUrl(`${orderId}/`);
-        return authTokenService.fetchWithAuth(url, { method: "DELETE" });
+        const options = {
+            method: "DELETE",
+        };
+
+        if (Object.keys(payload).length > 0) {
+            options.body = JSON.stringify(payload);
+        }
+
+        return authTokenService.fetchWithAuth(url, options);
     }
 }
 
 export const purchaseOrderServices = new PurchaseOrderServices();
-
-

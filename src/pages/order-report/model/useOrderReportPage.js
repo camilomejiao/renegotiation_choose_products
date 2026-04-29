@@ -21,10 +21,13 @@ export const useOrderReportPage = () => {
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [deleteConfirmationChecked, setDeleteConfirmationChecked] =
+    useState(false);
 
   const loadingText = useMemo(() => {
     if (loading && isDeleteModalOpen) {
-      return "Eliminando orden...";
+      return "Solicitando anulación de orden...";
     }
 
     return "Cargando órdenes...";
@@ -55,10 +58,16 @@ export const useOrderReportPage = () => {
     loadOrders();
   }, [loadOrders]);
 
+  const resetDeleteFlow = useCallback(() => {
+    setCancellationReason("");
+    setDeleteConfirmationChecked(false);
+  }, []);
+
   const closeDeleteModal = useCallback(() => {
     setIsDeleteModalOpen(false);
     setSelectedOrder(null);
-  }, []);
+    resetDeleteFlow();
+  }, [resetDeleteFlow]);
 
   const handleSearchQueryChange = useCallback((event) => {
     setSearchQuery(event.target.value);
@@ -94,6 +103,15 @@ export const useOrderReportPage = () => {
   const handleDeleteRequest = useCallback((order) => {
     setSelectedOrder(order);
     setIsDeleteModalOpen(true);
+    resetDeleteFlow();
+  }, [resetDeleteFlow]);
+
+  const handleCancellationReasonChange = useCallback((value) => {
+    setCancellationReason(value);
+  }, []);
+
+  const handleDeleteConfirmationChange = useCallback((checked) => {
+    setDeleteConfirmationChecked(checked);
   }, []);
 
   const handleDeleteConfirm = useCallback(async () => {
@@ -102,12 +120,35 @@ export const useOrderReportPage = () => {
       return;
     }
 
+    const normalizedReason = cancellationReason.trim();
+
+    if (!normalizedReason) {
+      AlertComponent.error(
+        "Error",
+        "Debes ingresar un motivo de anulación para continuar"
+      );
+      return;
+    }
+
+    if (!deleteConfirmationChecked) {
+      AlertComponent.error(
+        "Error",
+        "Debes confirmar que entiendes que la anulación no se podrá deshacer"
+      );
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await deleteOrderReportItem(selectedOrder.id);
+      const response = await deleteOrderReportItem(selectedOrder.id, {
+        motivo_anulacion: normalizedReason,
+      });
 
       if (response?.status === ResponseStatusEnum.NO_CONTENT) {
-        AlertComponent.success("Bien hecho!", "Orden eliminada exitosamente!");
+        AlertComponent.success(
+          "Bien hecho!",
+          "La solicitud de anulación fue registrada exitosamente"
+        );
         closeDeleteModal();
 
         const isLastItemOnPage = rows.length === 1 && page > 1;
@@ -129,13 +170,23 @@ export const useOrderReportPage = () => {
       }
     } catch (response) {
       console.error("Error al eliminar la orden:", response);
-      AlertComponent.error("Error", "No se pudo eliminar la orden");
+      AlertComponent.error("Error", "No se pudo registrar la solicitud de anulación");
     } finally {
       setLoading(false);
     }
-  }, [closeDeleteModal, loadOrders, page, rows.length, selectedOrder]);
+  }, [
+    cancellationReason,
+    closeDeleteModal,
+    deleteConfirmationChecked,
+    loadOrders,
+    page,
+    rows.length,
+    selectedOrder,
+  ]);
 
   return {
+    cancellationReason,
+    deleteConfirmationChecked,
     rows,
     total,
     loading,
@@ -152,6 +203,8 @@ export const useOrderReportPage = () => {
     handlePageChange,
     handleDeleteRequest,
     handleDeleteConfirm,
+    handleCancellationReasonChange,
+    handleDeleteConfirmationChange,
     closeDeleteModal,
   };
 };

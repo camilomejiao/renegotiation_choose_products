@@ -20,6 +20,8 @@ import {
 
 export const OrderReportPage = () => {
   const {
+    cancellationReason,
+    deleteConfirmationChecked,
     rows,
     total,
     loading,
@@ -36,6 +38,8 @@ export const OrderReportPage = () => {
     handlePageChange,
     handleDeleteRequest,
     handleDeleteConfirm,
+    handleCancellationReasonChange,
+    handleDeleteConfirmationChange,
     closeDeleteModal,
   } = useOrderReportPage();
 
@@ -109,6 +113,10 @@ export const OrderReportPage = () => {
         orderId={selectedOrder?.id}
         onClose={closeDeleteModal}
         onConfirm={handleDeleteConfirm}
+        onReasonChange={handleCancellationReasonChange}
+        onConfirmationChange={handleDeleteConfirmationChange}
+        cancellationReason={cancellationReason}
+        confirmationChecked={deleteConfirmationChecked}
         loading={loading}
       />
     </Page>

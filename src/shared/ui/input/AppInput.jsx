@@ -1,7 +1,25 @@
-import { StyledInput, StyledPasswordInput } from "./AppInput.styles";
+import {
+  StyledInput,
+  StyledPasswordInput,
+  StyledTextArea,
+} from "./AppInput.styles";
 
-export const AppInput = ({ value, onChange, placeholder, size = "middle", className, ...rest }) => {
-  const InputComponent = rest.type === "password" ? StyledPasswordInput : StyledInput;
+export const AppInput = ({
+  value,
+  onChange,
+  placeholder,
+  size = "middle",
+  className,
+  multiline = false,
+  ...rest
+}) => {
+  let InputComponent = StyledInput;
+
+  if (multiline) {
+    InputComponent = StyledTextArea;
+  } else if (rest.type === "password") {
+    InputComponent = StyledPasswordInput;
+  }
 
   return (
     <InputComponent

@@ -1,78 +1,39 @@
-import { useEffect, useRef, useState } from "react";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Typography } from "antd";
 import styled from "@emotion/styled";
 
 import { AppButton } from "../../../shared/ui/button";
+import { AppCheckbox } from "../../../shared/ui/checkbox";
+import { AppInput } from "../../../shared/ui/input";
 import { Modal } from "../../../shared/ui/modal";
 import { DeleteModalFooter } from "./OrderReportPage.styles";
 
 const { Paragraph, Text } = Typography;
 
-const LEGAL_ORDER_CANCELLATION_NOTICE = `
-La anulacion de una orden de compra constituye una actuacion administrativa sensible y debe
-realizarse exclusivamente cuando existan razones objetivas, verificables y suficientemente
-documentadas que impidan la continuidad del proceso. Al avanzar con esta accion, el usuario deja
-constancia de que ha revisado la informacion disponible, que entiende el impacto operativo de la
-anulacion y que actua en el marco de sus competencias funcionales.
-
-El usuario reconoce que una anulacion puede afectar reportes, trazabilidad documental, procesos de
-seguimiento interno, validaciones posteriores y controles asociados a la orden. En consecuencia,
-esta accion no debe utilizarse como mecanismo de prueba, reversa temporal o ajuste informal, sino
-como una decision debidamente sustentada dentro del flujo operativo del sistema.
-
-Tambien se entiende que la anulacion puede requerir revisiones complementarias por parte de otras
-areas y generar efectos sobre registros dependientes, historicos y auditoria. Por ello, antes de
-confirmar, el usuario declara que ha verificado la pertinencia de la solicitud, que comprende sus
-efectos y que asume responsabilidad sobre el uso diligente de esta opcion.
-
-Al pulsar el boton de confirmacion, el usuario manifiesta que ha leido de forma completa esta
-advertencia, que comprende el alcance de la anulacion y que cuenta con fundamentos suficientes para
-ejecutarla en nombre del proceso que administra.
-`;
+const IMPACT_ITEMS = [
+  "La solicitud será revisada por el equipo correspondiente antes de ser aceptada.",
+  "Si la anulación es aceptada, la orden no podrá reactivarse ni deshacerse.",
+  "Debes registrar un motivo claro para sustentar la solicitud.",
+];
 
 export const OrderReportDeleteModal = ({
+  cancellationReason,
+  confirmationChecked,
   loading,
   onClose,
+  onConfirmationChange,
   onConfirm,
+  onReasonChange,
   open,
   orderId,
 }) => {
-  const scrollRef = useRef(null);
-  const [hasReachedBottom, setHasReachedBottom] = useState(false);
-
-  useEffect(() => {
-    if (!open) {
-      setHasReachedBottom(false);
-      return;
-    }
-
-    const node = scrollRef.current;
-    if (!node) {
-      return;
-    }
-
-    node.scrollTop = 0;
-    setHasReachedBottom(false);
-  }, [open]);
-
-  const handleScroll = () => {
-    const node = scrollRef.current;
-    if (!node) {
-      return;
-    }
-
-    const reachedBottom =
-      node.scrollTop + node.clientHeight >= node.scrollHeight - 4;
-
-    if (reachedBottom) {
-      setHasReachedBottom(true);
-    }
-  };
+  const hasCancellationReason = cancellationReason.trim().length > 0;
+  const canSubmit = hasCancellationReason && confirmationChecked;
 
   return (
     <Modal
-      title="Anular orden"
-      subTitle="Lee la advertencia completa antes de continuar."
+      title="Solicitar anulación de orden"
+      subTitle="Esta acción inicia una revisión formal y puede volverse irreversible."
       isOpen={open}
       onCloseModal={onClose}
       centered
@@ -86,27 +47,88 @@ export const OrderReportDeleteModal = ({
             variant="danger"
             onClick={onConfirm}
             loading={loading}
-            disabled={!hasReachedBottom}
+            disabled={!canSubmit}
           >
-            Anular orden
+            Enviar solicitud
           </AppButton>
         </DeleteModalFooter>
       )}
     >
       <ModalContent>
-        {orderId && (
-          <Text strong>Orden seleccionada: {orderId}</Text>
-        )}
+        <HeroCard>
+          <HeroIcon>
+            <ExclamationCircleOutlined />
+          </HeroIcon>
 
-        <LegalScrollBox ref={scrollRef} onScroll={handleScroll}>
-          <Paragraph>{LEGAL_ORDER_CANCELLATION_NOTICE}</Paragraph>
-        </LegalScrollBox>
+          <HeroBody>
+            <HeroEyebrow>Advertencia importante</HeroEyebrow>
+            <HeroTitle>
+              Una vez la solicitud sea aceptada, la anulación no se podrá deshacer.
+            </HeroTitle>
+            {orderId && (
+              <OrderPill>Orden seleccionada: {orderId}</OrderPill>
+            )}
+          </HeroBody>
+        </HeroCard>
 
-        <Text type={hasReachedBottom ? "success" : "secondary"}>
-          {hasReachedBottom
-            ? "Has leído el texto completo. Ya puedes continuar."
-            : "Desplázate hasta el final del texto para habilitar la acción."}
-        </Text>
+        <SummaryCard>
+          <SectionTitle>Puntos que debes confirmar antes de continuar</SectionTitle>
+          <ImpactList>
+            {IMPACT_ITEMS.map((item) => (
+              <ImpactItem key={item}>
+                <ImpactDot />
+                <span>{item}</span>
+              </ImpactItem>
+            ))}
+          </ImpactList>
+
+          <LegalCopy>
+            <Paragraph>
+              La anulación de una orden de compra es una actuación sensible y solo
+              debe solicitarse cuando existan razones objetivas, verificables y
+              suficientemente documentadas.
+            </Paragraph>
+            <Paragraph>
+              Al continuar, declaras que revisaste la información disponible,
+              entiendes el impacto operativo de la anulación y que actúas dentro
+              de tus competencias funcionales.
+            </Paragraph>
+          </LegalCopy>
+        </SummaryCard>
+
+        <FieldCard>
+          <FieldHeader>
+            <SectionTitle>Motivo de anulación</SectionTitle>
+            <CharacterCount type={hasCancellationReason ? "secondary" : "danger"}>
+              {cancellationReason.length}/500
+            </CharacterCount>
+          </FieldHeader>
+
+          <AppInput
+            multiline
+            rows={5}
+            value={cancellationReason}
+            onChange={(event) => onReasonChange(event.target.value)}
+            placeholder="Describe por qué solicitas la anulación de esta orden"
+            maxLength={500}
+          />
+
+          <FieldHint type={hasCancellationReason ? "secondary" : "danger"}>
+            {hasCancellationReason
+              ? "Este motivo se enviará al equipo responsable de la revisión."
+              : "El motivo de anulación es obligatorio."}
+          </FieldHint>
+        </FieldCard>
+
+        <ConfirmationCard $checked={confirmationChecked}>
+          <AppCheckbox
+            checked={confirmationChecked}
+            onChange={(event) => onConfirmationChange(event.target.checked)}
+          >
+            Confirmo que entiendo que estoy enviando una solicitud de anulación y
+            que, si esta es aceptada, no se podrá deshacer.
+          </AppCheckbox>
+        </ConfirmationCard>
       </ModalContent>
     </Modal>
   );
@@ -114,21 +136,147 @@ export const OrderReportDeleteModal = ({
 
 const ModalContent = styled.div`
   display: grid;
-  gap: 12px;
+  gap: 16px;
 `;
 
-const LegalScrollBox = styled.div`
-  max-height: 260px;
-  overflow-y: auto;
-  padding: 16px;
+const cardStyles = `
+  border-radius: 18px;
+  padding: 18px;
+`;
+
+const HeroCard = styled.div`
+  ${cardStyles}
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+  background:
+    radial-gradient(circle at top left, rgba(239, 68, 68, 0.18), transparent 44%),
+    linear-gradient(135deg, #fff6f6 0%, #fff1f2 100%);
+  border: 1px solid #fecaca;
+`;
+
+const HeroIcon = styled.div`
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #b91c1c;
+  color: #ffffff;
+  font-size: 22px;
+  box-shadow: 0 10px 24px rgba(185, 28, 28, 0.22);
+`;
+
+const HeroBody = styled.div`
+  display: grid;
+  gap: 6px;
+`;
+
+const HeroEyebrow = styled(Text)`
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b91c1c;
+`;
+
+const HeroTitle = styled.div`
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  color: #7f1d1d;
+`;
+
+const OrderPill = styled.div`
+  width: fit-content;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 12px;
+  font-weight: 600;
+`;
+
+const SummaryCard = styled.div`
+  ${cardStyles}
+  display: grid;
+  gap: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #dbe4f0;
-  border-radius: 12px;
-  background: #f8fafc;
+`;
+
+const SectionTitle = styled(Text)`
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+`;
+
+const ImpactList = styled.div`
+  display: grid;
+  gap: 10px;
+`;
+
+const ImpactItem = styled.div`
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: #334155;
+  line-height: 1.5;
+`;
+
+const ImpactDot = styled.span`
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+`;
+
+const LegalCopy = styled.div`
+  display: grid;
+  gap: 4px;
 
   .ant-typography {
     margin-bottom: 0;
-    white-space: pre-line;
     line-height: 1.65;
-    color: #334155;
+    color: #475569;
   }
+`;
+
+const FieldCard = styled.div`
+  ${cardStyles}
+  display: grid;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+`;
+
+const FieldHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+`;
+
+const CharacterCount = styled(Text)`
+  font-size: 12px;
+`;
+
+const FieldHint = styled(Text)`
+  font-size: 12px;
+`;
+
+const ConfirmationCard = styled.div`
+  ${cardStyles}
+  border: 1px solid ${({ $checked }) => ($checked ? "#86efac" : "#dbe4f0")};
+  background:
+    ${({ $checked }) =>
+      $checked
+        ? "linear-gradient(180deg, #f0fdf4 0%, #f7fee7 100%)"
+        : "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)"};
+  transition: border-color 0.2s ease, background 0.2s ease;
 `;
