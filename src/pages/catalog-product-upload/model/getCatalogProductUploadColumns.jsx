@@ -1,13 +1,18 @@
-import { ReadOnlyWrappedCell } from "../ui/CatalogProductUploadTableCells";
+import {
+  CategoryCell,
+  DeleteActionCell,
+  NameCell,
+  PriceMaxCell,
+  PriceMinCell,
+  UnitCell,
+} from "../../catalog-edit-products-by-convocation/ui/CatalogEditTableCells";
 
-const currencyFormatter = new Intl.NumberFormat("es-CO", {
-  style: "currency",
-  currency: "COP",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-export const getCatalogProductUploadColumns = () => [
+export const getCatalogProductUploadColumns = ({
+  unitOptions = [],
+  categoryOptions = [],
+  onRowChange,
+  onDelete,
+}) => [
   {
     title: "ID",
     dataIndex: "id",
@@ -18,43 +23,71 @@ export const getCatalogProductUploadColumns = () => [
   },
   {
     title: "Categoria",
-    dataIndex: "categoryLabel",
+    dataIndex: "category",
     key: "category",
-    width: 260,
-    ellipsis: false,
-    render: (value) => <ReadOnlyWrappedCell value={value} />,
+    render: (value, record) => (
+      <CategoryCell
+        value={value}
+        record={record}
+        onRowChange={onRowChange}
+        options={categoryOptions.map((option) => ({
+          value: option.id,
+          label: option.nombre,
+        }))}
+      />
+    ),
   },
   {
     title: "Nombre",
     dataIndex: "name",
     key: "name",
     width: 360,
-    ellipsis: false,
-    render: (value) => <ReadOnlyWrappedCell value={value} />,
+    render: (value, record) => (
+      <NameCell value={value} record={record} onRowChange={onRowChange} />
+    ),
   },
   {
     title: "Unidad",
-    dataIndex: "unitLabel",
+    dataIndex: "unit",
     key: "unit",
     width: 240,
-    ellipsis: false,
     align: "center",
-    render: (value) => <ReadOnlyWrappedCell value={value} />,
+    render: (value, record) => (
+      <UnitCell
+        value={value}
+        record={record}
+        onRowChange={onRowChange}
+        options={unitOptions.map((option) => ({
+          value: option.id,
+          label: option.nombre,
+        }))}
+      />
+    ),
   },
   {
     title: "Precio Min",
     dataIndex: "price_min",
     key: "price_min",
     align: "right",
-    width: 180,
-    render: (value) => currencyFormatter.format(Number(value || 0)),
+    render: (value, record) => (
+      <PriceMinCell value={value} record={record} onRowChange={onRowChange} />
+    ),
   },
   {
     title: "Precio Max",
     dataIndex: "price_max",
     key: "price_max",
     align: "right",
-    width: 180,
-    render: (value) => currencyFormatter.format(Number(value || 0)),
+    render: (value, record) => (
+      <PriceMaxCell value={value} record={record} onRowChange={onRowChange} />
+    ),
+  },
+  {
+    title: "Acciones",
+    dataIndex: "actions",
+    key: "actions",
+    align: "center",
+    sorter: false,
+    render: (_value, record) => <DeleteActionCell record={record} onDelete={onDelete} />,
   },
 ];

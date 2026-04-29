@@ -49,6 +49,13 @@ export const useCatalogManagementPage = () => {
     navigate("/admin/report-by-convocation");
   }, [navigate]);
 
+  const handleAddProducts = useCallback(
+    (id) => {
+      navigate(`/admin/product-upload?convocationId=${id}`);
+    },
+    [navigate]
+  );
+
   const handleEditCatalogItem = useCallback(
     (id) => {
       navigate(`/admin/edit-products-by-convocation/${id}`);
@@ -87,6 +94,7 @@ export const useCatalogManagementPage = () => {
     handleSearchChange,
     handleCreateCatalogItem,
     handleExportReport,
+    handleAddProducts,
     handleEditCatalogItem,
     openSuppliersModal,
     closeSuppliersModal,

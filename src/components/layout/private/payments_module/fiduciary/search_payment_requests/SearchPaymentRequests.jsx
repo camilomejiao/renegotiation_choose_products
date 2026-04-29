@@ -1,6 +1,4 @@
-import { DataGrid } from "@mui/x-data-grid";
 import {useEffect, useRef, useState} from "react";
-import { useNavigate } from "react-router-dom";
 import {Button, Col, Container, Nav, Row} from "react-bootstrap";
 
 //Components
@@ -15,17 +13,15 @@ import { paymentServices } from "../../../../../../helpers/services/PaymentServi
 
 //Enum
 import { CollectionAccountStatusEnum, ResponseStatusEnum } from "../../../../../../helpers/GlobalEnum";
+import { SmartTable } from "../../../../../../shared/ui/smart-table";
 
 //
 const STATUS_ARRAY = Object.values(CollectionAccountStatusEnum);
 
 export const SearchPaymentRequests = () => {
-
-    const navigate = useNavigate();
-
     const [loading, setLoading] = useState(false);
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
 
@@ -36,13 +32,13 @@ export const SearchPaymentRequests = () => {
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "ID", flex: 0.2 },
-        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
-        { field: "status", headerName: "Estado", flex: 0.3 },
-        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
-        { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
-        { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
-        { field: "total", headerName: "Valor Total", flex: 0.5 },
+        { title: "ID", dataIndex: "id", key: "id", width: 90 },
+        { title: "N° Cuenta de Cobro", dataIndex: "collection_account", key: "collection_account", width: 180 },
+        { title: "Estado", dataIndex: "status", key: "status", width: 160 },
+        { title: "Fecha Creación", dataIndex: "date", key: "date", width: 150 },
+        { title: "Nit", dataIndex: "supplier_nit", key: "supplier_nit", width: 140 },
+        { title: "Proveedor", dataIndex: "supplier_name", key: "supplier_name", width: 320 },
+        { title: "Valor Total", dataIndex: "total", key: "total", width: 160 },
     ];
 
     const getStatusValueFromKey = (key) => STATUS_ARRAY.find((s) => s.key === key)?.key ?? null;
@@ -89,10 +85,8 @@ export const SearchPaymentRequests = () => {
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return;
-        //opcional: resetear p�gina si usas paginaci�n
-        setPage(0);
+        setPage(1);
 
-        //Si quieres mantener un peque�o debounce para evitar doble click/enter r�pidos:
         searchTimerRef.current = setTimeout(() => {
             getAccountOfSuppliers(1, pageSize, query, '');
         }, 150);
@@ -101,13 +95,13 @@ export const SearchPaymentRequests = () => {
     const handleChangeStatus = (newKey) => {
         if (newKey === activeStatusKey) return;
         setActiveStatusKey(newKey);
-        setPage(0);
+        setPage(1);
         setSearchQuery("");
         getAccountOfSuppliers(1, pageSize, "", newKey);
     };
 
     useEffect(() => {
-        getAccountOfSuppliers(page + 1, pageSize, searchQuery, activeStatusKey);
+        getAccountOfSuppliers(page, pageSize, searchQuery, activeStatusKey);
     }, [page, pageSize]);
 
     return (
@@ -117,7 +111,7 @@ export const SearchPaymentRequests = () => {
                 titleHeader={'Fiduciara'}
                 bannerIcon={imgAdd}
                 backgroundIconColor={'#2148C0'}
-                bannerInformation={'Aqu� podr�s ver el listado de cuentas de cobro.'}
+                bannerInformation={'Aquí podrás ver el listado de cuentas de cobro.'}
                 backgroundInformationColor={'#40A581'}
             />
 
@@ -165,54 +159,26 @@ export const SearchPaymentRequests = () => {
                 </Row>
 
                 <div style={{ height: 600, width: "100%" }}>
-                    <DataGrid
-                        rows={dataTable}
+                    <SmartTable
+                        rowKey="id"
                         columns={columns}
+                        dataSource={dataTable}
                         loading={loading}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
+                        total={rowCount}
+                        currentPage={page}
+                        defaultPageSize={pageSize}
+                        pageSizeOptions={["25", "50", "100"]}
+                        onPageChange={(nextPage, nextPageSize) => {
+                            setPage(nextPage);
+                            setPageSize(nextPageSize);
                         }}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "9px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "12px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "12px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
+                        defaultText="---"
+                        emptyText="No hay solicitudes de pago registradas."
+                        enableRowSelection={false}
+                        showToolbar={false}
+                        showTableResize={false}
+                        showColumnSettings={false}
+                        scroll={{ x: 1400 }}
                     />
                 </div>
 
@@ -220,4 +186,3 @@ export const SearchPaymentRequests = () => {
         </>
     )
 }
-

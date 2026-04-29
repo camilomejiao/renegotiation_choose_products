@@ -1,15 +1,9 @@
 ﻿import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../shared/loading/Loading";
-import { Button } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa";
-
-//Img
-import imgDCSIPeople from "../../../../../assets/image/addProducts/imgDSCIPeople.png";
 
 //Utils
-import {getAccionColumns, getConvocationColumn} from "../../../../../helpers/utils/ManagementColumns";
+import { createConvocationManagementColumns } from "../ui/managementTableColumns";
 
 //Services
 import { convocationServices } from "../../../../../helpers/services/ConvocationServices";
@@ -22,6 +16,7 @@ import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 import imgPayments from "../../../../../assets/image/payments/pay-supplier.png";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import {HeaderImage} from "../../../shared/header_image/HeaderImage";
+import { ManagementTableSection } from "../ui/ManagementTableSection";
 
 
 export const ConvocationList = () => {
@@ -33,6 +28,8 @@ export const ConvocationList = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(100);
 
     const getConvocationList = async () => {
         try {
@@ -66,7 +63,8 @@ export const ConvocationList = () => {
             start_date: row?.fecha_inicio,
             end_date: row?.fecha_fin,
             remaining_days: row?.dias_restantes,
-            status: row?.abierto ? 'ACTIVO' : 'INACTIVO',
+            status: Boolean(row?.abierto),
+            statusLabel: row?.abierto ? 'ACTIVO' : 'INACTIVO',
             description: row?.estado_descripcion,
         }));
     };
@@ -101,21 +99,28 @@ export const ConvocationList = () => {
         console.log(rowId);
     }
 
-    //
-    const baseColumns = getConvocationColumn();
-    const accions = getAccionColumns(handleActiveAndInactive, handleEditClick, handleDeleteClick);
-    const columns = [...baseColumns, ...accions];
+    const columns = createConvocationManagementColumns({
+        onToggleStatus: handleActiveAndInactive,
+        onEdit: handleEditClick,
+        onDelete: handleDeleteClick,
+    });
 
     //
     const handleSearchChange = (event) => {
         const query = event.target.value.toLowerCase();
         setSearchQuery(query);
+        setPage(1);
         const filteredData = convocations.filter((row) =>
             Object.values(row).some((value) =>
                 value.toString().toLowerCase().includes(query)
             )
         );
         setFilteredConvocations(filteredData);
+    };
+
+    const handlePageChange = (nextPage, nextPageSize) => {
+        setPage(nextPage);
+        setPageSize(nextPageSize);
     };
 
     const reloadPage = () => {
@@ -141,78 +146,24 @@ export const ConvocationList = () => {
 
             <div className="container mt-lg-3">
 
-                <div className="table-toolbar mt-5">
-                    <input
-                        type="text"
-                        placeholder="Buscar..."
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="input-responsive"
-                    />
-                    <div className="text-end">
-                        <Button
-                            variant="outline-success"
-                            onClick={() => navigate('/admin/create-convocation')}
-                            className="button-order-responsive"
-                        >
-                            <FaPlus/> Crear Jornada
-                        </Button>
-                    </div>
-                </div>
-
                 {loading && <Loading fullScreen text="Cargando Datos..." />}
 
-                <div style={{height: 600, width: "100%"}}>
-                    <DataGrid
-                        rows={filteredConvocations}
-                        columns={columns}
-                        editMode="row"
-                        pagination
-                        loading={loadingTable}
-                        pageSize={100}
-                        rowsPerPageOptions={[100, 500, 1000]}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "10px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "14px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "14px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
-                    />
-                </div>
+                <ManagementTableSection
+                    searchQuery={searchQuery}
+                    onSearchChange={handleSearchChange}
+                    createLabel="Crear Jornada"
+                    onCreate={() => navigate('/admin/create-convocation')}
+                    columns={columns}
+                    dataSource={filteredConvocations}
+                    loading={loadingTable}
+                    total={filteredConvocations.length}
+                    currentPage={page}
+                    pageSize={pageSize}
+                    onPageChange={handlePageChange}
+                />
             </div>
 
 
         </>
     )
 }
-

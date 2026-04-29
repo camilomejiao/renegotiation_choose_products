@@ -5,17 +5,11 @@ import {
     Autocomplete,
     CircularProgress,
     IconButton,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     TextField,
 } from "@mui/material";
 import { Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 
 // Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -216,6 +210,60 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         return options.filter((o) => !inList.has(o.id));
     }, [options, formik.values.suppliers]);
 
+    const columns = [
+        {
+            title: "ID",
+            dataIndex: "id",
+            key: "id",
+            width: 100,
+        },
+        {
+            title: "Proveedor",
+            dataIndex: "name",
+            key: "name",
+            width: 320,
+        },
+        {
+            title: "Estado",
+            dataIndex: "persisted",
+            key: "persisted",
+            width: 140,
+            render: (value) =>
+                value ? (
+                    <span className="badge text-bg-info">Guardado</span>
+                ) : (
+                    <span className="badge text-bg-success">Nuevo</span>
+                ),
+        },
+        {
+            title: "Acciones",
+            dataIndex: "actions",
+            key: "actions",
+            width: 180,
+            render: (_, record) => (
+                <div className="d-flex gap-2 justify-content-end">
+                    {record.persisted ? (
+                        <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => handleDeleteSupplierPersisted(record.id)}
+                        >
+                            Desasociar
+                        </Button>
+                    ) : (
+                        <IconButton
+                            aria-label="Eliminar"
+                            color="error"
+                            onClick={() => handleRemoveSupplierTransient(record.id)}
+                        >
+                            <FaTrash />
+                        </IconButton>
+                    )}
+                </div>
+            ),
+        },
+    ];
+
     useEffect(() => {
         loadSuppliersOnce();
         fetchAssociatedSuppliers();
@@ -286,60 +334,22 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
 
                 {/* Tabla de proveedores (mezcla guardados + temporales) */}
                 <div className="col-12">
-                    <TableContainer component={Paper}>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell style={{ fontWeight: 600 }}>ID</TableCell>
-                                    <TableCell style={{ fontWeight: 600 }}>Proveedor</TableCell>
-                                    <TableCell style={{ fontWeight: 600 }}>Estado</TableCell>
-                                    <TableCell style={{ fontWeight: 600 }}>Acciones</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {formik.values.suppliers.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={4} align="center">
-                                            No tienes proveedores en la lista aún.
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    formik.values.suppliers.map((supplier) => (
-                                        <TableRow key={supplier.id}>
-                                            <TableCell>{supplier.id}</TableCell>
-                                            <TableCell>{supplier.name}</TableCell>
-                                            <TableCell>
-                                                {supplier.persisted ? (
-                                                    <span className="badge text-bg-info">Guardado</span>
-                                                ) : (
-                                                    <span className="badge text-bg-success">Nuevo</span>
-                                                )}
-                                            </TableCell>
-                                            <TableCell align="right" className="d-flex gap-2 justify-content-end">
-                                                {supplier.persisted ? (
-                                                    <Button
-                                                        variant="outline-danger"
-                                                        size="sm"
-                                                        onClick={() => handleDeleteSupplierPersisted(supplier.id)}
-                                                    >
-                                                        Desasociar
-                                                    </Button>
-                                                ) : (
-                                                    <IconButton
-                                                        aria-label="Eliminar"
-                                                        color="error"
-                                                        onClick={() => handleRemoveSupplierTransient(supplier.id)}
-                                                    >
-                                                        <FaTrash />
-                                                    </IconButton>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <SmartTable
+                        rowKey="id"
+                        columns={columns}
+                        dataSource={formik.values.suppliers}
+                        total={formik.values.suppliers.length}
+                        currentPage={1}
+                        defaultPageSize={10}
+                        pageSizeOptions={["10", "20", "50"]}
+                        defaultText="---"
+                        emptyText="No tienes proveedores en la lista aún."
+                        enableRowSelection={false}
+                        showToolbar={false}
+                        showTableResize={false}
+                        showColumnSettings={false}
+                        scroll={{ x: 900 }}
+                    />
 
                     {/* Mensaje de validación Yup para la lista */}
                     {formik.touched.suppliers && formik.errors.suppliers && (
@@ -354,4 +364,3 @@ export const Suppliers = ({ id, onBack, refreshPage }) => {
         </form>
     );
 };
-

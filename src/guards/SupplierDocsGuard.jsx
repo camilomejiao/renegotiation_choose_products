@@ -118,10 +118,10 @@ export const SupplierDocsGuard = () => {
      */
     const mustRedirect =
         isSupplier &&
+        !mustChangePassword &&
         !isLoading &&
         supplierCompliance?.isComplete === false &&
-        !alreadyOnDocs &&
-        !(mustChangePassword && alreadyOnForcedPasswordRoute);
+        !alreadyOnDocs;
 
     // -------------------------
     // EFECTO

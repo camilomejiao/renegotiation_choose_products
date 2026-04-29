@@ -59,3 +59,23 @@ export const SuppliersViewButton = styled(Button, {
     color: ${({ $hoverText }) => $hoverText} !important;
   }
 `;
+
+export const RowActions = styled(Space)`
+  justify-content: center;
+`;
+
+export const CatalogActionIconButton = styled(Button, {
+  shouldForwardProp: (prop) =>
+    !["$borderColor", "$textColor", "$hoverBg", "$hoverText"].includes(prop),
+})`
+  border-color: ${({ $borderColor }) => $borderColor};
+  background: transparent;
+  color: ${({ $textColor }) => $textColor};
+
+  &:hover,
+  &:focus {
+    border-color: ${({ $hoverBg }) => $hoverBg} !important;
+    background: ${({ $hoverBg }) => $hoverBg} !important;
+    color: ${({ $hoverText }) => $hoverText} !important;
+  }
+`;

@@ -1,4 +1,100 @@
-const normalizeText = (value) => String(value || "").trim().toLowerCase();
+import {
+  normalizeClipboardText,
+  normalizeLookupText,
+} from "../../../shared/lib/normalizeClipboardText";
+
+const normalizeText = (value) => normalizeLookupText(value || "");
+
+const EXPECTED_COLUMN_COUNT = 6;
+
+const parseClipboardRows = ({ clipboardText, separator, expectedColumnCount }) => {
+  const rows = [];
+  let currentRow = [];
+  let currentCell = "";
+  let isInsideQuotes = false;
+  let quoteWrappedCell = false;
+
+  const pushCell = () => {
+    currentRow.push(currentCell.trim());
+    currentCell = "";
+    quoteWrappedCell = false;
+  };
+
+  const pushRow = () => {
+    const hasContent = currentRow.some((cell) => String(cell || "").trim() !== "");
+
+    if (hasContent) {
+      rows.push(currentRow);
+    }
+
+    currentRow = [];
+  };
+
+  for (let index = 0; index < clipboardText.length; index += 1) {
+    const character = clipboardText[index];
+    const nextCharacter = clipboardText[index + 1];
+
+    if (character === '"' && (quoteWrappedCell || currentCell === "")) {
+      if (isInsideQuotes && nextCharacter === '"') {
+        currentCell += '"';
+        index += 1;
+        continue;
+      }
+
+      quoteWrappedCell = true;
+      isInsideQuotes = !isInsideQuotes;
+      continue;
+    }
+
+    if (!isInsideQuotes && character === separator) {
+      pushCell();
+      continue;
+    }
+
+    if (!isInsideQuotes && (character === "\n" || character === "\r")) {
+      const isLineBreakForCurrentCell = currentRow.length < expectedColumnCount - 1;
+
+      if (isLineBreakForCurrentCell) {
+        currentCell += "\n";
+
+        if (character === "\r" && nextCharacter === "\n") {
+          index += 1;
+        }
+
+        continue;
+      }
+
+      pushCell();
+      pushRow();
+
+      if (character === "\r" && nextCharacter === "\n") {
+        index += 1;
+      }
+
+      continue;
+    }
+
+    currentCell += character;
+  }
+
+  pushCell();
+  pushRow();
+
+  return rows;
+};
+
+const isHeaderRow = (cells = []) => {
+  const [id, category, name, unit, priceMin, priceMax] = cells;
+
+  return (
+    normalizeText(id) === "id" &&
+    normalizeText(category) === "categoria" &&
+    normalizeText(name) === "nombre" &&
+    normalizeText(unit) === "unidad" &&
+    normalizeText(priceMin) === "precio min" &&
+    normalizeText(priceMax) === "precio max"
+  );
+};
 
 const parseNumberCell = (value) => {
   if (value === null || value === undefined || value === "") {
@@ -39,43 +135,46 @@ export const parseProductUploadClipboard = ({ clipboardText, unitOptions = [], c
     return { rows: [], hasValidSeparator: false };
   }
 
-  const rawRows = clipboardText
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => line.split(separator).map((cell) => cell.trim()));
+  const rawRows = parseClipboardRows({
+    clipboardText,
+    separator,
+    expectedColumnCount: EXPECTED_COLUMN_COUNT,
+  }).filter((cells) => !isHeaderRow(cells));
 
   const parsedRows = rawRows.map((cells, index) => {
     const [rawId, rawCategory, rawName, rawUnit, rawPriceMin, rawPriceMax] = cells;
-
-    const idValue = rawId && rawId !== "-" ? rawId : `${Date.now()}-${index + 1}`;
+    const rowKey = `${Date.now()}-${index + 1}`;
+    const idValue = rawId && rawId !== "-" ? rawId : "";
+    const normalizedCategory = normalizeClipboardText(rawCategory);
+    const normalizedName = normalizeClipboardText(rawName, { preserveLineBreaks: true });
+    const normalizedUnit = normalizeClipboardText(rawUnit);
 
     const categoryId = resolveSelectValue({
       options: categoryOptions,
-      value: rawCategory,
+      value: normalizedCategory,
       fallback: categoryOptions[0]?.id,
     });
     const unitId = resolveSelectValue({
       options: unitOptions,
-      value: rawUnit,
+      value: normalizedUnit,
       fallback: unitOptions[0]?.id,
     });
 
     return {
-      rowKey: `${Date.now()}-${index + 1}`,
+      rowKey,
       id: idValue,
       category: categoryId,
       categoryLabel: resolveSelectLabel({
         options: categoryOptions,
         id: categoryId,
-        fallback: rawCategory || "",
+        fallback: normalizedCategory,
       }),
-      name: rawName || "",
+      name: normalizedName,
       unit: unitId,
       unitLabel: resolveSelectLabel({
         options: unitOptions,
         id: unitId,
-        fallback: rawUnit || "",
+        fallback: normalizedUnit,
       }),
       price_min: parseNumberCell(rawPriceMin),
       price_max: parseNumberCell(rawPriceMax),

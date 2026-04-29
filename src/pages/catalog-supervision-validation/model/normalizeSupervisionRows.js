@@ -13,6 +13,24 @@ const toDateOnly = (value) => {
   return typeof value === "string" ? value.split("T")[0] : "";
 };
 
+const toMarketStudyValue = (value) => {
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (["true", "1", "si", "sí", "alertado"].includes(normalized)) {
+      return "SI";
+    }
+
+    if (["false", "0", "no", ""].includes(normalized)) {
+      return "NO";
+    }
+
+    return value;
+  }
+
+  return value ? "SI" : "NO";
+};
+
 const resolveStatusByApprovals = ({ approvalDate, approvals = [] }) => {
   if (!Array.isArray(approvals) || approvals.length === 0) {
     return GeneralStatusDeliveryProductEnum.PENDING_APPROVAL;
@@ -99,6 +117,7 @@ export const normalizeSupervisionRows = (rows = []) => {
       description: row?.especificacion_tecnicas ?? "-",
       brand: row?.marca_comercial ?? "-",
       unit: row?.unidad_medida ?? "-",
+      market_study: toMarketStudyValue(row?.alertado),
       price_min: priceMinValue,
       price_max: priceMaxValue,
       price: priceValue,

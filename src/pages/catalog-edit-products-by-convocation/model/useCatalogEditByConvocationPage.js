@@ -191,8 +191,8 @@ export const useCatalogEditByConvocationPage = () => {
   }, []);
 
   const handleCreateProducts = useCallback(() => {
-    navigate("/admin/product-upload");
-  }, [navigate]);
+    navigate(`/admin/product-upload?convocationId=${params.id}`);
+  }, [navigate, params.id]);
 
   const handleBack = useCallback(() => {
     navigate("/admin/list-products-by-convocation");

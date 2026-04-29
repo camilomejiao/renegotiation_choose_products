@@ -18,6 +18,7 @@ export const SmartTableView = ({
   total,
   currentPage,
   defaultText = "---",
+  emptyText,
   defaultSelectedRows,
   rowSelectionType = "checkbox",
   enableRowSelection = true,
@@ -75,6 +76,17 @@ export const SmartTableView = ({
   });
 
   const resetColumns = () => setColumnConfig(columns);
+  const resolvedScroll = useMemo(() => {
+    if (scroll === false || scroll == null) {
+      return undefined;
+    }
+
+    return {
+      x: 1,
+      y: 480,
+      ...scroll,
+    };
+  }, [scroll]);
 
   const rowClassName = useMemo(
     () => {
@@ -163,9 +175,10 @@ export const SmartTableView = ({
             onRow={onRow}
             pagination={pagination}
             onChange={handleSort}
-            scroll={scroll}
+            scroll={resolvedScroll}
             showHeader={showHeader}
             rowClassName={rowClassName}
+            locale={emptyText ? { emptyText } : undefined}
           />
         </TableContainer>
       )}

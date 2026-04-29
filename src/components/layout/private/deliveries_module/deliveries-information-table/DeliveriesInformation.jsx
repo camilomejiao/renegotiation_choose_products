@@ -1,6 +1,5 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../shared/loading/Loading";
 import { Button, Col, Row } from "react-bootstrap";
 import Select from "react-select";
@@ -26,6 +25,7 @@ import {
 } from "../../../../../helpers/GlobalEnum";
 
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 
 const canShowSuppliers = [RolesEnum.SUPPLIER];
 const canShowOtherRol = [
@@ -57,7 +57,7 @@ export const DeliveriesInformation = () => {
     const [dataDepts, setDataDepts] = useState([]);
     const [dataMunis, setDataMunis] = useState([]);
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
@@ -76,18 +76,18 @@ export const DeliveriesInformation = () => {
     const loadedDeptsRef = useRef(false);
 
     const columns = [
-        { field: "id", headerName: "N° Entrega", width: 100 },
-        { field: "send_date", headerName: "Fecha de envio", width: 100 },
-        { field: "department_name", headerName: "Departamento", width: 110 },
-        { field: "municipality_name", headerName: "Municipio", width: 110 },
-        { field: "status", headerName: "Estado", width: 110 },
-        { field: "cub_id", headerName: "CUB", width: 80 },
+        { title: "N° Entrega", dataIndex: "id", key: "id", width: 110 },
+        { title: "Fecha de envio", dataIndex: "send_date", key: "send_date", width: 140 },
+        { title: "Departamento", dataIndex: "department_name", key: "department_name", width: 140 },
+        { title: "Municipio", dataIndex: "municipality_name", key: "municipality_name", width: 140 },
+        { title: "Estado", dataIndex: "status", key: "status", width: 140 },
+        { title: "CUB", dataIndex: "cub_id", key: "cub_id", width: 100 },
         {
-            field: "name",
-            headerName: "Nombre del Beneficiario",
-            flex: 1,
-            minWidth: 200,
-            renderCell: (params) => (
+            title: "Nombre del Beneficiario",
+            dataIndex: "name",
+            key: "name",
+            width: 280,
+            render: (value) => (
                 <div
                     style={{
                         whiteSpace: "normal",
@@ -96,17 +96,17 @@ export const DeliveriesInformation = () => {
                         overflowWrap: "break-word",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
-        { field: "identification", headerName: "Identificación", width: 110 },
+        { title: "Identificación", dataIndex: "identification", key: "identification", width: 140 },
         {
-            field: "supplier_name",
-            headerName: "Proveedor",
-            flex: 1,
-            minWidth: 200,
-            renderCell: (params) => (
+            title: "Proveedor",
+            dataIndex: "supplier_name",
+            key: "supplier_name",
+            width: 280,
+            render: (value) => (
                 <div
                     style={{
                         whiteSpace: "normal",
@@ -115,18 +115,18 @@ export const DeliveriesInformation = () => {
                         overflowWrap: "break-word",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
-        { field: "supplier_nit", headerName: "Nit", width: 110 },
-        { field: "pay", headerName: "Valor", width: 110 },
+        { title: "Nit", dataIndex: "supplier_nit", key: "supplier_nit", width: 130 },
+        { title: "Valor", dataIndex: "pay", key: "pay", width: 140 },
         {
-            field: "observation",
-            headerName: "Observación",
-            flex: 1,
-            minWidth: 200,
-            renderCell: (params) => (
+            title: "Observación",
+            dataIndex: "observation",
+            key: "observation",
+            width: 320,
+            render: (value) => (
                 <div
                     style={{
                         whiteSpace: "normal",
@@ -135,7 +135,7 @@ export const DeliveriesInformation = () => {
                         overflowWrap: "break-word",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
@@ -300,7 +300,7 @@ export const DeliveriesInformation = () => {
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return;
 
-        setPage(0);
+        setPage(1);
         setActiveStatusKey("");
         setSelectedSupplierId("");
         setCommittedSearch(query);
@@ -326,7 +326,7 @@ export const DeliveriesInformation = () => {
     const handleChangeStatus = (newKey) => {
         if (newKey === activeStatusKey) return;
         setActiveStatusKey(newKey);
-        setPage(0);
+        setPage(1);
         setCommittedSearch("");
         setSearchQuery("");
     };
@@ -336,7 +336,7 @@ export const DeliveriesInformation = () => {
         setSelectedSupplierId(opt?.value ?? "");
         setCommittedSearch("");
         setSearchQuery("");
-        setPage(0);
+        setPage(1);
     }
 
     const searchDept = (opt) => {
@@ -344,14 +344,14 @@ export const DeliveriesInformation = () => {
         loadMunicipalitiesForDepartment(opt?.value ?? "");
         setCommittedSearch("");
         setSearchQuery("");
-        setPage(0);
+        setPage(1);
     }
 
     const searchMuni = (opt) => {
         setSelectedMuniId(opt?.value ?? "");
         setCommittedSearch("");
         setSearchQuery("");
-        setPage(0);
+        setPage(1);
     }
 
     //
@@ -449,7 +449,7 @@ export const DeliveriesInformation = () => {
             const statusKey = activeStatusKey;
 
             getDeliveriesInformation(
-                page + 1,
+                page,
                 pageSize,
                 search,
                 statusKey,
@@ -695,68 +695,29 @@ export const DeliveriesInformation = () => {
                 {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div style={{ height: 600, width: "100%" }}>
-                    <DataGrid
-                        rows={dataTable}
+                    <SmartTable
+                        rowKey="id"
                         columns={columns}
+                        dataSource={dataTable}
                         loading={loading}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        rowHeight={50}
-                        headerHeight={48}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
+                        total={rowCount}
+                        currentPage={page}
+                        defaultPageSize={pageSize}
+                        pageSizeOptions={["25", "50", "100"]}
+                        onPageChange={(nextPage, nextPageSize) => {
+                            setPage(nextPage);
+                            setPageSize(nextPageSize);
                         }}
-                        onRowClick={handleRowClick}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "10px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "14px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cellContent": {
-                                whiteSpace: "normal",
-                                wordBreak: "break-word",
-                                lineHeight: 1.4,
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "12px",
-                                textAlign: "left",
-                                justifyContent: "left",
-                                whiteSpace: 'normal',
-                                wordBreak: 'break-word',
-                                display: 'block',
-                                paddingTop: '10px',
-                                alignItems: "flex-start",
-                                paddingBottom: '10px',
-                                lineHeight: "1.4 !important",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
+                        onRow={(record) => ({
+                            onClick: () => handleRowClick({ row: record }),
+                        })}
+                        defaultText="---"
+                        emptyText="No hay entregas registradas."
+                        enableRowSelection={false}
+                        showToolbar={false}
+                        showTableResize={false}
+                        showColumnSettings={false}
+                        scroll={{ x: 2200 }}
                     />
 
                 </div>
@@ -765,4 +726,3 @@ export const DeliveriesInformation = () => {
         </>
     )
 }
-

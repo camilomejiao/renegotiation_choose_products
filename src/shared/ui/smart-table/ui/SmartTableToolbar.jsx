@@ -8,7 +8,12 @@ import {
 } from "@ant-design/icons";
 import { ColumnSettings } from "./ColumnSettings";
 import { DownloadMenu } from "./DownloadMenu";
-import { EmptySpace, LeftToolbar, ToolbarRow } from "./SmartTable.styles";
+import {
+  EmptySpace,
+  LeftToolbar,
+  RightToolbar,
+  ToolbarRow,
+} from "./SmartTable.styles";
 
 export const SmartTableToolbar = ({
   leftToolbar,
@@ -33,10 +38,10 @@ export const SmartTableToolbar = ({
   return (
     <ToolbarRow>
       <LeftToolbar>
-        {leftToolbar?.length ? leftToolbar : <EmptySpace />}
+        {leftToolbar ? leftToolbar : <EmptySpace />}
       </LeftToolbar>
 
-      <Flex gap={4} align="center" wrap>
+      <RightToolbar gap={4} align="center" wrap>
         {toolbarExtensions}
 
         <Button type="text" icon={<ReloadOutlined />} onClick={reload}>
@@ -101,7 +106,7 @@ export const SmartTableToolbar = ({
             ]}
           />
         )}
-      </Flex>
+      </RightToolbar>
     </ToolbarRow>
   );
 };

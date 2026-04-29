@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../../shared/loading/Loading";
 import { Button, Col, Row } from "react-bootstrap";
 //
@@ -14,6 +13,7 @@ import { deliveriesServices } from "../../../../../../helpers/services/Deliverie
 
 //Enum
 import { ReportTypePaymentsEnum, ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
+import { SmartTable } from "../../../../../../shared/ui/smart-table";
 
 /** Roles que pueden ver el boton descargra. */
 const canShowRoles = [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS];
@@ -23,23 +23,24 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     const canShowButton = canShowRoles.includes(userAuth.rol_id);
 
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
+    const [appliedSearch, setAppliedSearch] = useState("");
     const [loading, setLoading] = useState(false);
     const [informationLoadingText, setInformationLoadingText] = useState("");
 
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "N° Entrega", width: 100 },
-        { field: "approval_date", headerName: "Fecha Aprobación", width: 80 },
-        { field: "cub_id", headerName: "CUB", width: 80 },
-        { field: "name", headerName: "Beneficiario", width: 350 },
-        { field: "identification", headerName: "Identificación", width: 100 },
-        { field: "supplier_name", headerName: "Proveedor", width: 350 },
-        { field: "supplier_nit", headerName: "Nit", width: 150 },
+        { title: "NÂ° Entrega", dataIndex: "id", key: "id", width: 110 },
+        { title: "Fecha AprobaciÃ³n", dataIndex: "approval_date", key: "approval_date", width: 150 },
+        { title: "CUB", dataIndex: "cub_id", key: "cub_id", width: 100 },
+        { title: "Beneficiario", dataIndex: "name", key: "name", width: 320 },
+        { title: "IdentificaciÃ³n", dataIndex: "identification", key: "identification", width: 160 },
+        { title: "Proveedor", dataIndex: "supplier_name", key: "supplier_name", width: 320 },
+        { title: "Nit", dataIndex: "supplier_nit", key: "supplier_nit", width: 160 },
     ];
 
     const getDeliveryList = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -73,8 +74,8 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
         });
     }
 
-    const handleRowClick = (params) => {
-        onRowSelect(params.id);
+    const handleRowClick = (record) => {
+        onRowSelect(record.id);
     }
 
     const handleSearchChange = (e) => {
@@ -88,14 +89,12 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
-        if (!canSearch) return; // no dispares la búsqueda si 1–3 chars
+        if (!canSearch) return; // no dispares la busqueda si 1-3 caracteres
 
-        // opcional: resetear página si usas paginación
-        setPage(0);
+        setPage(1);
 
-        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getDeliveryList(1, pageSize, query);
+            setAppliedSearch(query);
         }, 150);
     };
 
@@ -110,7 +109,7 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
 
             if (status === ResponseStatusEnum.OK && blob) {
                 const fileURL = URL.createObjectURL(blob);
-                // Si es PDF y quieres abrir en otra pestaña:
+                // Si es PDF y quieres abrir en otra pestaÃ±a:
                 if ((type).includes('pdf')) {
                     window.open(fileURL, '_blank');
                 } else {
@@ -136,8 +135,8 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
     };
 
     useEffect(() => {
-        getDeliveryList(page + 1, pageSize, "");
-    }, [page, pageSize]);
+        getDeliveryList(page, pageSize, appliedSearch);
+    }, [page, pageSize, appliedSearch]);
 
     return (
         <>
@@ -189,59 +188,32 @@ export const BeneficiaryDeliveryList = ({ onRowSelect }) => {
             {loading && <Loading fullScreen text={informationLoadingText} />}
 
             <div style={{ height: 600, width: "100%" }}>
-                <DataGrid
-                    rows={dataTable}
+                <SmartTable
+                    rowKey="id"
                     columns={columns}
+                    dataSource={dataTable}
                     loading={loading}
-                    paginationMode="server"
-                    rowCount={rowCount}
-                    pageSizeOptions={[25, 50, 100]}
-                    paginationModel={{ page, pageSize }}
-                    onPaginationModelChange={({ page, pageSize }) => {
-                        setPage(page);
-                        setPageSize(pageSize);
+                    total={rowCount}
+                    currentPage={page}
+                    defaultPageSize={pageSize}
+                    pageSizeOptions={["25", "50", "100"]}
+                    onPageChange={(nextPage, nextPageSize) => {
+                        setPage(nextPage);
+                        setPageSize(nextPageSize);
                     }}
-                    onRowClick={handleRowClick}
-                    componentsProps={{
-                        columnHeader: {
-                            style: {
-                                textAlign: "left",
-                                fontWeight: "bold",
-                                fontSize: "9px",
-                                wordWrap: "break-word",
-                            },
-                        },
-                    }}
-                    sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                            backgroundColor: "#2d3a4d",
-                            color: "white",
-                            fontSize: "12px",
-                        },
-                        "& .MuiDataGrid-columnHeader": {
-                            textAlign: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        },
-                        "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                            backgroundColor: "#2d3a4d !important",
-                            color: "white !important",
-                        },
-                        "& .MuiDataGrid-cell": {
-                            fontSize: "12px",
-                            textAlign: "center",
-                            justifyContent: "center",
-                            display: "flex",
-                        },
-                        "& .MuiDataGrid-row:hover": {
-                            backgroundColor: "#E8F5E9",
-                        },
-                    }}
+                    onRow={(record) => ({
+                        onClick: () => handleRowClick(record),
+                    })}
+                    defaultText="---"
+                    emptyText="No hay entregas aprobadas registradas."
+                    enableRowSelection={false}
+                    showToolbar={false}
+                    showTableResize={false}
+                    showColumnSettings={false}
+                    scroll={{ x: 1500 }}
                 />
             </div>
         </>
     )
 }
-
 

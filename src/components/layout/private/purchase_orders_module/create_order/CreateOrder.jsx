@@ -1,7 +1,7 @@
 ﻿import { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useParams} from "react-router-dom";
-import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import { debounce } from "@mui/material";
 import printJS from "print-js";
@@ -18,6 +18,8 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
 import { Loading } from "../../../shared/loading/Loading";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
+import { escapeHtml } from "../../../../../shared/lib/escapeHtml";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
 //Services
@@ -43,6 +45,57 @@ export const CreateOrder = () => {
     const [headLineInformation, setHeadLineInformation] = useState({});
     const [isReportLoading, setIsReportLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const getProductDisplayName = (product) => {
+        if (typeof product === "string") return product;
+
+        return (
+            product?.nombre ||
+            product?.name ||
+            product?.producto?.nombre ||
+            product?.producto?.name ||
+            product?.producto ||
+            product?.nombre_producto ||
+            product?.producto_nombre ||
+            product?.Producto ||
+            product?.Producto_Nombre ||
+            ""
+        );
+    };
+
+    const buildProductMarketErrorHtml = (errorMessage, productNames) => {
+        const safeMessage = escapeHtml(errorMessage || "Hubo un error al intentar agregar el producto.");
+        if (!productNames?.length) {
+            return `<p style="margin: 0; text-align: left;">${safeMessage}</p>`;
+        }
+
+        const items = productNames
+            .map((name) => `<li style="margin: 0 0 4px 0;">${escapeHtml(name)}</li>`)
+            .join("");
+
+        return `
+            <div style="text-align: left;">
+                <p style="margin: 0 0 8px 0;">${safeMessage}</p>
+                <div style="margin: 0 0 6px 0; font-weight: 600;">Productos:</div>
+                <div style="max-height: 86px; overflow: auto; padding-right: 4px;">
+                    <ul style="margin: 0 0 0 16px; padding: 0;">${items}</ul>
+                </div>
+            </div>
+        `;
+    };
+
+    const showProductMarketError = (errorMessage, productosAlterados = [], fallbackProductName = "", title = "Error") => {
+        const normalizedProducts = Array.isArray(productosAlterados) ? productosAlterados : [];
+        const productNames = normalizedProducts
+            .map(getProductDisplayName)
+            .filter(Boolean);
+
+        if (!productNames.length && fallbackProductName) {
+            productNames.push(fallbackProductName);
+        }
+
+        AlertComponent.Error(title, buildProductMarketErrorHtml(errorMessage, productNames));
+    };
 
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
@@ -87,7 +140,24 @@ export const CreateOrder = () => {
         if (selectedItem) {
             try {
                 //Obtenemos los datos completos del producto desde el servicio
-                const { data } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
+                const { data, status } = await productForPurchaseOrderServices.getProductId(selectedItem.value);
+
+                const productErrorMessage =
+                    data?.error ||
+                    data?.message ||
+                    data?.detail ||
+                    data?.errors?.[0]?.title ||
+                    data?.errors?.[0]?.detail ||
+                    null;
+
+                if (status === ResponseStatusEnum.BAD_REQUEST || productErrorMessage) {
+                    showProductMarketError(
+                        productErrorMessage || "No fue posible agregar el producto.",
+                        data?.productos_alterados,
+                        selectedItem?.label
+                    );
+                    return;
+                }
 
                 if(!data) {
                     AlertComponent.error('Error', 'El producto no tiene valor total configurado!');
@@ -266,6 +336,96 @@ export const CreateOrder = () => {
         return total === 0 || saldoRestante < 0 ;
     };
 
+    const productRows = items.map((item, index) => ({
+        rowKey: `${item.id}-${index}`,
+        index,
+        id: item.id,
+        nombre: item.nombre,
+        valor_unitario: item.valor_unitario,
+        unidad: item.unidad,
+        quantity: item.quantity,
+        discount: item.discount,
+        total: item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100),
+    }));
+
+    const columns = [
+        {
+            title: "COD",
+            dataIndex: "id",
+            key: "id",
+            width: 110,
+        },
+        {
+            title: "Nombre",
+            dataIndex: "nombre",
+            key: "nombre",
+            width: 260,
+        },
+        {
+            title: "Vr. Unitario",
+            dataIndex: "valor_unitario",
+            key: "valor_unitario",
+            width: 160,
+            render: (value) => `$${Number(value || 0).toLocaleString()}`,
+        },
+        {
+            title: "Unidad",
+            dataIndex: "unidad",
+            key: "unidad",
+            width: 130,
+        },
+        {
+            title: "Cantidad",
+            dataIndex: "quantity",
+            key: "quantity",
+            width: 140,
+            render: (_, record) => (
+                <Form.Control
+                    type="number"
+                    className="small-input form-control-sm"
+                    value={record.quantity}
+                    onChange={(e) => handleQuantityChange(record.index, e.target.value)}
+                    min="1"
+                />
+            ),
+        },
+        {
+            title: "Dto",
+            dataIndex: "discount",
+            key: "discount",
+            width: 140,
+            render: (_, record) => (
+                <Form.Control
+                    type="text"
+                    className="small-input form-control-sm"
+                    value={record.discount}
+                    onChange={(e) => handleDiscountChange(record.index, limitToFourDecimals(e.target.value))}
+                />
+            ),
+        },
+        {
+            title: "Total",
+            dataIndex: "total",
+            key: "total",
+            width: 170,
+            render: (value) => `$${Number(value || 0).toLocaleString()}`,
+        },
+        {
+            title: "",
+            dataIndex: "actions",
+            key: "actions",
+            width: 90,
+            render: (_, record) => (
+                <Button
+                    variant="outline-danger"
+                    onClick={() => handleDeleteItem(record.index)}
+                >
+                    <FaTrashAlt />
+                </Button>
+            ),
+        },
+    ];
+
     useEffect(() => {
         const subtotal = items.reduce((acc, item) => {
             const itemTotal = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
@@ -368,55 +528,23 @@ export const CreateOrder = () => {
                     {isLoading && <Loading text="Cargando..." />}
 
                     {/* Tabla */}
-                    <div className="mt-3 table-responsive scrollable-thead-body">
-                        <Table bordered hover>
-                            <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                <tr>
-                                    <th>COD</th>
-                                    <th>Nombre</th>
-                                    <th>Vr. Unitario</th>
-                                    <th>Unidad</th>
-                                    <th>Cantidad</th>
-                                    <th>Dto</th>
-                                    <th>Total</th>
-                                    <th>&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.id}</td>
-                                        <td style={{textAlign: 'left'}} >{item.nombre}</td>
-                                        <td>${item.valor_unitario.toLocaleString()}</td>
-                                        <td>{item.unidad}</td>
-                                        <td>
-                                            <Form.Control
-                                                type="number"
-                                                className="small-input form-control-sm"
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(index, e.target.value)}
-                                                min="1"
-                                            />
-                                        </td>
-                                        <td>
-                                            <Form.Control
-                                                type="text"
-                                                className="small-input form-control-sm"
-                                                value={item.discount}
-                                                onChange={(e) => handleDiscountChange(index, limitToFourDecimals(e.target.value))}
-                                            />
-                                        </td>
-                                        <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
-                                        <td>
-                                            <Button variant="outline-danger"
-                                                    onClick={() => handleDeleteItem(index)}>
-                                                <FaTrashAlt />
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
+                    <div className="mt-3 scrollable-thead-body">
+                        <SmartTable
+                            rowKey="rowKey"
+                            columns={columns}
+                            dataSource={productRows}
+                            total={productRows.length}
+                            currentPage={1}
+                            defaultPageSize={10}
+                            pageSizeOptions={["10", "20", "50"]}
+                            defaultText="---"
+                            emptyText="No hay productos agregados."
+                            enableRowSelection={false}
+                            showToolbar={false}
+                            showTableResize={false}
+                            showColumnSettings={false}
+                            scroll={{ x: 1200 }}
+                        />
                     </div>
 
                     {/* Totales */}
@@ -485,4 +613,3 @@ export const CreateOrder = () => {
         </>
     )
 }
-

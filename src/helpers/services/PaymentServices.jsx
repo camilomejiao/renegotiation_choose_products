@@ -1,6 +1,6 @@
 ﻿import { GlobalConnex } from "../GlobalConnex";
 import { authTokenService } from "./AuthTokenService";
-import {ReportTypePaymentsEnum} from "../GlobalEnum";
+import { ReportTypePaymentsEnum } from "../GlobalEnum";
 
 /**
  * Servicio para gestionar los pagos, entregas y cuentas de cobro.

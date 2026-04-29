@@ -17,7 +17,7 @@ export const EditCatalogItemButton = ({ onClick }) => {
       icon={<EditOutlined />}
       onClick={onClick}
     >
-      Editar
+      Agregar productos
     </EditButton>
   );
 };

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
@@ -7,7 +7,6 @@ import { handleError, showAlert } from "../../../helpers/utils/utils";
 import {
   getEnvironmentalCategoryKeys,
   getPlansByConvocation,
-  getProductsByPlan,
   loadProductUploadDependencies,
   saveProductsByConvocation,
 } from "../api/catalogProductUploadApi";
@@ -28,10 +27,10 @@ const filterRows = (rows, query) => {
 
 export const useCatalogProductUploadPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [loadingPlans, setLoadingPlans] = useState(false);
-  const [loadingTable, setLoadingTable] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [convocations, setConvocations] = useState([]);
@@ -42,8 +41,9 @@ export const useCatalogProductUploadPage = () => {
   const [selectedConvocation, setSelectedConvocation] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [rows, setRows] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const preselectedConvocationId = searchParams.get("convocationId");
 
   const loadInitialData = useCallback(async () => {
     try {
@@ -81,7 +81,7 @@ export const useCatalogProductUploadPage = () => {
     setSelectedPlan(null);
     setPlans([]);
     setRows([]);
-    setSelectedRows([]);
+    setSearchQuery("");
 
     if (!option?.value) {
       return;
@@ -99,41 +99,40 @@ export const useCatalogProductUploadPage = () => {
     }
   }, []);
 
-  const handleSelectedPlan = useCallback((option) => {
-    setSelectedPlan(option ?? null);
-    setSelectedRows([]);
-  }, []);
-
-  const loadProductsByPlan = useCallback(async (planId) => {
-    if (!planId) {
-      setRows([]);
+  useEffect(() => {
+    if (!preselectedConvocationId || !convocations.length) {
       return;
     }
 
-    try {
-      setLoadingTable(true);
-      const { products } = await getProductsByPlan({ planId, page: 1, pageSize: 100 });
-      const normalizedRows = products.map((product, index) => ({
-        rowKey: String(product?.id ?? `${Date.now()}-${index + 1}`),
-        id: product?.id ?? `${index + 1}`,
-        category: product?.categoria_producto?.id ?? product?.categoria_producto ?? null,
-        categoryLabel:
-          product?.categoria_producto?.nombre ?? String(product?.categoria_producto ?? ""),
-        name: product?.nombre ?? "",
-        unit: product?.unidad_medida?.id ?? product?.unidad_medida ?? null,
-        unitLabel: product?.unidad_medida?.nombre ?? String(product?.unidad_medida ?? ""),
-        price_min: Number(product?.precio_min ?? 0),
-        price_max: Number(product?.precio_max ?? 0),
-      }));
-      setRows(normalizedRows);
-      setSelectedRows([]);
-    } catch (error) {
-      handleError(error, "Error cargando productos del plan.");
-      setRows([]);
-      setSelectedRows([]);
-    } finally {
-      setLoadingTable(false);
+    const matchingConvocation = convocations.find(
+      (item) => String(item.id) === String(preselectedConvocationId)
+    );
+
+    if (!matchingConvocation) {
+      return;
     }
+
+    const nextSelectedConvocation = {
+      value: matchingConvocation.id,
+      label: matchingConvocation.nombre,
+    };
+
+    if (selectedConvocation?.value === nextSelectedConvocation.value) {
+      return;
+    }
+
+    handleSelectedConvocation(nextSelectedConvocation);
+  }, [
+    convocations,
+    handleSelectedConvocation,
+    preselectedConvocationId,
+    selectedConvocation?.value,
+  ]);
+
+  const handleSelectedPlan = useCallback((option) => {
+    setSelectedPlan(option ?? null);
+    setRows([]);
+    setSearchQuery("");
   }, []);
 
   const handleSearchChange = useCallback((event) => {
@@ -142,12 +141,17 @@ export const useCatalogProductUploadPage = () => {
 
   const handleResetTable = useCallback(() => {
     setRows([]);
-    setSelectedRows([]);
     setSearchQuery("");
   }, []);
 
-  const handleRowSelectionChange = useCallback((_keys, records) => {
-    setSelectedRows(records || []);
+  const handleRowChange = useCallback((rowKey, patch) => {
+    setRows((currentRows) =>
+      currentRows.map((row) => (row.rowKey === rowKey ? { ...row, ...patch } : row))
+    );
+  }, []);
+
+  const handleDeleteRow = useCallback((rowKey) => {
+    setRows((currentRows) => currentRows.filter((row) => row.rowKey !== rowKey));
   }, []);
 
   const handleBack = useCallback(() => {
@@ -165,8 +169,10 @@ export const useCatalogProductUploadPage = () => {
       return;
     }
 
-    if (!selectedRows.length) {
-      AlertComponent.warning("Validacion", "Selecciona al menos un producto.");
+    const hasEmptyFields = rows.some((row) => !row.name || !row.price_min || !row.price_max);
+
+    if (hasEmptyFields) {
+      AlertComponent.warning("Validacion", "Completa nombre, precio minimo y precio maximo.");
       return;
     }
 
@@ -174,7 +180,7 @@ export const useCatalogProductUploadPage = () => {
       setSaving(true);
 
       const environmentalKeys = await getEnvironmentalCategoryKeys();
-      const productos = buildProductUploadPayload({ rows: selectedRows, environmentalKeys });
+      const productos = buildProductUploadPayload({ rows, environmentalKeys });
 
       const response = await saveProductsByConvocation({
         jornada_plan: Number(selectedPlan.value),
@@ -219,10 +225,9 @@ export const useCatalogProductUploadPage = () => {
         return;
       }
 
-      if (status === ResponseStatusEnum.CREATED) {
+      if (status === ResponseStatusEnum.CREATED || status === ResponseStatusEnum.OK) {
         showAlert("", "Todos los productos se han creado exitosamente");
         setRows([]);
-        setSelectedRows([]);
         setSearchQuery("");
       }
     } catch (error) {
@@ -230,7 +235,7 @@ export const useCatalogProductUploadPage = () => {
     } finally {
       setSaving(false);
     }
-  }, [rows, selectedPlan?.value, selectedRows]);
+  }, [rows, selectedPlan?.value]);
 
   const handleClipboard = useCallback(
     (event) => {
@@ -254,8 +259,7 @@ export const useCatalogProductUploadPage = () => {
         return;
       }
 
-      setRows(parsedRows);
-      setSelectedRows([]);
+      setRows((currentRows) => [...currentRows, ...parsedRows]);
     },
     [categoryOptions, unitOptions]
   );
@@ -267,14 +271,9 @@ export const useCatalogProductUploadPage = () => {
     };
   }, [handleClipboard]);
 
-  useEffect(() => {
-    loadProductsByPlan(selectedPlan?.value);
-  }, [loadProductsByPlan, selectedPlan?.value]);
-
   return {
     loadingInitial,
     loadingPlans,
-    loadingTable,
     saving,
     convocationOptions,
     planOptions,
@@ -283,11 +282,12 @@ export const useCatalogProductUploadPage = () => {
     unitOptions,
     categoryOptions,
     rows: filteredRows,
-    selectedRows,
     searchQuery,
+    filteredRows,
     handleSelectedConvocation,
     handleSelectedPlan,
-    handleRowSelectionChange,
+    handleRowChange,
+    handleDeleteRow,
     handleSearchChange,
     handleResetTable,
     handleBack,

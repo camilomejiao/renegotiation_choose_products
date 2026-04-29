@@ -35,23 +35,6 @@ export const getPlansByConvocation = async (convocationId) => {
   return data?.data?.planes ?? [];
 };
 
-export const getProductsByPlan = async ({ planId, page = 1, pageSize = 100, search = "" }) => {
-  const { data, status } = await convocationProductsServices.getProductByConvocationAndPlan(
-    page,
-    pageSize,
-    planId,
-    search
-  );
-
-  if (status !== ResponseStatusEnum.OK) {
-    return { products: [] };
-  }
-
-  return {
-    products: data?.data?.productos ?? [],
-  };
-};
-
 export const saveProductsByConvocation = async (payload) => {
   return convocationProductsServices.saveProductsByConvocation(payload);
 };
