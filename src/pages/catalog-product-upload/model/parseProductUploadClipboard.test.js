@@ -24,6 +24,10 @@ describe("parseProductUploadClipboard", () => {
 
     expect(hasValidSeparator).toBe(true);
     expect(rows).toHaveLength(16);
+    expect(rows[0]).toMatchObject({
+      id: "1",
+      name: 'Producto prueba 1 %&/(#"',
+    });
     expect(rows[1]).toMatchObject({
       id: "2",
       name: "Producto prueba 2\nHola Camilo",
@@ -54,7 +58,7 @@ describe("parseProductUploadClipboard", () => {
     });
   });
 
-  it("removes special characters from category, name and unit on paste", () => {
+  it("preserves special characters in name while still resolving category and unit", () => {
     const { rows } = parseProductUploadClipboard({
       clipboardText: '2\t"Cat-egoría #1"\t"Nom@bre ++ 123"\t"Uni*dad %"\t10\t20',
       categoryOptions: [{ id: 1, nombre: "Categoria 1" }],
@@ -64,7 +68,7 @@ describe("parseProductUploadClipboard", () => {
     expect(rows[0]).toMatchObject({
       category: 1,
       unit: 2,
-      name: "Nombre 123",
+      name: "Nom@bre ++ 123",
       categoryLabel: "Categoria 1",
       unitLabel: "Unidad",
     });

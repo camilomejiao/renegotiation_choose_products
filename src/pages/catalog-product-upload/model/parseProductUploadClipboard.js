@@ -1,11 +1,9 @@
-import { sanitizeAlphaNumericText } from "../../../shared/lib/sanitizeAlphaNumericText";
+import {
+  normalizeClipboardText,
+  normalizeLookupText,
+} from "../../../shared/lib/normalizeClipboardText";
 
-const normalizeText = (value) =>
-  String(value || "")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+const normalizeText = (value) => normalizeLookupText(value || "");
 
 const EXPECTED_COLUMN_COUNT = 6;
 
@@ -109,7 +107,7 @@ const parseNumberCell = (value) => {
 };
 
 const resolveSelectValue = ({ options, value, fallback }) => {
-  const normalized = normalizeText(sanitizeAlphaNumericText(value));
+  const normalized = normalizeText(value);
   const foundByName = options.find((option) => normalizeText(option?.nombre) === normalized);
 
   if (foundByName) {
@@ -147,18 +145,18 @@ export const parseProductUploadClipboard = ({ clipboardText, unitOptions = [], c
     const [rawId, rawCategory, rawName, rawUnit, rawPriceMin, rawPriceMax] = cells;
     const rowKey = `${Date.now()}-${index + 1}`;
     const idValue = rawId && rawId !== "-" ? rawId : "";
-    const sanitizedCategory = sanitizeAlphaNumericText(rawCategory);
-    const sanitizedName = sanitizeAlphaNumericText(rawName, { preserveLineBreaks: true });
-    const sanitizedUnit = sanitizeAlphaNumericText(rawUnit);
+    const normalizedCategory = normalizeClipboardText(rawCategory);
+    const normalizedName = normalizeClipboardText(rawName, { preserveLineBreaks: true });
+    const normalizedUnit = normalizeClipboardText(rawUnit);
 
     const categoryId = resolveSelectValue({
       options: categoryOptions,
-      value: sanitizedCategory,
+      value: normalizedCategory,
       fallback: categoryOptions[0]?.id,
     });
     const unitId = resolveSelectValue({
       options: unitOptions,
-      value: sanitizedUnit,
+      value: normalizedUnit,
       fallback: unitOptions[0]?.id,
     });
 
@@ -169,14 +167,14 @@ export const parseProductUploadClipboard = ({ clipboardText, unitOptions = [], c
       categoryLabel: resolveSelectLabel({
         options: categoryOptions,
         id: categoryId,
-        fallback: sanitizedCategory,
+        fallback: normalizedCategory,
       }),
-      name: sanitizedName,
+      name: normalizedName,
       unit: unitId,
       unitLabel: resolveSelectLabel({
         options: unitOptions,
         id: unitId,
-        fallback: sanitizedUnit,
+        fallback: normalizedUnit,
       }),
       price_min: parseNumberCell(rawPriceMin),
       price_max: parseNumberCell(rawPriceMax),

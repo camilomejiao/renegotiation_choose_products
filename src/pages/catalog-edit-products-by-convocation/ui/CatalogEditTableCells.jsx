@@ -1,6 +1,5 @@
 import { Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { sanitizeAlphaNumericText } from "../../../shared/lib/sanitizeAlphaNumericText";
 import { CellInput, CellInputNumber, CellSelect } from "./CatalogEditTableCells.styles";
 
 const getRowIdentifier = (record) => record?.rowKey ?? record?.id;
@@ -20,11 +19,7 @@ export const NameCell = ({ value, record, onRowChange }) => {
   return (
     <CellInput
       value={value}
-      onChange={(event) =>
-        onRowChange(getRowIdentifier(record), {
-          name: sanitizeAlphaNumericText(event.target.value),
-        })
-      }
+      onChange={(event) => onRowChange(getRowIdentifier(record), { name: event.target.value })}
       size="small"
     />
   );
