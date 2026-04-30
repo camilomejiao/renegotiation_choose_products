@@ -47,14 +47,17 @@ export const getOrderReportColumns = ({ onDelete }) => [
     dataIndex: "__actions",
     key: "__actions",
     width: 160,
-    render: (_, record) => (
-      <AppButton
-        variant="danger"
-        icon={<DeleteOutlined />}
-        onClick={() => onDelete(record)}
-      >
-        Anular
-      </AppButton>
-    ),
+    render: (_, record) =>
+      record?.canCancelRequest ? (
+        <AppButton
+          variant="danger"
+          icon={<DeleteOutlined />}
+          onClick={() => onDelete(record)}
+        >
+          Anular
+        </AppButton>
+      ) : (
+        "---"
+      ),
   },
 ];

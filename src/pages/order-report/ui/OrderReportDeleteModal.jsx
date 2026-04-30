@@ -11,7 +11,7 @@ import { DeleteModalFooter } from "./OrderReportPage.styles";
 const { Paragraph, Text } = Typography;
 
 const IMPACT_ITEMS = [
-  "La solicitud será revisada por el equipo correspondiente antes de ser aceptada.",
+  "La solicitud será revisada por el equipo de Implementación antes de ser gestionada.",
   "Si la anulación es aceptada, la orden no podrá reactivarse ni deshacerse.",
   "Debes registrar un motivo claro para sustentar la solicitud.",
 ];
@@ -33,7 +33,7 @@ export const OrderReportDeleteModal = ({
   return (
     <Modal
       title="Solicitar anulación de orden"
-      subTitle="Esta acción inicia una revisión formal y puede volverse irreversible."
+      subTitle="Esta acción inicia una revisión formal sobre la orden de compra seleccionada."
       isOpen={open}
       onCloseModal={onClose}
       centered
@@ -49,7 +49,7 @@ export const OrderReportDeleteModal = ({
             loading={loading}
             disabled={!canSubmit}
           >
-            Enviar solicitud
+            Enviar
           </AppButton>
         </DeleteModalFooter>
       )}
@@ -63,7 +63,7 @@ export const OrderReportDeleteModal = ({
           <HeroBody>
             <HeroEyebrow>Advertencia importante</HeroEyebrow>
             <HeroTitle>
-              Una vez la solicitud sea aceptada, la anulación no se podrá deshacer.
+              Una vez la solicitud sea gestionada, no podrá ser cancelada.
             </HeroTitle>
             {orderId && (
               <OrderPill>Orden seleccionada: {orderId}</OrderPill>
@@ -84,14 +84,11 @@ export const OrderReportDeleteModal = ({
 
           <LegalCopy>
             <Paragraph>
-              La anulación de una orden de compra es una actuación sensible y solo
-              debe solicitarse cuando existan razones objetivas, verificables y
-              suficientemente documentadas.
+              PENDIENTE TEXTO JURÍDICO
             </Paragraph>
             <Paragraph>
-              Al continuar, declaras que revisaste la información disponible,
-              entiendes el impacto operativo de la anulación y que actúas dentro
-              de tus competencias funcionales.
+              Al continuar, declaras que revisaste la información disponible y
+              entiendes el impacto operativo de la solicitud.
             </Paragraph>
           </LegalCopy>
         </SummaryCard>
@@ -125,8 +122,7 @@ export const OrderReportDeleteModal = ({
             checked={confirmationChecked}
             onChange={(event) => onConfirmationChange(event.target.checked)}
           >
-            Confirmo que entiendo que estoy enviando una solicitud de anulación y
-            que, si esta es aceptada, no se podrá deshacer.
+            He leído y acepto el texto jurídico aplicable a esta solicitud.
           </AppCheckbox>
         </ConfirmationCard>
       </ModalContent>

@@ -33,6 +33,16 @@ class PurchaseOrderServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    /**
+     * Obtiene la lista paginada de solicitudes de anulación asociadas a órdenes.
+     * @param {string} queryString - Query string ya serializado.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    getCancellationRequests(queryString = "") {
+        const url = this.buildUrl(`solicitudes/${queryString}`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
+    }
+
     // =============================
     // ELIMINACIÓN
     // =============================
@@ -46,6 +56,25 @@ class PurchaseOrderServices {
         const url = this.buildUrl(`${orderId}/`);
         const options = {
             method: "DELETE",
+        };
+
+        if (Object.keys(payload).length > 0) {
+            options.body = JSON.stringify(payload);
+        }
+
+        return authTokenService.fetchWithAuth(url, options);
+    }
+
+    /**
+     * Cancela una solicitud de anulación previamente registrada.
+     * @param {number|string} requestId - ID de la solicitud.
+     * @param {Object} payload - Datos adicionales de cancelación.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    cancelCancellationRequest(requestId, payload = {}) {
+        const url = this.buildUrl(`solicitudes/${requestId}/cancelar/`);
+        const options = {
+            method: "PATCH",
         };
 
         if (Object.keys(payload).length > 0) {

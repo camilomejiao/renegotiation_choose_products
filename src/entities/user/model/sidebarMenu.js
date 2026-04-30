@@ -19,6 +19,7 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/management", iconKey: "userCog", label: "Control de Usuarios/Proveedores" },
       { path: "/admin/list-convocation", iconKey: "campaign", label: "Jornadas" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
       { path: "/admin/fiduciary/search-sp", iconKey: "searchDollar", label: "Consulta de Solicitudes de Pago" },
       { path: "/admin/payments-suppliers/create-collection-account", iconKey: "bank", label: "Solicitud de pago" },
     ],
@@ -71,6 +72,12 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
       { path: "/admin/payments-suppliers", iconKey: "cashStack", label: "Cuentas de cobro" },
       { path: "/admin/company-reports", iconKey: "chartPie", label: "Reportes generales" },
+    ],
+    [RolesEnum.AGRICULTURAL_LEAD]: [
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
+    ],
+    [RolesEnum.NON_AGRICULTURAL_LEAD]: [
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
     ],
     [RolesEnum.SYSTEM_USER]: [
       { path: "/", iconKey: "home", label: "Inicio" },

@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
-import { Card, Divider, Space } from "antd";
-
-import { AppButton } from "../../../shared/ui/button";
+import { Card, Divider } from "antd";
 
 export const HeaderSection = styled.div`
   position: relative;
@@ -34,22 +32,6 @@ export const ToolbarDivider = styled(Divider)`
 export const TableCard = styled(Card)`
   width: 100%;
   border-radius: 12px;
-`;
-
-export const ToolbarActions = styled(Space)`
-  width: 100%;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-
-  @media (min-width: 992px) {
-    justify-content: flex-end;
-  }
-`;
-
-export const SearchButton = styled(AppButton)`
-  && {
-    width: 100%;
-  }
 `;
 
 export const DeleteModalFooter = styled.div`

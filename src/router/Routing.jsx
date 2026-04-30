@@ -16,7 +16,7 @@ import { PageNotFound } from "../components/layout/page404/PageNotFound";
 import { AuthProvider } from "../context/AuthProvider";
 import { LogoutPage } from "../pages/logout";
 import { DashboardPage } from "../pages/dashboard";
-import { OrderReportPage } from "../pages/order-report";
+import { OrderReportPage } from "../pages/order-report/ui/OrderReportPage.jsx";
 import { UserCreatePage } from "../pages/user-create";
 import { UserEditPage } from "../pages/user-edit";
 import { UserProfilePage } from "../pages/user-profile";

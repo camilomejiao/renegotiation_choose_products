@@ -17,4 +17,10 @@ export const normalizeOrderReportRows = (rows = []) =>
     cub_apellido: row?.cub?.apellido || "",
     valor_total: formatCurrencyValue(row?.valor_total),
     fecha_registro: row?.fecha_registro || "",
+    canCancelRequest:
+      row?.puede_anular ??
+      row?.elegible_anulacion ??
+      row?.anulable ??
+      row?.can_cancel_request ??
+      true,
   }));

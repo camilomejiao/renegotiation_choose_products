@@ -11,6 +11,8 @@ const ROLE_TITLES = {
   [RolesEnum.TRUST_PAYMENTS]: "Fiduciaria",
   [RolesEnum.ENVIRONMENTAL]: "Ambiental",
   [RolesEnum.LEGAL]: "Jurídica",
+  [RolesEnum.AGRICULTURAL_LEAD]: "Líder Agro",
+  [RolesEnum.NON_AGRICULTURAL_LEAD]: "Líder No Agro",
 };
 
 export const getRoleTitle = (role) => ROLE_TITLES[role] ?? "Perfil";
