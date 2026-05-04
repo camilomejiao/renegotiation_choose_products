@@ -19,7 +19,6 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/management", iconKey: "userCog", label: "Control de Usuarios/Proveedores" },
       { path: "/admin/list-convocation", iconKey: "campaign", label: "Jornadas" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
-      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
       { path: "/admin/fiduciary/search-sp", iconKey: "searchDollar", label: "Consulta de Solicitudes de Pago" },
       { path: "/admin/payments-suppliers/create-collection-account", iconKey: "bank", label: "Solicitud de pago" },
     ],
@@ -67,17 +66,17 @@ export const getSidebarMenu = (role, id) => {
       { path: `/admin/edit-suppliers/${id}`, iconKey: "bank", label: "Gestión del proveedor" },
       { path: "/admin/product-price-quotes", iconKey: "boxOpen", label: "Cotización de catálogos" },
       { path: "/admin/search-user", iconKey: "shoppingCart", label: "Carrito de compras" },
-      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
       { path: "/admin/search-user-for-deliveries", iconKey: "shipping", label: "Entregas" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
       { path: "/admin/payments-suppliers", iconKey: "cashStack", label: "Cuentas de cobro" },
       { path: "/admin/company-reports", iconKey: "chartPie", label: "Reportes generales" },
     ],
-    [RolesEnum.AGRICULTURAL_LEAD]: [
-      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
+    [RolesEnum.LIDER_TECNICO_AGRO]: [
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
     ],
-    [RolesEnum.NON_AGRICULTURAL_LEAD]: [
-      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
+    [RolesEnum.LIDER_TECNICO_NO_AGRO]: [
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
     ],
     [RolesEnum.SYSTEM_USER]: [
       { path: "/", iconKey: "home", label: "Inicio" },

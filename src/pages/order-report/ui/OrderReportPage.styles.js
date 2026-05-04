@@ -9,6 +9,9 @@ export const HeaderSection = styled.div`
 export const ContentSection = styled.div`
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 12px 12px 24px;
 
   @media (min-width: 992px) {
@@ -22,7 +25,15 @@ export const StyledDivider = styled(Divider)`
 
 export const ToolbarCard = styled(Card)`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 12px;
+
+  .ant-card-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
 `;
 
 export const ToolbarDivider = styled(Divider)`
@@ -31,12 +42,24 @@ export const ToolbarDivider = styled(Divider)`
 
 export const TableCard = styled(Card)`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 12px;
+  overflow: hidden;
+
+  .ant-card-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+  }
 `;
 
 export const DeleteModalFooter = styled.div`
   width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+  text-align: right;
+
+  > * + * {
+    margin-left: 12px;
+  }
 `;

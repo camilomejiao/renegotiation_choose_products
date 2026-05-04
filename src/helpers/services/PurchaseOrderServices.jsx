@@ -43,6 +43,19 @@ class PurchaseOrderServices {
         return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
+    /**
+     * Consulta solicitudes de aprobación para líderes.
+     * @param {Object} payload - Filtros y paginación de la consulta.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    getApprovalRequests(payload = {}) {
+        const url = this.buildUrl("solicitudes/aprobacion/consulta");
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
     // =============================
     // ELIMINACIÓN
     // =============================

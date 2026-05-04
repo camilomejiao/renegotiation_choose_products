@@ -16,7 +16,32 @@ const resolveStatusLabel = (statusValue) => {
   return APPROVAL_STATUS_LABELS[normalizedStatus] ?? String(statusValue);
 };
 
+const formatDateToDayMonthYear = (dateValue) => {
+  if (!dateValue) {
+    return "";
+  }
+
+  const parsedDate = new Date(dateValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return String(dateValue);
+  }
+
+  const formatter = new Intl.DateTimeFormat("es-CO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+  return formatter.format(parsedDate);
+};
+
 const buildBeneficiaryName = (beneficiary = {}) => {
+  if (typeof beneficiary === "string") {
+    return beneficiary;
+  }
+
   const fullName =
     beneficiary?.nombre_completo ||
     [beneficiary?.nombre, beneficiary?.apellido].filter(Boolean).join(" ");
@@ -31,15 +56,59 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
     const supplier = row?.proveedor ?? order?.proveedor ?? {};
     const approval = row?.aprobacion ?? row?.approval ?? {};
     const approvalStatus = resolveStatusLabel(
-      row?.estado_solicitud ?? row?.estado ?? row?.status
+      row?.estado_aprobacion ??
+        row?.estado_solicitud ??
+        row?.estado ??
+        row?.status
     );
+    const requestType =
+      row?.tipo_solicitud ??
+      row?.request_type ??
+      row?.motivo_solicitud ??
+      "ANULACION_ORDEN_COMPRA";
 
     return {
-      id: row?.id,
-      orderId: row?.orden_id ?? order?.id ?? row?.order_id ?? "",
-      cubId: beneficiary?.cub_id ?? row?.cub_id ?? "",
+      id:
+        row?.id ??
+        row?.solicitud_id ??
+        row?.request_id ??
+        row?.numero_orden_compra ??
+        row?.orden_id ??
+        order?.id ??
+        row?.order_id ??
+        "",
+      orderId:
+        row?.numero_orden_compra ??
+        row?.orden_id ??
+        order?.id ??
+        row?.order_id ??
+        "",
+      requestDate: formatDateToDayMonthYear(
+        row?.fecha_solicitud ??
+          row?.fecha_registro ??
+          row?.created_at ??
+          row?.created ??
+          ""
+      ),
+      cubId:
+        (typeof beneficiary === "string" ? beneficiary : beneficiary?.cub_id) ??
+        row?.cub_id ??
+        "",
       beneficiary: buildBeneficiaryName(beneficiary),
-      supplier: supplier?.nombre ?? row?.supplier_name ?? "",
+      supplier:
+        (typeof supplier === "string" ? supplier : supplier?.nombre) ??
+        row?.supplier_name ??
+        "",
+      department:
+        supplier?.departamento?.nombre ??
+        row?.departamento ??
+        row?.department_name ??
+        "",
+      municipality:
+        supplier?.municipio?.nombre ??
+        row?.municipio ??
+        row?.municipality_name ??
+        "",
       approvalStatus,
       approvalDate:
         approval?.fecha_aprobacion ??
@@ -52,15 +121,15 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
         row?.aprobador ??
         row?.approved_by ??
         "",
-      requestType:
-        row?.tipo_solicitud ??
-        row?.request_type ??
-        "ANULACION_ORDEN_COMPRA",
+      requestType,
       requestTypeLabel:
         row?.tipo_solicitud_label ??
         row?.request_type_label ??
-        "Anulación de Orden de compra",
-      supplierId: supplier?.id ?? row?.proveedor_id ?? "",
+        requestType,
+      supplierId:
+        (typeof supplier === "string" ? "" : supplier?.id) ??
+        row?.proveedor_id ??
+        "",
       departmentId:
         supplier?.departamento?.id ?? row?.departamento_id ?? row?.department_id ?? "",
       municipalityId:
@@ -68,7 +137,12 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
       approvalComment:
         approval?.comentario ??
         row?.observacion_aprobacion ??
+        row?.approval_comment ??
+        "",
+      supplierObservation:
+        row?.motivo_solicitud ??
         row?.observacion ??
+        row?.comentario ??
         "",
       canManage: approvalStatus === "Pendiente",
     };

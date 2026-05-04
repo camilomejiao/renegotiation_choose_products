@@ -28,7 +28,7 @@ export const LeaderOrderRequestToolbar = ({
   return (
     <ToolbarCard bordered>
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
           <AppSelect
             value={requestType}
             options={requestTypeOptions}
@@ -38,7 +38,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
           <AppSelect
             value={requestStatus}
             options={requestStatusOptions}
@@ -48,7 +48,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
           <AppSelect
             value={selectedSupplier}
             options={supplierOptions}
@@ -58,7 +58,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
           <AppSelect
             value={selectedDepartment}
             options={departmentOptions}
@@ -68,7 +68,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
           <AppSelect
             value={selectedMunicipality}
             options={municipalityOptions}
@@ -78,7 +78,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={4} xxl={4}>
           <AppButton
             icon={<SearchOutlined />}
             onClick={onSearch}
@@ -89,7 +89,7 @@ export const LeaderOrderRequestToolbar = ({
           </AppButton>
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={8} xl={5} xxl={5}>
           <AppButton
             variant="secondary"
             icon={<ClearOutlined />}

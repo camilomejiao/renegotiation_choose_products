@@ -131,8 +131,9 @@ export const OrderReportDeleteModal = ({
 };
 
 const ModalContent = styled.div`
-  display: grid;
-  gap: 16px;
+  > * + * {
+    margin-top: 16px;
+  }
 `;
 
 const cardStyles = `
@@ -142,9 +143,6 @@ const cardStyles = `
 
 const HeroCard = styled.div`
   ${cardStyles}
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  gap: 14px;
   background:
     radial-gradient(circle at top left, rgba(239, 68, 68, 0.18), transparent 44%),
     linear-gradient(135deg, #fff6f6 0%, #fff1f2 100%);
@@ -154,8 +152,8 @@ const HeroCard = styled.div`
 const HeroIcon = styled.div`
   width: 48px;
   height: 48px;
-  display: grid;
-  place-items: center;
+  line-height: 48px;
+  text-align: center;
   border-radius: 14px;
   background: #b91c1c;
   color: #ffffff;
@@ -164,8 +162,7 @@ const HeroIcon = styled.div`
 `;
 
 const HeroBody = styled.div`
-  display: grid;
-  gap: 6px;
+  margin-top: 14px;
 `;
 
 const HeroEyebrow = styled(Text)`
@@ -185,7 +182,7 @@ const HeroTitle = styled.div`
 
 const OrderPill = styled.div`
   width: fit-content;
-  margin-top: 2px;
+  margin-top: 8px;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.9);
@@ -197,10 +194,12 @@ const OrderPill = styled.div`
 
 const SummaryCard = styled.div`
   ${cardStyles}
-  display: grid;
-  gap: 14px;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #dbe4f0;
+
+  > * + * {
+    margin-top: 14px;
+  }
 `;
 
 const SectionTitle = styled(Text)`
@@ -210,56 +209,57 @@ const SectionTitle = styled(Text)`
 `;
 
 const ImpactList = styled.div`
-  display: grid;
-  gap: 10px;
+  > * + * {
+    margin-top: 10px;
+  }
 `;
 
 const ImpactItem = styled.div`
-  display: grid;
-  grid-template-columns: 10px 1fr;
-  gap: 10px;
-  align-items: start;
   color: #334155;
   line-height: 1.5;
 `;
 
 const ImpactDot = styled.span`
+  display: inline-block;
   width: 10px;
   height: 10px;
   margin-top: 6px;
+  margin-right: 10px;
+  vertical-align: top;
   border-radius: 999px;
   background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
 `;
 
 const LegalCopy = styled.div`
-  display: grid;
-  gap: 4px;
-
   .ant-typography {
     margin-bottom: 0;
     line-height: 1.65;
     color: #475569;
   }
+
+  .ant-typography + .ant-typography {
+    margin-top: 4px;
+  }
 `;
 
 const FieldCard = styled.div`
   ${cardStyles}
-  display: grid;
-  gap: 10px;
   background: #ffffff;
   border: 1px solid #dbe4f0;
+
+  > * + * {
+    margin-top: 10px;
+  }
 `;
 
 const FieldHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 `;
 
 const CharacterCount = styled(Text)`
   font-size: 12px;
+  display: block;
+  margin-top: 4px;
 `;
 
 const FieldHint = styled(Text)`

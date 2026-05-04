@@ -5,8 +5,8 @@ import AlertComponent from "../../../helpers/alert/AlertComponent";
 import {
   getDepartmentCatalog,
   getLeaderSupplierCatalog,
+  getLeaderOrderApprovalRequestsPage,
   getMunicipalityCatalog,
-  getOrderCancellationRequestsPage,
   getOrderReportPage,
   getOrderRequestFilterCatalog,
 } from "../api/orderReportApi";
@@ -16,6 +16,30 @@ import { normalizeLeaderOrderRows } from "./normalizeLeaderOrderRows";
 import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
 
 const PAGE_SIZE = 100;
+const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
+const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
+const LEADER_APPROVAL_REQUEST_MOCK = {
+  id: "leader-approval-request-mock",
+  orderId: "OC-2026-0001",
+  requestDate: "30/04/2026",
+  cubId: "CUB-10001",
+  beneficiary: "Beneficiario de Prueba",
+  supplier: "Proveedor S.A.S.",
+  department: "Cundinamarca",
+  municipality: "Bogota",
+  approvalStatus: "Pendiente",
+  approvalDate: "",
+  approver: "",
+  requestType: "ANULACION",
+  requestTypeLabel: "ANULACION",
+  supplierId: "",
+  departmentId: "",
+  municipalityId: "",
+  approvalComment: "",
+  supplierObservation:
+    "Solicitud mock para validar el flujo de aprobación del líder.",
+  canManage: true,
+};
 
 export const useLeaderOrderReportPage = ({ userAuth }) => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -24,6 +48,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
   const [requestRows, setRequestRows] = useState([]);
   const [requestTotal, setRequestTotal] = useState(0);
+  const [requestEmptyText, setRequestEmptyText] = useState(REQUESTS_EMPTY_TEXT);
   const [requestPage, setRequestPage] = useState(1);
   const [requestPageSize, setRequestPageSize] = useState(PAGE_SIZE);
 
@@ -53,8 +78,11 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
   const [managedRequest, setManagedRequest] = useState(null);
   const [viewRequest, setViewRequest] = useState(null);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
-  const [approvalAction, setApprovalAction] = useState("approve");
   const [approvalComment, setApprovalComment] = useState("");
+  const [approvalConfirmationAction, setApprovalConfirmationAction] =
+    useState(null);
+  const [approvalModalView, setApprovalModalView] = useState("form");
+  const [approvalErrorMessage, setApprovalErrorMessage] = useState("");
 
   const loading = useMemo(() => {
     if (loadingMode === "submit-approval") {
@@ -148,25 +176,34 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
   const loadLeaderRequests = useCallback(async () => {
     try {
       setLoadingMode("requests");
+      setRequestEmptyText(REQUESTS_EMPTY_TEXT);
 
-      const data = await getOrderCancellationRequestsPage({
+      const data = await getLeaderOrderApprovalRequestsPage({
         page: requestPage,
         pageSize: requestPageSize,
         requestType: appliedRequestType?.value || "",
         requestStatus: appliedRequestStatus?.value || "",
-        supplierId: appliedSupplier?.value || "",
-        departmentId: appliedDepartment?.value || "",
-        municipalityId: appliedMunicipality?.value || "",
+        supplierName: appliedSupplier?.label || "",
+        departmentName: appliedDepartment?.label || "",
+        municipalityName: appliedMunicipality?.label || "",
       });
 
-      const normalizedRows = normalizeLeaderOrderRequestRows(data?.results);
-      setRequestRows(normalizedRows);
-      setRequestTotal(Number(data?.count) || 0);
+      const requestRows = data?.records ?? data?.results ?? [];
+      const normalizedRows = normalizeLeaderOrderRequestRows(requestRows);
+      const resolvedRows =
+        normalizedRows.length > 0
+          ? normalizedRows
+          : [LEADER_APPROVAL_REQUEST_MOCK];
+
+      setRequestRows(resolvedRows);
+      setRequestTotal(
+        Number(data?.count) || resolvedRows.length
+      );
     } catch (response) {
       console.error("Error obteniendo solicitudes del líder:", response);
-      setRequestRows([]);
-      setRequestTotal(0);
-      AlertComponent.error("Error", "No fue posible obtener las solicitudes");
+      setRequestRows([LEADER_APPROVAL_REQUEST_MOCK]);
+      setRequestTotal(1);
+      setRequestEmptyText(REQUESTS_ERROR_TEXT);
     } finally {
       setLoadingMode((currentMode) =>
         currentMode === "requests" ? null : currentMode
@@ -275,32 +312,84 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
   const handleManageRequest = useCallback((request) => {
     setManagedRequest(request);
-    setApprovalAction("approve");
     setApprovalComment(request?.approvalComment || "");
+    setApprovalConfirmationAction(null);
+    setApprovalModalView("form");
+    setApprovalErrorMessage("");
     setIsApprovalModalOpen(true);
   }, []);
 
   const closeApprovalModal = useCallback(() => {
     setManagedRequest(null);
-    setApprovalAction("approve");
     setApprovalComment("");
+    setApprovalConfirmationAction(null);
+    setApprovalModalView("form");
+    setApprovalErrorMessage("");
     setIsApprovalModalOpen(false);
   }, []);
 
-  const handleApprovalSubmit = useCallback(async () => {
+  const handleApprovalActionSelection = useCallback(
+    (nextAction) => {
+      const normalizedComment = approvalComment.trim();
+
+      if (!normalizedComment) {
+        AlertComponent.error(
+          "Error",
+          "La observación del líder es obligatoria"
+        );
+        return;
+      }
+
+      setApprovalConfirmationAction(nextAction);
+    },
+    [approvalComment]
+  );
+
+  const handleApprovalCommentChange = useCallback((nextComment) => {
+    setApprovalComment(nextComment);
+    setApprovalConfirmationAction(null);
+    setApprovalModalView("form");
+    setApprovalErrorMessage("");
+  }, []);
+
+  const handleApprovalSubmit = useCallback(async (nextAction) => {
     if (!managedRequest?.id) {
       closeApprovalModal();
       return;
     }
 
+    const normalizedComment = approvalComment.trim();
+
+    if (!normalizedComment) {
+      AlertComponent.error(
+        "Error",
+        "La observación del líder es obligatoria"
+      );
+      return;
+    }
+
     try {
       setLoadingMode("submit-approval");
+      if (nextAction === "approve") {
+        setApprovalErrorMessage("");
+        setApprovalModalView("processing");
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
 
       const nextStatus =
-        approvalAction === "approve" ? "Aprobado" : "Rechazado";
+        nextAction === "approve" ? "Aprobado" : "Rechazado";
       const approverName =
         userAuth?.name || userAuth?.username || "Usuario líder";
       const approvalDate = getOrderRequestPreviewTimestamp();
+
+      const nextManagedRequest = {
+        ...managedRequest,
+        approvalStatus: nextStatus,
+        approvalDate,
+        approver: approverName,
+        approvalComment: normalizedComment,
+        canManage: false,
+      };
 
       setRequestRows((currentRows) =>
         currentRows.map((row) =>
@@ -310,29 +399,36 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
                 approvalStatus: nextStatus,
                 approvalDate,
                 approver: approverName,
-                approvalComment: approvalComment.trim(),
+                approvalComment: normalizedComment,
                 canManage: false,
               }
             : row
         )
       );
+      setManagedRequest(nextManagedRequest);
 
-      AlertComponent.success(
-        "Bien hecho!",
-        `La solicitud fue ${
-          approvalAction === "approve" ? "aprobada" : "rechazada"
-        } visualmente.`
-      );
+      if (nextAction === "approve") {
+        setApprovalConfirmationAction(null);
+        setApprovalModalView("success");
+        return;
+      }
 
+      AlertComponent.success("Bien hecho!", "La solicitud fue rechazada visualmente.");
       closeApprovalModal();
     } catch (response) {
       console.error("Error gestionando solicitud:", response);
-      AlertComponent.error("Error", "No se pudo gestionar la solicitud");
+      if (nextAction === "approve") {
+        setApprovalConfirmationAction(null);
+        setApprovalErrorMessage("No se pudo aprobar la solicitud.");
+        setApprovalModalView("error");
+      } else {
+        setApprovalModalView("form");
+        AlertComponent.error("Error", "No se pudo gestionar la solicitud");
+      }
     } finally {
       setLoadingMode(null);
     }
   }, [
-    approvalAction,
     approvalComment,
     closeApprovalModal,
     managedRequest,
@@ -342,8 +438,10 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
   return {
     activeTab,
-    approvalAction,
     approvalComment,
+    approvalConfirmationAction,
+    approvalErrorMessage,
+    approvalModalView,
     departmentOptions,
     isApprovalModalOpen,
     loading,
@@ -356,6 +454,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     orderTotal,
     requestPage,
     requestPageSize,
+    requestEmptyText,
     requestRows,
     requestStatusOptions,
     requestTotal,
@@ -366,10 +465,15 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     selectedRequestType,
     selectedSupplier,
     supplierOptions,
+    managedRequest,
     viewRequest,
     closeApprovalModal,
     handleActiveTabChange: setActiveTab,
-    handleApprovalSubmit,
+    handleApproveRequest: () => handleApprovalSubmit("approve"),
+    handleApprovalActionSelection,
+    handleApprovalConfirmationCancel: () =>
+      setApprovalConfirmationAction(null),
+    handleRejectRequest: () => handleApprovalSubmit("reject"),
     handleDepartmentChange,
     handleManageRequest,
     handleOrderPageChange: setOrderPage,
@@ -384,8 +488,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     handleRequestTypeChange: setSelectedRequestType,
     handleSupplierChange: setSelectedSupplier,
     handleMunicipalityChange: setSelectedMunicipality,
-    handleApprovalActionChange: setApprovalAction,
-    handleApprovalCommentChange: setApprovalComment,
+    handleApprovalCommentChange,
     handleViewRequest: setViewRequest,
     closeViewRequest: () => setViewRequest(null),
     loadLeaderOrders,

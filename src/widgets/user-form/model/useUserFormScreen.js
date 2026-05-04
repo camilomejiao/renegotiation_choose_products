@@ -188,7 +188,7 @@ export const useUserFormScreen = () => {
   const fetchSuppliers = async () => {
     try {
       setLoadingSuppliers(true);
-      const response = await supplierServices.getSuppliers(1, 1000);
+      const response = await supplierServices.getSuppliers(1000, 1);
       const rows = normalizeSuppliersRows(response?.data);
       setSuppliersOptions(buildSupplierOptions(rows));
     } catch (error) {

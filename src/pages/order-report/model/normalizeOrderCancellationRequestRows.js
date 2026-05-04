@@ -25,7 +25,7 @@ export const normalizeOrderCancellationRequestRows = (rows = []) =>
     );
 
     return {
-      id: row?.id,
+      id: row?.id ?? row?.solicitud_id,
       orderId: row?.orden_id ?? order?.id ?? row?.order_id ?? "",
       requestDate:
         row?.fecha_solicitud ??
@@ -33,7 +33,8 @@ export const normalizeOrderCancellationRequestRows = (rows = []) =>
         row?.created_at ??
         row?.created ??
         "",
-      cubId: cub?.cub_id ?? row?.cub_id ?? "",
+      cubId:
+        (typeof cub === "string" ? cub : cub?.cub_id) ?? row?.cub_id ?? "",
       document:
         cub?.identificacion ?? row?.cub_identificacion ?? row?.documento ?? "",
       requestType:

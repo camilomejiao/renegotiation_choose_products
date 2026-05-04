@@ -111,6 +111,32 @@ export const getOrderCancellationRequestsPage = async ({
   return response?.data ?? { count: 0, results: [] };
 };
 
+export const getLeaderOrderApprovalRequestsPage = async ({
+  page = 1,
+  pageSize = 100,
+  requestType = "",
+  requestStatus = "",
+  supplierName = "",
+  departmentName = "",
+  municipalityName = "",
+}) => {
+  const response = await purchaseOrderServices.getApprovalRequests({
+    tipo_solicitud: requestType,
+    estado: requestStatus,
+    proveedor: supplierName,
+    departamento: departmentName,
+    municipio: municipalityName,
+    page,
+    size: pageSize,
+  });
+
+  if (response?.status !== ResponseStatusEnum.OK) {
+    throw response;
+  }
+
+  return response?.data ?? { count: 0, records: [] };
+};
+
 export const cancelOrderCancellationRequest = async (
   requestId,
   payload = {}

@@ -17,6 +17,8 @@ import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
 
 const PAGE_SIZE = 100;
 const MIN_SEARCH_LENGTH = 5;
+const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
+const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
 
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -24,6 +26,7 @@ export const useOrderReportPage = () => {
   const [total, setTotal] = useState(0);
   const [requestsRows, setRequestsRows] = useState([]);
   const [requestsTotal, setRequestsTotal] = useState(0);
+  const [requestsEmptyText, setRequestsEmptyText] = useState(REQUESTS_EMPTY_TEXT);
   const [loadingMode, setLoadingMode] = useState(null);
   const [requestTypeOptions, setRequestTypeOptions] = useState([]);
   const [requestStatusOptions, setRequestStatusOptions] = useState([]);
@@ -135,6 +138,7 @@ export const useOrderReportPage = () => {
   const loadRequests = useCallback(async () => {
     try {
       setLoadingMode("requests");
+      setRequestsEmptyText(REQUESTS_EMPTY_TEXT);
       const data = await getOrderCancellationRequestsPage({
         page: requestPage,
         pageSize: requestPageSize,
@@ -142,14 +146,15 @@ export const useOrderReportPage = () => {
         requestStatus: appliedRequestStatus?.value || "",
       });
 
-      const normalizedRows = normalizeOrderCancellationRequestRows(data?.results);
+      const requestRows = data?.records ?? data?.results ?? [];
+      const normalizedRows = normalizeOrderCancellationRequestRows(requestRows);
       setRequestsRows(normalizedRows);
-      setRequestsTotal(Number(data?.count) || 0);
+      setRequestsTotal(Number(data?.count) || normalizedRows.length);
     } catch (response) {
       console.error("Error obteniendo las solicitudes:", response);
       setRequestsRows([]);
       setRequestsTotal(0);
-      AlertComponent.error("Error", "No fue posible obtener las solicitudes");
+      setRequestsEmptyText(REQUESTS_ERROR_TEXT);
     } finally {
       setLoadingMode((currentMode) =>
         currentMode === "requests" ? null : currentMode
@@ -419,6 +424,7 @@ export const useOrderReportPage = () => {
     requestPageSize,
     requestStatusOptions,
     requestTypeOptions,
+    requestsEmptyText,
     requestsRows,
     requestsTotal,
     rows,

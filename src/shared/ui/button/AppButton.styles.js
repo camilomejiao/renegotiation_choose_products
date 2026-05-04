@@ -27,6 +27,14 @@ const variantStyles = {
     hoverBorder: "#157347",
     hoverColor: "#ffffff",
   },
+  confirmSuccess: {
+    background: "#389e0d",
+    border: "#389e0d",
+    color: "#ffffff",
+    hoverBackground: "#52c41a",
+    hoverBorder: "#52c41a",
+    hoverColor: "#ffffff",
+  },
   ghost: {
     background: "transparent",
     border: "#cbd5e1",

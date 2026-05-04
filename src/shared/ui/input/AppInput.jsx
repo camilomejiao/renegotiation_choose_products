@@ -11,24 +11,30 @@ export const AppInput = ({
   size = "middle",
   className,
   multiline = false,
+  type,
   ...rest
 }) => {
   let InputComponent = StyledInput;
+  const inputProps = {
+    className,
+    value,
+    onChange,
+    placeholder,
+    size,
+    ...rest,
+  };
 
   if (multiline) {
     InputComponent = StyledTextArea;
-  } else if (rest.type === "password") {
+  } else if (type === "password") {
     InputComponent = StyledPasswordInput;
+  } else if (type) {
+    inputProps.type = type;
   }
 
   return (
     <InputComponent
-      className={className}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      size={size}
-      {...rest}
+      {...inputProps}
     />
   );
 };
