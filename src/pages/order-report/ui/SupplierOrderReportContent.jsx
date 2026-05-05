@@ -7,6 +7,7 @@ import { getOrderCancellationRequestColumns } from "../model/getOrderCancellatio
 import { getOrderReportColumns } from "../model/getOrderReportColumns";
 import { useOrderReportPage } from "../model/useOrderReportPage";
 import { OrderReportDeleteModal } from "./OrderReportDeleteModal";
+import { OrderRequestCancelModal } from "./OrderRequestCancelModal";
 import { OrderReportToolbar } from "./OrderReportToolbar";
 import { OrderRequestToolbar } from "./OrderRequestToolbar";
 import {
@@ -17,8 +18,12 @@ import {
 export const SupplierOrderReportContent = () => {
   const {
     activeTab,
+    cancelSubmitting,
     cancellationReason,
-    deleteConfirmationChecked,
+    deleteErrorMessage,
+    deleteModalView,
+    hasReadDeleteLegalText,
+    isRequestCancelModalOpen,
     rows,
     total,
     requestsRows,
@@ -29,10 +34,14 @@ export const SupplierOrderReportContent = () => {
     pageSize,
     requestPage,
     requestPageSize,
+    requestCancelErrorMessage,
+    requestCancelModalView,
+    requestCancelObservation,
     requestTypeOptions,
     requestStatusOptions,
     requestsEmptyText,
     selectedOrder,
+    selectedRequest,
     selectedRequestType,
     selectedRequestStatus,
     isDeleteModalOpen,
@@ -43,18 +52,25 @@ export const SupplierOrderReportContent = () => {
     handleSearchQueryChange,
     handleSearch,
     handleClearSearch,
+    handleDeleteConfirmationCancel,
     handlePageChange,
     handleRequestPageChange,
+    handleDeleteContinue,
+    handleDeleteLegalTextRead,
     handleDeleteRequest,
     handleDeleteConfirm,
+    handleRequestCancelConfirm,
+    handleRequestCancelContinue,
+    handleRequestCancelObservationChange,
+    handleRequestCancelReturn,
     handleCancellationReasonChange,
-    handleDeleteConfirmationChange,
     handleRequestTypeChange,
     handleRequestStatusChange,
     handleRequestFiltersSearch,
     handleRequestFiltersClear,
     handleCancelRequest,
     closeDeleteModal,
+    closeRequestCancelModal,
   } = useOrderReportPage();
 
   const columns = useMemo(
@@ -185,12 +201,29 @@ export const SupplierOrderReportContent = () => {
         open={isDeleteModalOpen}
         orderId={selectedOrder?.id}
         onClose={closeDeleteModal}
+        modalView={deleteModalView}
+        errorMessage={deleteErrorMessage}
+        onContinue={handleDeleteContinue}
         onConfirm={handleDeleteConfirm}
+        onConfirmationCancel={handleDeleteConfirmationCancel}
+        onLegalTextRead={handleDeleteLegalTextRead}
         onReasonChange={handleCancellationReasonChange}
-        onConfirmationChange={handleDeleteConfirmationChange}
         cancellationReason={cancellationReason}
-        confirmationChecked={deleteConfirmationChecked}
+        hasReadLegalText={hasReadDeleteLegalText}
         loading={submitting}
+      />
+      <OrderRequestCancelModal
+        isOpen={isRequestCancelModalOpen}
+        request={selectedRequest}
+        modalView={requestCancelModalView}
+        observation={requestCancelObservation}
+        errorMessage={requestCancelErrorMessage}
+        loading={cancelSubmitting}
+        onClose={closeRequestCancelModal}
+        onContinue={handleRequestCancelContinue}
+        onConfirm={handleRequestCancelConfirm}
+        onObservationChange={handleRequestCancelObservationChange}
+        onReturn={handleRequestCancelReturn}
       />
     </>
   );

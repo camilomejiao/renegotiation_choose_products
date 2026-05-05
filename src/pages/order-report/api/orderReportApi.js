@@ -70,10 +70,12 @@ export const getOrderReportPage = async ({
   return response?.data ?? { count: 0, results: [] };
 };
 
-export const deleteOrderReportItem = async (orderId, payload = {}) => {
-  const response = await purchaseOrderServices.removeOrder(orderId, payload);
+export const createOrderCancellationRequest = async (payload = {}) => {
+  const response = await purchaseOrderServices.createCancellationRequest(payload);
 
   if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED &&
     response?.status !== ResponseStatusEnum.NO_CONTENT &&
     response?.status !== ResponseStatusEnum.FORBIDDEN
   ) {
@@ -138,13 +140,9 @@ export const getLeaderOrderApprovalRequestsPage = async ({
 };
 
 export const cancelOrderCancellationRequest = async (
-  requestId,
   payload = {}
 ) => {
-  const response = await purchaseOrderServices.cancelCancellationRequest(
-    requestId,
-    payload
-  );
+  const response = await purchaseOrderServices.updateCancellationRequest(payload);
 
   if (
     response?.status !== ResponseStatusEnum.OK &&

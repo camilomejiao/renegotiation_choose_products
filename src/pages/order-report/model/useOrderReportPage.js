@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Swal from "sweetalert2";
 
 import { normalizeParameterOptions } from "../../../entities/parameter";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import {
   cancelOrderCancellationRequest,
-  deleteOrderReportItem,
+  createOrderCancellationRequest,
   getOrderCancellationRequestsPage,
   getOrderRequestFilterCatalog,
   getOrderReportPage,
@@ -19,6 +18,10 @@ const PAGE_SIZE = 100;
 const MIN_SEARCH_LENGTH = 5;
 const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
 const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
+const DELETE_MODAL_INITIAL_VIEW = "legal";
+const ORDER_CANCELLATION_REQUEST_TYPE = 5215;
+const REQUEST_CANCEL_MODAL_INITIAL_VIEW = "form";
+const REQUEST_CANCEL_STATUS = "CANCELADO";
 
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -43,8 +46,18 @@ export const useOrderReportPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [cancellationReason, setCancellationReason] = useState("");
-  const [deleteConfirmationChecked, setDeleteConfirmationChecked] =
-    useState(false);
+  const [hasReadDeleteLegalText, setHasReadDeleteLegalText] = useState(false);
+  const [deleteModalView, setDeleteModalView] = useState(
+    DELETE_MODAL_INITIAL_VIEW
+  );
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isRequestCancelModalOpen, setIsRequestCancelModalOpen] = useState(false);
+  const [requestCancelObservation, setRequestCancelObservation] = useState("");
+  const [requestCancelModalView, setRequestCancelModalView] = useState(
+    REQUEST_CANCEL_MODAL_INITIAL_VIEW
+  );
+  const [requestCancelErrorMessage, setRequestCancelErrorMessage] = useState("");
   const [activeTab, setActiveTab] = useState("purchase-orders");
 
   const loading = useMemo(() => {
@@ -60,6 +73,7 @@ export const useOrderReportPage = () => {
   }, [activeTab, loadingMode]);
 
   const submitting = loadingMode === "submit-request";
+  const cancelSubmitting = loadingMode === "cancel-request";
 
   const loadingText = useMemo(() => {
     if (loadingMode === "submit-request") {
@@ -189,7 +203,9 @@ export const useOrderReportPage = () => {
 
   const resetDeleteFlow = useCallback(() => {
     setCancellationReason("");
-    setDeleteConfirmationChecked(false);
+    setHasReadDeleteLegalText(false);
+    setDeleteModalView(DELETE_MODAL_INITIAL_VIEW);
+    setDeleteErrorMessage("");
   }, []);
 
   const closeDeleteModal = useCallback(() => {
@@ -197,6 +213,18 @@ export const useOrderReportPage = () => {
     setSelectedOrder(null);
     resetDeleteFlow();
   }, [resetDeleteFlow]);
+
+  const resetRequestCancelFlow = useCallback(() => {
+    setRequestCancelObservation("");
+    setRequestCancelModalView(REQUEST_CANCEL_MODAL_INITIAL_VIEW);
+    setRequestCancelErrorMessage("");
+  }, []);
+
+  const closeRequestCancelModal = useCallback(() => {
+    setIsRequestCancelModalOpen(false);
+    setSelectedRequest(null);
+    resetRequestCancelFlow();
+  }, [resetRequestCancelFlow]);
 
   const handleSearchQueryChange = useCallback((event) => {
     setSearchQuery(event.target.value);
@@ -245,10 +273,66 @@ export const useOrderReportPage = () => {
 
   const handleCancellationReasonChange = useCallback((value) => {
     setCancellationReason(value);
+    setDeleteModalView(DELETE_MODAL_INITIAL_VIEW);
+    setDeleteErrorMessage("");
   }, []);
 
-  const handleDeleteConfirmationChange = useCallback((checked) => {
-    setDeleteConfirmationChecked(checked);
+  const handleDeleteLegalTextRead = useCallback(() => {
+    setHasReadDeleteLegalText(true);
+    setDeleteModalView(DELETE_MODAL_INITIAL_VIEW);
+    setDeleteErrorMessage("");
+  }, []);
+
+  const handleDeleteContinue = useCallback(() => {
+    const normalizedReason = cancellationReason.trim();
+
+    if (!normalizedReason) {
+      AlertComponent.error(
+        "Error",
+        "Debes ingresar un motivo de anulación para continuar"
+      );
+      return;
+    }
+
+    if (!hasReadDeleteLegalText) {
+      AlertComponent.error(
+        "Error",
+        "Debes leer el texto jurídico para continuar"
+      );
+      return;
+    }
+
+    setDeleteErrorMessage("");
+    setDeleteModalView("confirm");
+  }, [cancellationReason, hasReadDeleteLegalText]);
+
+  const handleDeleteConfirmationCancel = useCallback(() => {
+    setDeleteModalView(DELETE_MODAL_INITIAL_VIEW);
+    setDeleteErrorMessage("");
+  }, []);
+
+  const handleRequestCancelObservationChange = useCallback((value) => {
+    setRequestCancelObservation(value);
+    setRequestCancelModalView(REQUEST_CANCEL_MODAL_INITIAL_VIEW);
+    setRequestCancelErrorMessage("");
+  }, []);
+
+  const handleRequestCancelContinue = useCallback(() => {
+    if (!requestCancelObservation.trim()) {
+      AlertComponent.error(
+        "Error",
+        "Debes ingresar una observación para continuar"
+      );
+      return;
+    }
+
+    setRequestCancelErrorMessage("");
+    setRequestCancelModalView("confirm");
+  }, [requestCancelObservation]);
+
+  const handleRequestCancelReturn = useCallback(() => {
+    setRequestCancelModalView(REQUEST_CANCEL_MODAL_INITIAL_VIEW);
+    setRequestCancelErrorMessage("");
   }, []);
 
   const handleRequestTypeChange = useCallback((option) => {
@@ -290,138 +374,155 @@ export const useOrderReportPage = () => {
       return;
     }
 
-    if (!deleteConfirmationChecked) {
+    if (!hasReadDeleteLegalText) {
       AlertComponent.error(
         "Error",
-        "Debes leer o aceptar el texto jurídico para continuar"
+        "Debes leer el texto jurídico para continuar"
       );
-      return;
-    }
-
-    const confirmationResult = await Swal.fire({
-      title: "Confirmación",
-      text:
-        "Está a punto de enviar una solicitud de anulación de orden de compra. Una vez la solicitud sea gestionada por el equipo de Implementación, no podrá ser cancelada. ¿Desea continuar?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, continuar",
-      cancelButtonText: "No",
-      heightAuto: true,
-    });
-
-    if (!confirmationResult.isConfirmed) {
       return;
     }
 
     try {
       setLoadingMode("submit-request");
-      const response = await deleteOrderReportItem(selectedOrder.id, {
-        motivo_anulacion: normalizedReason,
+      setDeleteErrorMessage("");
+      setDeleteModalView("processing");
+      const response = await createOrderCancellationRequest({
+        order_id: String(selectedOrder.id),
+        tipo_solicitud: ORDER_CANCELLATION_REQUEST_TYPE,
+        observacion: normalizedReason,
       });
 
-      if (response?.status === ResponseStatusEnum.NO_CONTENT) {
-        AlertComponent.success(
-          "Bien hecho!",
-          "La solicitud de anulación fue registrada exitosamente"
-        );
-        closeDeleteModal();
+      if (
+        response?.status === ResponseStatusEnum.OK ||
+        response?.status === ResponseStatusEnum.CREATED ||
+        response?.status === ResponseStatusEnum.NO_CONTENT
+      ) {
         setActiveTab("requests");
         setRows((currentRows) =>
           currentRows.filter((row) => row.id !== selectedOrder.id)
         );
         setTotal((currentTotal) => Math.max(currentTotal - 1, 0));
+        setRequestPage(1);
+        setDeleteModalView("success");
 
         const isLastItemOnPage = rows.length === 1 && page > 1;
         if (isLastItemOnPage) {
           setPage((currentPage) => currentPage - 1);
           return;
         }
-
-        setRequestPage(1);
         return;
       }
 
       if (response?.status === ResponseStatusEnum.FORBIDDEN) {
-        AlertComponent.error(
-          "Error",
+        setDeleteErrorMessage(
           `No se puede anular la orden porque ${
             response?.data || "tiene dependencias asociadas"
           }`
         );
-        closeDeleteModal();
+        setDeleteModalView("error");
       }
     } catch (response) {
       console.error("Error al eliminar la orden:", response);
-      AlertComponent.error("Error", "No se pudo registrar la solicitud de anulación");
+      setDeleteErrorMessage("No se pudo registrar la solicitud de anulación.");
+      setDeleteModalView("error");
     } finally {
       setLoadingMode(null);
     }
   }, [
     cancellationReason,
     closeDeleteModal,
-    deleteConfirmationChecked,
+    hasReadDeleteLegalText,
     page,
     rows.length,
     selectedOrder,
   ]);
 
   const handleCancelRequest = useCallback(
-    async (request) => {
-      const confirmationResult = await Swal.fire({
-        title: "Confirmación",
-        text:
-          "Está a punto de cancelar esta solicitud de anulación. La solicitud quedará en estado Cancelado. ¿Desea continuar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, cancelar solicitud",
-        cancelButtonText: "No",
-        heightAuto: true,
+    (request) => {
+      setSelectedRequest(request);
+      setIsRequestCancelModalOpen(true);
+      resetRequestCancelFlow();
+    },
+    [resetRequestCancelFlow]
+  );
+
+  const handleRequestCancelConfirm = useCallback(async () => {
+    if (!selectedRequest?.id) {
+      closeRequestCancelModal();
+      return;
+    }
+
+    const normalizedObservation = requestCancelObservation.trim();
+
+    if (!normalizedObservation) {
+      AlertComponent.error(
+        "Error",
+        "Debes ingresar una observación para continuar"
+      );
+      return;
+    }
+
+    try {
+      setLoadingMode("cancel-request");
+      setRequestCancelErrorMessage("");
+      setRequestCancelModalView("processing");
+      const response = await cancelOrderCancellationRequest({
+        solicitud_id: String(selectedRequest.id),
+        observacion: normalizedObservation,
+        nuevo_estado: REQUEST_CANCEL_STATUS,
       });
 
-      if (!confirmationResult.isConfirmed) {
+      if (
+        response?.status === ResponseStatusEnum.OK ||
+        response?.status === ResponseStatusEnum.NO_CONTENT
+      ) {
+        setRequestsRows((currentRows) =>
+          currentRows.map((row) =>
+            row.id === selectedRequest.id
+              ? {
+                  ...row,
+                  status: "Cancelado",
+                  observation: normalizedObservation,
+                  canCancel: false,
+                }
+              : row
+          )
+        );
+        setRequestCancelModalView("success");
         return;
       }
-
-      try {
-        setLoadingMode("cancel-request");
-        await cancelOrderCancellationRequest(request.id, {
-          estado: "CANCELADO",
-        });
-
-        AlertComponent.success(
-          "Bien hecho!",
-          "La solicitud fue cancelada exitosamente"
-        );
-
-        const isLastItemOnPage = requestsRows.length === 1 && requestPage > 1;
-        if (isLastItemOnPage) {
-          setRequestPage((currentPage) => currentPage - 1);
-          return;
-        }
-
-        await loadRequests();
-      } catch (response) {
-        console.error("Error cancelando la solicitud:", response);
-        AlertComponent.error("Error", "No se pudo cancelar la solicitud");
-      } finally {
-        setLoadingMode(null);
-      }
-    },
-    [loadRequests, requestPage, requestsRows.length]
-  );
+    } catch (response) {
+      console.error("Error cancelando la solicitud:", response);
+      setRequestCancelErrorMessage("No se pudo cancelar la solicitud.");
+      setRequestCancelModalView("error");
+    } finally {
+      setLoadingMode(null);
+    }
+  }, [
+    closeRequestCancelModal,
+    requestCancelObservation,
+    selectedRequest,
+  ]);
 
   return {
     activeTab,
     cancellationReason,
-    deleteConfirmationChecked,
+    deleteErrorMessage,
+    deleteModalView,
+    hasReadDeleteLegalText,
+    isRequestCancelModalOpen,
     isDeleteModalOpen,
     loading,
     loadingText,
+    cancelSubmitting,
     submitting,
     page,
     pageSize,
     requestPage,
     requestPageSize,
+    requestCancelErrorMessage,
+    requestCancelModalView,
+    requestCancelObservation,
     requestStatusOptions,
     requestTypeOptions,
     requestsEmptyText,
@@ -430,17 +531,25 @@ export const useOrderReportPage = () => {
     rows,
     searchQuery,
     selectedOrder,
+    selectedRequest,
     selectedRequestStatus,
     selectedRequestType,
     total,
     closeDeleteModal,
+    closeRequestCancelModal,
     handleActiveTabChange: setActiveTab,
     handleCancellationReasonChange,
     handleClearSearch,
+    handleDeleteConfirmationCancel,
     handleDeleteConfirm,
-    handleDeleteConfirmationChange,
+    handleDeleteContinue,
+    handleDeleteLegalTextRead,
     handleDeleteRequest,
     handlePageChange,
+    handleRequestCancelConfirm,
+    handleRequestCancelContinue,
+    handleRequestCancelObservationChange,
+    handleRequestCancelReturn,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,

@@ -56,6 +56,19 @@ class PurchaseOrderServices {
         });
     }
 
+    /**
+     * Registra una solicitud de anulación de orden de compra.
+     * @param {Object} payload - Datos de la solicitud.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    createCancellationRequest(payload = {}) {
+        const url = this.buildUrl("solicitudes/");
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
     // =============================
     // ELIMINACIÓN
     // =============================
@@ -95,6 +108,19 @@ class PurchaseOrderServices {
         }
 
         return authTokenService.fetchWithAuth(url, options);
+    }
+
+    /**
+     * Actualiza una solicitud de anulación mediante el endpoint unificado.
+     * @param {Object} payload - Datos de actualización de la solicitud.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    updateCancellationRequest(payload = {}) {
+        const url = this.buildUrl("solicitudes/");
+        return authTokenService.fetchWithAuth(url, {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+        });
     }
 }
 

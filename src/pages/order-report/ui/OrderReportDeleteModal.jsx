@@ -1,131 +1,303 @@
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { Typography } from "antd";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  ExclamationCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
+import { Alert, Descriptions, Typography } from "antd";
 import styled from "@emotion/styled";
 
 import { AppButton } from "../../../shared/ui/button";
-import { AppCheckbox } from "../../../shared/ui/checkbox";
 import { AppInput } from "../../../shared/ui/input";
 import { Modal } from "../../../shared/ui/modal";
 import { DeleteModalFooter } from "./OrderReportPage.styles";
 
 const { Paragraph, Text } = Typography;
 
-const IMPACT_ITEMS = [
-  "La solicitud será revisada por el equipo de Implementación antes de ser gestionada.",
-  "Si la anulación es aceptada, la orden no podrá reactivarse ni deshacerse.",
-  "Debes registrar un motivo claro para sustentar la solicitud.",
-];
-
 export const OrderReportDeleteModal = ({
   cancellationReason,
-  confirmationChecked,
+  errorMessage,
+  hasReadLegalText,
   loading,
+  modalView,
   onClose,
-  onConfirmationChange,
+  onConfirmationCancel,
   onConfirm,
+  onContinue,
+  onLegalTextRead,
   onReasonChange,
   open,
   orderId,
 }) => {
   const hasCancellationReason = cancellationReason.trim().length > 0;
-  const canSubmit = hasCancellationReason && confirmationChecked;
+  const isConfirming = modalView === "confirm";
+  const isProcessing = modalView === "processing";
+  const isSuccess = modalView === "success";
+  const isError = modalView === "error";
+  const canContinue = hasCancellationReason && hasReadLegalText;
+  const modalTitle = isProcessing
+    ? "Creando solicitud"
+    : isSuccess
+      ? "Solicitud registrada"
+      : isError
+        ? "No se pudo crear la solicitud"
+        : isConfirming
+          ? "Confirmar solicitud de anulación"
+          : "Solicitar anulación de orden";
 
   return (
     <Modal
-      title="Solicitar anulación de orden"
-      subTitle="Esta acción inicia una revisión formal sobre la orden de compra seleccionada."
+      title={modalTitle}
+      subTitle={
+        isProcessing || isSuccess || isError
+          ? ""
+          : "Esta acción inicia una revisión formal sobre la orden de compra seleccionada."
+      }
       isOpen={open}
       onCloseModal={onClose}
+      titleCentered
       centered
       destroyOnClose
-      footer={(
-        <DeleteModalFooter>
-          <AppButton variant="secondary" onClick={onClose} disabled={loading}>
-            Cancelar
-          </AppButton>
-          <AppButton
-            variant="danger"
-            onClick={onConfirm}
-            loading={loading}
-            disabled={!canSubmit}
-          >
-            Enviar
-          </AppButton>
+      width={760}
+      footer={
+        <DeleteModalFooter
+          style={isSuccess || isError ? { textAlign: "center" } : undefined}
+        >
+          {isSuccess || isError ? (
+            <AppButton
+              variant={isSuccess ? "confirmSuccess" : "primary"}
+              onClick={onClose}
+              disabled={loading}
+            >
+              Aceptar
+            </AppButton>
+          ) : isProcessing ? null : isConfirming ? (
+            <>
+              <AppButton
+                variant="secondary"
+                onClick={onConfirmationCancel}
+                disabled={loading}
+              >
+                Volver
+              </AppButton>
+              <AppButton variant="danger" onClick={onConfirm} loading={loading}>
+                Confirmar solicitud
+              </AppButton>
+            </>
+          ) : (
+            <>
+              <AppButton variant="secondary" onClick={onClose} disabled={loading}>
+                Cancelar
+              </AppButton>
+              <AppButton
+                variant="danger"
+                onClick={onContinue}
+                disabled={!canContinue}
+              >
+                Continuar
+              </AppButton>
+            </>
+          )}
         </DeleteModalFooter>
-      )}
+      }
     >
-      <ModalContent>
-        <HeroCard>
-          <HeroIcon>
-            <ExclamationCircleOutlined />
-          </HeroIcon>
+      {isProcessing ? (
+        <FeedbackState>
+          <FeedbackIconWrapper $tone="processing">
+            <LoadingOutlined style={{ fontSize: 36 }} />
+          </FeedbackIconWrapper>
+          <FeedbackTitle>Registrando solicitud...</FeedbackTitle>
+          <FeedbackText>
+            Estamos creando la solicitud de anulación de la orden{" "}
+            <Text strong>{orderId || "---"}</Text>.
+          </FeedbackText>
+        </FeedbackState>
+      ) : null}
 
-          <HeroBody>
-            <HeroEyebrow>Advertencia importante</HeroEyebrow>
-            <HeroTitle>
-              Una vez la solicitud sea gestionada, no podrá ser cancelada.
-            </HeroTitle>
-            {orderId && (
-              <OrderPill>Orden seleccionada: {orderId}</OrderPill>
-            )}
-          </HeroBody>
-        </HeroCard>
+      {isSuccess ? (
+        <FeedbackState>
+          <FeedbackIconWrapper $tone="success">
+            <CheckOutlined style={{ fontSize: 36 }} />
+          </FeedbackIconWrapper>
+          <FeedbackTitle>Solicitud registrada correctamente.</FeedbackTitle>
+          <FeedbackText>
+            La solicitud de anulación de la orden{" "}
+            <Text strong>{orderId || "---"}</Text> fue enviada para revisión.
+          </FeedbackText>
+          <FeedbackSubText>
+            El equipo responsable validará la información antes de gestionar la
+            anulación.
+          </FeedbackSubText>
+        </FeedbackState>
+      ) : null}
 
-        <SummaryCard>
-          <SectionTitle>Puntos que debes confirmar antes de continuar</SectionTitle>
-          <ImpactList>
-            {IMPACT_ITEMS.map((item) => (
-              <ImpactItem key={item}>
-                <ImpactDot />
-                <span>{item}</span>
-              </ImpactItem>
-            ))}
-          </ImpactList>
+      {isError ? (
+        <FeedbackState>
+          <FeedbackIconWrapper $tone="error">
+            <CloseOutlined style={{ fontSize: 36 }} />
+          </FeedbackIconWrapper>
+          <FeedbackTitle>No se pudo registrar la solicitud.</FeedbackTitle>
+          <FeedbackText>
+            La solicitud de anulación de la orden{" "}
+            <Text strong>{orderId || "---"}</Text> no pudo ser creada.
+          </FeedbackText>
+          <FeedbackSubText>
+            {errorMessage ||
+              "Ocurrió un error durante el proceso. Intenta nuevamente."}
+          </FeedbackSubText>
+        </FeedbackState>
+      ) : null}
 
-          <LegalCopy>
-            <Paragraph>
-              PENDIENTE TEXTO JURÍDICO
-            </Paragraph>
-            <Paragraph>
-              Al continuar, declaras que revisaste la información disponible y
-              entiendes el impacto operativo de la solicitud.
-            </Paragraph>
-          </LegalCopy>
-        </SummaryCard>
+      {isConfirming ? (
+        <CenteredStepContent>
+          <FeedbackIconWrapper $tone="confirm">
+            <ExclamationCircleOutlined style={{ fontSize: 36 }} />
+          </FeedbackIconWrapper>
 
-        <FieldCard>
-          <FieldHeader>
-            <SectionTitle>Motivo de anulación</SectionTitle>
-            <CharacterCount type={hasCancellationReason ? "secondary" : "danger"}>
-              {cancellationReason.length}/500
-            </CharacterCount>
-          </FieldHeader>
+          <ConfirmationHeading>
+            ¿Estas seguro de querer crear la solicitud de anulacion de la orden
+            de compra {orderId || "---"}?
+          </ConfirmationHeading>
 
-          <AppInput
-            multiline
-            rows={5}
-            value={cancellationReason}
-            onChange={(event) => onReasonChange(event.target.value)}
-            placeholder="Describe por qué solicitas la anulación de esta orden"
-            maxLength={500}
+          <ConfirmationNote>
+            La solicitud sera enviada al equipo responsable para su validacion y
+            gestion posterior.
+          </ConfirmationNote>
+        </CenteredStepContent>
+      ) : null}
+
+      {!isConfirming && !isProcessing && !isSuccess && !isError ? (
+        <ModalContent>
+          <Alert
+            showIcon
+            type="warning"
+            message="Revisa la información de la solicitud y desplázate hasta el final del texto jurídico antes de continuar."
           />
 
-          <FieldHint type={hasCancellationReason ? "secondary" : "danger"}>
-            {hasCancellationReason
-              ? "Este motivo se enviará al equipo responsable de la revisión."
-              : "El motivo de anulación es obligatorio."}
-          </FieldHint>
-        </FieldCard>
-
-        <ConfirmationCard $checked={confirmationChecked}>
-          <AppCheckbox
-            checked={confirmationChecked}
-            onChange={(event) => onConfirmationChange(event.target.checked)}
+          <Descriptions
+            bordered
+            column={1}
+            size="small"
+            labelStyle={{ fontWeight: 700 }}
+            contentStyle={{ fontWeight: 400 }}
           >
-            He leído y acepto el texto jurídico aplicable a esta solicitud.
-          </AppCheckbox>
-        </ConfirmationCard>
-      </ModalContent>
+            <Descriptions.Item label="Orden de compra">
+              {orderId || "---"}
+            </Descriptions.Item>
+          </Descriptions>
+
+          <FieldCard>
+            <SectionTitle>Texto jurídico</SectionTitle>
+            <ScrollableLegalText
+              onScroll={(event) => {
+                if (hasReadLegalText) {
+                  return;
+                }
+
+                const { scrollTop, scrollHeight, clientHeight } =
+                  event.currentTarget;
+                const hasReachedBottom =
+                  scrollTop + clientHeight >= scrollHeight - 8;
+
+                if (hasReachedBottom) {
+                  onLegalTextRead();
+                }
+              }}
+            >
+              <Paragraph>
+                PENDIENTE TEXTO JURÍDICO
+              </Paragraph>
+              <Paragraph>
+                Este espacio representa el documento completo que el proveedor
+                debe revisar antes de registrar el motivo de anulación. La
+                presente solicitud implica una manifestación expresa de voluntad
+                respecto de la orden de compra seleccionada y será evaluada por
+                las áreas responsables conforme a los procedimientos internos
+                definidos por la organización.
+              </Paragraph>
+              <Paragraph>
+                El proveedor declara que la información suministrada en esta
+                solicitud corresponde a hechos ciertos, verificables y
+                directamente relacionados con la necesidad de anulación. En
+                consecuencia, entiende que cualquier omisión, inconsistencia o
+                falsedad podrá generar la suspensión del trámite, la solicitud
+                de aclaraciones adicionales o las medidas administrativas a que
+                haya lugar según la normativa aplicable y las reglas del negocio
+                vigentes.
+              </Paragraph>
+              <Paragraph>
+                Asimismo, el proveedor reconoce que el envío de esta solicitud
+                no produce por sí mismo la anulación automática de la orden de
+                compra, ni modifica de forma inmediata los compromisos
+                contractuales, operativos, contables o logísticos asociados. La
+                petición será sometida a revisión por el equipo competente, el
+                cual podrá aprobarla, rechazarla o requerir información
+                complementaria antes de adoptar una decisión definitiva.
+              </Paragraph>
+              <Paragraph>
+                Al continuar, el proveedor acepta que ha leído integralmente el
+                contenido de este texto, comprende el impacto operativo de la
+                solicitud, conoce que la orden podría mantener sus efectos hasta
+                tanto exista una decisión formal y entiende que la trazabilidad
+                de esta gestión quedará registrada en los sistemas de
+                información de la organización para fines de auditoría,
+                seguimiento y control.
+              </Paragraph>
+              <Paragraph>
+                Igualmente, se deja constancia de que la solicitud podrá afectar
+                procesos posteriores relacionados con entregas, facturación,
+                conciliaciones, devoluciones de saldo, soportes documentales y
+                demás actuaciones derivadas de la ejecución de la orden de
+                compra. Por ello, el proveedor manifiesta que ha evaluado el
+                alcance de su petición y que cuenta con fundamento suficiente
+                para iniciar el trámite de anulación correspondiente.
+              </Paragraph>
+              <Paragraph>
+                Finalmente, al habilitar el campo de motivo y continuar con el
+                proceso, el proveedor confirma que actúa con plena facultad para
+                presentar esta solicitud en nombre propio o de la organización a
+                la que representa, y que acepta las validaciones, controles y
+                tiempos de respuesta definidos por las áreas de revisión
+                involucradas.
+              </Paragraph>
+            </ScrollableLegalText>
+            <ScrollHint type={hasReadLegalText ? "success" : "warning"}>
+              {hasReadLegalText
+                ? "Texto jurídico leído. Ya puedes registrar el motivo."
+                : "Desplázate hasta el final del texto jurídico para habilitar el motivo de anulación."}
+            </ScrollHint>
+          </FieldCard>
+
+          <FieldCard>
+            <FieldHeader>
+              <SectionTitle>Motivo de anulación</SectionTitle>
+              <CharacterCount
+                type={hasCancellationReason ? "secondary" : "danger"}
+              >
+                {cancellationReason.length}/500
+              </CharacterCount>
+            </FieldHeader>
+
+            <AppInput
+              multiline
+              rows={5}
+              value={cancellationReason}
+              onChange={(event) => onReasonChange(event.target.value)}
+              placeholder="Describe por qué solicitas la anulación de esta orden"
+              maxLength={500}
+              disabled={!hasReadLegalText}
+            />
+
+            <FieldHint type={hasCancellationReason ? "secondary" : "danger"}>
+              {!hasReadLegalText
+                ? "Debes leer primero el texto jurídico para habilitar este campo."
+                : hasCancellationReason
+                ? "Este motivo se enviará al equipo responsable de la revisión."
+                : "El motivo de anulación es obligatorio."}
+            </FieldHint>
+          </FieldCard>
+        </ModalContent>
+      ) : null}
     </Modal>
   );
 };
@@ -141,106 +313,10 @@ const cardStyles = `
   padding: 18px;
 `;
 
-const HeroCard = styled.div`
-  ${cardStyles}
-  background:
-    radial-gradient(circle at top left, rgba(239, 68, 68, 0.18), transparent 44%),
-    linear-gradient(135deg, #fff6f6 0%, #fff1f2 100%);
-  border: 1px solid #fecaca;
-`;
-
-const HeroIcon = styled.div`
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  border-radius: 14px;
-  background: #b91c1c;
-  color: #ffffff;
-  font-size: 22px;
-  box-shadow: 0 10px 24px rgba(185, 28, 28, 0.22);
-`;
-
-const HeroBody = styled.div`
-  margin-top: 14px;
-`;
-
-const HeroEyebrow = styled(Text)`
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #b91c1c;
-`;
-
-const HeroTitle = styled.div`
-  font-size: 18px;
-  line-height: 1.45;
-  font-weight: 700;
-  color: #7f1d1d;
-`;
-
-const OrderPill = styled.div`
-  width: fit-content;
-  margin-top: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  font-size: 12px;
-  font-weight: 600;
-`;
-
-const SummaryCard = styled.div`
-  ${cardStyles}
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #dbe4f0;
-
-  > * + * {
-    margin-top: 14px;
-  }
-`;
-
 const SectionTitle = styled(Text)`
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
-`;
-
-const ImpactList = styled.div`
-  > * + * {
-    margin-top: 10px;
-  }
-`;
-
-const ImpactItem = styled.div`
-  color: #334155;
-  line-height: 1.5;
-`;
-
-const ImpactDot = styled.span`
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin-top: 6px;
-  margin-right: 10px;
-  vertical-align: top;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
-`;
-
-const LegalCopy = styled.div`
-  .ant-typography {
-    margin-bottom: 0;
-    line-height: 1.65;
-    color: #475569;
-  }
-
-  .ant-typography + .ant-typography {
-    margin-top: 4px;
-  }
 `;
 
 const FieldCard = styled.div`
@@ -266,13 +342,102 @@ const FieldHint = styled(Text)`
   font-size: 12px;
 `;
 
-const ConfirmationCard = styled.div`
-  ${cardStyles}
-  border: 1px solid ${({ $checked }) => ($checked ? "#86efac" : "#dbe4f0")};
-  background:
-    ${({ $checked }) =>
-      $checked
-        ? "linear-gradient(180deg, #f0fdf4 0%, #f7fee7 100%)"
-        : "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)"};
-  transition: border-color 0.2s ease, background 0.2s ease;
+const CenteredStepContent = styled.div`
+  padding-top: 8px;
+  text-align: center;
+`;
+
+const ConfirmationHeading = styled(Paragraph)`
+  max-width: 440px;
+  margin: 0 auto 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #262626;
+`;
+
+const ConfirmationNote = styled.div`
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff1f0;
+  border: 1px solid #ffccc7;
+  color: #a61d24;
+`;
+
+const ScrollableLegalText = styled.div`
+  max-height: 180px;
+  overflow-y: auto;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+  background: #ffffff;
+
+  .ant-typography {
+    margin-bottom: 0;
+    line-height: 1.7;
+    color: #434343;
+  }
+
+  .ant-typography + .ant-typography {
+    margin-top: 12px;
+  }
+`;
+
+const ScrollHint = styled(Text)`
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+`;
+
+const FeedbackState = styled.div`
+  padding-top: 8px;
+  text-align: center;
+`;
+
+const FeedbackIconWrapper = styled.div`
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 2px solid
+    ${({ $tone }) =>
+      $tone === "success"
+        ? "#52c41a"
+        : $tone === "error"
+          ? "#ff7875"
+          : $tone === "confirm"
+            ? "#ff7875"
+            : "#ff7875"};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ $tone }) =>
+    $tone === "success"
+      ? "#389e0d"
+      : $tone === "error"
+        ? "#cf1322"
+        : $tone === "confirm"
+          ? "#cf1322"
+          : "#cf1322"};
+  background-color: ${({ $tone }) =>
+    $tone === "success" ? "#f6ffed" : "#fff1f0"};
+`;
+
+const FeedbackTitle = styled(Paragraph)`
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #262626;
+`;
+
+const FeedbackText = styled(Paragraph)`
+  margin-bottom: 12px;
+  color: #262626;
+`;
+
+const FeedbackSubText = styled(Paragraph)`
+  margin-bottom: 0;
+  color: #595959;
 `;
