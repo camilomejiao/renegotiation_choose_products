@@ -7,19 +7,20 @@ export const getSidebarMenu = (role, id) => {
     { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
     { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
   ];
+  const catalogAdministrationMenu = {
+    label: "Administración Catálogo de productos",
+    iconKey: "boxes",
+    children: [
+      { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
+      { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
+      { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
+    ],
+  };
 
   const config = {
     [RolesEnum.ADMIN]: [
       { path: "/", iconKey: "home", label: "Inicio" },
-      {
-        label: "Administración Catálogo de productos",
-        iconKey: "boxes",
-        children: [
-          { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
-          { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
-          { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
-        ],
-      },
+      catalogAdministrationMenu,
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
       { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
@@ -91,15 +92,11 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión de beneficiarios" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
       { path: "/admin/fiduciary/search-sp", iconKey: "searchDollar", label: "Consulta de Solicitudes de Pago" },
-      {
-        label: "Administración Catálogo de productos",
-        iconKey: "boxes",
-        children: [
-          { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
-          { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
-          { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
-        ],
-      },
+      catalogAdministrationMenu,
+    ],
+    [RolesEnum.ADMINISTRATIVA]: [
+      { path: "/", iconKey: "home", label: "Inicio" },
+      catalogAdministrationMenu,
     ],
     [RolesEnum.LEGAL]: [
       { path: "/admin/management", iconKey: "people", label: "Gestión integral del beneficiario" },

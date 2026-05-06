@@ -11,6 +11,7 @@ const ROLE_TITLES = {
   [RolesEnum.TRUST_PAYMENTS]: "Fiduciaria",
   [RolesEnum.ENVIRONMENTAL]: "Ambiental",
   [RolesEnum.LEGAL]: "Jurídica",
+  [RolesEnum.ADMINISTRATIVA]: "Administrativa",
   [RolesEnum.LIDER_TECNICO_AGRO]: "Líder Agro",
   [RolesEnum.LIDER_TECNICO_NO_AGRO]: "Líder No Agro",
 };
