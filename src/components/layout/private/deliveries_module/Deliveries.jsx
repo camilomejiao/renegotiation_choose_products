@@ -79,11 +79,28 @@ const isValidPdf = (file) => {
  * @param {Object} row - Fila del DataGrid.
  */
 const hasFeNumber = (row) => row?.fe_number;
+const isLeaderTechnicalRole = (roleId) =>
+    roleId === RolesEnum.LIDER_TECNICO_AGRO ||
+    roleId === RolesEnum.LIDER_TECNICO_NO_AGRO;
 /** Roles que pueden editar entregas. */
-const canEditRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+const canEditRoles = [
+    RolesEnum.TERRITORIAL_LINKS,
+    RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
+    RolesEnum.SUPPLIER,
+    RolesEnum.ADMIN
+];
 
 /** Roles que pueden eliminar entregas. */
-const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+const canDeleteRoles = [
+    RolesEnum.TERRITORIAL_LINKS,
+    RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
+    RolesEnum.SUPPLIER,
+    RolesEnum.ADMIN
+];
 
 /**
  * Devuelve true si la fila tiene consolidado PDF cargado.
@@ -308,15 +325,15 @@ export const Deliveries = () => {
             return true;
         }
 
-        if(row.actions.aprobadoProveedor === true && row.actions.approvedTechnical === true && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
+        if(row.actions.aprobadoProveedor === true && row.actions.approvedTechnical === true && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL || isLeaderTechnicalRole(rolId))) {
             return true;
         }
 
-        if((row.actions.aprobadoProveedor === true || row.actions.aprobadoProveedor === null) && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
+        if((row.actions.aprobadoProveedor === true || row.actions.aprobadoProveedor === null) && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL || isLeaderTechnicalRole(rolId))) {
             return false;
         }
 
-        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.TECHNICAL) {
+        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.TECHNICAL && !isLeaderTechnicalRole(rolId)) {
             return true;
         }
 
@@ -542,7 +559,7 @@ const renderFeCell = (row) => {
         const canEdit = canEditRoles.includes(userAuth.rol_id);
         const canDelete = canDeleteRoles.includes(userAuth.rol_id);
         const isSP = userAuth.rol_id === RolesEnum.SUPPLIER;
-        const isTechOrAdmin = userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN;
+        const isTechOrAdmin = userAuth.rol_id === RolesEnum.TECHNICAL || isLeaderTechnicalRole(userAuth.rol_id) || userAuth.rol_id === RolesEnum.ADMIN;
 
         return (
             <div>
@@ -1354,7 +1371,7 @@ const renderFeCell = (row) => {
                     <Container>
                         <Row className="justify-content-end align-items-center">
                             <Col xs={12} md={6} className="deliveries-consolidated">
-                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL) && consolidated &&(
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL || isLeaderTechnicalRole(userAuth.rol_id)) && consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"

@@ -1,6 +1,13 @@
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 
 export const getSidebarMenu = (role, id) => {
+  const technicalMenu = [
+    { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de catálogo" },
+    { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
+    { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
+    { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
+  ];
+
   const config = {
     [RolesEnum.ADMIN]: [
       { path: "/", iconKey: "home", label: "Inicio" },
@@ -50,12 +57,7 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
     ],
-    [RolesEnum.TECHNICAL]: [
-      { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de catálogo" },
-      { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
-      { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
-      { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
-    ],
+    [RolesEnum.TECHNICAL]: technicalMenu,
     [RolesEnum.TERRITORIAL_LINKS]: [
       { path: "/", iconKey: "home", label: "Inicio" },
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
@@ -73,9 +75,11 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/company-reports", iconKey: "chartPie", label: "Reportes generales" },
     ],
     [RolesEnum.LIDER_TECNICO_AGRO]: [
+      ...technicalMenu,
       { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
     ],
     [RolesEnum.LIDER_TECNICO_NO_AGRO]: [
+      ...technicalMenu,
       { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
     ],
     [RolesEnum.SYSTEM_USER]: [

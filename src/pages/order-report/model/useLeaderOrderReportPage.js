@@ -18,28 +18,6 @@ import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
 const PAGE_SIZE = 100;
 const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
 const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
-const LEADER_APPROVAL_REQUEST_MOCK = {
-  id: "leader-approval-request-mock",
-  orderId: "OC-2026-0001",
-  requestDate: "30/04/2026",
-  cubId: "CUB-10001",
-  beneficiary: "Beneficiario de Prueba",
-  supplier: "Proveedor S.A.S.",
-  department: "Cundinamarca",
-  municipality: "Bogota",
-  approvalStatus: "Pendiente",
-  approvalDate: "",
-  approver: "",
-  requestType: "ANULACION",
-  requestTypeLabel: "ANULACION",
-  supplierId: "",
-  departmentId: "",
-  municipalityId: "",
-  approvalComment: "",
-  supplierObservation:
-    "Solicitud mock para validar el flujo de aprobación del líder.",
-  canManage: true,
-};
 
 export const useLeaderOrderReportPage = ({ userAuth }) => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -56,6 +34,8 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
   const [orderTotal, setOrderTotal] = useState(0);
   const [orderPage, setOrderPage] = useState(1);
   const [orderPageSize, setOrderPageSize] = useState(PAGE_SIZE);
+  const [selectedOrderSupplier, setSelectedOrderSupplier] = useState(null);
+  const [appliedOrderSupplier, setAppliedOrderSupplier] = useState(null);
 
   const [requestTypeOptions, setRequestTypeOptions] = useState([]);
   const [requestStatusOptions, setRequestStatusOptions] = useState([]);
@@ -190,19 +170,13 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
       const requestRows = data?.records ?? data?.results ?? [];
       const normalizedRows = normalizeLeaderOrderRequestRows(requestRows);
-      const resolvedRows =
-        normalizedRows.length > 0
-          ? normalizedRows
-          : [LEADER_APPROVAL_REQUEST_MOCK];
 
-      setRequestRows(resolvedRows);
-      setRequestTotal(
-        Number(data?.count) || resolvedRows.length
-      );
+      setRequestRows(normalizedRows);
+      setRequestTotal(Number(data?.count) || normalizedRows.length);
     } catch (response) {
       console.error("Error obteniendo solicitudes del líder:", response);
-      setRequestRows([LEADER_APPROVAL_REQUEST_MOCK]);
-      setRequestTotal(1);
+      setRequestRows([]);
+      setRequestTotal(0);
       setRequestEmptyText(REQUESTS_ERROR_TEXT);
     } finally {
       setLoadingMode((currentMode) =>
@@ -230,8 +204,20 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
       });
 
       const normalizedRows = normalizeLeaderOrderRows(data?.results);
-      setOrderRows(normalizedRows);
-      setOrderTotal(Number(data?.count) || 0);
+      const filteredRows = appliedOrderSupplier?.label
+        ? normalizedRows.filter(
+            (row) =>
+              String(row?.supplier || "").trim().toLowerCase() ===
+              String(appliedOrderSupplier.label).trim().toLowerCase()
+          )
+        : normalizedRows;
+
+      setOrderRows(filteredRows);
+      setOrderTotal(
+        appliedOrderSupplier?.label
+          ? filteredRows.length
+          : Number(data?.count) || 0
+      );
     } catch (response) {
       console.error("Error obteniendo órdenes del líder:", response);
       setOrderRows([]);
@@ -242,7 +228,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
         currentMode === "orders" ? null : currentMode
       );
     }
-  }, [orderPage, orderPageSize]);
+  }, [appliedOrderSupplier, orderPage, orderPageSize]);
 
   useEffect(() => {
     if (activeTab !== "requests" || hasLoadedRequestFiltersRef.current) {
@@ -308,6 +294,18 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     setMunicipalityOptions([]);
     setRequestPage(1);
     setRequestPageSize(PAGE_SIZE);
+  }, []);
+
+  const handleOrderFiltersSearch = useCallback(() => {
+    setOrderPage(1);
+    setAppliedOrderSupplier(selectedOrderSupplier);
+  }, [selectedOrderSupplier]);
+
+  const handleOrderFiltersClear = useCallback(() => {
+    setSelectedOrderSupplier(null);
+    setAppliedOrderSupplier(null);
+    setOrderPage(1);
+    setOrderPageSize(PAGE_SIZE);
   }, []);
 
   const handleManageRequest = useCallback((request) => {
@@ -452,6 +450,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     orderPageSize,
     orderRows,
     orderTotal,
+    selectedOrderSupplier,
     requestPage,
     requestPageSize,
     requestEmptyText,
@@ -476,8 +475,11 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     handleRejectRequest: () => handleApprovalSubmit("reject"),
     handleDepartmentChange,
     handleManageRequest,
+    handleOrderFiltersClear,
+    handleOrderFiltersSearch,
     handleOrderPageChange: setOrderPage,
     handleOrderPageSizeChange: setOrderPageSize,
+    handleOrderSupplierChange: setSelectedOrderSupplier,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange: (nextPage, nextPageSize) => {

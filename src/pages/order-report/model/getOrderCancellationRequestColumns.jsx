@@ -60,7 +60,9 @@ export const getOrderCancellationRequestColumns = ({ onCancelRequest }) => [
           variant="danger"
           icon={<DeleteOutlined />}
           onClick={() => onCancelRequest(record)}
-        />
+        >
+          Eliminar solicitud
+        </AppButton>
       ) : (
         "---"
       ),

@@ -32,6 +32,8 @@ const canShowOtherRol = [
     RolesEnum.SUPERVISION,
     RolesEnum.TERRITORIAL_LINKS,
     RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
     RolesEnum.PAYMENTS,
     RolesEnum.TRUST_PAYMENTS,
     RolesEnum.SYSTEM_USER,
@@ -42,7 +44,16 @@ const canShowOtherRol = [
 const STATUS_ARRAY = Object.values(DeliveryStatusEnum);
 
 /** Roles que pueden ver el boton descargra. */
-const canShowRoles = [RolesEnum.ADMIN, RolesEnum.TECHNICAL, RolesEnum.PAYMENTS, RolesEnum.TRUST_PAYMENTS, RolesEnum.SUPERVISION, RolesEnum.SUPPLIER];
+const canShowRoles = [
+    RolesEnum.ADMIN,
+    RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
+    RolesEnum.PAYMENTS,
+    RolesEnum.TRUST_PAYMENTS,
+    RolesEnum.SUPERVISION,
+    RolesEnum.SUPPLIER
+];
 export const DeliveriesInformation = () => {
 
     const { userAuth } = useOutletContext();

@@ -7,6 +7,7 @@ import { getLeaderOrderColumns } from "../model/getLeaderOrderColumns";
 import { getLeaderOrderRequestColumns } from "../model/getLeaderOrderRequestColumns";
 import { useLeaderOrderReportPage } from "../model/useLeaderOrderReportPage";
 import { LeaderOrderApprovalModal } from "./LeaderOrderApprovalModal";
+import { LeaderOrderToolbar } from "./LeaderOrderToolbar";
 import { LeaderOrderRequestToolbar } from "./LeaderOrderRequestToolbar";
 import { OrderRequestApprovalViewModal } from "./OrderRequestApprovalViewModal";
 import {
@@ -29,6 +30,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     orderPageSize,
     orderRows,
     orderTotal,
+    selectedOrderSupplier,
     requestPage,
     requestPageSize,
     requestEmptyText,
@@ -52,6 +54,9 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     handleApproveRequest,
     handleDepartmentChange,
     handleManageRequest,
+    handleOrderFiltersClear,
+    handleOrderFiltersSearch,
+    handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
@@ -139,6 +144,17 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     <Row gutter={[0, 16]}>
       <Col span={24}>
         <StyledDivider />
+      </Col>
+
+      <Col span={24}>
+        <LeaderOrderToolbar
+          loading={loading}
+          selectedSupplier={selectedOrderSupplier}
+          supplierOptions={supplierOptions}
+          onSupplierChange={handleOrderSupplierChange}
+          onSearch={handleOrderFiltersSearch}
+          onClear={handleOrderFiltersClear}
+        />
       </Col>
 
       <Col span={24}>
