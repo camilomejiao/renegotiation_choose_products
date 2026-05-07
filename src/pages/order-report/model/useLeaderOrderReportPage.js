@@ -9,15 +9,21 @@ import {
   getMunicipalityCatalog,
   getOrderReportPage,
   getOrderRequestFilterCatalog,
+  submitLeaderOrderApprovalRequest,
 } from "../api/orderReportApi";
 import { getOrderRequestPreviewTimestamp } from "./utils";
 import { normalizeLeaderOrderRequestRows } from "./normalizeLeaderOrderRequestRows";
 import { normalizeLeaderOrderRows } from "./normalizeLeaderOrderRows";
 import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
 
-const PAGE_SIZE = 100;
+const REQUEST_PAGE_SIZE = 10;
+const ORDER_PAGE_SIZE = 100;
 const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
 const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
+const APPROVAL_ACTION_STATUS = {
+  approve: 1,
+  reject: 0,
+};
 
 export const useLeaderOrderReportPage = ({ userAuth }) => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -28,13 +34,15 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
   const [requestTotal, setRequestTotal] = useState(0);
   const [requestEmptyText, setRequestEmptyText] = useState(REQUESTS_EMPTY_TEXT);
   const [requestPage, setRequestPage] = useState(1);
-  const [requestPageSize, setRequestPageSize] = useState(PAGE_SIZE);
+  const [requestPageSize, setRequestPageSize] = useState(REQUEST_PAGE_SIZE);
 
   const [orderRows, setOrderRows] = useState([]);
   const [orderTotal, setOrderTotal] = useState(0);
   const [orderPage, setOrderPage] = useState(1);
-  const [orderPageSize, setOrderPageSize] = useState(PAGE_SIZE);
+  const [orderPageSize, setOrderPageSize] = useState(ORDER_PAGE_SIZE);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [selectedOrderSupplier, setSelectedOrderSupplier] = useState(null);
+  const [appliedOrderSearchQuery, setAppliedOrderSearchQuery] = useState("");
   const [appliedOrderSupplier, setAppliedOrderSupplier] = useState(null);
 
   const [requestTypeOptions, setRequestTypeOptions] = useState([]);
@@ -75,6 +83,9 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
     return loadingMode === "orders";
   }, [activeTab, loadingMode]);
+
+  const requestTableLoading = loadingMode === "requests";
+  const orderTableLoading = loadingMode === "orders";
 
   const submitting = loadingMode === "submit-approval";
 
@@ -164,11 +175,11 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
         requestType: appliedRequestType?.value || "",
         requestStatus: appliedRequestStatus?.value || "",
         supplierName: appliedSupplier?.label || "",
-        departmentName: appliedDepartment?.label || "",
-        municipalityName: appliedMunicipality?.label || "",
+        departmentId: appliedDepartment?.value || "",
+        municipalityId: appliedMunicipality?.value || "",
       });
 
-      const requestRows = data?.records ?? data?.results ?? [];
+      const requestRows = data?.records ?? [];
       const normalizedRows = normalizeLeaderOrderRequestRows(requestRows);
 
       setRequestRows(normalizedRows);
@@ -200,7 +211,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
       const data = await getOrderReportPage({
         page: orderPage,
         pageSize: orderPageSize,
-        searchQuery: "",
+        searchQuery: appliedOrderSearchQuery,
       });
 
       const normalizedRows = normalizeLeaderOrderRows(data?.results);
@@ -228,7 +239,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
         currentMode === "orders" ? null : currentMode
       );
     }
-  }, [appliedOrderSupplier, orderPage, orderPageSize]);
+  }, [appliedOrderSearchQuery, appliedOrderSupplier, orderPage, orderPageSize]);
 
   useEffect(() => {
     if (activeTab !== "requests" || hasLoadedRequestFiltersRef.current) {
@@ -293,19 +304,22 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     setAppliedMunicipality(null);
     setMunicipalityOptions([]);
     setRequestPage(1);
-    setRequestPageSize(PAGE_SIZE);
+    setRequestPageSize(REQUEST_PAGE_SIZE);
   }, []);
 
   const handleOrderFiltersSearch = useCallback(() => {
     setOrderPage(1);
+    setAppliedOrderSearchQuery(orderSearchQuery.trim());
     setAppliedOrderSupplier(selectedOrderSupplier);
-  }, [selectedOrderSupplier]);
+  }, [orderSearchQuery, selectedOrderSupplier]);
 
   const handleOrderFiltersClear = useCallback(() => {
+    setOrderSearchQuery("");
     setSelectedOrderSupplier(null);
+    setAppliedOrderSearchQuery("");
     setAppliedOrderSupplier(null);
     setOrderPage(1);
-    setOrderPageSize(PAGE_SIZE);
+    setOrderPageSize(ORDER_PAGE_SIZE);
   }, []);
 
   const handleManageRequest = useCallback((request) => {
@@ -368,11 +382,14 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
 
     try {
       setLoadingMode("submit-approval");
-      if (nextAction === "approve") {
-        setApprovalErrorMessage("");
-        setApprovalModalView("processing");
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
+      setApprovalErrorMessage("");
+      setApprovalModalView("processing");
+
+      await submitLeaderOrderApprovalRequest({
+        solicitud_id: String(managedRequest.id),
+        observacion: normalizedComment,
+        estado: APPROVAL_ACTION_STATUS[nextAction],
+      });
 
       const nextStatus =
         nextAction === "approve" ? "Aprobado" : "Rechazado";
@@ -411,17 +428,22 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
         return;
       }
 
-      AlertComponent.success("Bien hecho!", "La solicitud fue rechazada visualmente.");
+      AlertComponent.success("Bien hecho!", "La solicitud fue rechazada correctamente.");
       closeApprovalModal();
     } catch (response) {
       console.error("Error gestionando solicitud:", response);
+      const errorMessage =
+        response?.data?.message ||
+        response?.message ||
+        "No se pudo gestionar la solicitud";
+
       if (nextAction === "approve") {
         setApprovalConfirmationAction(null);
-        setApprovalErrorMessage("No se pudo aprobar la solicitud.");
+        setApprovalErrorMessage(errorMessage);
         setApprovalModalView("error");
       } else {
         setApprovalModalView("form");
-        AlertComponent.error("Error", "No se pudo gestionar la solicitud");
+        AlertComponent.error("Error", errorMessage);
       }
     } finally {
       setLoadingMode(null);
@@ -430,6 +452,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     approvalComment,
     closeApprovalModal,
     managedRequest,
+    loadLeaderRequests,
     userAuth?.name,
     userAuth?.username,
   ]);
@@ -443,11 +466,14 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     departmentOptions,
     isApprovalModalOpen,
     loading,
+    requestTableLoading,
+    orderTableLoading,
     loadingText,
     submitting,
     municipalityOptions,
     orderPage,
     orderPageSize,
+    orderSearchQuery,
     orderRows,
     orderTotal,
     selectedOrderSupplier,
@@ -479,6 +505,7 @@ export const useLeaderOrderReportPage = ({ userAuth }) => {
     handleOrderFiltersSearch,
     handleOrderPageChange: setOrderPage,
     handleOrderPageSizeChange: setOrderPageSize,
+    handleOrderSearchQueryChange: setOrderSearchQuery,
     handleOrderSupplierChange: setSelectedOrderSupplier,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,

@@ -22,6 +22,21 @@ const DELETE_MODAL_INITIAL_VIEW = "legal";
 const ORDER_CANCELLATION_REQUEST_TYPE = 5215;
 const REQUEST_CANCEL_MODAL_INITIAL_VIEW = "form";
 const REQUEST_CANCEL_STATUS = "CANCELADO";
+const DELETE_FORBIDDEN_FALLBACK_MESSAGE = "tiene dependencias asociadas";
+
+const getDeleteForbiddenMessage = (response) => {
+  const responseData = response?.data;
+
+  if (typeof responseData?.message === "string" && responseData.message.trim()) {
+    return responseData.message.trim();
+  }
+
+  if (typeof responseData === "string" && responseData.trim()) {
+    return responseData.trim();
+  }
+
+  return DELETE_FORBIDDEN_FALLBACK_MESSAGE;
+};
 
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
@@ -415,9 +430,9 @@ export const useOrderReportPage = () => {
 
       if (response?.status === ResponseStatusEnum.FORBIDDEN) {
         setDeleteErrorMessage(
-          `No se puede anular la orden porque ${
-            response?.data || "tiene dependencias asociadas"
-          }`
+          `No se puede anular la orden de compra porque ${getDeleteForbiddenMessage(
+            response
+          )}`
         );
         setDeleteModalView("error");
       }

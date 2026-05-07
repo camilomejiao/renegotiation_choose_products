@@ -26,14 +26,17 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     isApprovalModalOpen,
     loading,
     municipalityOptions,
+    orderTableLoading,
     orderPage,
     orderPageSize,
+    orderSearchQuery,
     orderRows,
     orderTotal,
     selectedOrderSupplier,
     requestPage,
     requestPageSize,
     requestEmptyText,
+    requestTableLoading,
     requestRows,
     requestStatusOptions,
     requestTotal,
@@ -56,6 +59,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     handleManageRequest,
     handleOrderFiltersClear,
     handleOrderFiltersSearch,
+    handleOrderSearchQueryChange,
     handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
@@ -119,7 +123,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             rowKey="id"
             columns={requestColumns}
             dataSource={requestRows}
-            loading={loading}
+            loading={requestTableLoading}
             total={requestTotal}
             currentPage={requestPage}
             onPageChange={handleRequestPageChange}
@@ -149,8 +153,10 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
       <Col span={24}>
         <LeaderOrderToolbar
           loading={loading}
+          searchQuery={orderSearchQuery}
           selectedSupplier={selectedOrderSupplier}
           supplierOptions={supplierOptions}
+          onSearchQueryChange={handleOrderSearchQueryChange}
           onSupplierChange={handleOrderSupplierChange}
           onSearch={handleOrderFiltersSearch}
           onClear={handleOrderFiltersClear}
@@ -163,7 +169,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             rowKey="id"
             columns={orderColumns}
             dataSource={orderRows}
-            loading={loading}
+            loading={orderTableLoading}
             total={orderTotal}
             currentPage={orderPage}
             onPageChange={onOrderPageChange}

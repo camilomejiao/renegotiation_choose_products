@@ -115,28 +115,74 @@ export const getOrderCancellationRequestsPage = async ({
 
 export const getLeaderOrderApprovalRequestsPage = async ({
   page = 1,
-  pageSize = 100,
+  pageSize = 10,
   requestType = "",
   requestStatus = "",
   supplierName = "",
-  departmentName = "",
-  municipalityName = "",
+  departmentId = "",
+  municipalityId = "",
 }) => {
-  const response = await purchaseOrderServices.getApprovalRequests({
-    tipo_solicitud: requestType,
-    estado: requestStatus,
-    proveedor: supplierName,
-    departamento: departmentName,
-    municipio: municipalityName,
-    page,
-    size: pageSize,
-  });
+  const payload = {};
+
+  if (requestType !== "" && requestType !== null && requestType !== undefined) {
+    payload.tipo_solicitud = Number(requestType);
+  }
+
+  if (
+    requestStatus !== "" &&
+    requestStatus !== null &&
+    requestStatus !== undefined
+  ) {
+    payload.estado = Number(requestStatus);
+  }
+
+  if (typeof supplierName === "string" && supplierName.trim()) {
+    payload.proveedor = supplierName.trim();
+  }
+
+  if (
+    departmentId !== "" &&
+    departmentId !== null &&
+    departmentId !== undefined
+  ) {
+    payload.departamento = Number(departmentId);
+  }
+
+  if (
+    municipalityId !== "" &&
+    municipalityId !== null &&
+    municipalityId !== undefined
+  ) {
+    payload.municipio = Number(municipalityId);
+  }
+
+  const normalizedPage = Number(page);
+  const normalizedPageSize = Number(pageSize);
+
+  payload.page = normalizedPage;
+  payload.size = normalizedPageSize;
+
+  const response = await purchaseOrderServices.getApprovalRequests(payload);
 
   if (response?.status !== ResponseStatusEnum.OK) {
     throw response;
   }
 
-  return response?.data ?? { count: 0, records: [] };
+  return response?.data ?? { records: [] };
+};
+
+export const submitLeaderOrderApprovalRequest = async (payload = {}) => {
+  const response = await purchaseOrderServices.submitApprovalRequest(payload);
+
+  if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED &&
+    response?.status !== ResponseStatusEnum.NO_CONTENT
+  ) {
+    throw response;
+  }
+
+  return response;
 };
 
 export const cancelOrderCancellationRequest = async (

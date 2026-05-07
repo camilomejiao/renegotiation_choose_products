@@ -22,6 +22,10 @@ export const normalizeLeaderOrderRows = (rows = []) =>
     orderId: row?.id ?? row?.orden_id ?? "",
     cubId: row?.cub?.cub_id || row?.cub_id || "",
     beneficiary: buildBeneficiaryName(row?.cub),
-    supplier: row?.proveedor?.nombre || row?.supplier?.nombre || row?.supplier_name || "",
+    supplier:
+      (typeof row?.proveedor === "string" ? row.proveedor : row?.proveedor?.nombre) ||
+      row?.supplier?.nombre ||
+      row?.supplier_name ||
+      "",
     totalValue: formatCurrencyValue(row?.valor_total),
   }));

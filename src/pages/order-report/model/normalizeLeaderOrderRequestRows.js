@@ -52,7 +52,16 @@ const buildBeneficiaryName = (beneficiary = {}) => {
 export const normalizeLeaderOrderRequestRows = (rows = []) =>
   rows.map((row) => {
     const order = row?.orden ?? row?.order ?? {};
-    const beneficiary = order?.cub ?? row?.cub ?? row?.beneficiario ?? {};
+    const cub =
+      row?.cub ??
+      row?.cubId ??
+      row?.cub_id ??
+      row?.CUB ??
+      order?.cub ??
+      order?.cubId ??
+      order?.cub_id ??
+      {};
+    const beneficiary = row?.beneficiario ?? order?.beneficiario ?? {};
     const supplier = row?.proveedor ?? order?.proveedor ?? {};
     const approval = row?.aprobacion ?? row?.approval ?? {};
     const approvalStatus = resolveStatusLabel(
@@ -70,6 +79,7 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
     return {
       id:
         row?.id ??
+        row?.id_solicitud ??
         row?.solicitud_id ??
         row?.request_id ??
         row?.numero_orden_compra ??
@@ -91,8 +101,12 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
           ""
       ),
       cubId:
-        (typeof beneficiary === "string" ? beneficiary : beneficiary?.cub_id) ??
-        row?.cub_id ??
+        ((typeof cub === "string" || typeof cub === "number")
+          ? String(cub)
+          : cub?.cub_id ?? cub?.id ?? cub?.codigo) ||
+        row?.cubId ||
+        row?.cub_id ||
+        row?.CUB ||
         "",
       beneficiary: buildBeneficiaryName(beneficiary),
       supplier:
@@ -111,10 +125,12 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
         "",
       approvalStatus,
       approvalDate:
-        approval?.fecha_aprobacion ??
-        row?.fecha_aprobacion ??
-        row?.approved_at ??
-        "",
+        formatDateToDayMonthYear(
+          approval?.fecha_aprobacion ??
+            row?.fecha_aprobacion ??
+            row?.approved_at ??
+            ""
+        ),
       approver:
         approval?.aprobador ??
         approval?.usuario ??

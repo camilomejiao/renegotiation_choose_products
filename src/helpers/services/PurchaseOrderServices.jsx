@@ -49,7 +49,20 @@ class PurchaseOrderServices {
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
     getApprovalRequests(payload = {}) {
-        const url = this.buildUrl("solicitudes/aprobacion/consulta");
+        const url = this.buildUrl("solicitudes/aprobacion/consulta/");
+        return authTokenService.fetchWithAuth(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
+    /**
+     * Gestiona una solicitud de aprobación de orden para líderes.
+     * @param {Object} payload - Datos de la aprobación o rechazo.
+     * @returns {Promise<Response>} Promesa con la respuesta del servidor.
+     */
+    submitApprovalRequest(payload = {}) {
+        const url = this.buildUrl("solicitudes/aprobacion/");
         return authTokenService.fetchWithAuth(url, {
             method: "POST",
             body: JSON.stringify(payload),
