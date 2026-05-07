@@ -205,60 +205,26 @@ export const OrderReportDeleteModal = ({
               }}
             >
               <Paragraph>
-                PENDIENTE TEXTO JURÍDICO
+                Estimado Proveedor:
               </Paragraph>
               <Paragraph>
-                Este espacio representa el documento completo que el proveedor
-                debe revisar antes de registrar el motivo de anulación. La
-                presente solicitud implica una manifestación expresa de voluntad
-                respecto de la orden de compra seleccionada y será evaluada por
-                las áreas responsables conforme a los procedimientos internos
-                definidos por la organización.
+                Al continuar con esta solicitud, usted declara que ha leído,
+                entendido y aceptado los términos aplicables a la anulación de
+                la orden de compra en el Portal PNIS.
               </Paragraph>
               <Paragraph>
-                El proveedor declara que la información suministrada en esta
-                solicitud corresponde a hechos ciertos, verificables y
-                directamente relacionados con la necesidad de anulación. En
-                consecuencia, entiende que cualquier omisión, inconsistencia o
-                falsedad podrá generar la suspensión del trámite, la solicitud
-                de aclaraciones adicionales o las medidas administrativas a que
-                haya lugar según la normativa aplicable y las reglas del negocio
-                vigentes.
+                Tenga en cuenta que la solicitud de anulación solo podrá ser
+                cancelada mientras se encuentre en estado <Text strong>"Pendiente"</Text>.
+                Una vez cambie a cualquier otro estado, no procederá su
+                cancelación, reversión o modificación.
               </Paragraph>
               <Paragraph>
-                Asimismo, el proveedor reconoce que el envío de esta solicitud
-                no produce por sí mismo la anulación automática de la orden de
-                compra, ni modifica de forma inmediata los compromisos
-                contractuales, operativos, contables o logísticos asociados. La
-                petición será sometida a revisión por el equipo competente, el
-                cual podrá aprobarla, rechazarla o requerir información
-                complementaria antes de adoptar una decisión definitiva.
+                Asimismo, acepta que no podrán generarse ni tramitarse actas de
+                entrega asociadas a la orden de compra objeto de anulación.
               </Paragraph>
               <Paragraph>
-                Al continuar, el proveedor acepta que ha leído integralmente el
-                contenido de este texto, comprende el impacto operativo de la
-                solicitud, conoce que la orden podría mantener sus efectos hasta
-                tanto exista una decisión formal y entiende que la trazabilidad
-                de esta gestión quedará registrada en los sistemas de
-                información de la organización para fines de auditoría,
-                seguimiento y control.
-              </Paragraph>
-              <Paragraph>
-                Igualmente, se deja constancia de que la solicitud podrá afectar
-                procesos posteriores relacionados con entregas, facturación,
-                conciliaciones, devoluciones de saldo, soportes documentales y
-                demás actuaciones derivadas de la ejecución de la orden de
-                compra. Por ello, el proveedor manifiesta que ha evaluado el
-                alcance de su petición y que cuenta con fundamento suficiente
-                para iniciar el trámite de anulación correspondiente.
-              </Paragraph>
-              <Paragraph>
-                Finalmente, al habilitar el campo de motivo y continuar con el
-                proceso, el proveedor confirma que actúa con plena facultad para
-                presentar esta solicitud en nombre propio o de la organización a
-                la que representa, y que acepta las validaciones, controles y
-                tiempos de respuesta definidos por las áreas de revisión
-                involucradas.
+                Verifique la información antes de continuar, ya que este
+                trámite puede ser irreversible en el sistema.
               </Paragraph>
             </ScrollableLegalText>
             <ScrollHint type={hasReadLegalText ? "success" : "warning"}>
