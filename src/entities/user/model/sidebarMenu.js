@@ -1,8 +1,13 @@
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 
 export const getSidebarMenu = (role, id) => {
+  const catalogManagementItem = {
+    path: "/admin/list-products-by-convocation",
+    iconKey: "tools",
+    label: "Administración de catálogo",
+  };
   const technicalMenu = [
-    { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de catálogo" },
+    catalogManagementItem,
     { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
     { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
     { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
@@ -95,8 +100,7 @@ export const getSidebarMenu = (role, id) => {
       catalogAdministrationMenu,
     ],
     [RolesEnum.ADMINISTRATIVA]: [
-      { path: "/", iconKey: "home", label: "Inicio" },
-      catalogAdministrationMenu,
+      ...technicalMenu,
     ],
     [RolesEnum.LEGAL]: [
       { path: "/admin/management", iconKey: "people", label: "Gestión integral del beneficiario" },
