@@ -24,6 +24,7 @@ export const AppSelect = ({
   isLoading = false,
   noOptionsMessage,
   showSearch = true,
+  filterOption,
   className,
 }) => {
   const handleChange = (nextValue, option) => {
@@ -63,6 +64,7 @@ export const AppSelect = ({
           disabled={isDisabled}
           loading={isLoading}
           showSearch={showSearch}
+          filterOption={filterOption}
           optionFilterProp="label"
           notFoundContent={noOptionsMessage ? noOptionsMessage() : "Sin opciones"}
           popupClassName="app-select-dropdown"

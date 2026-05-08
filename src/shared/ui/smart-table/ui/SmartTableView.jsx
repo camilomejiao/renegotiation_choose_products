@@ -25,8 +25,11 @@ export const SmartTableView = ({
   showTableResize = true,
   showColumnSettings = true,
   toolbarExtensions = null,
+  toolbarExtensionsPosition = "right",
   leftToolbar = [],
   reload,
+  reloadPosition = "right",
+  showReload = true,
   onSortChange,
   onPageChange,
   onRowSelectionChange,
@@ -124,7 +127,10 @@ export const SmartTableView = ({
           <SmartTableToolbar
             leftToolbar={leftToolbar}
             toolbarExtensions={toolbarExtensions}
+            toolbarExtensionsPosition={toolbarExtensionsPosition}
             reload={reload}
+            reloadPosition={reloadPosition}
+            showReload={showReload}
             showTableResize={showTableResize}
             tableSize={tableSize}
             setTableSize={setTableSize}

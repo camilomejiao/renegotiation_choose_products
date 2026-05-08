@@ -39,7 +39,7 @@ export const OrderReport = () => {
 
     // Configuración de las columnas del DataGrid
     const columns = [
-        { title: "ORDER ID", dataIndex: "id", key: "id", width: 120 },
+        { title: "ORDEN DE COMPRA", dataIndex: "id", key: "id", width: 120 },
         { title: "FECHA DE REGISTRO", dataIndex: "fecha_registro", key: "fecha_registro", width: 180 },
         { title: "CUB", dataIndex: "cub_id", key: "cub_id", width: 120 },
         { title: "DOCUMENTO", dataIndex: "cub_identificacion", key: "cub_identificacion", width: 160 },
