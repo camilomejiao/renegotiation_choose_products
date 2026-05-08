@@ -7,7 +7,7 @@ const formatCurrency = (value) =>
 
 export const getLeaderOrderColumns = () => [
   {
-    title: "NÚMERO DE ORDEN DE COMPRA",
+    title: "ORDEN DE COMPRA",
     dataIndex: "orderId",
     key: "orderId",
     width: 220,

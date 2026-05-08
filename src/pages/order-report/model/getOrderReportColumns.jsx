@@ -11,7 +11,7 @@ const formatCurrency = (value) =>
 
 export const getOrderReportColumns = ({ onDelete }) => [
   {
-    title: "ORDER ID",
+    title: "ORDEN DE COMPRA",
     dataIndex: "id",
     key: "id",
     width: 140,

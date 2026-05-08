@@ -16,6 +16,24 @@ const resolveStatusLabel = (statusValue) => {
   return REQUEST_STATUS_LABELS[normalizedStatus] ?? String(statusValue);
 };
 
+const formatDateToIsoDate = (dateValue) => {
+  if (!dateValue) {
+    return "";
+  }
+
+  const parsedDate = new Date(dateValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return String(dateValue);
+  }
+
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 export const normalizeOrderCancellationRequestRows = (rows = []) =>
   rows.map((row) => {
     const order = row?.orden ?? row?.order ?? {};
@@ -27,12 +45,13 @@ export const normalizeOrderCancellationRequestRows = (rows = []) =>
     return {
       id: row?.id ?? row?.solicitud_id,
       orderId: row?.orden_id ?? order?.id ?? row?.order_id ?? "",
-      requestDate:
+      requestDate: formatDateToIsoDate(
         row?.fecha_solicitud ??
-        row?.fecha_registro ??
-        row?.created_at ??
-        row?.created ??
-        "",
+          row?.fecha_registro ??
+          row?.created_at ??
+          row?.created ??
+          ""
+      ),
       cubId:
         (typeof cub === "string" ? cub : cub?.cub_id) ?? row?.cub_id ?? "",
       document:

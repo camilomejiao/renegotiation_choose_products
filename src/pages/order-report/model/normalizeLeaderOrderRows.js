@@ -17,15 +17,23 @@ const buildBeneficiaryName = (beneficiary = {}) => {
 };
 
 export const normalizeLeaderOrderRows = (rows = []) =>
-  rows.map((row) => ({
-    id: row?.id,
-    orderId: row?.id ?? row?.orden_id ?? "",
-    cubId: row?.cub?.cub_id || row?.cub_id || "",
-    beneficiary: buildBeneficiaryName(row?.cub),
-    supplier:
-      (typeof row?.proveedor === "string" ? row.proveedor : row?.proveedor?.nombre) ||
-      row?.supplier?.nombre ||
-      row?.supplier_name ||
-      "",
-    totalValue: formatCurrencyValue(row?.valor_total),
-  }));
+  rows.map((row) => {
+    const supplier = row?.proveedor ?? row?.supplier ?? {};
+
+    return {
+      id: row?.id,
+      orderId: row?.id ?? row?.orden_id ?? "",
+      cubId: row?.cub?.cub_id || row?.cub_id || "",
+      beneficiary: buildBeneficiaryName(row?.cub),
+      supplier:
+        (typeof supplier === "string" ? supplier : supplier?.nombre) ||
+        row?.supplier_name ||
+        "",
+      supplierId:
+        (typeof supplier === "string" ? "" : supplier?.id) ??
+        row?.proveedor_id ??
+        row?.supplier_id ??
+        "",
+      totalValue: formatCurrencyValue(row?.valor_total),
+    };
+  });

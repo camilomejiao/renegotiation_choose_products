@@ -2,17 +2,15 @@ import { ClearOutlined, SearchOutlined } from "@ant-design/icons";
 import { Col, Row } from "antd";
 
 import { AppButton } from "../../../shared/ui/button";
-import { AppSearchInput } from "../../../shared/ui/search-input";
 import { AppSelect } from "../../../shared/ui/select";
+import { matchesSupplierSelectOption } from "../model/supplierSelectSearch";
 import { ToolbarCard, ToolbarDivider } from "./OrderReportPage.styles";
 
 export const LeaderOrderToolbar = ({
   loading,
   onClear,
   onSearch,
-  onSearchQueryChange,
   onSupplierChange,
-  searchQuery,
   selectedSupplier,
   supplierOptions,
 }) => {
@@ -20,24 +18,17 @@ export const LeaderOrderToolbar = ({
     <ToolbarCard bordered>
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={24} md={12} lg={10} xl={6} xxl={6}>
-          <AppSearchInput
-            placeholder="Buscar por documento"
-            value={searchQuery}
-            onChange={onSearchQueryChange}
-          />
-        </Col>
-
-        <Col xs={24} sm={24} md={12} lg={10} xl={6} xxl={6}>
           <AppSelect
             value={selectedSupplier}
             options={supplierOptions}
-            placeholder="Proveedor"
+            placeholder="Proveedor (nombre o NIT)"
             onChange={onSupplierChange}
+            filterOption={matchesSupplierSelectOption}
             isDisabled={loading}
           />
         </Col>
 
-        <Col xs={24} sm={12} md={6} lg={7} xl={3} xxl={3}>
+        <Col xs={24} sm={12} md={6} lg={7} xl={4} xxl={4}>
           <AppButton
             icon={<SearchOutlined />}
             onClick={onSearch}
@@ -48,12 +39,12 @@ export const LeaderOrderToolbar = ({
           </AppButton>
         </Col>
 
-        <Col xs={24} sm={12} md={6} lg={7} xl={3} xxl={3}>
+        <Col xs={24} sm={12} md={6} lg={7} xl={4} xxl={4}>
           <AppButton
             variant="secondary"
             icon={<ClearOutlined />}
             onClick={onClear}
-            disabled={loading && !selectedSupplier && !searchQuery}
+            disabled={loading && !selectedSupplier}
             style={{ width: "100%" }}
           >
             Limpiar

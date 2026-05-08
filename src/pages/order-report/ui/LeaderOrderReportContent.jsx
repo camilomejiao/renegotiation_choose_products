@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
+import { TableSearchControl } from "../../../shared/ui/table-search-control";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
 import { getLeaderOrderColumns } from "../model/getLeaderOrderColumns";
 import { getLeaderOrderRequestColumns } from "../model/getLeaderOrderRequestColumns";
-import { useLeaderOrderReportPage } from "../model/useLeaderOrderReportPage";
+import { useLeaderOrderReportSearchPage } from "../model/useLeaderOrderReportSearchPage";
 import { LeaderOrderApprovalModal } from "./LeaderOrderApprovalModal";
 import { LeaderOrderToolbar } from "./LeaderOrderToolbar";
 import { LeaderOrderRequestToolbar } from "./LeaderOrderRequestToolbar";
@@ -29,13 +30,16 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     orderTableLoading,
     orderPage,
     orderPageSize,
-    orderSearchQuery,
+    orderSearchOptions,
+    orderSearchValue,
     orderRows,
     orderTotal,
-    selectedOrderSupplier,
+    selectedOrderSearchAttribute,
     requestPage,
     requestPageSize,
     requestEmptyText,
+    requestSearchOptions,
+    requestSearchValue,
     requestTableLoading,
     requestRows,
     requestStatusOptions,
@@ -43,6 +47,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     requestTypeOptions,
     selectedDepartment,
     selectedMunicipality,
+    selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
     selectedSupplier,
@@ -59,12 +64,15 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     handleManageRequest,
     handleOrderFiltersClear,
     handleOrderFiltersSearch,
-    handleOrderSearchQueryChange,
+    handleOrderSearchAttributeChange,
+    handleOrderSearchValueChange,
     handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,
+    handleRequestSearchAttributeChange,
+    handleRequestSearchValueChange,
     handleRequestStatusChange,
     handleRequestTypeChange,
     handleSupplierChange,
@@ -75,7 +83,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     loadLeaderOrders,
     loadLeaderRequests,
     onOrderPageChange,
-  } = useLeaderOrderReportPage({ userAuth });
+  } = useLeaderOrderReportSearchPage({ userAuth });
 
   const requestColumns = useMemo(
     () =>
@@ -87,6 +95,50 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
   );
 
   const orderColumns = useMemo(() => getLeaderOrderColumns(), []);
+
+  const requestSearchExtension = useMemo(
+    () => [
+      <TableSearchControl
+        key="leader-request-table-search"
+        attributeOptions={requestSearchOptions}
+        selectedAttribute={selectedRequestSearchAttribute}
+        searchValue={requestSearchValue}
+        loading={loading}
+        onAttributeChange={handleRequestSearchAttributeChange}
+        onSearchValueChange={handleRequestSearchValueChange}
+      />,
+    ],
+    [
+      handleRequestSearchAttributeChange,
+      handleRequestSearchValueChange,
+      loading,
+      requestSearchOptions,
+      requestSearchValue,
+      selectedRequestSearchAttribute,
+    ]
+  );
+
+  const orderSearchExtension = useMemo(
+    () => [
+      <TableSearchControl
+        key="leader-order-table-search"
+        attributeOptions={orderSearchOptions}
+        selectedAttribute={selectedOrderSearchAttribute}
+        searchValue={orderSearchValue}
+        loading={loading}
+        onAttributeChange={handleOrderSearchAttributeChange}
+        onSearchValueChange={handleOrderSearchValueChange}
+      />,
+    ],
+    [
+      handleOrderSearchAttributeChange,
+      handleOrderSearchValueChange,
+      loading,
+      orderSearchOptions,
+      orderSearchValue,
+      selectedOrderSearchAttribute,
+    ]
+  );
 
   const requestsContent = (
     <Row gutter={[0, 16]}>
@@ -137,6 +189,11 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
+            toolbarExtensions={requestSearchExtension}
+            toolbarExtensionsPosition="left"
+            reloadPosition="left"
+            showReload={false}
+            download={{ enable: false }}
             scroll={{ x: "max-content" }}
           />
         </TableCard>
@@ -153,10 +210,8 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
       <Col span={24}>
         <LeaderOrderToolbar
           loading={loading}
-          searchQuery={orderSearchQuery}
-          selectedSupplier={selectedOrderSupplier}
+          selectedSupplier={selectedSupplier}
           supplierOptions={supplierOptions}
-          onSearchQueryChange={handleOrderSearchQueryChange}
           onSupplierChange={handleOrderSupplierChange}
           onSearch={handleOrderFiltersSearch}
           onClear={handleOrderFiltersClear}
@@ -183,6 +238,11 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
+            toolbarExtensions={orderSearchExtension}
+            toolbarExtensionsPosition="left"
+            reloadPosition="left"
+            showReload={false}
+            download={{ enable: false }}
             scroll={{ x: "max-content" }}
           />
         </TableCard>

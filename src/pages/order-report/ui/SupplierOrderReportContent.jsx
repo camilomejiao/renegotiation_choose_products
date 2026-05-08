@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
+import { TableSearchControl } from "../../../shared/ui/table-search-control";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
 import { getOrderCancellationRequestColumns } from "../model/getOrderCancellationRequestColumns";
@@ -8,7 +9,6 @@ import { getOrderReportColumns } from "../model/getOrderReportColumns";
 import { useOrderReportPage } from "../model/useOrderReportPage";
 import { OrderReportDeleteModal } from "./OrderReportDeleteModal";
 import { OrderRequestCancelModal } from "./OrderRequestCancelModal";
-import { OrderReportToolbar } from "./OrderReportToolbar";
 import { OrderRequestToolbar } from "./OrderRequestToolbar";
 import {
   StyledDivider,
@@ -29,7 +29,8 @@ export const SupplierOrderReportContent = () => {
     requestsRows,
     requestsTotal,
     loading,
-    searchQuery,
+    orderSearchOptions,
+    orderSearchValue,
     page,
     pageSize,
     requestPage,
@@ -37,11 +38,15 @@ export const SupplierOrderReportContent = () => {
     requestCancelErrorMessage,
     requestCancelModalView,
     requestCancelObservation,
+    requestSearchOptions,
+    requestSearchValue,
     requestTypeOptions,
     requestStatusOptions,
     requestsEmptyText,
+    selectedOrderSearchAttribute,
     selectedOrder,
     selectedRequest,
+    selectedRequestSearchAttribute,
     selectedRequestType,
     selectedRequestStatus,
     isDeleteModalOpen,
@@ -49,12 +54,13 @@ export const SupplierOrderReportContent = () => {
     loadRequests,
     submitting,
     handleActiveTabChange,
-    handleSearchQueryChange,
-    handleSearch,
-    handleClearSearch,
+    handleOrderSearchAttributeChange,
+    handleOrderSearchValueChange,
     handleDeleteConfirmationCancel,
     handlePageChange,
     handleRequestPageChange,
+    handleRequestSearchAttributeChange,
+    handleRequestSearchValueChange,
     handleDeleteContinue,
     handleDeleteLegalTextRead,
     handleDeleteRequest,
@@ -86,20 +92,54 @@ export const SupplierOrderReportContent = () => {
     [handleCancelRequest]
   );
 
+  const orderSearchExtension = useMemo(
+    () => [
+      <TableSearchControl
+        key="order-table-search"
+        loading={loading}
+        attributeOptions={orderSearchOptions}
+        selectedAttribute={selectedOrderSearchAttribute}
+        searchValue={orderSearchValue}
+        onAttributeChange={handleOrderSearchAttributeChange}
+        onSearchValueChange={handleOrderSearchValueChange}
+      />,
+    ],
+    [
+      handleOrderSearchAttributeChange,
+      handleOrderSearchValueChange,
+      loading,
+      orderSearchOptions,
+      orderSearchValue,
+      selectedOrderSearchAttribute,
+    ]
+  );
+
+  const requestSearchExtension = useMemo(
+    () => [
+      <TableSearchControl
+        key="request-table-search"
+        loading={loading}
+        attributeOptions={requestSearchOptions}
+        selectedAttribute={selectedRequestSearchAttribute}
+        searchValue={requestSearchValue}
+        onAttributeChange={handleRequestSearchAttributeChange}
+        onSearchValueChange={handleRequestSearchValueChange}
+      />,
+    ],
+    [
+      handleRequestSearchAttributeChange,
+      handleRequestSearchValueChange,
+      loading,
+      requestSearchOptions,
+      requestSearchValue,
+      selectedRequestSearchAttribute,
+    ]
+  );
+
   const orderPurchaseContent = (
     <Row gutter={[0, 16]}>
       <Col span={24}>
         <StyledDivider />
-      </Col>
-
-      <Col span={24}>
-        <OrderReportToolbar
-          loading={loading}
-          onClear={handleClearSearch}
-          onSearch={handleSearch}
-          onSearchQueryChange={handleSearchQueryChange}
-          searchQuery={searchQuery}
-        />
       </Col>
 
       <Col span={24}>
@@ -122,6 +162,11 @@ export const SupplierOrderReportContent = () => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
+            toolbarExtensions={orderSearchExtension}
+            toolbarExtensionsPosition="left"
+            reloadPosition="left"
+            showReload={false}
+            download={{ enable: false }}
             scroll={{ x: "max-content" }}
           />
         </TableCard>
@@ -169,6 +214,11 @@ export const SupplierOrderReportContent = () => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
+            toolbarExtensions={requestSearchExtension}
+            toolbarExtensionsPosition="left"
+            reloadPosition="left"
+            showReload={false}
+            download={{ enable: false }}
             scroll={{ x: "max-content" }}
           />
         </TableCard>

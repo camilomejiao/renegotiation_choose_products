@@ -10,12 +10,18 @@ import {
   getOrderRequestFilterCatalog,
   getOrderReportPage,
 } from "../api/orderReportApi";
+import {
+  DEFAULT_ORDER_SEARCH_OPTION,
+  getOrderSearchError,
+  normalizeOrderSearchValue,
+  ORDER_SEARCH_DEBOUNCE_MS,
+  ORDER_SEARCH_OPTIONS,
+} from "./orderSearch";
 import { normalizeOrderCancellationRequestRows } from "./normalizeOrderCancellationRequestRows";
 import { normalizeOrderReportRows } from "./normalizeOrderReportRows";
 import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
 
 const PAGE_SIZE = 100;
-const MIN_SEARCH_LENGTH = 5;
 const REQUESTS_EMPTY_TEXT = "No hay solicitudes registradas para mostrar.";
 const REQUESTS_ERROR_TEXT = "No fue posible obtener las solicitudes.";
 const DELETE_MODAL_INITIAL_VIEW = "legal";
@@ -40,6 +46,8 @@ const getDeleteForbiddenMessage = (response) => {
 
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
+  const lastOrderSearchValueRef = useRef("");
+  const lastRequestSearchValueRef = useRef("");
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [requestsRows, setRequestsRows] = useState([]);
@@ -48,8 +56,6 @@ export const useOrderReportPage = () => {
   const [loadingMode, setLoadingMode] = useState(null);
   const [requestTypeOptions, setRequestTypeOptions] = useState([]);
   const [requestStatusOptions, setRequestStatusOptions] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [appliedSearchQuery, setAppliedSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [requestPage, setRequestPage] = useState(1);
@@ -74,6 +80,22 @@ export const useOrderReportPage = () => {
   );
   const [requestCancelErrorMessage, setRequestCancelErrorMessage] = useState("");
   const [activeTab, setActiveTab] = useState("purchase-orders");
+
+  const [selectedOrderSearchAttribute, setSelectedOrderSearchAttribute] =
+    useState(DEFAULT_ORDER_SEARCH_OPTION);
+  const [orderSearchValue, setOrderSearchValue] = useState("");
+  const [orderSearchError, setOrderSearchError] = useState("");
+  const [appliedOrderSearchAttribute, setAppliedOrderSearchAttribute] =
+    useState(DEFAULT_ORDER_SEARCH_OPTION.value);
+  const [appliedOrderSearchValue, setAppliedOrderSearchValue] = useState("");
+
+  const [selectedRequestSearchAttribute, setSelectedRequestSearchAttribute] =
+    useState(DEFAULT_ORDER_SEARCH_OPTION);
+  const [requestSearchValue, setRequestSearchValue] = useState("");
+  const [requestSearchError, setRequestSearchError] = useState("");
+  const [appliedRequestSearchAttribute, setAppliedRequestSearchAttribute] =
+    useState(DEFAULT_ORDER_SEARCH_OPTION.value);
+  const [appliedRequestSearchValue, setAppliedRequestSearchValue] = useState("");
 
   const loading = useMemo(() => {
     if (loadingMode === "submit-request" || loadingMode === "cancel-request") {
@@ -112,7 +134,8 @@ export const useOrderReportPage = () => {
       const data = await getOrderReportPage({
         page,
         pageSize,
-        searchQuery: appliedSearchQuery,
+        searchField: appliedOrderSearchAttribute,
+        searchValue: appliedOrderSearchValue,
       });
 
       setRows(normalizeOrderReportRows(data?.results));
@@ -127,7 +150,7 @@ export const useOrderReportPage = () => {
         currentMode === "orders" ? null : currentMode
       );
     }
-  }, [appliedSearchQuery, page, pageSize]);
+  }, [appliedOrderSearchAttribute, appliedOrderSearchValue, page, pageSize]);
 
   const loadRequestFilterOptions = useCallback(async () => {
     const requestTypeParameterId =
@@ -173,6 +196,8 @@ export const useOrderReportPage = () => {
         pageSize: requestPageSize,
         requestType: appliedRequestType?.value || "",
         requestStatus: appliedRequestStatus?.value || "",
+        searchField: appliedRequestSearchAttribute,
+        searchValue: appliedRequestSearchValue,
       });
 
       const requestRows = data?.records ?? data?.results ?? [];
@@ -189,7 +214,14 @@ export const useOrderReportPage = () => {
         currentMode === "requests" ? null : currentMode
       );
     }
-  }, [appliedRequestStatus, appliedRequestType, requestPage, requestPageSize]);
+  }, [
+    appliedRequestSearchAttribute,
+    appliedRequestSearchValue,
+    appliedRequestStatus,
+    appliedRequestType,
+    requestPage,
+    requestPageSize,
+  ]);
 
   useEffect(() => {
     if (activeTab !== "purchase-orders") {
@@ -216,6 +248,114 @@ export const useOrderReportPage = () => {
     loadRequests();
   }, [activeTab, loadRequests]);
 
+  useEffect(() => {
+    if (activeTab !== "purchase-orders") {
+      return;
+    }
+
+    const nextField =
+      selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+    const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+    const nextError = getOrderSearchError(
+      { field: nextField, value: normalizedValue },
+      { allowEmpty: true }
+    );
+    const didSearchValueChange =
+      lastOrderSearchValueRef.current !== orderSearchValue;
+
+    setOrderSearchError(nextError || "");
+    lastOrderSearchValueRef.current = orderSearchValue;
+
+    if (!didSearchValueChange) {
+      return;
+    }
+
+    if (!normalizedValue || nextError) {
+      if (page !== 1) {
+        setPage(1);
+      }
+
+      if (appliedOrderSearchAttribute !== nextField) {
+        setAppliedOrderSearchAttribute(nextField);
+      }
+
+      if (appliedOrderSearchValue !== "") {
+        setAppliedOrderSearchValue("");
+      }
+
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setPage(1);
+      setAppliedOrderSearchAttribute(nextField);
+      setAppliedOrderSearchValue(normalizedValue);
+    }, ORDER_SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    activeTab,
+    appliedOrderSearchAttribute,
+    appliedOrderSearchValue,
+    orderSearchValue,
+    page,
+    selectedOrderSearchAttribute,
+  ]);
+
+  useEffect(() => {
+    if (activeTab !== "requests") {
+      return;
+    }
+
+    const nextField =
+      selectedRequestSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+    const normalizedValue = normalizeOrderSearchValue(requestSearchValue);
+    const nextError = getOrderSearchError(
+      { field: nextField, value: normalizedValue },
+      { allowEmpty: true }
+    );
+    const didSearchValueChange =
+      lastRequestSearchValueRef.current !== requestSearchValue;
+
+    setRequestSearchError(nextError || "");
+    lastRequestSearchValueRef.current = requestSearchValue;
+
+    if (!didSearchValueChange) {
+      return;
+    }
+
+    if (!normalizedValue || nextError) {
+      if (requestPage !== 1) {
+        setRequestPage(1);
+      }
+
+      if (appliedRequestSearchAttribute !== nextField) {
+        setAppliedRequestSearchAttribute(nextField);
+      }
+
+      if (appliedRequestSearchValue !== "") {
+        setAppliedRequestSearchValue("");
+      }
+
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setRequestPage(1);
+      setAppliedRequestSearchAttribute(nextField);
+      setAppliedRequestSearchValue(normalizedValue);
+    }, ORDER_SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    activeTab,
+    appliedRequestSearchAttribute,
+    appliedRequestSearchValue,
+    requestPage,
+    requestSearchValue,
+    selectedRequestSearchAttribute,
+  ]);
+
   const resetDeleteFlow = useCallback(() => {
     setCancellationReason("");
     setHasReadDeleteLegalText(false);
@@ -240,32 +380,6 @@ export const useOrderReportPage = () => {
     setSelectedRequest(null);
     resetRequestCancelFlow();
   }, [resetRequestCancelFlow]);
-
-  const handleSearchQueryChange = useCallback((event) => {
-    setSearchQuery(event.target.value);
-  }, []);
-
-  const handleSearch = useCallback(() => {
-    const normalizedQuery = searchQuery.trim();
-
-    if (normalizedQuery.length < MIN_SEARCH_LENGTH) {
-      AlertComponent.error(
-        "Error",
-        `El valor a buscar debe tener al menos ${MIN_SEARCH_LENGTH} caracteres`
-      );
-      return;
-    }
-
-    setPage(1);
-    setAppliedSearchQuery(normalizedQuery);
-  }, [searchQuery]);
-
-  const handleClearSearch = useCallback(() => {
-    setSearchQuery("");
-    setAppliedSearchQuery("");
-    setPage(1);
-    setPageSize(PAGE_SIZE);
-  }, []);
 
   const handlePageChange = useCallback((nextPage, nextPageSize) => {
     setPage(nextPage);
@@ -358,6 +472,16 @@ export const useOrderReportPage = () => {
     setSelectedRequestStatus(option);
   }, []);
 
+  const handleOrderSearchAttributeChange = useCallback((option) => {
+    setSelectedOrderSearchAttribute(option);
+    setOrderSearchValue("");
+  }, []);
+
+  const handleRequestSearchAttributeChange = useCallback((option) => {
+    setSelectedRequestSearchAttribute(option);
+    setRequestSearchValue("");
+  }, []);
+
   const handleRequestFiltersSearch = useCallback(() => {
     setRequestPage(1);
     setAppliedRequestType(selectedRequestType);
@@ -425,6 +549,7 @@ export const useOrderReportPage = () => {
           setPage((currentPage) => currentPage - 1);
           return;
         }
+
         return;
       }
 
@@ -538,15 +663,22 @@ export const useOrderReportPage = () => {
     requestCancelErrorMessage,
     requestCancelModalView,
     requestCancelObservation,
+    requestSearchError,
+    requestSearchOptions: ORDER_SEARCH_OPTIONS,
+    requestSearchValue,
     requestStatusOptions,
     requestTypeOptions,
     requestsEmptyText,
     requestsRows,
     requestsTotal,
     rows,
-    searchQuery,
+    orderSearchError,
+    orderSearchOptions: ORDER_SEARCH_OPTIONS,
+    orderSearchValue,
     selectedOrder,
+    selectedOrderSearchAttribute,
     selectedRequest,
+    selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
     total,
@@ -554,12 +686,14 @@ export const useOrderReportPage = () => {
     closeRequestCancelModal,
     handleActiveTabChange: setActiveTab,
     handleCancellationReasonChange,
-    handleClearSearch,
     handleDeleteConfirmationCancel,
     handleDeleteConfirm,
     handleDeleteContinue,
     handleDeleteLegalTextRead,
     handleDeleteRequest,
+    handleOrderSearchAttributeChange,
+    handleOrderSearchValueChange: (event) =>
+      setOrderSearchValue(event.target.value),
     handlePageChange,
     handleRequestCancelConfirm,
     handleRequestCancelContinue,
@@ -568,10 +702,11 @@ export const useOrderReportPage = () => {
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,
+    handleRequestSearchAttributeChange,
+    handleRequestSearchValueChange: (event) =>
+      setRequestSearchValue(event.target.value),
     handleRequestStatusChange,
     handleRequestTypeChange,
-    handleSearch,
-    handleSearchQueryChange,
     handleCancelRequest,
     loadOrders,
     loadRequests,
