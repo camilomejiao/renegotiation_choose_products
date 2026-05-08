@@ -30,32 +30,9 @@ class SupplierServices {
     // NUEVO PROVEEDORES
     // =============================
 
-    async getSuppliers(pageSize = 1000, page = 1, search = "") {
-        const params = new URLSearchParams();
-        params.set("page_size", pageSize);
-        params.set("page", page);
-
-        if (search) {
-            params.set("search", search);
-        }
-
-        const url = this.buildUrl(`?${params.toString()}`);
-        const response = await authTokenService.fetchWithAuth(url, { method: "GET" });
-
-        if (response?.status !== 200) {
-            return response;
-        }
-
-        return {
-            ...response,
-            data: {
-                ...response.data,
-                data: {
-                    ...(response.data?.data ?? {}),
-                    proveedores: response.data?.results?.data?.proveedores ?? [],
-                },
-            },
-        };
+    getSuppliers() {
+        const url = this.buildUrl(`aprobados/`);
+        return authTokenService.fetchWithAuth(url, { method: "GET" });
     }
 
     getSuppliersByPage(pageSize = 100, page = 1, search) {

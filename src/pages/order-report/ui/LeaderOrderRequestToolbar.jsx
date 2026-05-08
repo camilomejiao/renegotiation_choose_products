@@ -3,6 +3,7 @@ import { Col, Row } from "antd";
 
 import { AppButton } from "../../../shared/ui/button";
 import { AppSelect } from "../../../shared/ui/select";
+import { matchesSupplierSelectOption } from "../model/supplierSelectSearch";
 import { ToolbarCard, ToolbarDivider } from "./OrderReportPage.styles";
 
 export const LeaderOrderRequestToolbar = ({
@@ -27,8 +28,9 @@ export const LeaderOrderRequestToolbar = ({
 }) => {
   return (
     <ToolbarCard bordered>
+      {/* Fila 1: Tipo solicitud · Estado · Proveedor */}
       <Row gutter={[12, 12]}>
-        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
           <AppSelect
             value={requestType}
             options={requestTypeOptions}
@@ -38,7 +40,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
           <AppSelect
             value={requestStatus}
             options={requestStatusOptions}
@@ -48,17 +50,21 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
+        <Col xs={24} sm={24} md={8} lg={8} xl={8} xxl={8}>
           <AppSelect
             value={selectedSupplier}
             options={supplierOptions}
-            placeholder="Proveedor"
+            placeholder="Proveedor (nombre o NIT)"
             onChange={onSupplierChange}
+            filterOption={matchesSupplierSelectOption}
             isDisabled={loading}
           />
         </Col>
+      </Row>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
+      {/* Fila 2: Departamento · Municipio · Botones */}
+      <Row gutter={[12, 12]} style={{ marginTop: 24 }}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
           <AppSelect
             value={selectedDepartment}
             options={departmentOptions}
@@ -68,7 +74,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={3} xxl={3}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
           <AppSelect
             value={selectedMunicipality}
             options={municipalityOptions}
@@ -78,27 +84,24 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={12} lg={8} xl={4} xxl={4}>
-          <AppButton
-            icon={<SearchOutlined />}
-            onClick={onSearch}
-            loading={loading}
-            style={{ width: "100%" }}
-          >
-            Buscar
-          </AppButton>
-        </Col>
-
-        <Col xs={24} sm={12} md={12} lg={8} xl={5} xxl={5}>
-          <AppButton
-            variant="secondary"
-            icon={<ClearOutlined />}
-            onClick={onClear}
-            disabled={loading}
-            style={{ width: "100%" }}
-          >
-            Limpiar
-          </AppButton>
+        <Col xs={24} sm={24} md={8} lg={8} xl={8} xxl={8}>
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            <AppButton
+              icon={<SearchOutlined />}
+              onClick={onSearch}
+              loading={loading}
+            >
+              Buscar
+            </AppButton>
+            <AppButton
+              variant="secondary"
+              icon={<ClearOutlined />}
+              onClick={onClear}
+              disabled={loading}
+            >
+              Limpiar
+            </AppButton>
+          </div>
         </Col>
       </Row>
 

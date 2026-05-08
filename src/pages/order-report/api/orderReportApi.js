@@ -1,18 +1,32 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
+import { approvedSupplierCatalogService } from "../../../helpers/services/ApprovedSupplierCatalogService";
 import { locationServices } from "../../../helpers/services/LocationServices";
 import { parameterServices } from "../../../helpers/services/ParameterServices";
 import { purchaseOrderServices } from "../../../helpers/services/PurchaseOrderServices";
-import { supplierServices } from "../../../helpers/services/SupplierServices";
 
-const buildOrderReportQuery = ({ page, pageSize, searchQuery = "" }) => {
+const appendSearchParam = (params, { searchField = "", searchValue = "" }) => {
+  if (searchField && searchValue) {
+    params.set(searchField, searchValue);
+  }
+};
+
+const buildOrderReportQuery = ({
+  page,
+  pageSize,
+  supplierId = "",
+  searchField = "",
+  searchValue = "",
+}) => {
   const params = new URLSearchParams({
     page: String(page),
     size: String(pageSize),
   });
 
-  if (searchQuery) {
-    params.set("cedula", searchQuery);
+  if (supplierId) {
+    params.set("proveedor_id", supplierId);
   }
+
+  appendSearchParam(params, { searchField, searchValue });
 
   return `?${params.toString()}`;
 };
@@ -25,6 +39,8 @@ const buildOrderRequestQuery = ({
   supplierId = "",
   departmentId = "",
   municipalityId = "",
+  searchField = "",
+  searchValue = "",
 }) => {
   const params = new URLSearchParams({
     page: String(page),
@@ -51,16 +67,26 @@ const buildOrderRequestQuery = ({
     params.set("municipio_id", municipalityId);
   }
 
+  appendSearchParam(params, { searchField, searchValue });
+
   return `?${params.toString()}`;
 };
 
 export const getOrderReportPage = async ({
   page = 1,
   pageSize = 100,
-  searchQuery = "",
+  supplierId = "",
+  searchField = "",
+  searchValue = "",
 }) => {
   const response = await purchaseOrderServices.getAll(
-    buildOrderReportQuery({ page, pageSize, searchQuery })
+    buildOrderReportQuery({
+      page,
+      pageSize,
+      supplierId,
+      searchField,
+      searchValue,
+    })
   );
 
   if (response?.status !== ResponseStatusEnum.OK) {
@@ -93,6 +119,8 @@ export const getOrderCancellationRequestsPage = async ({
   supplierId = "",
   departmentId = "",
   municipalityId = "",
+  searchField = "",
+  searchValue = "",
 }) => {
   const response = await purchaseOrderServices.getCancellationRequests(
     buildOrderRequestQuery({
@@ -103,6 +131,8 @@ export const getOrderCancellationRequestsPage = async ({
       supplierId,
       departmentId,
       municipalityId,
+      searchField,
+      searchValue,
     })
   );
 
@@ -118,9 +148,11 @@ export const getLeaderOrderApprovalRequestsPage = async ({
   pageSize = 10,
   requestType = "",
   requestStatus = "",
-  supplierName = "",
+  supplierId = "",
   departmentId = "",
   municipalityId = "",
+  searchField = "",
+  searchValue = "",
 }) => {
   const payload = {};
 
@@ -136,8 +168,8 @@ export const getLeaderOrderApprovalRequestsPage = async ({
     payload.estado = Number(requestStatus);
   }
 
-  if (typeof supplierName === "string" && supplierName.trim()) {
-    payload.proveedor = supplierName.trim();
+  if (supplierId !== "" && supplierId !== null && supplierId !== undefined) {
+    payload.proveedor = Number(supplierId);
   }
 
   if (
@@ -154,6 +186,14 @@ export const getLeaderOrderApprovalRequestsPage = async ({
     municipalityId !== undefined
   ) {
     payload.municipio = Number(municipalityId);
+  }
+
+  const NUMERIC_SEARCH_FIELDS = ["cub", "orden", "cedula"];
+
+  if (searchField && searchValue) {
+    payload[searchField] = NUMERIC_SEARCH_FIELDS.includes(searchField)
+      ? Number(searchValue)
+      : searchValue;
   }
 
   const normalizedPage = Number(page);
@@ -210,14 +250,24 @@ export const getOrderRequestFilterCatalog = async (parameterTypeId) => {
   return response?.data ?? [];
 };
 
+const extractApprovedSuppliers = (response) => {
+  const rows =
+    response?.data?.data?.proveedores ??
+    response?.data?.proveedores ??
+    response?.data?.results?.data?.proveedores ??
+    [];
+
+  return Array.isArray(rows) ? rows : [];
+};
+
 export const getLeaderSupplierCatalog = async () => {
-  const response = await supplierServices.getSuppliers();
+  const response = await approvedSupplierCatalogService.getApprovedSuppliers();
 
   if (response?.status !== ResponseStatusEnum.OK) {
     throw response;
   }
 
-  return response?.data?.data?.proveedores ?? response?.data ?? [];
+  return extractApprovedSuppliers(response);
 };
 
 export const getDepartmentCatalog = async () => {
