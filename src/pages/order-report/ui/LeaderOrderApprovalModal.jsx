@@ -322,9 +322,6 @@ export const LeaderOrderApprovalModal = ({
               <Descriptions.Item label="Fecha de solicitud">
                 {request?.requestDate || "---"}
               </Descriptions.Item>
-              <Descriptions.Item label="Tipo de solicitud">
-                {request?.requestTypeLabel || "---"}
-              </Descriptions.Item>
               <Descriptions.Item label="CUB">
                 {request?.cubId || "---"}
               </Descriptions.Item>
