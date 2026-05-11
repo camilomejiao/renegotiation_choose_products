@@ -1,0 +1,111 @@
+import { ClearOutlined, SearchOutlined } from "@ant-design/icons";
+import { Col, Row } from "antd";
+
+import { AppButton } from "../../../shared/ui/button";
+import { AppSelect } from "../../../shared/ui/select";
+import { matchesSupplierSelectOption } from "../model/supplierSelectSearch";
+import { ToolbarCard, ToolbarDivider } from "./OrderReportPage.styles";
+
+export const LeaderOrderRequestToolbar = ({
+  departmentOptions,
+  loading,
+  municipalityOptions,
+  onClear,
+  onDepartmentChange,
+  onMunicipalityChange,
+  onSearch,
+  onStatusChange,
+  onSupplierChange,
+  onTypeChange,
+  requestStatus,
+  requestStatusOptions,
+  requestType,
+  requestTypeOptions,
+  selectedDepartment,
+  selectedMunicipality,
+  selectedSupplier,
+  supplierOptions,
+}) => {
+  return (
+    <ToolbarCard bordered>
+      {/* Fila 1: Tipo solicitud · Estado · Proveedor */}
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+          <AppSelect
+            value={requestType}
+            options={requestTypeOptions}
+            placeholder="Tipo de Solicitud"
+            onChange={onTypeChange}
+            isDisabled={loading}
+          />
+        </Col>
+
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+          <AppSelect
+            value={requestStatus}
+            options={requestStatusOptions}
+            placeholder="Estado"
+            onChange={onStatusChange}
+            isDisabled={loading}
+          />
+        </Col>
+
+        <Col xs={24} sm={24} md={8} lg={8} xl={8} xxl={8}>
+          <AppSelect
+            value={selectedSupplier}
+            options={supplierOptions}
+            placeholder="Proveedor (nombre o NIT)"
+            onChange={onSupplierChange}
+            filterOption={matchesSupplierSelectOption}
+            isDisabled={loading}
+          />
+        </Col>
+      </Row>
+
+      {/* Fila 2: Departamento · Municipio · Botones */}
+      <Row gutter={[12, 12]} style={{ marginTop: 24 }}>
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+          <AppSelect
+            value={selectedDepartment}
+            options={departmentOptions}
+            placeholder="Departamento"
+            onChange={onDepartmentChange}
+            isDisabled={loading}
+          />
+        </Col>
+
+        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+          <AppSelect
+            value={selectedMunicipality}
+            options={municipalityOptions}
+            placeholder="Municipio"
+            onChange={onMunicipalityChange}
+            isDisabled={!selectedDepartment || loading}
+          />
+        </Col>
+
+        <Col xs={24} sm={24} md={8} lg={8} xl={8} xxl={8}>
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            <AppButton
+              icon={<SearchOutlined />}
+              onClick={onSearch}
+              loading={loading}
+            >
+              Buscar
+            </AppButton>
+            <AppButton
+              variant="secondary"
+              icon={<ClearOutlined />}
+              onClick={onClear}
+              disabled={loading}
+            >
+              Limpiar
+            </AppButton>
+          </div>
+        </Col>
+      </Row>
+
+      <ToolbarDivider />
+    </ToolbarCard>
+  );
+};

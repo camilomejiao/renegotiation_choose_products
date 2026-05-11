@@ -5,14 +5,10 @@ import {
     Autocomplete,
     TextField,
     CircularProgress,
-    TableContainer,
-    Paper,
-    Table,
-    TableHead,
-    TableRow, TableCell, TableBody
 } from "@mui/material";
 import { Button } from "react-bootstrap";
 import {FaTrash} from "react-icons/fa";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 
 //Helpers
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
@@ -171,6 +167,49 @@ export const Location = ({ id, onBack, refreshPage }) => {
         }
     }
 
+    const columns = [
+        {
+            title: "ID",
+            dataIndex: "id",
+            key: "id",
+            width: 100,
+        },
+        {
+            title: "Departamento",
+            dataIndex: "ubicacion_padre_nombre",
+            key: "ubicacion_padre_nombre",
+            width: 220,
+        },
+        {
+            title: "Municipio",
+            dataIndex: "municipio_nombre",
+            key: "municipio_nombre",
+            width: 220,
+        },
+        {
+            title: "Acciones",
+            dataIndex: "actions",
+            key: "actions",
+            width: 140,
+            render: (_, record) => (
+                <div className="d-flex gap-2 justify-content-end">
+                    <Button
+                        variant="outline-danger"
+                        onClick={() => handleDeleteLocation(record.id)}
+                    >
+                        <FaTrash />
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
+    const locationRows = locationRegister.map((location) => ({
+        id: location?.id,
+        ubicacion_padre_nombre: location?.ubicacion_padre_nombre,
+        municipio_nombre: location?.ubicacion?.nombre,
+    }));
+
     useEffect(() => {
         loadDepartmentsOnce();
         fetchLocationData();
@@ -267,53 +306,23 @@ export const Location = ({ id, onBack, refreshPage }) => {
 
             {/* Tabla de ubicaciones */}
             <div className="col-12">
-                <TableContainer
-                    component={Paper}
-                    sx={{
-                        width: "100%",
-                        overflowX: "auto",
-                    }}
-                >
-                    <Table size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell style={{ fontWeight: 600 }}>ID</TableCell>
-                                <TableCell style={{ fontWeight: 600 }}>Departamento</TableCell>
-                                <TableCell style={{ fontWeight: 600 }}>Municipio</TableCell>
-                                <TableCell style={{ fontWeight: 600 }}>
-                                    Acciones
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {locationRegister.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={4} align="center">
-                                        No tienes ubicaciones en la lista aún.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                locationRegister.map((s) => (
-                                    <TableRow key={s?.id}>
-                                        <TableCell>{s?.id}</TableCell>
-                                        <TableCell>{s?.ubicacion_padre_nombre}</TableCell>
-                                        <TableCell>{s?.ubicacion?.nombre}</TableCell>
-                                        <TableCell align="right" className="d-flex gap-2 justify-content-end">
-                                            <Button
-                                                variant="outline-danger"
-                                                onClick={() => handleDeleteLocation(s?.id)}
-                                            >
-                                                <FaTrash />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <SmartTable
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={locationRows}
+                    total={locationRows.length}
+                    currentPage={1}
+                    defaultPageSize={10}
+                    pageSizeOptions={["10", "20", "50"]}
+                    defaultText="---"
+                    emptyText="No tienes ubicaciones en la lista aún."
+                    enableRowSelection={false}
+                    showToolbar={false}
+                    showTableResize={false}
+                    showColumnSettings={false}
+                    scroll={{ x: 800 }}
+                />
             </div>
         </form>
     );
 };
-

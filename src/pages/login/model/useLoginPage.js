@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { authService } from "../../../helpers/services/Auth";
 import useAuth from "../../../hooks/useAuth";
 import {
@@ -20,41 +19,51 @@ export const useLoginPage = () => {
     setShowPassword((previous) => !previous);
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values, { resetForm, setStatus, setSubmitting }) => {
     const credentials = {
       mail: values.email,
       pass: values.password,
     };
 
-    const response = await authService.login(credentials).then((data) => data);
+    try {
+      setStatus(undefined);
+      const response = await authService.login(credentials).then((data) => data);
 
-    if (!response.access && !response.refresh) {
-      AlertComponent.error("Oops...", response.error);
-      resetForm();
-      return;
-    }
+      if (!response.access && !response.refresh) {
+        setStatus({
+          authError:
+            response?.error || "No fue posible iniciar sesión. Inténtalo de nuevo.",
+        });
+        return;
+      }
 
-    AlertComponent.success("Bien hecho!", response.message);
-    setAuth(response);
-    window.dispatchEvent(new Event("authUpdated"));
+      setAuth(response);
+      window.dispatchEvent(new Event("authUpdated"));
 
-    const nextAuth = normalizeAuthSession(response);
-    const redirectPath = hasForcedPasswordChange(nextAuth)
-      ? "/admin/edit-user"
-      : "/admin";
-    const shouldShowPasswordValidityNotice =
-      !hasForcedPasswordChange(nextAuth) && hasPasswordValidityWarning(nextAuth);
+      const nextAuth = normalizeAuthSession(response);
+      const redirectPath = hasForcedPasswordChange(nextAuth)
+        ? "/admin/edit-user"
+        : "/admin";
+      const shouldShowPasswordValidityNotice =
+        !hasForcedPasswordChange(nextAuth) && hasPasswordValidityWarning(nextAuth);
 
-    setTimeout(() => {
       navigate(redirectPath, {
         replace: true,
         state: shouldShowPasswordValidityNotice
           ? { showPasswordValidityNotice: true }
           : undefined,
       });
-    }, 2000);
 
-    resetForm();
+      resetForm();
+    } catch (error) {
+      console.error("Error iniciando sesión:", error);
+      setStatus({
+        authError:
+          "Tu sesión no se pudo llevar a cabo en este momento. Inténtalo nuevamente.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return {

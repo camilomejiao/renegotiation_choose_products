@@ -1,18 +1,31 @@
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 
 export const getSidebarMenu = (role, id) => {
+  const catalogManagementItem = {
+    path: "/admin/list-products-by-convocation",
+    iconKey: "tools",
+    label: "Administración de catálogo",
+  };
+  const technicalMenu = [
+    catalogManagementItem,
+    { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
+    { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
+    { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
+  ];
+  const catalogAdministrationMenu = {
+    label: "Administración Catálogo de productos",
+    iconKey: "boxes",
+    children: [
+      { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
+      { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
+      { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
+    ],
+  };
+
   const config = {
     [RolesEnum.ADMIN]: [
       { path: "/", iconKey: "home", label: "Inicio" },
-      {
-        label: "Administración Catálogo de productos",
-        iconKey: "boxes",
-        children: [
-          { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
-          { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
-          { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
-        ],
-      },
+      catalogAdministrationMenu,
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
       { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
@@ -50,12 +63,7 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
     ],
-    [RolesEnum.TECHNICAL]: [
-      { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de catálogo" },
-      { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
-      { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
-      { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
-    ],
+    [RolesEnum.TECHNICAL]: technicalMenu,
     [RolesEnum.TERRITORIAL_LINKS]: [
       { path: "/", iconKey: "home", label: "Inicio" },
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
@@ -66,11 +74,19 @@ export const getSidebarMenu = (role, id) => {
       { path: `/admin/edit-suppliers/${id}`, iconKey: "bank", label: "Gestión del proveedor" },
       { path: "/admin/product-price-quotes", iconKey: "boxOpen", label: "Cotización de catálogos" },
       { path: "/admin/search-user", iconKey: "shoppingCart", label: "Carrito de compras" },
-      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Órdenes de compra" },
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
       { path: "/admin/search-user-for-deliveries", iconKey: "shipping", label: "Entregas" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
       { path: "/admin/payments-suppliers", iconKey: "cashStack", label: "Cuentas de cobro" },
       { path: "/admin/company-reports", iconKey: "chartPie", label: "Reportes generales" },
+    ],
+    [RolesEnum.LIDER_TECNICO_AGRO]: [
+      ...technicalMenu,
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
+    ],
+    [RolesEnum.LIDER_TECNICO_NO_AGRO]: [
+      ...technicalMenu,
+      { path: "/admin/order-report", iconKey: "fileInvoice", label: "Ordenes de compra" },
     ],
     [RolesEnum.SYSTEM_USER]: [
       { path: "/", iconKey: "home", label: "Inicio" },
@@ -81,15 +97,10 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión de beneficiarios" },
       { path: "/admin/delivery-information-and-tracking", iconKey: "route", label: "Seguimiento de entregas" },
       { path: "/admin/fiduciary/search-sp", iconKey: "searchDollar", label: "Consulta de Solicitudes de Pago" },
-      {
-        label: "Administración Catálogo de productos",
-        iconKey: "boxes",
-        children: [
-          { path: "/admin/list-products-by-convocation", iconKey: "tools", label: "Administración de Catálogo Técnica" },
-          { path: "/admin/products-enviromental", iconKey: "leaf", label: "Validación Ambiental" },
-          { path: "/admin/products-supervision", iconKey: "userCheck", label: "Validación de Supervisión" },
-        ],
-      },
+      catalogAdministrationMenu,
+    ],
+    [RolesEnum.ADMINISTRATIVA]: [
+      ...technicalMenu,
     ],
     [RolesEnum.LEGAL]: [
       { path: "/admin/management", iconKey: "people", label: "Gestión integral del beneficiario" },

@@ -43,6 +43,10 @@ export const LoginHeaderImage = styled.img`
   width: 100%;
   max-width: 180px;
   height: auto;
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
 `;
 
 export const LoginHeaderTitle = styled(Title)`
@@ -62,6 +66,17 @@ export const LoginHeaderText = styled(Text)`
 export const LoginFormLayout = styled.form`
   display: grid;
   gap: 18px;
+`;
+
+export const LoginFeedbackMessage = styled(Text)`
+  && {
+    display: block;
+    margin-top: 8px;
+    text-align: center;
+    color: ${({ $tone }) => ($tone === "error" ? "#b91c1c" : "#334155")};
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
 `;
 
 export const LoginField = styled.div`
@@ -140,6 +155,10 @@ export const LoginIllustrationPanel = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
 `;
 
 export const LoginIllustrationImage = styled.img`
