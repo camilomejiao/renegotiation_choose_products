@@ -19,6 +19,12 @@ export const getLeaderOrderColumns = () => [
     width: 160,
   },
   {
+    title: "DOCUMENTO",
+    dataIndex: "document",
+    key: "document",
+    width: 180,
+  },
+  {
     title: "BENEFICIARIO",
     dataIndex: "beneficiary",
     key: "beneficiary",

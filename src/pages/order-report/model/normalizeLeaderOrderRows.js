@@ -24,6 +24,7 @@ export const normalizeLeaderOrderRows = (rows = []) =>
       id: row?.id,
       orderId: row?.id ?? row?.orden_id ?? "",
       cubId: row?.cub?.cub_id || row?.cub_id || "",
+      document: row?.identificacion ?? row?.cub?.identificacion ?? "",
       beneficiary: buildBeneficiaryName(row?.cub),
       supplier:
         (typeof supplier === "string" ? supplier : supplier?.nombre) ||

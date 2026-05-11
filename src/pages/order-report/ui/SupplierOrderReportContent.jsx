@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
-import { TableSearchControl } from "../../../shared/ui/table-search-control";
+import { AppSearchInput } from "../../../shared/ui/search-input";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
 import { getOrderCancellationRequestColumns } from "../model/getOrderCancellationRequestColumns";
@@ -29,7 +29,7 @@ export const SupplierOrderReportContent = () => {
     requestsRows,
     requestsTotal,
     loading,
-    orderSearchOptions,
+    orderSearchError,
     orderSearchValue,
     page,
     pageSize,
@@ -38,15 +38,11 @@ export const SupplierOrderReportContent = () => {
     requestCancelErrorMessage,
     requestCancelModalView,
     requestCancelObservation,
-    requestSearchOptions,
-    requestSearchValue,
     requestTypeOptions,
     requestStatusOptions,
     requestsEmptyText,
-    selectedOrderSearchAttribute,
     selectedOrder,
     selectedRequest,
-    selectedRequestSearchAttribute,
     selectedRequestType,
     selectedRequestStatus,
     isDeleteModalOpen,
@@ -54,13 +50,10 @@ export const SupplierOrderReportContent = () => {
     loadRequests,
     submitting,
     handleActiveTabChange,
-    handleOrderSearchAttributeChange,
     handleOrderSearchValueChange,
     handleDeleteConfirmationCancel,
     handlePageChange,
     handleRequestPageChange,
-    handleRequestSearchAttributeChange,
-    handleRequestSearchValueChange,
     handleDeleteContinue,
     handleDeleteLegalTextRead,
     handleDeleteRequest,
@@ -94,46 +87,16 @@ export const SupplierOrderReportContent = () => {
 
   const orderSearchExtension = useMemo(
     () => [
-      <TableSearchControl
-        key="order-table-search"
-        loading={loading}
-        attributeOptions={orderSearchOptions}
-        selectedAttribute={selectedOrderSearchAttribute}
-        searchValue={orderSearchValue}
-        onAttributeChange={handleOrderSearchAttributeChange}
-        onSearchValueChange={handleOrderSearchValueChange}
+      <AppSearchInput
+        key="supplier-order-cedula-search"
+        placeholder="Buscar por cédula"
+        value={orderSearchValue}
+        onChange={handleOrderSearchValueChange}
+        disabled={loading}
+        status={orderSearchError ? "error" : undefined}
       />,
     ],
-    [
-      handleOrderSearchAttributeChange,
-      handleOrderSearchValueChange,
-      loading,
-      orderSearchOptions,
-      orderSearchValue,
-      selectedOrderSearchAttribute,
-    ]
-  );
-
-  const requestSearchExtension = useMemo(
-    () => [
-      <TableSearchControl
-        key="request-table-search"
-        loading={loading}
-        attributeOptions={requestSearchOptions}
-        selectedAttribute={selectedRequestSearchAttribute}
-        searchValue={requestSearchValue}
-        onAttributeChange={handleRequestSearchAttributeChange}
-        onSearchValueChange={handleRequestSearchValueChange}
-      />,
-    ],
-    [
-      handleRequestSearchAttributeChange,
-      handleRequestSearchValueChange,
-      loading,
-      requestSearchOptions,
-      requestSearchValue,
-      selectedRequestSearchAttribute,
-    ]
+    [handleOrderSearchValueChange, loading, orderSearchError, orderSearchValue]
   );
 
   const orderPurchaseContent = (
@@ -214,8 +177,6 @@ export const SupplierOrderReportContent = () => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
-            toolbarExtensions={requestSearchExtension}
-            toolbarExtensionsPosition="left"
             reloadPosition="left"
             showReload={false}
             download={{ enable: false }}

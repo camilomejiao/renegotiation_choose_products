@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
-import { TableSearchControl } from "../../../shared/ui/table-search-control";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
 import { getLeaderOrderColumns } from "../model/getLeaderOrderColumns";
@@ -30,16 +29,11 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     orderTableLoading,
     orderPage,
     orderPageSize,
-    orderSearchOptions,
-    orderSearchValue,
     orderRows,
     orderTotal,
-    selectedOrderSearchAttribute,
     requestPage,
     requestPageSize,
     requestEmptyText,
-    requestSearchOptions,
-    requestSearchValue,
     requestTableLoading,
     requestRows,
     requestStatusOptions,
@@ -64,15 +58,11 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     handleManageRequest,
     handleOrderFiltersClear,
     handleOrderFiltersSearch,
-    handleOrderSearchAttributeChange,
-    handleOrderSearchValueChange,
     handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,
-    handleRequestSearchAttributeChange,
-    handleRequestSearchValueChange,
     handleRequestStatusChange,
     handleRequestTypeChange,
     handleSupplierChange,
@@ -95,50 +85,6 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
   );
 
   const orderColumns = useMemo(() => getLeaderOrderColumns(), []);
-
-  const requestSearchExtension = useMemo(
-    () => [
-      <TableSearchControl
-        key="leader-request-table-search"
-        attributeOptions={requestSearchOptions}
-        selectedAttribute={selectedRequestSearchAttribute}
-        searchValue={requestSearchValue}
-        loading={loading}
-        onAttributeChange={handleRequestSearchAttributeChange}
-        onSearchValueChange={handleRequestSearchValueChange}
-      />,
-    ],
-    [
-      handleRequestSearchAttributeChange,
-      handleRequestSearchValueChange,
-      loading,
-      requestSearchOptions,
-      requestSearchValue,
-      selectedRequestSearchAttribute,
-    ]
-  );
-
-  const orderSearchExtension = useMemo(
-    () => [
-      <TableSearchControl
-        key="leader-order-table-search"
-        attributeOptions={orderSearchOptions}
-        selectedAttribute={selectedOrderSearchAttribute}
-        searchValue={orderSearchValue}
-        loading={loading}
-        onAttributeChange={handleOrderSearchAttributeChange}
-        onSearchValueChange={handleOrderSearchValueChange}
-      />,
-    ],
-    [
-      handleOrderSearchAttributeChange,
-      handleOrderSearchValueChange,
-      loading,
-      orderSearchOptions,
-      orderSearchValue,
-      selectedOrderSearchAttribute,
-    ]
-  );
 
   const requestsContent = (
     <Row gutter={[0, 16]}>
@@ -189,8 +135,6 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
-            toolbarExtensions={requestSearchExtension}
-            toolbarExtensionsPosition="left"
             reloadPosition="left"
             showReload={false}
             download={{ enable: false }}
@@ -238,8 +182,6 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
             showToolbar
             showColumnSettings={false}
             showTableResize={false}
-            toolbarExtensions={orderSearchExtension}
-            toolbarExtensionsPosition="left"
             reloadPosition="left"
             showReload={false}
             download={{ enable: false }}

@@ -29,6 +29,9 @@ const ORDER_CANCELLATION_REQUEST_TYPE = 5215;
 const REQUEST_CANCEL_MODAL_INITIAL_VIEW = "form";
 const REQUEST_CANCEL_STATUS = "CANCELADO";
 const DELETE_FORBIDDEN_FALLBACK_MESSAGE = "tiene dependencias asociadas";
+const SUPPLIER_ORDER_SEARCH_OPTION =
+  ORDER_SEARCH_OPTIONS.find((option) => option.value === "cedula") ??
+  DEFAULT_ORDER_SEARCH_OPTION;
 
 const getDeleteForbiddenMessage = (response) => {
   const responseData = response?.data;
@@ -82,11 +85,11 @@ export const useOrderReportPage = () => {
   const [activeTab, setActiveTab] = useState("purchase-orders");
 
   const [selectedOrderSearchAttribute, setSelectedOrderSearchAttribute] =
-    useState(DEFAULT_ORDER_SEARCH_OPTION);
+    useState(SUPPLIER_ORDER_SEARCH_OPTION);
   const [orderSearchValue, setOrderSearchValue] = useState("");
   const [orderSearchError, setOrderSearchError] = useState("");
   const [appliedOrderSearchAttribute, setAppliedOrderSearchAttribute] =
-    useState(DEFAULT_ORDER_SEARCH_OPTION.value);
+    useState(SUPPLIER_ORDER_SEARCH_OPTION.value);
   const [appliedOrderSearchValue, setAppliedOrderSearchValue] = useState("");
 
   const [selectedRequestSearchAttribute, setSelectedRequestSearchAttribute] =
@@ -253,8 +256,7 @@ export const useOrderReportPage = () => {
       return;
     }
 
-    const nextField =
-      selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+    const nextField = SUPPLIER_ORDER_SEARCH_OPTION.value;
     const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
     const nextError = getOrderSearchError(
       { field: nextField, value: normalizedValue },
@@ -299,7 +301,6 @@ export const useOrderReportPage = () => {
     appliedOrderSearchValue,
     orderSearchValue,
     page,
-    selectedOrderSearchAttribute,
   ]);
 
   useEffect(() => {
