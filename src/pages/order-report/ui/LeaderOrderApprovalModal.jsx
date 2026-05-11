@@ -52,7 +52,7 @@ export const LeaderOrderApprovalModal = ({
       ? "Solicitud aprobada"
       : isConfirming
         ? confirmationTitle
-        : "Detalle de solicitud de anulacion";
+        : "Detalle de solicitud";
 
   return (
     <Modal
