@@ -48,7 +48,7 @@ export const OrderReportPage = () => {
 
       <ContentSection>
         {isLeaderView ? (
-          <LeaderOrderReportContent userAuth={userAuth} />
+          <LeaderOrderReportContent />
         ) : (
           <SupplierOrderReportContent />
         )}

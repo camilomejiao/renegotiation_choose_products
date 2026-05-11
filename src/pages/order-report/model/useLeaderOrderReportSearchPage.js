@@ -21,7 +21,6 @@ import {
 import { normalizeLeaderOrderRequestRows } from "./normalizeLeaderOrderRequestRows";
 import { normalizeLeaderOrderRows } from "./normalizeLeaderOrderRows";
 import { ORDER_REQUEST_FILTER_PARAMETER_IDS } from "./requestFilterConfig";
-import { getOrderRequestPreviewTimestamp } from "./utils";
 
 const REQUEST_PAGE_SIZE = 10;
 const ORDER_PAGE_SIZE = 100;
@@ -54,7 +53,7 @@ const normalizeLeaderSupplierOptions = (rows = []) =>
     })
     .filter(Boolean);
 
-export const useLeaderOrderReportSearchPage = ({ userAuth }) => {
+export const useLeaderOrderReportSearchPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const hasLoadedSupplierOptionsRef = useRef(false);
   const lastOrderSearchValueRef = useRef("");
@@ -242,11 +241,13 @@ export const useLeaderOrderReportSearchPage = ({ userAuth }) => {
 
       setRequestRows(normalizedRows);
       setRequestTotal(Number(data?.count) || normalizedRows.length);
+      return normalizedRows;
     } catch (response) {
       console.error("Error obteniendo solicitudes del líder:", response);
       setRequestRows([]);
       setRequestTotal(0);
       setRequestEmptyText(REQUESTS_ERROR_TEXT);
+      return null;
     } finally {
       setLoadingMode((currentMode) =>
         currentMode === "requests" ? null : currentMode
@@ -576,34 +577,19 @@ export const useLeaderOrderReportSearchPage = ({ userAuth }) => {
 
       const nextStatus =
         nextAction === "approve" ? "Aprobado" : "Rechazado";
-      const approverName =
-        userAuth?.name || userAuth?.username || "Usuario líder";
-      const approvalDate = getOrderRequestPreviewTimestamp();
-
-      const nextManagedRequest = {
-        ...managedRequest,
-        approvalStatus: nextStatus,
-        approvalDate,
-        approver: approverName,
-        approvalComment: normalizedComment,
-        canManage: false,
-      };
-
-      setRequestRows((currentRows) =>
-        currentRows.map((row) =>
-          row.id === managedRequest.id
-            ? {
-                ...row,
-                approvalStatus: nextStatus,
-                approvalDate,
-                approver: approverName,
-                approvalComment: normalizedComment,
-                canManage: false,
-              }
-            : row
-        )
+      const refreshedRows = await loadLeaderRequests();
+      const refreshedManagedRequest = refreshedRows?.find(
+        (row) => row.id === managedRequest.id
       );
-      setManagedRequest(nextManagedRequest);
+
+      setManagedRequest(
+        refreshedManagedRequest ?? {
+          ...managedRequest,
+          approvalStatus: nextStatus,
+          approvalComment: normalizedComment,
+          canManage: false,
+        }
+      );
 
       if (nextAction === "approve") {
         setApprovalConfirmationAction(null);
@@ -634,9 +620,8 @@ export const useLeaderOrderReportSearchPage = ({ userAuth }) => {
   }, [
     approvalComment,
     closeApprovalModal,
+    loadLeaderRequests,
     managedRequest,
-    userAuth?.name,
-    userAuth?.username,
   ]);
 
   return {

@@ -15,7 +15,7 @@ import {
   TableCard,
 } from "./OrderReportPage.styles";
 
-export const LeaderOrderReportContent = ({ userAuth }) => {
+export const LeaderOrderReportContent = () => {
   const {
     activeTab,
     approvalComment,
@@ -73,7 +73,7 @@ export const LeaderOrderReportContent = ({ userAuth }) => {
     loadLeaderOrders,
     loadLeaderRequests,
     onOrderPageChange,
-  } = useLeaderOrderReportSearchPage({ userAuth });
+  } = useLeaderOrderReportSearchPage();
 
   const requestColumns = useMemo(
     () =>
