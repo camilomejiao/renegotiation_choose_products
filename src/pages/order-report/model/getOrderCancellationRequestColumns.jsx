@@ -10,6 +10,13 @@ const STATUS_COLORS = {
   Cancelado: "default",
 };
 
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+
 export const getOrderCancellationRequestColumns = ({ onCancelRequest }) => [
   {
     title: "ORDEN ID",
@@ -34,6 +41,14 @@ export const getOrderCancellationRequestColumns = ({ onCancelRequest }) => [
     dataIndex: "document",
     key: "document",
     width: 180,
+  },
+  {
+    title: "TOTAL ORDEN",
+    dataIndex: "totalOrder",
+    key: "totalOrder",
+    width: 180,
+    align: "right",
+    render: (value) => formatCurrency(value),
   },
   {
     title: "ESTADO",
