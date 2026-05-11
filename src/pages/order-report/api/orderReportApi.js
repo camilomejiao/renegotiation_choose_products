@@ -23,7 +23,7 @@ const buildOrderReportQuery = ({
   });
 
   if (supplierId) {
-    params.set("proveedor_id", supplierId);
+    params.set("proveedor", supplierId);
   }
 
   appendSearchParam(params, { searchField, searchValue });
@@ -56,7 +56,7 @@ const buildOrderRequestQuery = ({
   }
 
   if (supplierId) {
-    params.set("proveedor_id", supplierId);
+    params.set("proveedor", supplierId);
   }
 
   if (departmentId) {
