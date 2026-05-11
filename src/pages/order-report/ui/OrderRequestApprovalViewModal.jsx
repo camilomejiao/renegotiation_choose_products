@@ -36,8 +36,11 @@ export const OrderRequestApprovalViewModal = ({
         <Descriptions.Item label="Aprobador">
           {request?.approver || "---"}
         </Descriptions.Item>
-        <Descriptions.Item label="Observación">
-          {request?.approvalComment || "---"}
+        <Descriptions.Item label="Motivo de la solicitud">
+          {request?.requestReason || "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Observación del líder">
+          {request?.leaderObservation || "---"}
         </Descriptions.Item>
       </Descriptions>
     </Modal>
