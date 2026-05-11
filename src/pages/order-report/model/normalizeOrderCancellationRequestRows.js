@@ -71,10 +71,14 @@ export const normalizeOrderCancellationRequestRows = (rows = []) =>
         row?.valor_total ??
         0,
       status,
-      observation:
-        row?.observacion_aprobacion ??
-        row?.observacion ??
+      requestReason:
+        row?.motivo_solicitud ??
         row?.comentario ??
+        "",
+      leaderResponse:
+        row?.observacion_lider ??
+        row?.observacion_aprobacion ??
+        row?.approval_comment ??
         "",
       canCancel: status === "Pendiente",
     };

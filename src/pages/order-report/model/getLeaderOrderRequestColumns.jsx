@@ -19,30 +19,35 @@ export const getLeaderOrderRequestColumns = ({
     dataIndex: "orderId",
     key: "orderId",
     width: 240,
+    align: "center",
   },
   {
     title: "CUB",
     dataIndex: "cubId",
     key: "cubId",
     width: 160,
+    align: "center",
   },
   {
     title: "BENEFICIARIO",
     dataIndex: "beneficiary",
     key: "beneficiary",
     width: 260,
+    align: "center",
   },
   {
     title: "PROVEEDOR",
     dataIndex: "supplier",
     key: "supplier",
     width: 240,
+    align: "center",
   },
   {
     title: "ESTADO DE APROBACIÓN",
     dataIndex: "approvalStatus",
     key: "approvalStatus",
     width: 200,
+    align: "center",
     render: (value) => <Tag color={STATUS_COLORS[value] ?? "default"}>{value}</Tag>,
   },
   {
@@ -50,6 +55,7 @@ export const getLeaderOrderRequestColumns = ({
     dataIndex: "approvalDate",
     key: "approvalDate",
     width: 200,
+    align: "center",
     render: (value) => value || "---",
   },
   {
@@ -57,6 +63,7 @@ export const getLeaderOrderRequestColumns = ({
     dataIndex: "approver",
     key: "approver",
     width: 220,
+    align: "center",
     render: (value) => value || "---",
   },
   {
@@ -64,6 +71,7 @@ export const getLeaderOrderRequestColumns = ({
     dataIndex: "__actions",
     key: "__actions",
     width: 220,
+    align: "center",
     render: (_, record) =>
       record?.canManage ? (
         <AppButton onClick={() => onManageRequest(record)}>

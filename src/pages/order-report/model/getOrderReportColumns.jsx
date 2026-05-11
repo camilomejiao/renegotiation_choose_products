@@ -15,24 +15,28 @@ export const getOrderReportColumns = ({ onDelete }) => [
     dataIndex: "id",
     key: "id",
     width: 140,
+    align: "center",
   },
   {
     title: "FECHA DE REGISTRO",
     dataIndex: "fecha_registro",
     key: "fecha_registro",
     width: 220,
+    align: "center",
   },
   {
     title: "CUB",
     dataIndex: "cub_id",
     key: "cub_id",
     width: 160,
+    align: "center",
   },
   {
     title: "DOCUMENTO",
     dataIndex: "cub_identificacion",
     key: "cub_identificacion",
     width: 180,
+    align: "center",
   },
   {
     title: "VALOR TOTAL",
@@ -47,6 +51,7 @@ export const getOrderReportColumns = ({ onDelete }) => [
     dataIndex: "__actions",
     key: "__actions",
     width: 160,
+    align: "center",
     render: (_, record) =>
       record?.canCancelRequest ? (
         <AppButton
