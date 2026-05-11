@@ -75,6 +75,11 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
       row?.request_type ??
       row?.motivo_solicitud ??
       "ANULACION_ORDEN_COMPRA";
+    const requestReason =
+      row?.motivo_solicitud ??
+      row?.observacion ??
+      row?.comentario ??
+      "";
 
     return {
       id:
@@ -155,11 +160,8 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
         row?.observacion_aprobacion ??
         row?.approval_comment ??
         "",
-      requestReason:
-        row?.motivo_solicitud ??
-        row?.observacion ??
-        row?.comentario ??
-        "",
+      requestReason,
+      supplierObservation: requestReason,
       leaderObservation:
         row?.observacion_lider ??
         row?.leader_observation ??

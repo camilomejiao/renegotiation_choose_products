@@ -338,7 +338,7 @@ export const LeaderOrderApprovalModal = ({
           </div>
 
           <div style={{ marginTop: 16 }}>
-            <Text strong>Observacion del proveedor</Text>
+            <Text strong>Motivo de la solicitud</Text>
             <div
               style={{
                 marginTop: 8,
