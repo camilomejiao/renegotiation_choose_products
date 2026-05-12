@@ -29,9 +29,7 @@ const ORDER_CANCELLATION_REQUEST_TYPE = 5215;
 const REQUEST_CANCEL_MODAL_INITIAL_VIEW = "form";
 const REQUEST_CANCEL_STATUS = "CANCELADO";
 const DELETE_FORBIDDEN_FALLBACK_MESSAGE = "tiene dependencias asociadas";
-const SUPPLIER_ORDER_SEARCH_OPTION =
-  ORDER_SEARCH_OPTIONS.find((option) => option.value === "cedula") ??
-  DEFAULT_ORDER_SEARCH_OPTION;
+const SUPPLIER_ORDER_SEARCH_FIELD = "search";
 
 const getDeleteForbiddenMessage = (response) => {
   const responseData = response?.data;
@@ -49,7 +47,6 @@ const getDeleteForbiddenMessage = (response) => {
 
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
-  const lastOrderSearchValueRef = useRef("");
   const lastRequestSearchValueRef = useRef("");
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
@@ -85,11 +82,11 @@ export const useOrderReportPage = () => {
   const [activeTab, setActiveTab] = useState("purchase-orders");
 
   const [selectedOrderSearchAttribute, setSelectedOrderSearchAttribute] =
-    useState(SUPPLIER_ORDER_SEARCH_OPTION);
+    useState({ value: SUPPLIER_ORDER_SEARCH_FIELD, label: "BUSQUEDA" });
   const [orderSearchValue, setOrderSearchValue] = useState("");
   const [orderSearchError, setOrderSearchError] = useState("");
   const [appliedOrderSearchAttribute, setAppliedOrderSearchAttribute] =
-    useState(SUPPLIER_ORDER_SEARCH_OPTION.value);
+    useState(SUPPLIER_ORDER_SEARCH_FIELD);
   const [appliedOrderSearchValue, setAppliedOrderSearchValue] = useState("");
 
   const [selectedRequestSearchAttribute, setSelectedRequestSearchAttribute] =
@@ -256,51 +253,18 @@ export const useOrderReportPage = () => {
       return;
     }
 
-    const nextField = SUPPLIER_ORDER_SEARCH_OPTION.value;
-    const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
     const nextError = getOrderSearchError(
-      { field: nextField, value: normalizedValue },
+      {
+        field: SUPPLIER_ORDER_SEARCH_FIELD,
+        value: normalizeOrderSearchValue(orderSearchValue),
+      },
       { allowEmpty: true }
     );
-    const didSearchValueChange =
-      lastOrderSearchValueRef.current !== orderSearchValue;
 
     setOrderSearchError(nextError || "");
-    lastOrderSearchValueRef.current = orderSearchValue;
-
-    if (!didSearchValueChange) {
-      return;
-    }
-
-    if (!normalizedValue || nextError) {
-      if (page !== 1) {
-        setPage(1);
-      }
-
-      if (appliedOrderSearchAttribute !== nextField) {
-        setAppliedOrderSearchAttribute(nextField);
-      }
-
-      if (appliedOrderSearchValue !== "") {
-        setAppliedOrderSearchValue("");
-      }
-
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setPage(1);
-      setAppliedOrderSearchAttribute(nextField);
-      setAppliedOrderSearchValue(normalizedValue);
-    }, ORDER_SEARCH_DEBOUNCE_MS);
-
-    return () => window.clearTimeout(timer);
   }, [
     activeTab,
-    appliedOrderSearchAttribute,
-    appliedOrderSearchValue,
     orderSearchValue,
-    page,
   ]);
 
   useEffect(() => {
@@ -488,6 +452,43 @@ export const useOrderReportPage = () => {
     setAppliedRequestType(selectedRequestType);
     setAppliedRequestStatus(selectedRequestStatus);
   }, [selectedRequestStatus, selectedRequestType]);
+
+  const handleOrderFiltersSearch = useCallback(() => {
+    const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+    const nextError = getOrderSearchError(
+      { field: SUPPLIER_ORDER_SEARCH_FIELD, value: normalizedValue },
+      { allowEmpty: true }
+    );
+
+    setOrderSearchError(nextError || "");
+
+    if (nextError) {
+      return;
+    }
+
+    if (page !== 1) {
+      setPage(1);
+    }
+
+    if (appliedOrderSearchAttribute !== SUPPLIER_ORDER_SEARCH_FIELD) {
+      setAppliedOrderSearchAttribute(SUPPLIER_ORDER_SEARCH_FIELD);
+    }
+
+    if (appliedOrderSearchValue !== normalizedValue) {
+      setAppliedOrderSearchValue(normalizedValue);
+      return;
+    }
+
+    if (page === 1) {
+      loadOrders();
+    }
+  }, [
+    appliedOrderSearchAttribute,
+    appliedOrderSearchValue,
+    loadOrders,
+    orderSearchValue,
+    page,
+  ]);
 
   const handleRequestFiltersClear = useCallback(() => {
     setSelectedRequestType(null);
@@ -692,6 +693,7 @@ export const useOrderReportPage = () => {
     handleDeleteContinue,
     handleDeleteLegalTextRead,
     handleDeleteRequest,
+    handleOrderFiltersSearch,
     handleOrderSearchAttributeChange,
     handleOrderSearchValueChange: (event) =>
       setOrderSearchValue(event.target.value),

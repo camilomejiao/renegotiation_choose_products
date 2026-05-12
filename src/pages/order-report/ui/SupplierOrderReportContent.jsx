@@ -1,6 +1,8 @@
+import { SearchOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
+import { AppButton } from "../../../shared/ui/button";
 import { AppSearchInput } from "../../../shared/ui/search-input";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
@@ -50,6 +52,7 @@ export const SupplierOrderReportContent = () => {
     loadRequests,
     submitting,
     handleActiveTabChange,
+    handleOrderFiltersSearch,
     handleOrderSearchValueChange,
     handleDeleteConfirmationCancel,
     handlePageChange,
@@ -87,16 +90,40 @@ export const SupplierOrderReportContent = () => {
 
   const orderSearchExtension = useMemo(
     () => [
-      <AppSearchInput
-        key="supplier-order-cedula-search"
-        placeholder="Buscar por cédula"
-        value={orderSearchValue}
-        onChange={handleOrderSearchValueChange}
-        disabled={loading}
-        status={orderSearchError ? "error" : undefined}
-      />,
+      <Row key="supplier-order-search" gutter={[12, 12]} style={{ width: "100%" }}>
+        <Col xs={24} sm={24} md={18} lg={8} xl={8} xxl={8}>
+          <Row gutter={[12, 12]}>
+            <Col xs={24} sm={16} md={16} lg={17} xl={17} xxl={17}>
+              <AppSearchInput
+                placeholder="Buscar por cedula/CUB/orden"
+                value={orderSearchValue}
+                onChange={handleOrderSearchValueChange}
+                onPressEnter={handleOrderFiltersSearch}
+                disabled={loading}
+                status={orderSearchError ? "error" : undefined}
+              />
+            </Col>
+            <Col xs={24} sm={8} md={8} lg={7} xl={7} xxl={7}>
+              <AppButton
+                icon={<SearchOutlined />}
+                onClick={handleOrderFiltersSearch}
+                loading={loading}
+                style={{ width: "100%" }}
+              >
+                Buscar
+              </AppButton>
+            </Col>
+          </Row>
+        </Col>
+      </Row>,
     ],
-    [handleOrderSearchValueChange, loading, orderSearchError, orderSearchValue]
+    [
+      handleOrderFiltersSearch,
+      handleOrderSearchValueChange,
+      loading,
+      orderSearchError,
+      orderSearchValue,
+    ]
   );
 
   const orderPurchaseContent = (
