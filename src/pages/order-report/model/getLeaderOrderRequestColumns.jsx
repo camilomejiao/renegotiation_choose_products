@@ -51,7 +51,14 @@ export const getLeaderOrderRequestColumns = ({
     align: "center",
     render: (value) => value || "---",
   },
-
+  {
+    title: "TITULAR",
+    dataIndex: "beneficiary",
+    key: "beneficiary",
+    width: 260,
+    align: "center",
+    render: (value) => value || "---",
+  },
   {
     title: "PROVEEDOR",
     dataIndex: "supplier",
