@@ -44,7 +44,7 @@ export const getLeaderOrderRequestColumns = ({
     align: "center",
   },
   {
-    title: "BENEFICIARIO",
+    title: "TITULAR",
     dataIndex: "beneficiary",
     key: "beneficiary",
     width: 260,
