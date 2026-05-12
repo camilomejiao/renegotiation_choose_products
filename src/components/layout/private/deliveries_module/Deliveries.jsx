@@ -13,7 +13,6 @@ import {
     FaTrash
 } from "react-icons/fa";
 import printJS from "print-js";
-import { DataGrid } from "@mui/x-data-grid";
 
 //Components
 import { HeaderImage } from "../../shared/header_image/HeaderImage";
@@ -23,6 +22,7 @@ import { DeliveryReport } from "./delivery-report/DeliveryReport";
 import { ApprovedDeniedModal } from "../../shared/Modals/ApprovedDeniedModal";
 import { FEModal } from "../../shared/Modals/FEModal";
 import { ConfirmationModal } from "../../shared/Modals/ConfirmationModal";
+import { SmartTable } from "../../../../shared/ui/smart-table";
 
 //Util
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
@@ -79,11 +79,28 @@ const isValidPdf = (file) => {
  * @param {Object} row - Fila del DataGrid.
  */
 const hasFeNumber = (row) => row?.fe_number;
+const isLeaderTechnicalRole = (roleId) =>
+    roleId === RolesEnum.LIDER_TECNICO_AGRO ||
+    roleId === RolesEnum.LIDER_TECNICO_NO_AGRO;
 /** Roles que pueden editar entregas. */
-const canEditRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+const canEditRoles = [
+    RolesEnum.TERRITORIAL_LINKS,
+    RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
+    RolesEnum.SUPPLIER,
+    RolesEnum.ADMIN
+];
 
 /** Roles que pueden eliminar entregas. */
-const canDeleteRoles = [RolesEnum.TERRITORIAL_LINKS, RolesEnum.TECHNICAL, RolesEnum.SUPPLIER, RolesEnum.ADMIN];
+const canDeleteRoles = [
+    RolesEnum.TERRITORIAL_LINKS,
+    RolesEnum.TECHNICAL,
+    RolesEnum.LIDER_TECNICO_AGRO,
+    RolesEnum.LIDER_TECNICO_NO_AGRO,
+    RolesEnum.SUPPLIER,
+    RolesEnum.ADMIN
+];
 
 /**
  * Devuelve true si la fila tiene consolidado PDF cargado.
@@ -136,6 +153,10 @@ export const Deliveries = () => {
     const [feLoading, setFeLoading] = useState(false);
 
     const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
+    const [deliveriesPage, setDeliveriesPage] = useState(1);
+    const [deliveriesPageSize, setDeliveriesPageSize] = useState(10);
+    const [productsPage, setProductsPage] = useState(1);
+    const [productsPageSize, setProductsPageSize] = useState(5);
 
     //Confirmación proveedor
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -304,15 +325,15 @@ export const Deliveries = () => {
             return true;
         }
 
-        if(row.actions.aprobadoProveedor === true && row.actions.approvedTechnical === true && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
+        if(row.actions.aprobadoProveedor === true && row.actions.approvedTechnical === true && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL || isLeaderTechnicalRole(rolId))) {
             return true;
         }
 
-        if((row.actions.aprobadoProveedor === true || row.actions.aprobadoProveedor === null) && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL)) {
+        if((row.actions.aprobadoProveedor === true || row.actions.aprobadoProveedor === null) && (rolId === RolesEnum.TERRITORIAL_LINKS || rolId === RolesEnum.TECHNICAL || isLeaderTechnicalRole(rolId))) {
             return false;
         }
 
-        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.TECHNICAL) {
+        if(rolId !== RolesEnum.TERRITORIAL_LINKS && rolId !== RolesEnum.SUPPLIER && rolId !== RolesEnum.TECHNICAL && !isLeaderTechnicalRole(rolId)) {
             return true;
         }
 
@@ -428,8 +449,7 @@ export const Deliveries = () => {
     /** Renderiza la celda de FE (cargar/ver/editar factura electrónica). */
     
     /** Renderiza el botón de generación de acta de entrega. */
-    const renderGeneratePdfCell = (params) => {
-        const row = params.row;
+    const renderGeneratePdfCell = (row) => {
         const hasError = Boolean(row?.reportError);
         const handleClick = () => {
             if (hasError) {
@@ -458,8 +478,7 @@ export const Deliveries = () => {
     };
 
     /** Renderiza botones de evidencia PDF (subir/ver consolidado). */
-    const renderEvidenceCell = (params) => {
-        const row = params.row;
+    const renderEvidenceCell = (row) => {
         return (
             <div>
                 <Button
@@ -484,8 +503,7 @@ export const Deliveries = () => {
             </div>
         );
     };
-const renderFeCell = (params) => {
-        const row = params.row;
+const renderFeCell = (row) => {
         const canEdit = canEditRoles.includes(userAuth.rol_id);
         const fePdfUrl = getFePdfUrl(row);
 
@@ -537,12 +555,11 @@ const renderFeCell = (params) => {
     };
 
     /** Renderiza botones de acciones (editar, eliminar, aprobar). */
-    const renderActionsCell = (params) => {
-        const row = params.row;
+    const renderActionsCell = (row) => {
         const canEdit = canEditRoles.includes(userAuth.rol_id);
         const canDelete = canDeleteRoles.includes(userAuth.rol_id);
         const isSP = userAuth.rol_id === RolesEnum.SUPPLIER;
-        const isTechOrAdmin = userAuth.rol_id === RolesEnum.TECHNICAL || userAuth.rol_id === RolesEnum.ADMIN;
+        const isTechOrAdmin = userAuth.rol_id === RolesEnum.TECHNICAL || isLeaderTechnicalRole(userAuth.rol_id) || userAuth.rol_id === RolesEnum.ADMIN;
 
         return (
             <div>
@@ -610,8 +627,7 @@ const renderFeCell = (params) => {
         );
     };
 
-    const renderPhotoCell = (params) => {
-        const row = params.row;
+    const renderPhotoCell = (row) => {
         const imagen1Url = getImagen1Url(row);
         const imagen2Url = getImagen2Url(row);
 
@@ -664,48 +680,44 @@ const renderFeCell = (params) => {
 
     //===== Columnas =====
     const deliveryColumns = [
-        { field: "id", headerName: "N° ENTREGA", width: 120 },
-        { field: "date", headerName: "FECHA", width: 100 },
-        { field: "supplier", headerName: "PROVEEDOR", width: 350 },
+        { title: "N° ENTREGA", dataIndex: "id", key: "id", width: 120 },
+        { title: "FECHA", dataIndex: "date", key: "date", width: 120 },
+        { title: "PROVEEDOR", dataIndex: "supplier", key: "supplier", width: 350 },
         {
-            field: "generatePdf",
-            headerName: "GENERAR ACTA DE ENTREGA",
+            title: "GENERAR ACTA DE ENTREGA",
+            dataIndex: "generatePdf",
+            key: "generatePdf",
             width: 200,
-            renderCell: renderGeneratePdfCell,
-            sortable: false,
-            filterable: false,
+            render: (_, record) => renderGeneratePdfCell(record),
         },
         {
-            field: "evidencePdf",
-            headerName: "CONSOLIDADO DE ENTREGA",
+            title: "CONSOLIDADO DE ENTREGA",
+            dataIndex: "evidencePdf",
+            key: "evidencePdf",
             width: 250,
-            renderCell: renderEvidenceCell,
-            sortable: false,
-            filterable: false,
+            render: (_, record) => renderEvidenceCell(record),
         },
         {
-            field: "fe_number",
-            headerName: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
+            title: "NÚMERO FE O DOCUMENTO EQUIVALENTE",
+            dataIndex: "fe_number",
+            key: "fe_number",
             width: 400,
-            renderCell: renderFeCell,
-            sortable: false,
-            filterable: false,
+            render: (_, record) => renderFeCell(record),
         },
         {
-            field: "evidence_photo",
-            headerName: "EVIDENCIA FOTOGRÁFICA",
+            title: "EVIDENCIA FOTOGRÁFICA",
+            dataIndex: "evidence_photo",
+            key: "evidence_photo",
             width: 550,
-            renderCell: renderPhotoCell,
-            sortable: false,
-            filterable: false,
+            render: (_, record) => renderPhotoCell(record),
         },
-        { field: "statusDelivery", headerName: "ESTADO", width: 150 },
+        { title: "ESTADO", dataIndex: "statusDelivery", key: "statusDelivery", width: 150 },
         {
-            field: "observation",
-            headerName: "OBSERVACIÓN",
-            flex: 1,
-            minWidth: 250,
-            renderCell: (params) => (
+            title: "OBSERVACIÓN",
+            dataIndex: "observation",
+            key: "observation",
+            width: 280,
+            render: (value) => (
                 <div
                     style={{
                         whiteSpace: "normal",
@@ -715,17 +727,16 @@ const renderFeCell = (params) => {
                         textAlign: "justify",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
         {
-            field: "actions",
-            headerName: "ACCIONES",
+            title: "ACCIONES",
+            dataIndex: "actions",
+            key: "actions",
             width: 350,
-            renderCell: renderActionsCell,
-            sortable: false,
-            filterable: false,
+            render: (_, record) => renderActionsCell(record),
         },
     ];
 
@@ -799,13 +810,13 @@ const renderFeCell = (params) => {
 
     //
     const productsToBeDeliveredColumns = [
-        { field: "id", headerName: "COD", flex: 0.5 },
+        { title: "COD", dataIndex: "id", key: "id", width: 100 },
         {
-            field: "name",
-            headerName: "NOMBRE",
-            flex: 2,
-            headerAlign: "left",
-            renderCell: (params) => (
+            title: "NOMBRE",
+            dataIndex: "name",
+            key: "name",
+            width: 260,
+            render: (value) => (
                 <div
                     style={{
                         textAlign: "left",
@@ -813,16 +824,16 @@ const renderFeCell = (params) => {
                         overflow: "visible",
                     }}
                 >
-                    {params?.value}
+                    {value}
                 </div>
             ),
         },
         {
-            field: "description",
-            headerName: "DESCRIPCIÓN",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
+            title: "DESCRIPCIÓN",
+            dataIndex: "description",
+            key: "description",
+            width: 420,
+            render: (value) => (
                 <div
                     style={{
                         textAlign: "left",
@@ -831,24 +842,25 @@ const renderFeCell = (params) => {
                         overflow: "visible",
                     }}
                 >
-                    {params?.value}
+                    {value}
                 </div>
             ),
         },
-        { field: "amount", headerName: "CANT. SOLICITADA", flex: 1 },
+        { title: "CANT. SOLICITADA", dataIndex: "amount", key: "amount", width: 160 },
         {
-            field: "quantityToBeDelivered",
-            headerName: "CANT. A ENTREGAR",
-            flex: 1,
-            renderCell: (params) => {
+            title: "CANT. A ENTREGAR",
+            dataIndex: "quantityToBeDelivered",
+            key: "quantityToBeDelivered",
+            width: 180,
+            render: (_value, record) => {
                 return (
                     <Form.Control
                         type="number"
                         className="small-input form-control-sm"
-                        value={params?.row?.quantityToBeDelivered}
+                        value={record?.quantityToBeDelivered}
                         min="0"
                         onChange={(e) =>
-                            handleQuantityChange(params?.row?.id, e.target.value)
+                            handleQuantityChange(record?.id, e.target.value)
                         }
                         style={{
                             width: "100%",
@@ -861,15 +873,16 @@ const renderFeCell = (params) => {
             },
         },
         {
-            field: "state",
-            headerName: "ESTADO",
-            flex: 1.5,
-            renderCell: (params) => {
+            title: "ESTADO",
+            dataIndex: "state",
+            key: "state",
+            width: 180,
+            render: (_value, record) => {
                 return (
                     <select
-                        value={params?.row?.state}
+                        value={record?.state}
                         onChange={(e) =>
-                            handleStatusChange(params?.row?.id, parseInt(e.target.value))
+                            handleStatusChange(record?.id, parseInt(e.target.value))
                         }
                         style={{
                             width: "100%",
@@ -1358,7 +1371,7 @@ const renderFeCell = (params) => {
                     <Container>
                         <Row className="justify-content-end align-items-center">
                             <Col xs={12} md={6} className="deliveries-consolidated">
-                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL) && consolidated &&(
+                                {(userAuth.rol_id === RolesEnum.ADMIN || userAuth.rol_id === RolesEnum.TECHNICAL || isLeaderTechnicalRole(userAuth.rol_id)) && consolidated &&(
                                     <button
                                         onClick={() => handleViewFile(consolidated)}
                                         rel="noopener noreferrer"
@@ -1405,50 +1418,26 @@ const renderFeCell = (params) => {
                         {listDeliveriesToUser.length > 0 && !showDeliveryForm ? (
                             <>
                                 <div className="deliveries-table-card">
-                                    <DataGrid
-                                        rows={listDeliveriesToUser}
+                                    <SmartTable
+                                        rowKey="id"
                                         columns={deliveryColumns}
-                                        pageSize={10}
-                                        rowsPerPageOptions={[5, 10, 20]}
-                                        disableColumnMenu
-                                        disableSelectionOnClick
-                                        rowHeight={100}
-                                        componentsProps={{
-                                            columnHeader: {
-                                                style: {
-                                                    textAlign: "left",
-                                                    fontWeight: "bold",
-                                                    fontSize: "10px",
-                                                    wordWrap: "break-word",
-                                                },
-                                            },
+                                        dataSource={listDeliveriesToUser}
+                                        loading={loading}
+                                        total={listDeliveriesToUser.length}
+                                        currentPage={deliveriesPage}
+                                        defaultPageSize={deliveriesPageSize}
+                                        pageSizeOptions={["5", "10", "20"]}
+                                        onPageChange={(nextPage, nextPageSize) => {
+                                            setDeliveriesPage(nextPage);
+                                            setDeliveriesPageSize(nextPageSize);
                                         }}
-                                        sx={{
-                                            "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#2d3a4d",
-                                                color: "white",
-                                                fontSize: "14px",
-                                            },
-                                            "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                            },
-                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#2d3a4d !important",
-                                                color: "white !important",
-                                            },
-                                            "& .MuiDataGrid-cell": {
-                                                fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
-                                                display: "flex",
-                                            },
-                                            "& .MuiDataGrid-row:hover": {
-                                                backgroundColor: "#E8F5E9",
-                                            },
-                                        }}
+                                        defaultText="---"
+                                        emptyText="No se han realizado entregas."
+                                        enableRowSelection={false}
+                                        showToolbar={false}
+                                        showTableResize={false}
+                                        showColumnSettings={false}
+                                        scroll={{ x: 2800 }}
                                     />
                                 </div>
                                 <div className="button-container button-container--deliveries mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
@@ -1473,49 +1462,26 @@ const renderFeCell = (params) => {
                         {showDeliveryForm && (
                             <>
                                 <div className="deliveries-table-card">
-                                    <DataGrid
-                                        rows={deliveryProducts}
+                                    <SmartTable
+                                        rowKey="id"
                                         columns={productsToBeDeliveredColumns}
-                                        pageSize={5}
-                                        rowsPerPageOptions={[5, 10, 20]}
-                                        disableColumnMenu
-                                        disableSelectionOnClick
-                                        componentsProps={{
-                                            columnHeader: {
-                                                style: {
-                                                    textAlign: "left", // Alinea los títulos a la izquierda
-                                                    fontWeight: "bold", // Opcional: Aplica un peso específico
-                                                    fontSize: "14px", // Ajusta el tamaño de fuente
-                                                    wordWrap: "break-word", // Permite que el título se divida en varias líneas
-                                                },
-                                            },
+                                        dataSource={deliveryProducts}
+                                        loading={loading}
+                                        total={deliveryProducts.length}
+                                        currentPage={productsPage}
+                                        defaultPageSize={productsPageSize}
+                                        pageSizeOptions={["5", "10", "20"]}
+                                        onPageChange={(nextPage, nextPageSize) => {
+                                            setProductsPage(nextPage);
+                                            setProductsPageSize(nextPageSize);
                                         }}
-                                        sx={{
-                                            "& .MuiDataGrid-columnHeaders": {
-                                                backgroundColor: "#2d3a4d",
-                                                color: "white",
-                                                fontSize: "14px",
-                                            },
-                                            "& .MuiDataGrid-columnHeader": {
-                                                textAlign: "center",
-                                                display: "flex",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                            },
-                                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                                backgroundColor: "#2d3a4d !important",
-                                                color: "white !important",
-                                            },
-                                            "& .MuiDataGrid-cell": {
-                                                fontSize: "14px",
-                                                textAlign: "center",
-                                                justifyContent: "center",
-                                                display: "flex",
-                                            },
-                                            "& .MuiDataGrid-row:hover": {
-                                                backgroundColor: "#E8F5E9",
-                                            },
-                                        }}
+                                        defaultText="---"
+                                        emptyText="No hay productos pendientes para entregar."
+                                        enableRowSelection={false}
+                                        showToolbar={false}
+                                        showTableResize={false}
+                                        showColumnSettings={false}
+                                        scroll={{ x: 1500 }}
                                     />
                                 </div>
 

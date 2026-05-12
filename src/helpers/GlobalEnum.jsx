@@ -1,5 +1,4 @@
-﻿
-export const ResponseStatusEnum = {
+﻿export const ResponseStatusEnum = {
     OK: 200,
     CREATED: 201,
     NO_CONTENT: 204,
@@ -22,7 +21,11 @@ export const RolesEnum = {
     PAYMENTS: 7,
     SYSTEM_USER: 8,
     TRUST_PAYMENTS: 9,
-    LEGAL: 10
+    LEGAL: 10,
+    ADMINISTRATIVA: 11,
+    LIDER_TECNICO_AGRO: 12,
+    LIDER_TECNICO_NO_AGRO: 13
+
 }
 
 export const GeneralStatusDeliveryProductEnum = {
@@ -30,11 +33,15 @@ export const GeneralStatusDeliveryProductEnum = {
     PENDING_APPROVAL: 'PENDIENTE',
     REFUSED: 'DENEGADO'
 }
-
+export const GeneralStatusPurchaseOrder = {
+    PENDING: 'PENDIENTE',
+    REJECT: "RECHAZADO",
+    CANCELLED: "CANCELADO"
+}
 export const StatusTeamProductEnum = {
-    DENIED: { id: 0, label: "Denegado" },
-    APPROVED: { id: 1, label: "Aprobado" },
-    UNREVIEWED: { id: 9, label: "Sin Revisar" }
+    DENIED: {id: 0, label: "Denegado"},
+    APPROVED: {id: 1, label: "Aprobado"},
+    UNREVIEWED: {id: 9, label: "Sin Revisar"}
 }
 
 export const ComponentEnum = {
@@ -114,9 +121,9 @@ export const ReportTypePaymentsEnum = {
 }
 
 export const CollectionAccountStatusEnum = {
-    REGISTERED: { key: "REGISTRADA",  label: "Registrado" },
-    PAID: { key: "PAGADA",  label: "Pagado" },
-    ISSUED_FOR_PAYMENT: { key: "EMITIDO_PARA_PAGO",  label: "Emitido para Pago" }
+    REGISTERED: {key: "REGISTRADA", label: "Registrado"},
+    PAID: {key: "PAGADA", label: "Pagado"},
+    ISSUED_FOR_PAYMENT: {key: "EMITIDO_PARA_PAGO", label: "Emitido para Pago"}
 }
 
 export const DeliveryDocumentReviewAction = {

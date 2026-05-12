@@ -1,7 +1,7 @@
 ﻿import { useCallback, useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { useParams} from "react-router-dom";
-import { Button, Col, Container, Form, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import { debounce } from "@mui/material";
 import printJS from "print-js";
@@ -18,6 +18,7 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import { UserInformation } from "../../../shared/user_information/UserInformation";
 import { CompanyReportPrinting } from "../../reports_module/report_company/report/CompanyReportPrinting";
 import { Loading } from "../../../shared/loading/Loading";
+import { SmartTable } from "../../../../../shared/ui/smart-table";
 import { escapeHtml } from "../../../../../shared/lib/escapeHtml";
 import AlertComponent from "../../../../../helpers/alert/AlertComponent";
 
@@ -335,6 +336,96 @@ export const CreateOrder = () => {
         return total === 0 || saldoRestante < 0 ;
     };
 
+    const productRows = items.map((item, index) => ({
+        rowKey: `${item.id}-${index}`,
+        index,
+        id: item.id,
+        nombre: item.nombre,
+        valor_unitario: item.valor_unitario,
+        unidad: item.unidad,
+        quantity: item.quantity,
+        discount: item.discount,
+        total: item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100),
+    }));
+
+    const columns = [
+        {
+            title: "COD",
+            dataIndex: "id",
+            key: "id",
+            width: 110,
+        },
+        {
+            title: "Nombre",
+            dataIndex: "nombre",
+            key: "nombre",
+            width: 260,
+        },
+        {
+            title: "Vr. Unitario",
+            dataIndex: "valor_unitario",
+            key: "valor_unitario",
+            width: 160,
+            render: (value) => `$${Number(value || 0).toLocaleString()}`,
+        },
+        {
+            title: "Unidad",
+            dataIndex: "unidad",
+            key: "unidad",
+            width: 130,
+        },
+        {
+            title: "Cantidad",
+            dataIndex: "quantity",
+            key: "quantity",
+            width: 140,
+            render: (_, record) => (
+                <Form.Control
+                    type="number"
+                    className="small-input form-control-sm"
+                    value={record.quantity}
+                    onChange={(e) => handleQuantityChange(record.index, e.target.value)}
+                    min="1"
+                />
+            ),
+        },
+        {
+            title: "Dto",
+            dataIndex: "discount",
+            key: "discount",
+            width: 140,
+            render: (_, record) => (
+                <Form.Control
+                    type="text"
+                    className="small-input form-control-sm"
+                    value={record.discount}
+                    onChange={(e) => handleDiscountChange(record.index, limitToFourDecimals(e.target.value))}
+                />
+            ),
+        },
+        {
+            title: "Total",
+            dataIndex: "total",
+            key: "total",
+            width: 170,
+            render: (value) => `$${Number(value || 0).toLocaleString()}`,
+        },
+        {
+            title: "",
+            dataIndex: "actions",
+            key: "actions",
+            width: 90,
+            render: (_, record) => (
+                <Button
+                    variant="outline-danger"
+                    onClick={() => handleDeleteItem(record.index)}
+                >
+                    <FaTrashAlt />
+                </Button>
+            ),
+        },
+    ];
+
     useEffect(() => {
         const subtotal = items.reduce((acc, item) => {
             const itemTotal = item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100);
@@ -437,55 +528,23 @@ export const CreateOrder = () => {
                     {isLoading && <Loading text="Cargando..." />}
 
                     {/* Tabla */}
-                    <div className="mt-3 table-responsive scrollable-thead-body">
-                        <Table bordered hover>
-                            <thead style={{ backgroundColor: "#40A581", color: "white" }}>
-                                <tr>
-                                    <th>COD</th>
-                                    <th>Nombre</th>
-                                    <th>Vr. Unitario</th>
-                                    <th>Unidad</th>
-                                    <th>Cantidad</th>
-                                    <th>Dto</th>
-                                    <th>Total</th>
-                                    <th>&nbsp;</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.id}</td>
-                                        <td style={{textAlign: 'left'}} >{item.nombre}</td>
-                                        <td>${item.valor_unitario.toLocaleString()}</td>
-                                        <td>{item.unidad}</td>
-                                        <td>
-                                            <Form.Control
-                                                type="number"
-                                                className="small-input form-control-sm"
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(index, e.target.value)}
-                                                min="1"
-                                            />
-                                        </td>
-                                        <td>
-                                            <Form.Control
-                                                type="text"
-                                                className="small-input form-control-sm"
-                                                value={item.discount}
-                                                onChange={(e) => handleDiscountChange(index, limitToFourDecimals(e.target.value))}
-                                            />
-                                        </td>
-                                        <td>${(item.valor_unitario * item.quantity * (1 - (parseFloat(item.discount) || 0) / 100)).toLocaleString()}</td>
-                                        <td>
-                                            <Button variant="outline-danger"
-                                                    onClick={() => handleDeleteItem(index)}>
-                                                <FaTrashAlt />
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
+                    <div className="mt-3 scrollable-thead-body">
+                        <SmartTable
+                            rowKey="rowKey"
+                            columns={columns}
+                            dataSource={productRows}
+                            total={productRows.length}
+                            currentPage={1}
+                            defaultPageSize={10}
+                            pageSizeOptions={["10", "20", "50"]}
+                            defaultText="---"
+                            emptyText="No hay productos agregados."
+                            enableRowSelection={false}
+                            showToolbar={false}
+                            showTableResize={false}
+                            showColumnSettings={false}
+                            scroll={{ x: 1200 }}
+                        />
                     </div>
 
                     {/* Totales */}

@@ -1,7 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {Button, Container, Form} from "react-bootstrap";
-import { DataGrid } from "@mui/x-data-grid";
 
 //Img
 import imgDCSIPeople from "../../../../assets/image/addProducts/imgDSCIPeople.png";
@@ -14,6 +13,7 @@ import { ResponseStatusEnum } from "../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../helpers/alert/AlertComponent";
 import {FaSave, FaStepBackward} from "react-icons/fa";
 import { Loading } from "../../shared/loading/Loading";
+import { SmartTable } from "../../../../shared/ui/smart-table";
 
 //Opciones para los productos a entregar
 const deliveryStatus = [
@@ -32,15 +32,17 @@ export const EditDeliveryOrder = () => {
     const [listDeliveryProducts, setListDeliveryProducts] = useState([]);
     const [deliveryId, setDeliveryId] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
 
     const columns = [
-        { field: "id", headerName: "COD", flex: 0.5 },
+        { title: "COD", dataIndex: "id", key: "id", width: 100 },
         {
-            field: "name",
-            headerName: "NOMBRE",
-            flex: 2,
-            headerAlign: "left",
-            renderCell: (params) => (
+            title: "NOMBRE",
+            dataIndex: "name",
+            key: "name",
+            width: 260,
+            render: (value) => (
                 <div
                     style={{
                         textAlign: "left",
@@ -48,16 +50,16 @@ export const EditDeliveryOrder = () => {
                         overflow: "visible",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
         {
-            field: "description",
-            headerName: "DESCRIPCIÓN",
-            flex: 3,
-            headerAlign: "left",
-            renderCell: (params) => (
+            title: "DESCRIPCIÓN",
+            dataIndex: "description",
+            key: "description",
+            width: 420,
+            render: (value) => (
                 <div
                     style={{
                         textAlign: "left",
@@ -66,28 +68,29 @@ export const EditDeliveryOrder = () => {
                         overflow: "visible",
                     }}
                 >
-                    {params.value}
+                    {value}
                 </div>
             ),
         },
-        { field: "amount", headerName: "CANT. SOLICITADA", flex: 1 },
+        { title: "CANT. SOLICITADA", dataIndex: "amount", key: "amount", width: 160 },
         {
-            field: "quantityToBeDelivered",
-            headerName: "CANT. A ENTREGAR",
-            flex: 1,
-            renderCell: (params) => {
-                if (!params?.row) {
-                    console.warn("renderCell: fila vacía en quantityToBeDelivered", params);
+            title: "CANT. A ENTREGAR",
+            dataIndex: "quantityToBeDelivered",
+            key: "quantityToBeDelivered",
+            width: 180,
+            render: (_value, record) => {
+                if (!record) {
+                    console.warn("render: fila vacía en quantityToBeDelivered");
                     return "–";
                 }
                 return (
                     <Form.Control
                         type="number"
                         className="small-input form-control-sm"
-                        value={params.row.quantityToBeDelivered ?? 0}
+                        value={record.quantityToBeDelivered ?? 0}
                         min="0"
                         onChange={(e) =>
-                            handleQuantityChange(params.row.id, e.target.value)
+                            handleQuantityChange(record.id, e.target.value)
                         }
                         style={{
                             width: "100%",
@@ -100,15 +103,16 @@ export const EditDeliveryOrder = () => {
             },
         },
         {
-            field: "state",
-            headerName: "ESTADO",
-            flex: 1.5,
-            renderCell: (params) => {
+            title: "ESTADO",
+            dataIndex: "state",
+            key: "state",
+            width: 180,
+            render: (_value, record) => {
                 return (
                     <select
-                        value={params.row.state}
+                        value={record.state}
                         onChange={(e) =>
-                            handleStatusChange(params.row.id, parseInt(e.target.value))
+                            handleStatusChange(record.id, parseInt(e.target.value))
                         }
                         style={{
                             width: "100%",
@@ -259,50 +263,26 @@ export const EditDeliveryOrder = () => {
                 <div className="p-5">
                     <Container>
 
-                        <DataGrid
-                            rows={listDeliveryProducts}
+                        <SmartTable
+                            rowKey="id"
                             columns={columns}
+                            dataSource={listDeliveryProducts}
                             loading={isLoading}
-                            pageSize={5}
-                            rowsPerPageOptions={[5, 10, 20]}
-                            disableColumnMenu
-                            disableSelectionOnClick
-                            componentsProps={{
-                                columnHeader: {
-                                    style: {
-                                        textAlign: "left", // Alinea los títulos a la izquierda
-                                        fontWeight: "bold", // Opcional: Aplica un peso específico
-                                        fontSize: "14px", // Ajusta el tamaño de fuente
-                                        wordWrap: "break-word", // Permite que el título se divida en varias líneas
-                                    },
-                                },
+                            total={listDeliveryProducts.length}
+                            currentPage={page}
+                            defaultPageSize={pageSize}
+                            pageSizeOptions={["5", "10", "20"]}
+                            onPageChange={(nextPage, nextPageSize) => {
+                                setPage(nextPage);
+                                setPageSize(nextPageSize);
                             }}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#2d3a4d",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#2d3a4d !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
+                            defaultText="---"
+                            emptyText="No hay productos para editar."
+                            enableRowSelection={false}
+                            showToolbar={false}
+                            showTableResize={false}
+                            showColumnSettings={false}
+                            scroll={{ x: 1400 }}
                         />
 
                         <div className="button-container mt-2 d-flex flex-md-row flex-column justify-content-md-end justify-content-center">
@@ -331,5 +311,4 @@ export const EditDeliveryOrder = () => {
     )
 
 }
-
 

@@ -1,6 +1,5 @@
 ﻿import {useEffect, useRef, useState} from "react";
 import {useNavigate, useOutletContext} from "react-router-dom";
-import { DataGrid } from "@mui/x-data-grid";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FaFileAlt, FaSave, FaStepBackward } from "react-icons/fa";
 import { SectionHeader } from "../../../../shared/section_header/SectionHeader";
@@ -23,6 +22,7 @@ import {supplierServices} from "../../../../../../helpers/services/SupplierServi
 import { ResponseStatusEnum, RolesEnum } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
 import {filesServices} from "../../../../../../helpers/services/FilesServices";
+import { SmartTable } from "../../../../../../shared/ui/smart-table";
 
 //
 const canShowSelect = [
@@ -45,7 +45,7 @@ export const CreateCollectionAccount = () => {
     const [selectedAccountTypeId, setSelectedAccountTypeId] = useState("");
 
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -59,14 +59,14 @@ export const CreateCollectionAccount = () => {
     const loadRef = useRef(false);
 
     const statusCollectionAccountColumns = [
-        { field: "id", headerName: "N° Entrega", flex: 0.8 },
-        { field: "cub_id", headerName: "Cub", flex: 0.4 },
-        { field: "name", headerName: "Beneficiario", flex: 2.5 },
-        { field: "identification", headerName: "Identificación", flex: 1 },
-        { field: "date", headerName: "Fecha", flex: 0.6 },
-        { field: "unid", headerName: "Productos", flex: 0.6 },
-        { field: "amount", headerName: "Cantidad de Productos", flex: 1.2 },
-        { field: "amount_of_money", headerName: "Valor", flex: 1 },
+        { title: "N° Entrega", dataIndex: "id", key: "id", width: 120 },
+        { title: "Cub", dataIndex: "cub_id", key: "cub_id", width: 110 },
+        { title: "Beneficiario", dataIndex: "name", key: "name", width: 320 },
+        { title: "Identificación", dataIndex: "identification", key: "identification", width: 160 },
+        { title: "Fecha", dataIndex: "date", key: "date", width: 140 },
+        { title: "Productos", dataIndex: "unid", key: "unid", width: 120 },
+        { title: "Cantidad de Productos", dataIndex: "amount", key: "amount", width: 180 },
+        { title: "Valor", dataIndex: "amount_of_money", key: "amount_of_money", width: 160 },
     ];
 
     //Carga catálogo (activos) una sola vez
@@ -208,8 +208,8 @@ export const CreateCollectionAccount = () => {
         });
     };
 
-    const handleSelectionChange = (newSelection) => {
-        setSelectedIds(newSelection);
+    const handleSelectionChange = (selectedKeys) => {
+        setSelectedIds(selectedKeys);
     };
 
     const handleSaveDeliveries = async () => {
@@ -300,7 +300,7 @@ export const CreateCollectionAccount = () => {
 
     useEffect(() => {
         if(isSupplier) {
-            getApprovedDeliveries(page + 1, pageSize, userAuth.id);
+            getApprovedDeliveries(page, pageSize, userAuth.id);
         }
     }, [page, pageSize]);
 
@@ -444,46 +444,27 @@ export const CreateCollectionAccount = () => {
                         )}
 
                     <div style={{ height: 500, width: "100%" }}>
-                        <DataGrid
-                            checkboxSelection
-                            rows={dataTable}
+                        <SmartTable
+                            rowKey="id"
                             columns={statusCollectionAccountColumns}
+                            dataSource={dataTable}
                             loading={loading}
-                            paginationMode="server"
-                            rowCount={rowCount}
-                            pageSizeOptions={[50, 100]}
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={({ page, pageSize }) => {
-                                setPage(page);
-                                setPageSize(pageSize);
+                            total={rowCount}
+                            currentPage={page}
+                            defaultPageSize={pageSize}
+                            pageSizeOptions={["50", "100"]}
+                            onPageChange={(nextPage, nextPageSize) => {
+                                setPage(nextPage);
+                                setPageSize(nextPageSize);
                             }}
-                            onRowSelectionModelChange={handleSelectionChange}
-                            sx={{
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#2d3a4d",
-                                    color: "white",
-                                    fontSize: "14px",
-                                },
-                                "& .MuiDataGrid-columnHeader": {
-                                    textAlign: "center",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                },
-                                "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                    backgroundColor: "#2d3a4d !important",
-                                    color: "white !important",
-                                },
-                                "& .MuiDataGrid-cell": {
-                                    fontSize: "14px",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    display: "flex",
-                                },
-                                "& .MuiDataGrid-row:hover": {
-                                    backgroundColor: "#E8F5E9",
-                                },
-                            }}
+                            onRowSelectionChange={handleSelectionChange}
+                            defaultText="---"
+                            emptyText="No hay entregas disponibles."
+                            enableRowSelection
+                            showToolbar={false}
+                            showTableResize={false}
+                            showColumnSettings={false}
+                            scroll={{ x: 1500 }}
                         />
                     </div>
 
@@ -506,7 +487,6 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
-
 
 
 

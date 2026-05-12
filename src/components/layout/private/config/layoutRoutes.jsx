@@ -26,6 +26,10 @@ export const privateLayoutRoutes = [
     contentMode: "fluid",
   },
   {
+    path: "/admin/order-report",
+    contentMode: "fluid",
+  },
+  {
     path: "/admin/list-products-by-convocation",
     contentMode: "fluid",
   },

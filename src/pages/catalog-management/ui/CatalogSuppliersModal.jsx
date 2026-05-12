@@ -1,6 +1,7 @@
-import { Button, Table, Typography } from "antd";
+import { Button, Typography } from "antd";
 import styled from "@emotion/styled";
 import { Modal } from "../../../shared/ui/modal";
+import { SmartTable } from "../../../shared/ui/smart-table";
 import { suppliersModalColumns } from "../model/suppliersModalColumns";
 
 export const CatalogSuppliersModal = ({ isOpen, onClose, dataSource }) => {
@@ -14,12 +15,17 @@ export const CatalogSuppliersModal = ({ isOpen, onClose, dataSource }) => {
       footer={<Button onClick={onClose}>Cerrar</Button>}
       title={<ModalTitle level={5}>Proveedores</ModalTitle>}
     >
-      <Table
+      <SmartTable
+        rowKey="index"
         columns={suppliersModalColumns}
         dataSource={dataSource}
-        pagination={false}
-        locale={{ emptyText: "No hay proveedores registrados." }}
-        size="small"
+        defaultText="---"
+        emptyText="No hay proveedores registrados."
+        showToolbar={false}
+        showPagination={false}
+        enableRowSelection={false}
+        showColumnSettings={false}
+        showTableResize={false}
         scroll={{ x: 520 }}
       />
     </Modal>

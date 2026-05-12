@@ -95,7 +95,10 @@ export const Sidebar = ({
   const isActive = (path) => {
     if (!path) return false;
     if (path === "/" && (location.pathname === "/" || location.pathname === "/admin")) return true;
-    return location.pathname.startsWith(path) && path !== "/";
+    return (
+      path !== "/" &&
+      (location.pathname === path || location.pathname.startsWith(`${path}/`))
+    );
   };
 
   return (

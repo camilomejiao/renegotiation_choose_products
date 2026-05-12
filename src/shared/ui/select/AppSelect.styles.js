@@ -4,10 +4,12 @@ import { CONTROL_HEIGHT } from "../lib/controlMetrics";
 
 export const SelectWrapper = styled.div`
   width: 100%;
+  min-width: 0;
 `;
 
 export const StyledSelect = styled(Select)`
   width: 100%;
+  min-width: 0;
   background: #ffffff;
   border-radius: 8px;
 
@@ -26,11 +28,13 @@ export const StyledSelect = styled(Select)`
   .ant-select-selection-wrap {
     display: flex;
     align-items: center;
+    min-width: 0;
   }
 
   .ant-select-selection-search {
     display: flex;
     align-items: center;
+    min-width: 0;
   }
 
   .ant-select-selection-search-input {
@@ -76,6 +80,17 @@ export const StyledSelect = styled(Select)`
   .ant-select-selection-item {
     font-weight: 600;
     line-height: ${CONTROL_HEIGHT}px !important;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ant-select-selection-placeholder {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &.ant-select-disabled .ant-select-selector {

@@ -27,6 +27,14 @@ const variantStyles = {
     hoverBorder: "#157347",
     hoverColor: "#ffffff",
   },
+  confirmSuccess: {
+    background: "#389e0d",
+    border: "#389e0d",
+    color: "#ffffff",
+    hoverBackground: "#52c41a",
+    hoverBorder: "#52c41a",
+    hoverColor: "#ffffff",
+  },
   ghost: {
     background: "transparent",
     border: "#cbd5e1",
@@ -34,6 +42,14 @@ const variantStyles = {
     hoverBackground: "#eff6ff",
     hoverBorder: "#93c5fd",
     hoverColor: "#0f172a",
+  },
+  danger: {
+    background: "#ffffff",
+    border: "#dc2626",
+    color: "#dc2626",
+    hoverBackground: "#fef2f2",
+    hoverBorder: "#b91c1c",
+    hoverColor: "#b91c1c",
   },
 };
 

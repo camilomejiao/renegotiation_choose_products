@@ -18,7 +18,10 @@ import {
 export const SmartTableToolbar = ({
   leftToolbar,
   toolbarExtensions,
+  toolbarExtensionsPosition = "right",
   reload,
+  reloadPosition = "right",
+  showReload = true,
   showTableResize,
   tableSize,
   setTableSize,
@@ -35,18 +38,41 @@ export const SmartTableToolbar = ({
   setViewMode,
   showViewToggle,
 }) => {
+  const renderReloadButton = () => (
+    <Button type="text" icon={<ReloadOutlined />} onClick={reload}>
+      Recargar
+    </Button>
+  );
+
+  const renderToolbarExtensions = () => toolbarExtensions;
+
   return (
     <ToolbarRow>
       <LeftToolbar>
-        {leftToolbar ? leftToolbar : <EmptySpace />}
+        {leftToolbar ||
+        toolbarExtensionsPosition === "left" ||
+        (showReload && reloadPosition === "left") ? (
+          <>
+            {leftToolbar}
+            {toolbarExtensionsPosition === "left"
+              ? renderToolbarExtensions()
+              : null}
+            {showReload && reloadPosition === "left"
+              ? renderReloadButton()
+              : null}
+          </>
+        ) : (
+          <EmptySpace />
+        )}
       </LeftToolbar>
 
       <RightToolbar gap={4} align="center" wrap>
-        {toolbarExtensions}
-
-        <Button type="text" icon={<ReloadOutlined />} onClick={reload}>
-          Recargar
-        </Button>
+        {toolbarExtensionsPosition === "right"
+          ? renderToolbarExtensions()
+          : null}
+        {showReload && reloadPosition === "right"
+          ? renderReloadButton()
+          : null}
 
         {showTableResize && (
           <Segmented

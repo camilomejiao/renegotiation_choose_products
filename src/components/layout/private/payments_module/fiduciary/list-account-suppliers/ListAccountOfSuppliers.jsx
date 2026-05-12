@@ -1,4 +1,3 @@
-import { DataGrid } from "@mui/x-data-grid";
 import { Loading } from "../../../../shared/loading/Loading";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,13 +20,14 @@ import {
     ResponseStatusEnum
 } from "../../../../../../helpers/GlobalEnum";
 import AlertComponent from "../../../../../../helpers/alert/AlertComponent";
+import { SmartTable } from "../../../../../../shared/ui/smart-table";
 
 export const ListAccountOfSuppliers = () => {
 
     const navigate = useNavigate();
 
     const [dataTable, setDataTable] = useState([]);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [rowCount, setRowCount] = useState(0);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -35,18 +35,19 @@ export const ListAccountOfSuppliers = () => {
     const [informationLoadingText, setInformationLoadingText] = useState("");
 
     const [searchQuery, setSearchQuery] = useState("");
+    const [appliedSearch, setAppliedSearch] = useState("");
 
     const searchTimerRef = useRef(null);
 
     const columns = [
-        { field: "id", headerName: "ID", flex: 0.2 },
-        { field: "collection_account", headerName: "N° Cuenta de Cobro", flex: 0.3 },
-        { field: "status", headerName: "Estado", flex: 0.3 },
-        { field: "date", headerName: "Fecha Creación", flex: 0.3 },
-        { field: "supplier_nit", headerName: "Nit", flex: 0.4 },
-        { field: "supplier_name", headerName: "Proveedor", flex: 1.5 },
-        { field: "total", headerName: "Valor Total", flex: 0.5 },
-        { field: "user", headerName: "Registró", flex: 0.5 },
+        { title: "ID", dataIndex: "id", key: "id", width: 90 },
+        { title: "N° Cuenta de Cobro", dataIndex: "collection_account", key: "collection_account", width: 180 },
+        { title: "Estado", dataIndex: "status", key: "status", width: 160 },
+        { title: "Fecha Creación", dataIndex: "date", key: "date", width: 150 },
+        { title: "Nit", dataIndex: "supplier_nit", key: "supplier_nit", width: 140 },
+        { title: "Proveedor", dataIndex: "supplier_name", key: "supplier_name", width: 320 },
+        { title: "Valor Total", dataIndex: "total", key: "total", width: 160 },
+        { title: "Registró", dataIndex: "user", key: "user", width: 180 },
     ];
 
     const getAccountOfSuppliers = async (pageToFetch = 1, sizeToFetch = 100, search = "") => {
@@ -86,11 +87,8 @@ export const ListAccountOfSuppliers = () => {
     }
 
     //Manejar selección de filas
-    const handleSelectionChange = (newSelectionModel) => {
-        // Encuentra las filas seleccionadas, busca los id seleccionados para traer la informacion y luego la informacion que necesitamos
-        const selectedAccounts = dataTable
-            .filter((row) => newSelectionModel.includes(row.id))
-            .map((row) => row.collection_account);
+    const handleSelectionChange = (_selectedKeys, selectedRecords) => {
+        const selectedAccounts = selectedRecords.map((row) => row.collection_account);
         setSelectedIds(selectedAccounts);
     };
 
@@ -106,12 +104,10 @@ export const ListAccountOfSuppliers = () => {
         const query = (q || "").trim().toLowerCase();
         const canSearch = query.length === 0 || query.length >= 4;
         if (!canSearch) return; // no dispares la busqueda si 1-3 chars
-        // opcional: resetear página si usas paginación
-        setPage(0);
+        setPage(1);
 
-        // Si quieres mantener un pequeño debounce para evitar doble click/enter rápidos:
         searchTimerRef.current = setTimeout(() => {
-            getAccountOfSuppliers(1, pageSize, query);
+            setAppliedSearch(query);
         }, 150);
     };
 
@@ -187,13 +183,13 @@ export const ListAccountOfSuppliers = () => {
         }
     };
 
-    const handleRowClick = (params) => {
-        navigate(`/admin/fiduciary/collection-account-details/${params.id}`);
+    const handleRowClick = (record) => {
+        navigate(`/admin/fiduciary/collection-account-details/${record.id}`);
     }
 
     useEffect(() => {
-        getAccountOfSuppliers(page + 1, pageSize, "");
-    }, [page, pageSize]);
+        getAccountOfSuppliers(page, pageSize, appliedSearch);
+    }, [page, pageSize, appliedSearch]);
 
     return (
         <>
@@ -263,57 +259,30 @@ export const ListAccountOfSuppliers = () => {
                 {loading && <Loading fullScreen text={informationLoadingText} />}
 
                 <div style={{ height: 600, width: "100%" }}>
-                    <DataGrid
-                        rows={dataTable}
+                    <SmartTable
+                        rowKey="id"
                         columns={columns}
+                        dataSource={dataTable}
                         loading={loading}
-                        checkboxSelection
-                        onRowSelectionModelChange={handleSelectionChange}
-                        onRowClick={handleRowClick}
-                        paginationMode="server"
-                        rowCount={rowCount}
-                        pageSizeOptions={[25, 50, 100]}
-                        paginationModel={{ page, pageSize }}
-                        onPaginationModelChange={({ page, pageSize }) => {
-                            setPage(page);
-                            setPageSize(pageSize);
+                        total={rowCount}
+                        currentPage={page}
+                        defaultPageSize={pageSize}
+                        pageSizeOptions={["25", "50", "100"]}
+                        onPageChange={(nextPage, nextPageSize) => {
+                            setPage(nextPage);
+                            setPageSize(nextPageSize);
                         }}
-                        componentsProps={{
-                            columnHeader: {
-                                style: {
-                                    textAlign: "left",
-                                    fontWeight: "bold",
-                                    fontSize: "9px",
-                                    wordWrap: "break-word",
-                                },
-                            },
-                        }}
-                        sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#2d3a4d",
-                                color: "white",
-                                fontSize: "12px",
-                            },
-                            "& .MuiDataGrid-columnHeader": {
-                                textAlign: "center",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
-                            "& .MuiDataGrid-container--top [role=row], .MuiDataGrid-container--bottom [role=row]": {
-                                backgroundColor: "#2d3a4d !important",
-                                color: "white !important",
-                            },
-                            "& .MuiDataGrid-cell": {
-                                fontSize: "12px",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                display: "flex",
-                            },
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: "#E8F5E9",
-                            },
-                        }}
+                        onRowSelectionChange={handleSelectionChange}
+                        onRow={(record) => ({
+                            onClick: () => handleRowClick(record),
+                        })}
+                        defaultText="---"
+                        emptyText="No hay cuentas de cobro registradas."
+                        enableRowSelection
+                        showToolbar={false}
+                        showTableResize={false}
+                        showColumnSettings={false}
+                        scroll={{ x: 1600 }}
                     />
                 </div>
 
@@ -321,5 +290,4 @@ export const ListAccountOfSuppliers = () => {
         </>
     )
 }
-
 

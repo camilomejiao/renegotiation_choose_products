@@ -6,6 +6,7 @@ const { Title, Text } = Typography;
 export const Modal = ({
   title = <></>,
   subTitle = <></>,
+  titleCentered = false,
   isLoading = false,
   isOpen = false,
   onCloseModal = () => {},
@@ -22,9 +23,13 @@ export const Modal = ({
       $maxBodyHeight={maxBodyHeight}
       title={
         !isLoading && (
-          <HeaderSpace wrap direction="vertical">
-            <HeaderTitle level={4}>{title}</HeaderTitle>
-            <Text type="secondary">{subTitle}</Text>
+          <HeaderSpace wrap direction="vertical" $centered={titleCentered}>
+            <HeaderTitle level={4} $centered={titleCentered}>
+              {title}
+            </HeaderTitle>
+            <HeaderSubTitle type="secondary" $centered={titleCentered}>
+              {subTitle}
+            </HeaderSubTitle>
           </HeaderSpace>
         )
       }
@@ -49,11 +54,20 @@ export const Modal = ({
 const HeaderTitle = styled(Title)`
   && {
     margin: 0;
+    text-align: ${({ $centered }) => ($centered ? "center" : "left")};
+    width: 100%;
   }
 `;
 
 const HeaderSpace = styled(Space)`
   gap: 4px;
+  width: 100%;
+  align-items: ${({ $centered }) => ($centered ? "center" : "flex-start")};
+`;
+
+const HeaderSubTitle = styled(Text)`
+  width: 100%;
+  text-align: ${({ $centered }) => ($centered ? "center" : "left")};
 `;
 
 const StyledModal = styled(AntdModal)`

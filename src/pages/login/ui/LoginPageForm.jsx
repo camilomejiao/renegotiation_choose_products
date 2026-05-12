@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { AppButton } from "../../../shared/ui/button";
 import {
+  LoginFeedbackMessage,
   LoginFormLayout,
   LoginSubmitButton,
   LoginSubmitRow,
@@ -22,12 +23,27 @@ export const LoginPageForm = ({
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+      {({
+        values,
+        errors,
+        touched,
+        status,
+        isSubmitting,
+        setStatus,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+      }) => (
         <LoginFormLayout onSubmit={handleSubmit} noValidate>
           <LoginFormFields
             errors={errors}
             handleBlur={handleBlur}
-            handleChange={handleChange}
+            handleChange={(event) => {
+              if (status?.authError) {
+                setStatus(undefined);
+              }
+              handleChange(event);
+            }}
             showPassword={showPassword}
             touched={touched}
             values={values}
@@ -37,8 +53,15 @@ export const LoginPageForm = ({
 
           <LoginSubmitRow>
             <LoginSubmitButton>
-              <AppButton htmlType="submit">Iniciar Sesión</AppButton>
+              <AppButton htmlType="submit" loading={isSubmitting} disabled={isSubmitting}>
+                {isSubmitting ? "Accediendo..." : "Iniciar Sesión"}
+              </AppButton>
             </LoginSubmitButton>
+            {status?.authError && !isSubmitting && (
+              <LoginFeedbackMessage $tone="error" role="alert">
+                {status.authError}
+              </LoginFeedbackMessage>
+            )}
           </LoginSubmitRow>
         </LoginFormLayout>
       )}

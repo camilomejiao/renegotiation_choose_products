@@ -2,6 +2,8 @@ import styled from "@emotion/styled";
 import { Input } from "antd";
 import { CONTROL_HEIGHT } from "../lib/controlMetrics";
 
+const { TextArea } = Input;
+
 const inputStyles = `
   width: 100%;
   min-height: ${CONTROL_HEIGHT}px;
@@ -34,4 +36,11 @@ export const StyledInput = styled(Input)`
 
 export const StyledPasswordInput = styled(Input.Password)`
   ${inputStyles}
+`;
+
+export const StyledTextArea = styled(TextArea)`
+  ${inputStyles}
+  min-height: auto;
+  padding: 10px 12px;
+  resize: vertical;
 `;
