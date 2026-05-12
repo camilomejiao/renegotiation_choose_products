@@ -325,7 +325,10 @@ export const LeaderOrderApprovalModal = ({
               <Descriptions.Item label="CUB">
                 {request?.cubId || "---"}
               </Descriptions.Item>
-              <Descriptions.Item label="Beneficiario">
+              <Descriptions.Item label="Documento">
+                {request?.document || "---"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Titular">
                 {request?.beneficiary || "---"}
               </Descriptions.Item>
               <Descriptions.Item label="Proveedor">
