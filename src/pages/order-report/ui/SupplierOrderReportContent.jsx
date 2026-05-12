@@ -94,29 +94,25 @@ export const SupplierOrderReportContent = () => {
   const orderSearchExtension = useMemo(
     () => [
       <Row key="supplier-order-search" gutter={[12, 12]} style={{ width: "100%" }}>
-        <Col xs={24} sm={24} md={18} lg={8} xl={8} xxl={8}>
-          <Row gutter={[12, 12]}>
-            <Col xs={24} sm={16} md={16} lg={18} xl={18} xxl={18}>
-              <AppSearchInput
-                placeholder="Buscar por cédula/CUB/orden"
-                value={orderSearchValue}
-                onChange={handleOrderSearchValueChange}
-                onPressEnter={handleOrderFiltersSearch}
-                disabled={loading}
-                status={orderSearchError ? "error" : undefined}
-              />
-            </Col>
-            <Col xs={24} sm={8} md={8} lg={6} xl={6} xxl={6}>
-              <AppButton
-                icon={<SearchOutlined />}
-                onClick={handleOrderFiltersSearch}
-                loading={loading}
-                style={{ width: "25%" }}
-              >
-                Buscar
-              </AppButton>
-            </Col>
-          </Row>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
+          <AppSearchInput
+            placeholder="Buscar por cédula/CUB/orden"
+            value={orderSearchValue}
+            onChange={handleOrderSearchValueChange}
+            onPressEnter={handleOrderFiltersSearch}
+            disabled={loading}
+            status={orderSearchError ? "error" : undefined}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
+          <AppButton
+            icon={<SearchOutlined />}
+            onClick={handleOrderFiltersSearch}
+            loading={loading}
+            style={{ width: "25%" }}
+          >
+            Buscar
+          </AppButton>
         </Col>
       </Row>,
     ],

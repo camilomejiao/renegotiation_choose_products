@@ -21,7 +21,7 @@ export const LeaderOrderToolbar = ({
   return (
     <ToolbarCard bordered>
       <Row gutter={[12, 12]} style={{ marginBottom: 8 }}>
-        <Col xs={24} sm={24} md={12} lg={10} xl={6} xxl={6}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSearchInput
             placeholder="Buscar por cédula/CUB/orden"
             value={orderSearchValue}
@@ -32,20 +32,20 @@ export const LeaderOrderToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={6} lg={7} xl={4} xxl={4}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppButton
             icon={<SearchOutlined />}
             onClick={onSearch}
             loading={loading}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Buscar
           </AppButton>
         </Col>
       </Row>
 
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={24} md={12} lg={10} xl={6} xxl={6}>
+      <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={selectedSupplier}
             options={supplierOptions}
@@ -56,13 +56,13 @@ export const LeaderOrderToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={6} lg={7} xl={4} xxl={4}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppButton
             variant="secondary"
             icon={<ClearOutlined />}
             onClick={onClear}
             disabled={loading && !selectedSupplier && !orderSearchValue}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Limpiar
           </AppButton>
