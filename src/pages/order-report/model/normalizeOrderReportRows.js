@@ -8,6 +8,25 @@ const formatCurrencyValue = (value) => {
   return numericValue;
 };
 
+const normalizeCanCancelRequest = (row = {}) => {
+  const rawValue =
+    row?.eliminar ??
+    row?.puede_anular ??
+    row?.elegible_anulacion ??
+    row?.anulable ??
+    row?.can_cancel_request;
+
+  if (rawValue === undefined || rawValue === null) {
+    return true;
+  }
+
+  if (typeof rawValue === "string") {
+    return rawValue.trim().toLowerCase() !== "false";
+  }
+
+  return Boolean(rawValue);
+};
+
 export const normalizeOrderReportRows = (rows = []) =>
   rows.map((row) => ({
     id: row?.id,
@@ -17,10 +36,5 @@ export const normalizeOrderReportRows = (rows = []) =>
     cub_apellido: row?.cub?.apellido || "",
     valor_total: formatCurrencyValue(row?.valor_total),
     fecha_registro: row?.fecha_registro || "",
-    canCancelRequest:
-      row?.puede_anular ??
-      row?.elegible_anulacion ??
-      row?.anulable ??
-      row?.can_cancel_request ??
-      true,
+    canCancelRequest: normalizeCanCancelRequest(row),
   }));
