@@ -45,14 +45,13 @@ class PurchaseOrderServices {
 
     /**
      * Consulta solicitudes de aprobación para líderes.
-     * @param {Object} payload - Filtros y paginación de la consulta.
+     * @param {string} queryString - Query string ya serializado.
      * @returns {Promise<Response>} Promesa con la respuesta del servidor.
      */
-    getApprovalRequests(payload = {}) {
-        const url = this.buildUrl("solicitudes/aprobacion/consulta/");
+    getApprovalRequests(queryString = "") {
+        const url = this.buildUrl(`solicitudes/aprobacion/consulta/${queryString}`);
         return authTokenService.fetchWithAuth(url, {
-            method: "POST",
-            body: JSON.stringify(payload),
+            method: "GET",
         });
     }
 

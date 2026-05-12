@@ -36,6 +36,8 @@ export const LeaderOrderReportContent = () => {
     requestEmptyText,
     requestTableLoading,
     requestRows,
+    requestSearchError,
+    requestSearchValue,
     requestStatusOptions,
     requestTotal,
     requestTypeOptions,
@@ -63,6 +65,7 @@ export const LeaderOrderReportContent = () => {
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,
+    handleRequestSearchValueChange,
     handleRequestStatusChange,
     handleRequestTypeChange,
     handleSupplierChange,
@@ -111,7 +114,10 @@ export const LeaderOrderReportContent = () => {
           municipalityOptions={municipalityOptions}
           onMunicipalityChange={handleMunicipalityChange}
           onSearch={handleRequestFiltersSearch}
+          onSearchValueChange={handleRequestSearchValueChange}
           onClear={handleRequestFiltersClear}
+          requestSearchError={requestSearchError}
+          requestSearchValue={requestSearchValue}
         />
       </Col>
 

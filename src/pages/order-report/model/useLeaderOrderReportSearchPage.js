@@ -57,7 +57,6 @@ export const useLeaderOrderReportSearchPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const hasLoadedSupplierOptionsRef = useRef(false);
   const lastOrderSearchValueRef = useRef("");
-  const lastRequestSearchValueRef = useRef("");
   const [activeTab, setActiveTab] = useState("requests");
   const [loadingMode, setLoadingMode] = useState(null);
 
@@ -394,24 +393,45 @@ export const useLeaderOrderReportSearchPage = () => {
       return;
     }
 
-    const nextField =
-      selectedRequestSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
-    const normalizedValue = normalizeOrderSearchValue(requestSearchValue);
     const nextError = getOrderSearchError(
-      { field: nextField, value: normalizedValue },
+      {
+        field:
+          selectedRequestSearchAttribute?.value ||
+          DEFAULT_ORDER_SEARCH_OPTION.value,
+        value: normalizeOrderSearchValue(requestSearchValue),
+      },
       { allowEmpty: true }
     );
-    const didSearchValueChange =
-      lastRequestSearchValueRef.current !== requestSearchValue;
 
     setRequestSearchError(nextError || "");
-    lastRequestSearchValueRef.current = requestSearchValue;
+  }, [
+    activeTab,
+    requestSearchValue,
+    selectedRequestSearchAttribute,
+  ]);
 
-    if (!didSearchValueChange) {
-      return;
-    }
+  const runRequestSearch = useCallback(
+    ({
+      nextRequestType = selectedRequestType,
+      nextRequestStatus = selectedRequestStatus,
+      nextSupplier = selectedSupplier,
+      nextDepartment = selectedDepartment,
+      nextMunicipality = selectedMunicipality,
+    } = {}) => {
+      const nextField =
+        selectedRequestSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+      const normalizedValue = normalizeOrderSearchValue(requestSearchValue);
+      const nextError = getOrderSearchError(
+        { field: nextField, value: normalizedValue },
+        { allowEmpty: true }
+      );
 
-    if (!normalizedValue || nextError) {
+      setRequestSearchError(nextError || "");
+
+      if (nextError) {
+        return;
+      }
+
       if (requestPage !== 1) {
         setRequestPage(1);
       }
@@ -420,28 +440,61 @@ export const useLeaderOrderReportSearchPage = () => {
         setAppliedRequestSearchAttribute(nextField);
       }
 
-      if (appliedRequestSearchValue !== "") {
-        setAppliedRequestSearchValue("");
+      if (appliedRequestType !== nextRequestType) {
+        setAppliedRequestType(nextRequestType);
       }
 
-      return;
-    }
+      if (appliedRequestStatus !== nextRequestStatus) {
+        setAppliedRequestStatus(nextRequestStatus);
+      }
 
-    const timer = window.setTimeout(() => {
-      setRequestPage(1);
-      setAppliedRequestSearchAttribute(nextField);
-      setAppliedRequestSearchValue(normalizedValue);
-    }, ORDER_SEARCH_DEBOUNCE_MS);
+      if (appliedSupplier !== nextSupplier) {
+        setAppliedSupplier(nextSupplier);
+      }
 
-    return () => window.clearTimeout(timer);
-  }, [
-    activeTab,
-    appliedRequestSearchAttribute,
-    appliedRequestSearchValue,
-    requestPage,
-    requestSearchValue,
-    selectedRequestSearchAttribute,
-  ]);
+      if (appliedDepartment !== nextDepartment) {
+        setAppliedDepartment(nextDepartment);
+      }
+
+      if (appliedMunicipality !== nextMunicipality) {
+        setAppliedMunicipality(nextMunicipality);
+      }
+
+      if (appliedRequestSearchValue !== normalizedValue) {
+        setAppliedRequestSearchValue(normalizedValue);
+        return;
+      }
+
+      if (
+        requestPage === 1 &&
+        appliedRequestType === nextRequestType &&
+        appliedRequestStatus === nextRequestStatus &&
+        appliedSupplier === nextSupplier &&
+        appliedDepartment === nextDepartment &&
+        appliedMunicipality === nextMunicipality
+      ) {
+        loadLeaderRequests();
+      }
+    },
+    [
+      appliedDepartment,
+      appliedMunicipality,
+      appliedRequestSearchAttribute,
+      appliedRequestSearchValue,
+      appliedRequestStatus,
+      appliedRequestType,
+      appliedSupplier,
+      loadLeaderRequests,
+      requestPage,
+      requestSearchValue,
+      selectedDepartment,
+      selectedMunicipality,
+      selectedRequestSearchAttribute,
+      selectedRequestStatus,
+      selectedRequestType,
+      selectedSupplier,
+    ]
+  );
 
   const handleDepartmentChange = useCallback(
     async (option) => {
@@ -449,23 +502,18 @@ export const useLeaderOrderReportSearchPage = () => {
       setSelectedMunicipality(null);
       setAppliedMunicipality(null);
       await loadMunicipalities(option?.value);
+      runRequestSearch({
+        nextDepartment: option,
+        nextMunicipality: null,
+      });
     },
-    [loadMunicipalities]
+    [loadMunicipalities, runRequestSearch]
   );
 
   const handleRequestFiltersSearch = useCallback(() => {
-    setRequestPage(1);
-    setAppliedRequestType(selectedRequestType);
-    setAppliedRequestStatus(selectedRequestStatus);
-    setAppliedSupplier(selectedSupplier);
-    setAppliedDepartment(selectedDepartment);
-    setAppliedMunicipality(selectedMunicipality);
+    runRequestSearch();
   }, [
-    selectedDepartment,
-    selectedMunicipality,
-    selectedRequestStatus,
-    selectedRequestType,
-    selectedSupplier,
+    runRequestSearch,
   ]);
 
   const handleRequestFiltersClear = useCallback(() => {
@@ -479,6 +527,9 @@ export const useLeaderOrderReportSearchPage = () => {
     setAppliedSupplier(null);
     setAppliedDepartment(null);
     setAppliedMunicipality(null);
+    setRequestSearchValue("");
+    setRequestSearchError("");
+    setAppliedRequestSearchValue("");
     setMunicipalityOptions([]);
     setRequestPage(1);
     setRequestPageSize(REQUEST_PAGE_SIZE);
@@ -493,6 +544,38 @@ export const useLeaderOrderReportSearchPage = () => {
     setSelectedRequestSearchAttribute(option);
     setRequestSearchValue("");
   }, []);
+
+  const handleRequestTypeChange = useCallback(
+    (option) => {
+      setSelectedRequestType(option);
+      runRequestSearch({ nextRequestType: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleRequestStatusChange = useCallback(
+    (option) => {
+      setSelectedRequestStatus(option);
+      runRequestSearch({ nextRequestStatus: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleSupplierChange = useCallback(
+    (option) => {
+      setSelectedSupplier(option);
+      runRequestSearch({ nextSupplier: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleMunicipalityChange = useCallback(
+    (option) => {
+      setSelectedMunicipality(option);
+      runRequestSearch({ nextMunicipality: option });
+    },
+    [runRequestSearch]
+  );
 
   const handleOrderFiltersSearch = useCallback(() => {
     setOrderPage(1);
@@ -689,10 +772,10 @@ export const useLeaderOrderReportSearchPage = () => {
     handleRequestSearchAttributeChange,
     handleRequestSearchValueChange: (event) =>
       setRequestSearchValue(event.target.value),
-    handleRequestStatusChange: setSelectedRequestStatus,
-    handleRequestTypeChange: setSelectedRequestType,
-    handleSupplierChange: setSelectedSupplier,
-    handleMunicipalityChange: setSelectedMunicipality,
+    handleRequestStatusChange,
+    handleRequestTypeChange,
+    handleSupplierChange,
+    handleMunicipalityChange,
     handleApprovalCommentChange,
     handleViewRequest: setViewRequest,
     closeViewRequest: () => setViewRequest(null),

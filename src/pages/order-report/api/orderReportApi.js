@@ -72,6 +72,60 @@ const buildOrderRequestQuery = ({
   return `?${params.toString()}`;
 };
 
+const buildLeaderApprovalRequestQuery = ({
+  page,
+  pageSize,
+  requestType = "",
+  requestStatus = "",
+  supplierId = "",
+  departmentId = "",
+  municipalityId = "",
+  searchValue = "",
+}) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(pageSize),
+  });
+
+  if (requestType !== "" && requestType !== null && requestType !== undefined) {
+    params.set("tipo_solicitud", String(Number(requestType)));
+  }
+
+  if (
+    requestStatus !== "" &&
+    requestStatus !== null &&
+    requestStatus !== undefined
+  ) {
+    params.set("estado", String(Number(requestStatus)));
+  }
+
+  if (supplierId !== "" && supplierId !== null && supplierId !== undefined) {
+    params.set("proveedor", String(Number(supplierId)));
+  }
+
+  if (
+    departmentId !== "" &&
+    departmentId !== null &&
+    departmentId !== undefined
+  ) {
+    params.set("departamento", String(Number(departmentId)));
+  }
+
+  if (
+    municipalityId !== "" &&
+    municipalityId !== null &&
+    municipalityId !== undefined
+  ) {
+    params.set("municipio", String(Number(municipalityId)));
+  }
+
+  if (searchValue) {
+    params.set("search", searchValue);
+  }
+
+  return `?${params.toString()}`;
+};
+
 export const getOrderReportPage = async ({
   page = 1,
   pageSize = 100,
@@ -151,58 +205,20 @@ export const getLeaderOrderApprovalRequestsPage = async ({
   supplierId = "",
   departmentId = "",
   municipalityId = "",
-  searchField = "",
   searchValue = "",
 }) => {
-  const payload = {};
-
-  if (requestType !== "" && requestType !== null && requestType !== undefined) {
-    payload.tipo_solicitud = Number(requestType);
-  }
-
-  if (
-    requestStatus !== "" &&
-    requestStatus !== null &&
-    requestStatus !== undefined
-  ) {
-    payload.estado = Number(requestStatus);
-  }
-
-  if (supplierId !== "" && supplierId !== null && supplierId !== undefined) {
-    payload.proveedor = Number(supplierId);
-  }
-
-  if (
-    departmentId !== "" &&
-    departmentId !== null &&
-    departmentId !== undefined
-  ) {
-    payload.departamento = Number(departmentId);
-  }
-
-  if (
-    municipalityId !== "" &&
-    municipalityId !== null &&
-    municipalityId !== undefined
-  ) {
-    payload.municipio = Number(municipalityId);
-  }
-
-  const NUMERIC_SEARCH_FIELDS = ["cub", "orden", "cedula"];
-
-  if (searchField && searchValue) {
-    payload[searchField] = NUMERIC_SEARCH_FIELDS.includes(searchField)
-      ? Number(searchValue)
-      : searchValue;
-  }
-
-  const normalizedPage = Number(page);
-  const normalizedPageSize = Number(pageSize);
-
-  payload.page = normalizedPage;
-  payload.size = normalizedPageSize;
-
-  const response = await purchaseOrderServices.getApprovalRequests(payload);
+  const response = await purchaseOrderServices.getApprovalRequests(
+    buildLeaderApprovalRequestQuery({
+      page,
+      pageSize,
+      requestType,
+      requestStatus,
+      supplierId,
+      departmentId,
+      municipalityId,
+      searchValue,
+    })
+  );
 
   if (response?.status !== ResponseStatusEnum.OK) {
     throw response;
