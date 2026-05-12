@@ -40,6 +40,8 @@ export const SupplierOrderReportContent = () => {
     requestCancelErrorMessage,
     requestCancelModalView,
     requestCancelObservation,
+    requestSearchError,
+    requestSearchValue,
     requestTypeOptions,
     requestStatusOptions,
     requestsEmptyText,
@@ -66,9 +68,10 @@ export const SupplierOrderReportContent = () => {
     handleRequestCancelObservationChange,
     handleRequestCancelReturn,
     handleCancellationReasonChange,
+    handleRequestSearch,
     handleRequestTypeChange,
     handleRequestStatusChange,
-    handleRequestFiltersSearch,
+    handleRequestSearchValueChange,
     handleRequestFiltersClear,
     handleCancelRequest,
     closeDeleteModal,
@@ -95,7 +98,7 @@ export const SupplierOrderReportContent = () => {
           <Row gutter={[12, 12]}>
             <Col xs={24} sm={16} md={16} lg={17} xl={17} xxl={17}>
               <AppSearchInput
-                placeholder="Buscar por cedula/CUB/orden"
+                placeholder="Buscar por cédula/CUB/orden"
                 value={orderSearchValue}
                 onChange={handleOrderSearchValueChange}
                 onPressEnter={handleOrderFiltersSearch}
@@ -174,9 +177,12 @@ export const SupplierOrderReportContent = () => {
         <OrderRequestToolbar
           loading={loading}
           onClear={handleRequestFiltersClear}
-          onSearch={handleRequestFiltersSearch}
+          onSearch={handleRequestSearch}
+          onSearchValueChange={handleRequestSearchValueChange}
           onStatusChange={handleRequestStatusChange}
           onTypeChange={handleRequestTypeChange}
+          requestSearchError={requestSearchError}
+          requestSearchValue={requestSearchValue}
           requestStatus={selectedRequestStatus}
           requestStatusOptions={requestStatusOptions}
           requestType={selectedRequestType}
