@@ -10,10 +10,25 @@ const STATUS_COLORS = {
   Cancelado: "default",
 };
 
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+
 export const getLeaderOrderRequestColumns = ({
   onManageRequest,
   onViewRequest,
 }) => [
+  {
+    title: "TIPO DE SOLICITUD",
+    dataIndex: "requestType",
+    key: "requestType",
+    width: 220,
+    align: "center",
+    render: (value) => value || "---",
+  },
   {
     title: "ORDEN DE COMPRA",
     dataIndex: "orderId",
@@ -41,6 +56,14 @@ export const getLeaderOrderRequestColumns = ({
     key: "supplier",
     width: 240,
     align: "center",
+  },
+  {
+    title: "TOTAL ORDEN",
+    dataIndex: "totalOrder",
+    key: "totalOrder",
+    width: 180,
+    align: "center",
+    render: (value) => formatCurrency(value),
   },
   {
     title: "ESTADO DE APROBACIÓN",

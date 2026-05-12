@@ -49,6 +49,16 @@ const buildBeneficiaryName = (beneficiary = {}) => {
   return fullName || "";
 };
 
+const formatCurrencyValue = (value) => {
+  const numericValue = Number.parseFloat(value);
+
+  if (Number.isNaN(numericValue)) {
+    return 0;
+  }
+
+  return numericValue;
+};
+
 export const normalizeLeaderOrderRequestRows = (rows = []) =>
   rows.map((row) => {
     const order = row?.orden ?? row?.order ?? {};
@@ -73,8 +83,7 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
     const requestType =
       row?.tipo_solicitud ??
       row?.request_type ??
-      row?.motivo_solicitud ??
-      "ANULACION_ORDEN_COMPRA";
+      "";
     const requestReason =
       row?.motivo_solicitud ??
       row?.observacion ??
@@ -128,6 +137,13 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
         row?.municipio ??
         row?.municipality_name ??
         "",
+      totalOrder: formatCurrencyValue(
+        row?.total_orden ??
+          row?.totalOrder ??
+          order?.valor_total ??
+          row?.valor_total ??
+          0
+      ),
       approvalStatus,
       approvalDate:
         formatDateToDayMonthYear(

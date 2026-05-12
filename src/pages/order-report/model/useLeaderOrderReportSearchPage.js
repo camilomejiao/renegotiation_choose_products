@@ -578,13 +578,57 @@ export const useLeaderOrderReportSearchPage = () => {
   );
 
   const handleOrderFiltersSearch = useCallback(() => {
-    setOrderPage(1);
-    setAppliedSupplier(selectedSupplier);
-  }, [selectedSupplier]);
+    const nextField =
+      selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+    const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+    const nextError = getOrderSearchError(
+      { field: nextField, value: normalizedValue },
+      { allowEmpty: true }
+    );
+
+    setOrderSearchError(nextError || "");
+
+    if (nextError) {
+      return;
+    }
+
+    if (orderPage !== 1) {
+      setOrderPage(1);
+    }
+
+    if (appliedSupplier !== selectedSupplier) {
+      setAppliedSupplier(selectedSupplier);
+    }
+
+    if (appliedOrderSearchAttribute !== nextField) {
+      setAppliedOrderSearchAttribute(nextField);
+    }
+
+    if (appliedOrderSearchValue !== normalizedValue) {
+      setAppliedOrderSearchValue(normalizedValue);
+      return;
+    }
+
+    if (orderPage === 1 && appliedSupplier === selectedSupplier) {
+      loadLeaderOrders();
+    }
+  }, [
+    appliedOrderSearchAttribute,
+    appliedOrderSearchValue,
+    appliedSupplier,
+    loadLeaderOrders,
+    orderPage,
+    orderSearchValue,
+    selectedOrderSearchAttribute,
+    selectedSupplier,
+  ]);
 
   const handleOrderFiltersClear = useCallback(() => {
     setSelectedSupplier(null);
     setAppliedSupplier(null);
+    setOrderSearchValue("");
+    setOrderSearchError("");
+    setAppliedOrderSearchValue("");
     setOrderPage(1);
     setOrderPageSize(ORDER_PAGE_SIZE);
   }, []);

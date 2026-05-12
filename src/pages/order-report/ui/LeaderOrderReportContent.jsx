@@ -30,6 +30,8 @@ export const LeaderOrderReportContent = () => {
     orderPage,
     orderPageSize,
     orderRows,
+    orderSearchError,
+    orderSearchValue,
     orderTotal,
     requestPage,
     requestPageSize,
@@ -60,6 +62,7 @@ export const LeaderOrderReportContent = () => {
     handleManageRequest,
     handleOrderFiltersClear,
     handleOrderFiltersSearch,
+    handleOrderSearchValueChange,
     handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
@@ -160,8 +163,11 @@ export const LeaderOrderReportContent = () => {
       <Col span={24}>
         <LeaderOrderToolbar
           loading={loading}
+          orderSearchError={orderSearchError}
+          orderSearchValue={orderSearchValue}
           selectedSupplier={selectedSupplier}
           supplierOptions={supplierOptions}
+          onSearchValueChange={handleOrderSearchValueChange}
           onSupplierChange={handleOrderSupplierChange}
           onSearch={handleOrderFiltersSearch}
           onClear={handleOrderFiltersClear}

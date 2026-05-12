@@ -49,7 +49,7 @@ export const LeaderOrderRequestToolbar = ({
             icon={<SearchOutlined />}
             onClick={onSearch}
             loading={loading}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Buscar
           </AppButton>
@@ -116,7 +116,7 @@ export const LeaderOrderRequestToolbar = ({
             icon={<ClearOutlined />}
             onClick={onClear}
             disabled={loading}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Limpiar
           </AppButton>

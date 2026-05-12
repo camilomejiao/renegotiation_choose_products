@@ -39,7 +39,7 @@ export const OrderRequestToolbar = ({
             icon={<SearchOutlined />}
             onClick={onSearch}
             loading={loading}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Buscar
           </AppButton>
@@ -73,7 +73,7 @@ export const OrderRequestToolbar = ({
             icon={<ClearOutlined />}
             onClick={onClear}
             disabled={loading}
-            style={{ width: "100%" }}
+            style={{ width: "25%" }}
           >
             Limpiar
           </AppButton>
