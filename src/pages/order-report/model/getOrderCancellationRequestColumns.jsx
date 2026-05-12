@@ -19,6 +19,14 @@ const formatCurrency = (value) =>
 
 export const getOrderCancellationRequestColumns = ({onCancelRequest}) => [
     {
+        title: "TIPO DE SOLICITUD",
+        dataIndex: "requestType",
+        key: "requestType",
+        width: 220,
+        align: "center",
+        render: (value) => value || "---",
+    },
+    {
         title: "ORDEN ID",
         dataIndex: "orderId",
         key: "orderId",

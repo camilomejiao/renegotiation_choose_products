@@ -59,7 +59,7 @@ export const normalizeOrderCancellationRequestRows = (rows = []) =>
       requestType:
         row?.tipo_solicitud ??
         row?.request_type ??
-        "ANULACION_ORDEN_COMPRA",
+        "",
       requestTypeLabel:
         row?.tipo_solicitud_label ??
         row?.request_type_label ??
