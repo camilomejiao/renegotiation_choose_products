@@ -122,6 +122,12 @@ export const normalizeLeaderOrderRequestRows = (rows = []) =>
         row?.cub_id ||
         row?.CUB ||
         "",
+      document:
+        row?.documento ??
+        row?.document ??
+        cub?.identificacion ??
+        order?.identificacion ??
+        "",
       beneficiary: buildBeneficiaryName(beneficiary),
       supplier:
         (typeof supplier === "string" ? supplier : supplier?.nombre) ??

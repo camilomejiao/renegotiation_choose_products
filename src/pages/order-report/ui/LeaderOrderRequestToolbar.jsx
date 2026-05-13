@@ -33,7 +33,7 @@ export const LeaderOrderRequestToolbar = ({
   return (
     <ToolbarCard bordered>
       <Row gutter={[12, 12]} style={{ marginBottom: 8 }}>
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSearchInput
             placeholder="Buscar por cédula/CUB/orden"
             value={requestSearchValue}
@@ -44,7 +44,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppButton
             icon={<SearchOutlined />}
             onClick={onSearch}
@@ -57,7 +57,7 @@ export const LeaderOrderRequestToolbar = ({
       </Row>
 
       <Row gutter={[12, 12]} style={{ marginTop: 12, marginBottom: 8 }}>
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={requestType}
             options={requestTypeOptions}
@@ -67,7 +67,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={24} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={requestStatus}
             options={requestStatusOptions}
@@ -77,7 +77,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={selectedSupplier}
             options={supplierOptions}
@@ -90,7 +90,7 @@ export const LeaderOrderRequestToolbar = ({
       </Row>
 
       <Row gutter={[12, 12]} style={{ margin: "25px -6px 8px" }}>
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={selectedDepartment}
             options={departmentOptions}
@@ -100,7 +100,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppSelect
             value={selectedMunicipality}
             options={municipalityOptions}
@@ -110,7 +110,7 @@ export const LeaderOrderRequestToolbar = ({
           />
         </Col>
 
-        <Col xs={24} sm={12} md={8} lg={8} xl={8} xxl={8}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
           <AppButton
             variant="secondary"
             icon={<ClearOutlined />}

@@ -44,11 +44,20 @@ export const getLeaderOrderRequestColumns = ({
     align: "center",
   },
   {
+    title: "DOCUMENTO",
+    dataIndex: "document",
+    key: "document",
+    width: 180,
+    align: "center",
+    render: (value) => value || "---",
+  },
+  {
     title: "TITULAR",
     dataIndex: "beneficiary",
     key: "beneficiary",
     width: 260,
     align: "center",
+    render: (value) => value || "---",
   },
   {
     title: "PROVEEDOR",
@@ -56,6 +65,7 @@ export const getLeaderOrderRequestColumns = ({
     key: "supplier",
     width: 240,
     align: "center",
+    render: (value) => value || "---",
   },
   {
     title: "TOTAL ORDEN",

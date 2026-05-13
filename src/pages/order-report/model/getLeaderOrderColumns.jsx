@@ -33,6 +33,7 @@ export const getLeaderOrderColumns = () => [
     key: "beneficiary",
     width: 260,
     align: "center",
+    render: (value) => value || "---",
   },
   {
     title: "PROVEEDOR",
