@@ -8,6 +8,12 @@ const formatCurrencyValue = (value) => {
   return numericValue;
 };
 
+const buildCubHolderName = (cub = {}) =>
+  [cub?.nombre, cub?.apellido]
+    .filter((value) => typeof value === "string" && value.trim())
+    .map((value) => value.trim())
+    .join(" ");
+
 const normalizeCanCancelRequest = (row = {}) => {
   const rawValue =
     row?.eliminar ??
@@ -32,6 +38,7 @@ export const normalizeOrderReportRows = (rows = []) =>
     id: row?.id,
     cub_id: row?.cub?.cub_id || "",
     cub_identificacion: row?.cub?.identificacion || "",
+    titular: buildCubHolderName(row?.cub),
     cub_nombre: row?.cub?.nombre || "",
     cub_apellido: row?.cub?.apellido || "",
     valor_total: formatCurrencyValue(row?.valor_total),
