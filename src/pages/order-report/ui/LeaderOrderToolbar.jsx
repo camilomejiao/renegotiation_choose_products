@@ -26,7 +26,6 @@ export const LeaderOrderToolbar = ({
             placeholder="Buscar por cédula/CUB/orden"
             value={orderSearchValue}
             onChange={onSearchValueChange}
-            onPressEnter={onSearch}
             disabled={loading}
             status={orderSearchError ? "error" : undefined}
           />
