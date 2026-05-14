@@ -26,7 +26,9 @@ const buildOrderReportQuery = ({
     params.set("proveedor", supplierId);
   }
 
-  appendSearchParam(params, { searchField, searchValue });
+  if (searchValue) {
+    params.set(searchField || "search", searchValue);
+  }
 
   return `?${params.toString()}`;
 };

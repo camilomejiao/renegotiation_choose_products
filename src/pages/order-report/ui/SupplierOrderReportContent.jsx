@@ -99,7 +99,6 @@ export const SupplierOrderReportContent = () => {
             placeholder="Buscar por cédula/CUB/orden"
             value={orderSearchValue}
             onChange={handleOrderSearchValueChange}
-            onPressEnter={handleOrderFiltersSearch}
             disabled={loading}
             status={orderSearchError ? "error" : undefined}
           />

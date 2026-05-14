@@ -15,7 +15,6 @@ import {
   DEFAULT_ORDER_SEARCH_OPTION,
   getOrderSearchError,
   normalizeOrderSearchValue,
-  ORDER_SEARCH_DEBOUNCE_MS,
   ORDER_SEARCH_OPTIONS,
 } from "./orderSearch";
 import { normalizeLeaderOrderRequestRows } from "./normalizeLeaderOrderRequestRows";
@@ -56,7 +55,6 @@ const normalizeLeaderSupplierOptions = (rows = []) =>
 export const useLeaderOrderReportSearchPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const hasLoadedSupplierOptionsRef = useRef(false);
-  const lastOrderSearchValueRef = useRef("");
   const [activeTab, setActiveTab] = useState("requests");
   const [loadingMode, setLoadingMode] = useState(null);
 
@@ -79,13 +77,15 @@ export const useLeaderOrderReportSearchPage = () => {
 
   const [selectedRequestType, setSelectedRequestType] = useState(null);
   const [selectedRequestStatus, setSelectedRequestStatus] = useState(null);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedRequestSupplier, setSelectedRequestSupplier] = useState(null);
+  const [selectedOrderSupplier, setSelectedOrderSupplier] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedMunicipality, setSelectedMunicipality] = useState(null);
 
   const [appliedRequestType, setAppliedRequestType] = useState(null);
   const [appliedRequestStatus, setAppliedRequestStatus] = useState(null);
-  const [appliedSupplier, setAppliedSupplier] = useState(null);
+  const [appliedRequestSupplier, setAppliedRequestSupplier] = useState(null);
+  const [appliedOrderSupplier, setAppliedOrderSupplier] = useState(null);
   const [appliedDepartment, setAppliedDepartment] = useState(null);
   const [appliedMunicipality, setAppliedMunicipality] = useState(null);
 
@@ -228,7 +228,7 @@ export const useLeaderOrderReportSearchPage = () => {
         pageSize: requestPageSize,
         requestType: appliedRequestType?.value || "",
         requestStatus: appliedRequestStatus?.value || "",
-        supplierId: appliedSupplier?.value || "",
+        supplierId: appliedRequestSupplier?.value || "",
         departmentId: appliedDepartment?.value || "",
         municipalityId: appliedMunicipality?.value || "",
         searchField: appliedRequestSearchAttribute,
@@ -259,7 +259,7 @@ export const useLeaderOrderReportSearchPage = () => {
     appliedRequestSearchValue,
     appliedRequestStatus,
     appliedRequestType,
-    appliedSupplier,
+    appliedRequestSupplier,
     requestPage,
     requestPageSize,
   ]);
@@ -271,8 +271,7 @@ export const useLeaderOrderReportSearchPage = () => {
       const data = await getOrderReportPage({
         page: orderPage,
         pageSize: orderPageSize,
-        supplierId: appliedSupplier?.value || "",
-        searchField: appliedOrderSearchAttribute,
+        supplierId: appliedOrderSupplier?.value || "",
         searchValue: appliedOrderSearchValue,
       });
 
@@ -292,7 +291,7 @@ export const useLeaderOrderReportSearchPage = () => {
   }, [
     appliedOrderSearchAttribute,
     appliedOrderSearchValue,
-    appliedSupplier,
+    appliedOrderSupplier,
     orderPage,
     orderPageSize,
   ]);
@@ -346,44 +345,10 @@ export const useLeaderOrderReportSearchPage = () => {
       { field: nextField, value: normalizedValue },
       { allowEmpty: true }
     );
-    const didSearchValueChange =
-      lastOrderSearchValueRef.current !== orderSearchValue;
 
     setOrderSearchError(nextError || "");
-    lastOrderSearchValueRef.current = orderSearchValue;
-
-    if (!didSearchValueChange) {
-      return;
-    }
-
-    if (!normalizedValue || nextError) {
-      if (orderPage !== 1) {
-        setOrderPage(1);
-      }
-
-      if (appliedOrderSearchAttribute !== nextField) {
-        setAppliedOrderSearchAttribute(nextField);
-      }
-
-      if (appliedOrderSearchValue !== "") {
-        setAppliedOrderSearchValue("");
-      }
-
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setOrderPage(1);
-      setAppliedOrderSearchAttribute(nextField);
-      setAppliedOrderSearchValue(normalizedValue);
-    }, ORDER_SEARCH_DEBOUNCE_MS);
-
-    return () => window.clearTimeout(timer);
   }, [
     activeTab,
-    appliedOrderSearchAttribute,
-    appliedOrderSearchValue,
-    orderPage,
     orderSearchValue,
     selectedOrderSearchAttribute,
   ]);
@@ -414,7 +379,7 @@ export const useLeaderOrderReportSearchPage = () => {
     ({
       nextRequestType = selectedRequestType,
       nextRequestStatus = selectedRequestStatus,
-      nextSupplier = selectedSupplier,
+      nextSupplier = selectedRequestSupplier,
       nextDepartment = selectedDepartment,
       nextMunicipality = selectedMunicipality,
     } = {}) => {
@@ -448,8 +413,8 @@ export const useLeaderOrderReportSearchPage = () => {
         setAppliedRequestStatus(nextRequestStatus);
       }
 
-      if (appliedSupplier !== nextSupplier) {
-        setAppliedSupplier(nextSupplier);
+      if (appliedRequestSupplier !== nextSupplier) {
+        setAppliedRequestSupplier(nextSupplier);
       }
 
       if (appliedDepartment !== nextDepartment) {
@@ -469,7 +434,7 @@ export const useLeaderOrderReportSearchPage = () => {
         requestPage === 1 &&
         appliedRequestType === nextRequestType &&
         appliedRequestStatus === nextRequestStatus &&
-        appliedSupplier === nextSupplier &&
+        appliedRequestSupplier === nextSupplier &&
         appliedDepartment === nextDepartment &&
         appliedMunicipality === nextMunicipality
       ) {
@@ -483,7 +448,7 @@ export const useLeaderOrderReportSearchPage = () => {
       appliedRequestSearchValue,
       appliedRequestStatus,
       appliedRequestType,
-      appliedSupplier,
+      appliedRequestSupplier,
       loadLeaderRequests,
       requestPage,
       requestSearchValue,
@@ -492,7 +457,7 @@ export const useLeaderOrderReportSearchPage = () => {
       selectedRequestSearchAttribute,
       selectedRequestStatus,
       selectedRequestType,
-      selectedSupplier,
+      selectedRequestSupplier,
     ]
   );
 
@@ -519,12 +484,12 @@ export const useLeaderOrderReportSearchPage = () => {
   const handleRequestFiltersClear = useCallback(() => {
     setSelectedRequestType(null);
     setSelectedRequestStatus(null);
-    setSelectedSupplier(null);
+    setSelectedRequestSupplier(null);
     setSelectedDepartment(null);
     setSelectedMunicipality(null);
     setAppliedRequestType(null);
     setAppliedRequestStatus(null);
-    setAppliedSupplier(null);
+    setAppliedRequestSupplier(null);
     setAppliedDepartment(null);
     setAppliedMunicipality(null);
     setRequestSearchValue("");
@@ -563,7 +528,7 @@ export const useLeaderOrderReportSearchPage = () => {
 
   const handleSupplierChange = useCallback(
     (option) => {
-      setSelectedSupplier(option);
+      setSelectedRequestSupplier(option);
       runRequestSearch({ nextSupplier: option });
     },
     [runRequestSearch]
@@ -578,6 +543,7 @@ export const useLeaderOrderReportSearchPage = () => {
   );
 
   const handleOrderFiltersSearch = useCallback(() => {
+    const nextSupplier = selectedOrderSupplier;
     const nextField =
       selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
     const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
@@ -596,8 +562,8 @@ export const useLeaderOrderReportSearchPage = () => {
       setOrderPage(1);
     }
 
-    if (appliedSupplier !== selectedSupplier) {
-      setAppliedSupplier(selectedSupplier);
+    if (appliedOrderSupplier !== nextSupplier) {
+      setAppliedOrderSupplier(nextSupplier);
     }
 
     if (appliedOrderSearchAttribute !== nextField) {
@@ -609,23 +575,73 @@ export const useLeaderOrderReportSearchPage = () => {
       return;
     }
 
-    if (orderPage === 1 && appliedSupplier === selectedSupplier) {
+    if (orderPage === 1 && appliedOrderSupplier === nextSupplier) {
       loadLeaderOrders();
     }
   }, [
     appliedOrderSearchAttribute,
     appliedOrderSearchValue,
-    appliedSupplier,
+    appliedOrderSupplier,
     loadLeaderOrders,
     orderPage,
     orderSearchValue,
     selectedOrderSearchAttribute,
-    selectedSupplier,
+    selectedOrderSupplier,
   ]);
 
+  const handleOrderSupplierChange = useCallback(
+    (option) => {
+      setSelectedOrderSupplier(option);
+
+      const nextField =
+        selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+      const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+      const nextError = getOrderSearchError(
+        { field: nextField, value: normalizedValue },
+        { allowEmpty: true }
+      );
+
+      setOrderSearchError(nextError || "");
+
+      if (nextError) {
+        return;
+      }
+
+      if (orderPage !== 1) {
+        setOrderPage(1);
+      }
+
+      if (appliedOrderSupplier !== option) {
+        setAppliedOrderSupplier(option);
+      }
+
+      if (appliedOrderSearchAttribute !== nextField) {
+        setAppliedOrderSearchAttribute(nextField);
+      }
+
+      if (appliedOrderSearchValue !== normalizedValue) {
+        setAppliedOrderSearchValue(normalizedValue);
+        return;
+      }
+
+      if (orderPage === 1 && appliedOrderSupplier === option) {
+        loadLeaderOrders();
+      }
+    },
+    [
+      appliedOrderSearchAttribute,
+      appliedOrderSearchValue,
+      appliedOrderSupplier,
+      loadLeaderOrders,
+      orderPage,
+      orderSearchValue,
+      selectedOrderSearchAttribute,
+    ]
+  );
+
   const handleOrderFiltersClear = useCallback(() => {
-    setSelectedSupplier(null);
-    setAppliedSupplier(null);
+    setSelectedOrderSupplier(null);
+    setAppliedOrderSupplier(null);
     setOrderSearchValue("");
     setOrderSearchError("");
     setAppliedOrderSearchValue("");
@@ -788,7 +804,8 @@ export const useLeaderOrderReportSearchPage = () => {
     selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
-    selectedSupplier,
+    selectedRequestSupplier,
+    selectedOrderSupplier,
     supplierOptions,
     managedRequest,
     viewRequest,
@@ -806,7 +823,7 @@ export const useLeaderOrderReportSearchPage = () => {
     handleOrderSearchAttributeChange,
     handleOrderSearchValueChange: (event) =>
       setOrderSearchValue(event.target.value),
-    handleOrderSupplierChange: setSelectedSupplier,
+    handleOrderSupplierChange,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange: (nextPage, nextPageSize) => {

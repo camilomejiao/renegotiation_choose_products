@@ -132,7 +132,6 @@ export const useOrderReportPage = () => {
       const data = await getOrderReportPage({
         page,
         pageSize,
-        searchField: appliedOrderSearchAttribute,
         searchValue: appliedOrderSearchValue,
       });
 

@@ -45,10 +45,11 @@ export const LeaderOrderReportContent = () => {
     requestTypeOptions,
     selectedDepartment,
     selectedMunicipality,
+    selectedOrderSupplier,
     selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
-    selectedSupplier,
+    selectedRequestSupplier,
     supplierOptions,
     managedRequest,
     viewRequest,
@@ -107,7 +108,7 @@ export const LeaderOrderReportContent = () => {
           requestStatus={selectedRequestStatus}
           requestStatusOptions={requestStatusOptions}
           onStatusChange={handleRequestStatusChange}
-          selectedSupplier={selectedSupplier}
+          selectedSupplier={selectedRequestSupplier}
           supplierOptions={supplierOptions}
           onSupplierChange={handleSupplierChange}
           selectedDepartment={selectedDepartment}
@@ -165,7 +166,7 @@ export const LeaderOrderReportContent = () => {
           loading={loading}
           orderSearchError={orderSearchError}
           orderSearchValue={orderSearchValue}
-          selectedSupplier={selectedSupplier}
+          selectedSupplier={selectedOrderSupplier}
           supplierOptions={supplierOptions}
           onSearchValueChange={handleOrderSearchValueChange}
           onSupplierChange={handleOrderSupplierChange}
