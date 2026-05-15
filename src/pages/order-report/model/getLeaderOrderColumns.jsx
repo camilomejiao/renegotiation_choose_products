@@ -43,7 +43,7 @@ export const getLeaderOrderColumns = () => [
     align: "center",
   },
   {
-    title: "VALOR",
+    title: "Valor Total",
     dataIndex: "totalValue",
     key: "totalValue",
     width: 180,

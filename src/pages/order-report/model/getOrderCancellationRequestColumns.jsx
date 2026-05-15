@@ -55,7 +55,7 @@ export const getOrderCancellationRequestColumns = ({onCancelRequest}) => [
         align: "center"
     },
     {
-        title: "TOTAL ORDEN",
+        title: "Valor total",
         dataIndex: "totalOrder",
         key: "totalOrder",
         width: 180,

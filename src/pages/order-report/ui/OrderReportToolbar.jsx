@@ -1,9 +1,12 @@
 import { ClearOutlined, SearchOutlined } from "@ant-design/icons";
 import { Col, Row } from "antd";
 
-import { AppButton } from "../../../shared/ui/button";
 import { AppSearchInput } from "../../../shared/ui/search-input";
-import { ToolbarCard, ToolbarDivider } from "./OrderReportPage.styles";
+import {
+  ToolbarActionButton,
+  ToolbarCard,
+  ToolbarDivider,
+} from "./OrderReportPage.styles";
 
 export const OrderReportToolbar = ({
   loading,
@@ -23,26 +26,24 @@ export const OrderReportToolbar = ({
           />
         </Col>
         <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
-          <AppButton
+          <ToolbarActionButton
             icon={<SearchOutlined />}
             onClick={onSearch}
             loading={loading}
-            style={{ width: "100%" }}
           >
             Buscar
-          </AppButton>
+          </ToolbarActionButton>
         </Col>
 
         <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={8}>
-          <AppButton
+          <ToolbarActionButton
             variant="secondary"
             icon={<ClearOutlined />}
             onClick={onClear}
             disabled={loading && !searchQuery}
-            style={{ width: "100%" }}
           >
             Limpiar
-          </AppButton>
+          </ToolbarActionButton>
         </Col>
       </Row>
 
