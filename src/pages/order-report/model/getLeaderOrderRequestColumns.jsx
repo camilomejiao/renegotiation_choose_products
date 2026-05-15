@@ -68,7 +68,7 @@ export const getLeaderOrderRequestColumns = ({
     render: (value) => value || "---",
   },
   {
-    title: "Valor total",
+    title: "VALOR TOTAL",
     dataIndex: "totalOrder",
     key: "totalOrder",
     width: 180,
