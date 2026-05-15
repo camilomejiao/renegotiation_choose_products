@@ -44,6 +44,15 @@ const getDeleteForbiddenMessage = (response) => {
   return DELETE_FORBIDDEN_FALLBACK_MESSAGE;
 };
 
+const getPaginatedTotal = (data, fallbackLength = 0) =>
+  Number(
+    data?.count ??
+      data?.total ??
+      data?.total_count ??
+      data?.totalCount ??
+      data?.pagination?.total
+  ) || fallbackLength;
+
 export const useOrderReportPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const [rows, setRows] = useState([]);
@@ -200,7 +209,7 @@ export const useOrderReportPage = () => {
       const requestRows = data?.records ?? data?.results ?? [];
       const normalizedRows = normalizeOrderCancellationRequestRows(requestRows);
       setRequestsRows(normalizedRows);
-      setRequestsTotal(Number(data?.count) || normalizedRows.length);
+      setRequestsTotal(getPaginatedTotal(data, normalizedRows.length));
     } catch (response) {
       console.error("Error obteniendo las solicitudes:", response);
       setRequestsRows([]);

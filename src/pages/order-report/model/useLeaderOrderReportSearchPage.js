@@ -52,6 +52,15 @@ const normalizeLeaderSupplierOptions = (rows = []) =>
     })
     .filter(Boolean);
 
+const getPaginatedTotal = (data, fallbackLength = 0) =>
+  Number(
+    data?.count ??
+      data?.total ??
+      data?.total_count ??
+      data?.totalCount ??
+      data?.pagination?.total
+  ) || fallbackLength;
+
 export const useLeaderOrderReportSearchPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const hasLoadedSupplierOptionsRef = useRef(false);
@@ -235,11 +244,11 @@ export const useLeaderOrderReportSearchPage = () => {
         searchValue: appliedRequestSearchValue,
       });
 
-      const requestRows = data?.records ?? [];
+      const requestRows = data?.records ?? data?.results ?? [];
       const normalizedRows = normalizeLeaderOrderRequestRows(requestRows);
 
       setRequestRows(normalizedRows);
-      setRequestTotal(Number(data?.count) || normalizedRows.length);
+      setRequestTotal(getPaginatedTotal(data, normalizedRows.length));
       return normalizedRows;
     } catch (response) {
       console.error("Error obteniendo solicitudes del líder:", response);
