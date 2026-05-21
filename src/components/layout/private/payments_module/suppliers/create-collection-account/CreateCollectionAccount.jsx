@@ -443,7 +443,7 @@ export const CreateCollectionAccount = () => {
                             <Loading fullScreen text={informationLoadingText} />
                         )}
 
-                    <div style={{ height: 500, width: "100%" }}>
+                    <div className="collection-account-table-wrap">
                         <SmartTable
                             rowKey="id"
                             columns={statusCollectionAccountColumns}
@@ -468,7 +468,7 @@ export const CreateCollectionAccount = () => {
                         />
                     </div>
 
-                    <div className="d-flex justify-content-end gap-2 mt-3">
+                    <div className="collection-account-actions d-flex justify-content-end gap-2">
                         <Button
                             variant="outline-secondary"
                             onClick={onBack}
@@ -487,7 +487,6 @@ export const CreateCollectionAccount = () => {
         </>
     );
 };
-
 
 
 
