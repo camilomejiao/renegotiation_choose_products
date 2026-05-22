@@ -54,6 +54,7 @@ const buildSupportTableOperations = ({
   headerHeight,
   rowMinHeight,
   fontSize = 10,
+  centerContent = false,
 }) => {
   const tableWidth = columns.reduce((total, column) => total + column.width, 0);
   const headerLinesByColumn = columns.map((column) =>
@@ -133,7 +134,7 @@ const buildSupportTableOperations = ({
 
     let columnX = x;
     columns.forEach((column, columnIndex) => {
-      const cellX = column.align === "center" ? columnX + column.width / 2 : columnX + 6;
+      const cellX = centerContent ? columnX + column.width / 2 : column.align === "center" ? columnX + column.width / 2 : columnX + 6;
       computedRow.cellLines[columnIndex].forEach((line, lineIndex) => {
         operations.push(
           drawPdfText({
@@ -143,7 +144,7 @@ const buildSupportTableOperations = ({
             font: "F3",
             fontSize,
             color: PDF_COLORS.white,
-            align: column.align === "center" ? "center" : "left",
+            align: centerContent || column.align === "center" ? "center" : "left",
           })
         );
       });
@@ -239,6 +240,7 @@ export const buildSectionFiveOperations = (sectionFive, startY) => {
     headerHeight: 18,
     rowMinHeight: 22,
     fontSize: 10,
+    centerContent: true,
   });
 
   return {
