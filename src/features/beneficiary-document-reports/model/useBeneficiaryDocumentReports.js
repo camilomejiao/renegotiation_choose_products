@@ -11,7 +11,10 @@ import {
   shouldShowDocumentReportsSection,
 } from "./selectors";
 
-export const useBeneficiaryDocumentReports = ({ beneficiaryDetails }) => {
+export const useBeneficiaryDocumentReports = ({
+  beneficiaryDetails,
+  beneficiaryMovements,
+}) => {
   const [documentViewer, setDocumentViewer] = useState({
     isOpen: false,
     fileName: "",
@@ -61,6 +64,7 @@ export const useBeneficiaryDocumentReports = ({ beneficiaryDetails }) => {
     const fileName = `documento-cierre-${row?.cub || resolvedBeneficiaryDetails?.cub || "titular"}.pdf`;
     const blob = createClosureDocumentPdfBlob({
       beneficiaryDetails: resolvedBeneficiaryDetails,
+      beneficiaryMovements,
       row,
     });
     const url = URL.createObjectURL(blob);

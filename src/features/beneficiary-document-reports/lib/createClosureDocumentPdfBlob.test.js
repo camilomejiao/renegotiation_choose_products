@@ -72,6 +72,16 @@ describe("getSectionOneTableRows", () => {
         causal: GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION,
         tiene_m2: "SI",
       },
+      beneficiaryMovements: {
+        estado_cuenta: [
+          {
+            component: "Asistencia Alimentaria Inmediata AAI",
+            pay: "$ 100",
+            payNum: 100,
+            debtNum: 10,
+          },
+        ],
+      },
       row: {
         graduationCause: GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION,
       },

@@ -12,15 +12,18 @@ export const PDF_COLORS = {
   muted: [0.76, 0.78, 0.82],
 };
 
-export const sanitizePdfText = (value = "") =>
+export const normalizePdfText = (value = "") =>
   String(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\x20-\x7E]/g, " ")
+    .replace(/[^\x20-\x7E]/g, " ");
+
+export const sanitizePdfText = (value = "") =>
+  normalizePdfText(value)
     .replace(/[\\()]/g, "\\$&");
 
 export const getOptionalPdfText = (value) =>
-  sanitizePdfText(String(value ?? "").trim());
+  normalizePdfText(String(value ?? "").trim());
 
 export const estimateTextWidth = (text, fontSize) =>
   sanitizePdfText(text).length * fontSize * 0.52;
@@ -107,6 +110,61 @@ export const drawPdfText = ({
   return `BT /${font} ${fontSize} Tf ${color.join(" ")} rg 1 0 0 1 ${resolvedX.toFixed(
     2
   )} ${y.toFixed(2)} Tm (${safeText}) Tj ET`;
+};
+
+export const drawPdfJustifiedText = ({
+  text,
+  x,
+  y,
+  width,
+  font = "F1",
+  fontSize = 12,
+  color = PDF_COLORS.white,
+}) => {
+  const words = String(text ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length <= 1) {
+    return drawPdfText({
+      text,
+      x,
+      y,
+      font,
+      fontSize,
+      color,
+    });
+  }
+
+  const defaultSpaceWidth = estimateTextWidth(" ", fontSize);
+  const textWidth = estimateTextWidth(words.join(" "), fontSize);
+  const gapCount = words.length - 1;
+  const extraGapWidth = Math.max(0, (width - textWidth) / gapCount);
+
+  const operations = [];
+  let currentX = x;
+
+  words.forEach((word, index) => {
+    operations.push(
+      drawPdfText({
+        text: word,
+        x: currentX,
+        y,
+        font,
+        fontSize,
+        color,
+      })
+    );
+
+    currentX += estimateTextWidth(word, fontSize);
+
+    if (index < words.length - 1) {
+      currentX += defaultSpaceWidth + extraGapWidth;
+    }
+  });
+
+  return operations.join("\n");
 };
 
 export const drawPdfLine = ({

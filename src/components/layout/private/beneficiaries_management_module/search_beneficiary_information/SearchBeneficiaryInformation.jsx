@@ -101,6 +101,7 @@ export const SearchBeneficiaryInformation = () => {
         handleDownloadViewerFile,
     } = useBeneficiaryDocumentReports({
         beneficiaryDetails: movements?.datos_cub,
+        beneficiaryMovements: movements,
     });
 
     // cache de municipios por depto
