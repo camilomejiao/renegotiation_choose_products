@@ -6,6 +6,14 @@ export const TITULAR_STATUS = {
   SUSPENDED: "Suspendido",
 };
 
+export const GRADUATION_CAUSE = {
+  DIFFERENTIAL_ATTENTION: "Atención Diferencial",
+  NON_AGRICULTURAL_PRODUCTIVE_PROJECTS:
+    "Proyectos Productivos No Agropecuarios",
+  AGRICULTURAL_PRODUCTIVE_PROJECTS: "Proyectos Productivos Agropecuarios",
+  FINANCIAL_OBLIGATION_PAYMENT: "Pago de obligaciones financieras",
+};
+
 export const TITULAR_STATUS_COLORS = {
   [TITULAR_STATUS.ATTENTION_FINALIZED]: "success",
   [TITULAR_STATUS.RETIRED]: "error",

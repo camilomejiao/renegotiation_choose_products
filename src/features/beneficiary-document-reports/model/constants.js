@@ -1,4 +1,7 @@
-import { TITULAR_STATUS } from "../../../entities/beneficiary";
+import {
+  GRADUATION_CAUSE,
+  TITULAR_STATUS,
+} from "../../../entities/beneficiary";
 
 export const DOCUMENT_REPORTS_SECTION_TITLE = "Documentos y Reportes";
 export const DOCUMENT_REPORTS_SECTION_SUBTITLE =
@@ -13,5 +16,5 @@ export const IS_DOCUMENT_REPORTS_MOCK_ENABLED = true;
 export const DOCUMENT_REPORTS_MOCK = {
   estado_titular: TITULAR_STATUS.ATTENTION_FINALIZED,
   descripcion: "",
-  causal: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  causal: GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION,
 };

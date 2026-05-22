@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
-import { createSimplePdfBlob } from "../../../shared/lib/pdf/createSimplePdfBlob";
-import { buildClosureDocumentLines } from "../lib/buildClosureDocumentLines";
+import { createClosureDocumentPdfBlob } from "../lib/createClosureDocumentPdfBlob";
 import {
   DOCUMENT_VIEWER_TITLE,
   DOCUMENT_VIEWER_SUBTITLE,
@@ -60,11 +59,9 @@ export const useBeneficiaryDocumentReports = ({ beneficiaryDetails }) => {
     }
 
     const fileName = `documento-cierre-${row?.cub || resolvedBeneficiaryDetails?.cub || "titular"}.pdf`;
-    const blob = createSimplePdfBlob({
-      lines: buildClosureDocumentLines({
-        beneficiaryDetails: resolvedBeneficiaryDetails,
-        row,
-      }),
+    const blob = createClosureDocumentPdfBlob({
+      beneficiaryDetails: resolvedBeneficiaryDetails,
+      row,
     });
     const url = URL.createObjectURL(blob);
 

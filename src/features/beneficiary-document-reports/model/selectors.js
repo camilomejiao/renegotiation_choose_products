@@ -1,4 +1,5 @@
 import {
+  getGraduationCause,
   getTitularStatusDescription,
   isTitularAttentionFinalized,
 } from "../../../entities/beneficiary";
@@ -21,7 +22,7 @@ export const getDocumentReportsDetails = (beneficiaryDetails) => {
       ...beneficiaryDetails,
       estado_titular: beneficiaryDetails.estado_titular || "",
       descripcion: beneficiaryDetails.descripcion || "",
-      causal: beneficiaryDetails.causal || "",
+      causal: getGraduationCause(beneficiaryDetails.causal),
     };
   }
 
@@ -31,7 +32,8 @@ export const getDocumentReportsDetails = (beneficiaryDetails) => {
       beneficiaryDetails.estado_titular || DOCUMENT_REPORTS_MOCK.estado_titular,
     descripcion:
       beneficiaryDetails.descripcion || DOCUMENT_REPORTS_MOCK.descripcion,
-    causal: beneficiaryDetails.causal || DOCUMENT_REPORTS_MOCK.causal,
+    causal:
+      getGraduationCause(beneficiaryDetails.causal) || DOCUMENT_REPORTS_MOCK.causal,
   };
 };
 
