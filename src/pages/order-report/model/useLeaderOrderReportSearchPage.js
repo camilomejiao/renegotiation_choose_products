@@ -15,7 +15,6 @@ import {
   DEFAULT_ORDER_SEARCH_OPTION,
   getOrderSearchError,
   normalizeOrderSearchValue,
-  ORDER_SEARCH_DEBOUNCE_MS,
   ORDER_SEARCH_OPTIONS,
 } from "./orderSearch";
 import { normalizeLeaderOrderRequestRows } from "./normalizeLeaderOrderRequestRows";
@@ -53,11 +52,18 @@ const normalizeLeaderSupplierOptions = (rows = []) =>
     })
     .filter(Boolean);
 
+const getPaginatedTotal = (data, fallbackLength = 0) =>
+  Number(
+    data?.count ??
+      data?.total ??
+      data?.total_count ??
+      data?.totalCount ??
+      data?.pagination?.total
+  ) || fallbackLength;
+
 export const useLeaderOrderReportSearchPage = () => {
   const hasLoadedRequestFiltersRef = useRef(false);
   const hasLoadedSupplierOptionsRef = useRef(false);
-  const lastOrderSearchValueRef = useRef("");
-  const lastRequestSearchValueRef = useRef("");
   const [activeTab, setActiveTab] = useState("requests");
   const [loadingMode, setLoadingMode] = useState(null);
 
@@ -80,13 +86,15 @@ export const useLeaderOrderReportSearchPage = () => {
 
   const [selectedRequestType, setSelectedRequestType] = useState(null);
   const [selectedRequestStatus, setSelectedRequestStatus] = useState(null);
-  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [selectedRequestSupplier, setSelectedRequestSupplier] = useState(null);
+  const [selectedOrderSupplier, setSelectedOrderSupplier] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedMunicipality, setSelectedMunicipality] = useState(null);
 
   const [appliedRequestType, setAppliedRequestType] = useState(null);
   const [appliedRequestStatus, setAppliedRequestStatus] = useState(null);
-  const [appliedSupplier, setAppliedSupplier] = useState(null);
+  const [appliedRequestSupplier, setAppliedRequestSupplier] = useState(null);
+  const [appliedOrderSupplier, setAppliedOrderSupplier] = useState(null);
   const [appliedDepartment, setAppliedDepartment] = useState(null);
   const [appliedMunicipality, setAppliedMunicipality] = useState(null);
 
@@ -229,18 +237,18 @@ export const useLeaderOrderReportSearchPage = () => {
         pageSize: requestPageSize,
         requestType: appliedRequestType?.value || "",
         requestStatus: appliedRequestStatus?.value || "",
-        supplierId: appliedSupplier?.value || "",
+        supplierId: appliedRequestSupplier?.value || "",
         departmentId: appliedDepartment?.value || "",
         municipalityId: appliedMunicipality?.value || "",
         searchField: appliedRequestSearchAttribute,
         searchValue: appliedRequestSearchValue,
       });
 
-      const requestRows = data?.records ?? [];
+      const requestRows = data?.records ?? data?.results ?? [];
       const normalizedRows = normalizeLeaderOrderRequestRows(requestRows);
 
       setRequestRows(normalizedRows);
-      setRequestTotal(Number(data?.count) || normalizedRows.length);
+      setRequestTotal(getPaginatedTotal(data, normalizedRows.length));
       return normalizedRows;
     } catch (response) {
       console.error("Error obteniendo solicitudes del líder:", response);
@@ -260,7 +268,7 @@ export const useLeaderOrderReportSearchPage = () => {
     appliedRequestSearchValue,
     appliedRequestStatus,
     appliedRequestType,
-    appliedSupplier,
+    appliedRequestSupplier,
     requestPage,
     requestPageSize,
   ]);
@@ -272,8 +280,7 @@ export const useLeaderOrderReportSearchPage = () => {
       const data = await getOrderReportPage({
         page: orderPage,
         pageSize: orderPageSize,
-        supplierId: appliedSupplier?.value || "",
-        searchField: appliedOrderSearchAttribute,
+        supplierId: appliedOrderSupplier?.value || "",
         searchValue: appliedOrderSearchValue,
       });
 
@@ -293,7 +300,7 @@ export const useLeaderOrderReportSearchPage = () => {
   }, [
     appliedOrderSearchAttribute,
     appliedOrderSearchValue,
-    appliedSupplier,
+    appliedOrderSupplier,
     orderPage,
     orderPageSize,
   ]);
@@ -347,44 +354,10 @@ export const useLeaderOrderReportSearchPage = () => {
       { field: nextField, value: normalizedValue },
       { allowEmpty: true }
     );
-    const didSearchValueChange =
-      lastOrderSearchValueRef.current !== orderSearchValue;
 
     setOrderSearchError(nextError || "");
-    lastOrderSearchValueRef.current = orderSearchValue;
-
-    if (!didSearchValueChange) {
-      return;
-    }
-
-    if (!normalizedValue || nextError) {
-      if (orderPage !== 1) {
-        setOrderPage(1);
-      }
-
-      if (appliedOrderSearchAttribute !== nextField) {
-        setAppliedOrderSearchAttribute(nextField);
-      }
-
-      if (appliedOrderSearchValue !== "") {
-        setAppliedOrderSearchValue("");
-      }
-
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setOrderPage(1);
-      setAppliedOrderSearchAttribute(nextField);
-      setAppliedOrderSearchValue(normalizedValue);
-    }, ORDER_SEARCH_DEBOUNCE_MS);
-
-    return () => window.clearTimeout(timer);
   }, [
     activeTab,
-    appliedOrderSearchAttribute,
-    appliedOrderSearchValue,
-    orderPage,
     orderSearchValue,
     selectedOrderSearchAttribute,
   ]);
@@ -394,24 +367,45 @@ export const useLeaderOrderReportSearchPage = () => {
       return;
     }
 
-    const nextField =
-      selectedRequestSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
-    const normalizedValue = normalizeOrderSearchValue(requestSearchValue);
     const nextError = getOrderSearchError(
-      { field: nextField, value: normalizedValue },
+      {
+        field:
+          selectedRequestSearchAttribute?.value ||
+          DEFAULT_ORDER_SEARCH_OPTION.value,
+        value: normalizeOrderSearchValue(requestSearchValue),
+      },
       { allowEmpty: true }
     );
-    const didSearchValueChange =
-      lastRequestSearchValueRef.current !== requestSearchValue;
 
     setRequestSearchError(nextError || "");
-    lastRequestSearchValueRef.current = requestSearchValue;
+  }, [
+    activeTab,
+    requestSearchValue,
+    selectedRequestSearchAttribute,
+  ]);
 
-    if (!didSearchValueChange) {
-      return;
-    }
+  const runRequestSearch = useCallback(
+    ({
+      nextRequestType = selectedRequestType,
+      nextRequestStatus = selectedRequestStatus,
+      nextSupplier = selectedRequestSupplier,
+      nextDepartment = selectedDepartment,
+      nextMunicipality = selectedMunicipality,
+    } = {}) => {
+      const nextField =
+        selectedRequestSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+      const normalizedValue = normalizeOrderSearchValue(requestSearchValue);
+      const nextError = getOrderSearchError(
+        { field: nextField, value: normalizedValue },
+        { allowEmpty: true }
+      );
 
-    if (!normalizedValue || nextError) {
+      setRequestSearchError(nextError || "");
+
+      if (nextError) {
+        return;
+      }
+
       if (requestPage !== 1) {
         setRequestPage(1);
       }
@@ -420,28 +414,61 @@ export const useLeaderOrderReportSearchPage = () => {
         setAppliedRequestSearchAttribute(nextField);
       }
 
-      if (appliedRequestSearchValue !== "") {
-        setAppliedRequestSearchValue("");
+      if (appliedRequestType !== nextRequestType) {
+        setAppliedRequestType(nextRequestType);
       }
 
-      return;
-    }
+      if (appliedRequestStatus !== nextRequestStatus) {
+        setAppliedRequestStatus(nextRequestStatus);
+      }
 
-    const timer = window.setTimeout(() => {
-      setRequestPage(1);
-      setAppliedRequestSearchAttribute(nextField);
-      setAppliedRequestSearchValue(normalizedValue);
-    }, ORDER_SEARCH_DEBOUNCE_MS);
+      if (appliedRequestSupplier !== nextSupplier) {
+        setAppliedRequestSupplier(nextSupplier);
+      }
 
-    return () => window.clearTimeout(timer);
-  }, [
-    activeTab,
-    appliedRequestSearchAttribute,
-    appliedRequestSearchValue,
-    requestPage,
-    requestSearchValue,
-    selectedRequestSearchAttribute,
-  ]);
+      if (appliedDepartment !== nextDepartment) {
+        setAppliedDepartment(nextDepartment);
+      }
+
+      if (appliedMunicipality !== nextMunicipality) {
+        setAppliedMunicipality(nextMunicipality);
+      }
+
+      if (appliedRequestSearchValue !== normalizedValue) {
+        setAppliedRequestSearchValue(normalizedValue);
+        return;
+      }
+
+      if (
+        requestPage === 1 &&
+        appliedRequestType === nextRequestType &&
+        appliedRequestStatus === nextRequestStatus &&
+        appliedRequestSupplier === nextSupplier &&
+        appliedDepartment === nextDepartment &&
+        appliedMunicipality === nextMunicipality
+      ) {
+        loadLeaderRequests();
+      }
+    },
+    [
+      appliedDepartment,
+      appliedMunicipality,
+      appliedRequestSearchAttribute,
+      appliedRequestSearchValue,
+      appliedRequestStatus,
+      appliedRequestType,
+      appliedRequestSupplier,
+      loadLeaderRequests,
+      requestPage,
+      requestSearchValue,
+      selectedDepartment,
+      selectedMunicipality,
+      selectedRequestSearchAttribute,
+      selectedRequestStatus,
+      selectedRequestType,
+      selectedRequestSupplier,
+    ]
+  );
 
   const handleDepartmentChange = useCallback(
     async (option) => {
@@ -449,36 +476,34 @@ export const useLeaderOrderReportSearchPage = () => {
       setSelectedMunicipality(null);
       setAppliedMunicipality(null);
       await loadMunicipalities(option?.value);
+      runRequestSearch({
+        nextDepartment: option,
+        nextMunicipality: null,
+      });
     },
-    [loadMunicipalities]
+    [loadMunicipalities, runRequestSearch]
   );
 
   const handleRequestFiltersSearch = useCallback(() => {
-    setRequestPage(1);
-    setAppliedRequestType(selectedRequestType);
-    setAppliedRequestStatus(selectedRequestStatus);
-    setAppliedSupplier(selectedSupplier);
-    setAppliedDepartment(selectedDepartment);
-    setAppliedMunicipality(selectedMunicipality);
+    runRequestSearch();
   }, [
-    selectedDepartment,
-    selectedMunicipality,
-    selectedRequestStatus,
-    selectedRequestType,
-    selectedSupplier,
+    runRequestSearch,
   ]);
 
   const handleRequestFiltersClear = useCallback(() => {
     setSelectedRequestType(null);
     setSelectedRequestStatus(null);
-    setSelectedSupplier(null);
+    setSelectedRequestSupplier(null);
     setSelectedDepartment(null);
     setSelectedMunicipality(null);
     setAppliedRequestType(null);
     setAppliedRequestStatus(null);
-    setAppliedSupplier(null);
+    setAppliedRequestSupplier(null);
     setAppliedDepartment(null);
     setAppliedMunicipality(null);
+    setRequestSearchValue("");
+    setRequestSearchError("");
+    setAppliedRequestSearchValue("");
     setMunicipalityOptions([]);
     setRequestPage(1);
     setRequestPageSize(REQUEST_PAGE_SIZE);
@@ -494,14 +519,141 @@ export const useLeaderOrderReportSearchPage = () => {
     setRequestSearchValue("");
   }, []);
 
+  const handleRequestTypeChange = useCallback(
+    (option) => {
+      setSelectedRequestType(option);
+      runRequestSearch({ nextRequestType: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleRequestStatusChange = useCallback(
+    (option) => {
+      setSelectedRequestStatus(option);
+      runRequestSearch({ nextRequestStatus: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleSupplierChange = useCallback(
+    (option) => {
+      setSelectedRequestSupplier(option);
+      runRequestSearch({ nextSupplier: option });
+    },
+    [runRequestSearch]
+  );
+
+  const handleMunicipalityChange = useCallback(
+    (option) => {
+      setSelectedMunicipality(option);
+      runRequestSearch({ nextMunicipality: option });
+    },
+    [runRequestSearch]
+  );
+
   const handleOrderFiltersSearch = useCallback(() => {
-    setOrderPage(1);
-    setAppliedSupplier(selectedSupplier);
-  }, [selectedSupplier]);
+    const nextSupplier = selectedOrderSupplier;
+    const nextField =
+      selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+    const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+    const nextError = getOrderSearchError(
+      { field: nextField, value: normalizedValue },
+      { allowEmpty: true }
+    );
+
+    setOrderSearchError(nextError || "");
+
+    if (nextError) {
+      return;
+    }
+
+    if (orderPage !== 1) {
+      setOrderPage(1);
+    }
+
+    if (appliedOrderSupplier !== nextSupplier) {
+      setAppliedOrderSupplier(nextSupplier);
+    }
+
+    if (appliedOrderSearchAttribute !== nextField) {
+      setAppliedOrderSearchAttribute(nextField);
+    }
+
+    if (appliedOrderSearchValue !== normalizedValue) {
+      setAppliedOrderSearchValue(normalizedValue);
+      return;
+    }
+
+    if (orderPage === 1 && appliedOrderSupplier === nextSupplier) {
+      loadLeaderOrders();
+    }
+  }, [
+    appliedOrderSearchAttribute,
+    appliedOrderSearchValue,
+    appliedOrderSupplier,
+    loadLeaderOrders,
+    orderPage,
+    orderSearchValue,
+    selectedOrderSearchAttribute,
+    selectedOrderSupplier,
+  ]);
+
+  const handleOrderSupplierChange = useCallback(
+    (option) => {
+      setSelectedOrderSupplier(option);
+
+      const nextField =
+        selectedOrderSearchAttribute?.value || DEFAULT_ORDER_SEARCH_OPTION.value;
+      const normalizedValue = normalizeOrderSearchValue(orderSearchValue);
+      const nextError = getOrderSearchError(
+        { field: nextField, value: normalizedValue },
+        { allowEmpty: true }
+      );
+
+      setOrderSearchError(nextError || "");
+
+      if (nextError) {
+        return;
+      }
+
+      if (orderPage !== 1) {
+        setOrderPage(1);
+      }
+
+      if (appliedOrderSupplier !== option) {
+        setAppliedOrderSupplier(option);
+      }
+
+      if (appliedOrderSearchAttribute !== nextField) {
+        setAppliedOrderSearchAttribute(nextField);
+      }
+
+      if (appliedOrderSearchValue !== normalizedValue) {
+        setAppliedOrderSearchValue(normalizedValue);
+        return;
+      }
+
+      if (orderPage === 1 && appliedOrderSupplier === option) {
+        loadLeaderOrders();
+      }
+    },
+    [
+      appliedOrderSearchAttribute,
+      appliedOrderSearchValue,
+      appliedOrderSupplier,
+      loadLeaderOrders,
+      orderPage,
+      orderSearchValue,
+      selectedOrderSearchAttribute,
+    ]
+  );
 
   const handleOrderFiltersClear = useCallback(() => {
-    setSelectedSupplier(null);
-    setAppliedSupplier(null);
+    setSelectedOrderSupplier(null);
+    setAppliedOrderSupplier(null);
+    setOrderSearchValue("");
+    setOrderSearchError("");
+    setAppliedOrderSearchValue("");
     setOrderPage(1);
     setOrderPageSize(ORDER_PAGE_SIZE);
   }, []);
@@ -661,7 +813,8 @@ export const useLeaderOrderReportSearchPage = () => {
     selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
-    selectedSupplier,
+    selectedRequestSupplier,
+    selectedOrderSupplier,
     supplierOptions,
     managedRequest,
     viewRequest,
@@ -679,7 +832,7 @@ export const useLeaderOrderReportSearchPage = () => {
     handleOrderSearchAttributeChange,
     handleOrderSearchValueChange: (event) =>
       setOrderSearchValue(event.target.value),
-    handleOrderSupplierChange: setSelectedSupplier,
+    handleOrderSupplierChange,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange: (nextPage, nextPageSize) => {
@@ -689,10 +842,10 @@ export const useLeaderOrderReportSearchPage = () => {
     handleRequestSearchAttributeChange,
     handleRequestSearchValueChange: (event) =>
       setRequestSearchValue(event.target.value),
-    handleRequestStatusChange: setSelectedRequestStatus,
-    handleRequestTypeChange: setSelectedRequestType,
-    handleSupplierChange: setSelectedSupplier,
-    handleMunicipalityChange: setSelectedMunicipality,
+    handleRequestStatusChange,
+    handleRequestTypeChange,
+    handleSupplierChange,
+    handleMunicipalityChange,
     handleApprovalCommentChange,
     handleViewRequest: setViewRequest,
     closeViewRequest: () => setViewRequest(null),

@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Card, Divider } from "antd";
+import { AppButton } from "../../../shared/ui/button";
 
 export const HeaderSection = styled.div`
   position: relative;
@@ -38,6 +39,38 @@ export const ToolbarCard = styled(Card)`
 
 export const ToolbarDivider = styled(Divider)`
   margin: 12px 0 16px;
+`;
+
+export const ToolbarSection = styled.div`
+  width: 100%;
+  min-width: 0;
+
+  & + & {
+    margin-top: 12px;
+  }
+
+  @media (min-width: 768px) {
+    & + & {
+      margin-top: 16px;
+    }
+  }
+`;
+
+export const ToolbarActionsGroup = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+`;
+
+export const ToolbarActionButton = styled(AppButton)`
+  && {
+    width: 100%;
+    min-width: 0;
+    white-space: nowrap;
+  }
 `;
 
 export const TableCard = styled(Card)`

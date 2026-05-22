@@ -32,12 +32,20 @@ export const getOrderReportColumns = ({ onDelete }) => [
     align: "center",
   },
   {
+    title: "TITULAR",
+    dataIndex: "titular",
+    key: "titular",
+    width: 240,
+    align: "center",
+  },
+  {
     title: "DOCUMENTO",
     dataIndex: "cub_identificacion",
     key: "cub_identificacion",
     width: 180,
     align: "center",
   },
+
   {
     title: "VALOR TOTAL",
     dataIndex: "valor_total",

@@ -19,6 +19,14 @@ const formatCurrency = (value) =>
 
 export const getOrderCancellationRequestColumns = ({onCancelRequest}) => [
     {
+        title: "TIPO DE SOLICITUD",
+        dataIndex: "requestType",
+        key: "requestType",
+        width: 220,
+        align: "center",
+        render: (value) => value || "---",
+    },
+    {
         title: "ORDEN ID",
         dataIndex: "orderId",
         key: "orderId",
@@ -47,7 +55,7 @@ export const getOrderCancellationRequestColumns = ({onCancelRequest}) => [
         align: "center"
     },
     {
-        title: "TOTAL ORDEN",
+        title: "VALOR TOTAL",
         dataIndex: "totalOrder",
         key: "totalOrder",
         width: 180,

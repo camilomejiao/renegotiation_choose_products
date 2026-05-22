@@ -33,6 +33,7 @@ export const getLeaderOrderColumns = () => [
     key: "beneficiary",
     width: 260,
     align: "center",
+    render: (value) => value || "---",
   },
   {
     title: "PROVEEDOR",
@@ -42,7 +43,7 @@ export const getLeaderOrderColumns = () => [
     align: "center",
   },
   {
-    title: "VALOR",
+    title: "VALOR TOTAL",
     dataIndex: "totalValue",
     key: "totalValue",
     width: 180,

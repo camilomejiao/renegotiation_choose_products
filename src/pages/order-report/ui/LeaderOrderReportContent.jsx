@@ -30,21 +30,26 @@ export const LeaderOrderReportContent = () => {
     orderPage,
     orderPageSize,
     orderRows,
+    orderSearchError,
+    orderSearchValue,
     orderTotal,
     requestPage,
     requestPageSize,
     requestEmptyText,
     requestTableLoading,
     requestRows,
+    requestSearchError,
+    requestSearchValue,
     requestStatusOptions,
     requestTotal,
     requestTypeOptions,
     selectedDepartment,
     selectedMunicipality,
+    selectedOrderSupplier,
     selectedRequestSearchAttribute,
     selectedRequestStatus,
     selectedRequestType,
-    selectedSupplier,
+    selectedRequestSupplier,
     supplierOptions,
     managedRequest,
     viewRequest,
@@ -58,11 +63,13 @@ export const LeaderOrderReportContent = () => {
     handleManageRequest,
     handleOrderFiltersClear,
     handleOrderFiltersSearch,
+    handleOrderSearchValueChange,
     handleOrderSupplierChange,
     handleRejectRequest,
     handleRequestFiltersClear,
     handleRequestFiltersSearch,
     handleRequestPageChange,
+    handleRequestSearchValueChange,
     handleRequestStatusChange,
     handleRequestTypeChange,
     handleSupplierChange,
@@ -101,7 +108,7 @@ export const LeaderOrderReportContent = () => {
           requestStatus={selectedRequestStatus}
           requestStatusOptions={requestStatusOptions}
           onStatusChange={handleRequestStatusChange}
-          selectedSupplier={selectedSupplier}
+          selectedSupplier={selectedRequestSupplier}
           supplierOptions={supplierOptions}
           onSupplierChange={handleSupplierChange}
           selectedDepartment={selectedDepartment}
@@ -111,7 +118,10 @@ export const LeaderOrderReportContent = () => {
           municipalityOptions={municipalityOptions}
           onMunicipalityChange={handleMunicipalityChange}
           onSearch={handleRequestFiltersSearch}
+          onSearchValueChange={handleRequestSearchValueChange}
           onClear={handleRequestFiltersClear}
+          requestSearchError={requestSearchError}
+          requestSearchValue={requestSearchValue}
         />
       </Col>
 
@@ -154,8 +164,11 @@ export const LeaderOrderReportContent = () => {
       <Col span={24}>
         <LeaderOrderToolbar
           loading={loading}
-          selectedSupplier={selectedSupplier}
+          orderSearchError={orderSearchError}
+          orderSearchValue={orderSearchValue}
+          selectedSupplier={selectedOrderSupplier}
           supplierOptions={supplierOptions}
+          onSearchValueChange={handleOrderSearchValueChange}
           onSupplierChange={handleOrderSupplierChange}
           onSearch={handleOrderFiltersSearch}
           onClear={handleOrderFiltersClear}

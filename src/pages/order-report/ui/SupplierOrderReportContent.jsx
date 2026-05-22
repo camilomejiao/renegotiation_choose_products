@@ -1,6 +1,8 @@
+import { SearchOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
 import { Col, Row } from "antd";
 
+import { AppButton } from "../../../shared/ui/button";
 import { AppSearchInput } from "../../../shared/ui/search-input";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { AppTabs } from "../../../shared/ui/tabs";
@@ -38,6 +40,8 @@ export const SupplierOrderReportContent = () => {
     requestCancelErrorMessage,
     requestCancelModalView,
     requestCancelObservation,
+    requestSearchError,
+    requestSearchValue,
     requestTypeOptions,
     requestStatusOptions,
     requestsEmptyText,
@@ -50,6 +54,7 @@ export const SupplierOrderReportContent = () => {
     loadRequests,
     submitting,
     handleActiveTabChange,
+    handleOrderFiltersSearch,
     handleOrderSearchValueChange,
     handleDeleteConfirmationCancel,
     handlePageChange,
@@ -63,9 +68,10 @@ export const SupplierOrderReportContent = () => {
     handleRequestCancelObservationChange,
     handleRequestCancelReturn,
     handleCancellationReasonChange,
+    handleRequestSearch,
     handleRequestTypeChange,
     handleRequestStatusChange,
-    handleRequestFiltersSearch,
+    handleRequestSearchValueChange,
     handleRequestFiltersClear,
     handleCancelRequest,
     closeDeleteModal,
@@ -87,16 +93,35 @@ export const SupplierOrderReportContent = () => {
 
   const orderSearchExtension = useMemo(
     () => [
-      <AppSearchInput
-        key="supplier-order-cedula-search"
-        placeholder="Buscar por cédula"
-        value={orderSearchValue}
-        onChange={handleOrderSearchValueChange}
-        disabled={loading}
-        status={orderSearchError ? "error" : undefined}
-      />,
+      <Row key="supplier-order-search" gutter={[12, 12]} style={{ width: "100%" }}>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
+          <AppSearchInput
+            placeholder="Buscar por cédula/CUB/orden"
+            value={orderSearchValue}
+            onChange={handleOrderSearchValueChange}
+            disabled={loading}
+            status={orderSearchError ? "error" : undefined}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={12} lg={6} xl={6} xxl={6}>
+          <AppButton
+            icon={<SearchOutlined />}
+            onClick={handleOrderFiltersSearch}
+            loading={loading}
+            style={{ width: "25%" }}
+          >
+            Buscar
+          </AppButton>
+        </Col>
+      </Row>,
     ],
-    [handleOrderSearchValueChange, loading, orderSearchError, orderSearchValue]
+    [
+      handleOrderFiltersSearch,
+      handleOrderSearchValueChange,
+      loading,
+      orderSearchError,
+      orderSearchValue,
+    ]
   );
 
   const orderPurchaseContent = (
@@ -147,9 +172,12 @@ export const SupplierOrderReportContent = () => {
         <OrderRequestToolbar
           loading={loading}
           onClear={handleRequestFiltersClear}
-          onSearch={handleRequestFiltersSearch}
+          onSearch={handleRequestSearch}
+          onSearchValueChange={handleRequestSearchValueChange}
           onStatusChange={handleRequestStatusChange}
           onTypeChange={handleRequestTypeChange}
+          requestSearchError={requestSearchError}
+          requestSearchValue={requestSearchValue}
           requestStatus={selectedRequestStatus}
           requestStatusOptions={requestStatusOptions}
           requestType={selectedRequestType}
