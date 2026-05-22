@@ -33,6 +33,24 @@ describe("buildClosureDocumentLines", () => {
     expect(lines).toContain("JUSTIFICACION");
   });
 
+  it("builds the same section 1 for financial obligation payment", () => {
+    const lines = buildClosureDocumentLines({
+      beneficiaryDetails: {
+        cub: "456",
+        nombre_completo: "Ana Gomez",
+        identificacion: "900",
+        causal: GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT,
+      },
+      row: {
+        graduationCause: GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT,
+      },
+    });
+
+    expect(lines).toContain("PAGO DE OBLIGACIONES FINANCIERAS");
+    expect(lines).toContain("CUB: 456");
+    expect(lines).toContain("Tipo de atencion: Pago de obligaciones financieras");
+  });
+
   it("keeps optional fields empty without breaking the document", () => {
     const lines = buildClosureDocumentLines({
       beneficiaryDetails: {

@@ -89,6 +89,32 @@ const buildAttentionDifferentialSectionOne = (beneficiaryDetails) => [
   ...JUSTIFICATION_PARAGRAPHS.flatMap((paragraph) => [...wrapText(paragraph), ""]),
 ];
 
+const buildFinancialObligationPaymentSectionOne = (beneficiaryDetails) => [
+  "PAGO DE OBLIGACIONES FINANCIERAS",
+  "",
+  ...wrapText(DOCUMENT_TITLE, 72),
+  "",
+  ...buildFieldLines("CUB", beneficiaryDetails?.cub),
+  ...buildFieldLines("Nombre del Titular", beneficiaryDetails?.nombre_completo),
+  ...buildFieldLines("Cedula del titular", beneficiaryDetails?.identificacion),
+  ...buildFieldLines(
+    "Nombre del beneficiario",
+    beneficiaryDetails?.nombre_completo_beneficiario
+  ),
+  ...buildFieldLines(
+    "Cedula del beneficiario",
+    beneficiaryDetails?.identificacion_beneficiario
+  ),
+  ...buildFieldLines("Departamento", beneficiaryDetails?.departamento),
+  ...buildFieldLines("Municipio", beneficiaryDetails?.municipio),
+  ...buildFieldLines("Vereda", beneficiaryDetails?.vereda),
+  ...buildFieldLines("Tipo de atencion", beneficiaryDetails?.causal),
+  "",
+  "JUSTIFICACION",
+  "",
+  ...JUSTIFICATION_PARAGRAPHS.flatMap((paragraph) => [...wrapText(paragraph), ""]),
+];
+
 const buildPendingCauseDocument = ({ beneficiaryDetails, row }) => [
   "Documento de cierre PNIS",
   "",
@@ -100,7 +126,14 @@ const buildPendingCauseDocument = ({ beneficiaryDetails, row }) => [
 ];
 
 export const buildClosureDocumentLines = ({ beneficiaryDetails, row }) => {
-  if (row?.graduationCause === GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION) {
+  if (
+    row?.graduationCause === GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION ||
+    row?.graduationCause === GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT
+  ) {
+    if (row?.graduationCause === GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT) {
+      return buildFinancialObligationPaymentSectionOne(beneficiaryDetails);
+    }
+
     return buildAttentionDifferentialSectionOne(beneficiaryDetails);
   }
 
