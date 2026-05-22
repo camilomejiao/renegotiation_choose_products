@@ -12,11 +12,13 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import { Loading } from "../../../shared/loading/Loading";
+import {
+    DocumentReportsSection,
+    useBeneficiaryDocumentReports,
+} from "../../../../../features/beneficiary-document-reports";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-
-//Services
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { beneficiaryInformationServices } from "../../../../../helpers/services/BeneficiaryInformationServices";
 
@@ -86,6 +88,18 @@ export const SearchBeneficiaryInformation = () => {
         datos_cub: null,
         estado_cuenta: [],
         resumen_pagos: [],
+    });
+    const {
+        rows: documentReportsRows,
+        shouldShowSection: shouldShowDocumentReportsSection,
+        documentViewer,
+        viewerTitle,
+        viewerSubtitle,
+        handleOpenDocumentViewer,
+        handleCloseDocumentViewer,
+        handleDownloadViewerFile,
+    } = useBeneficiaryDocumentReports({
+        beneficiaryDetails: movements?.datos_cub,
     });
 
     // cache de municipios por depto
@@ -397,6 +411,7 @@ export const SearchBeneficiaryInformation = () => {
         { title: "N°", dataIndex: "id", key: "id", width: 80 },
         { title: "Cub", dataIndex: "cub", key: "cub", width: 100 },
         { title: "Estado Cub", dataIndex: "cub_state", key: "cub_state", width: 140 },
+        { title: "Estado titular", dataIndex: "holder_status", key: "holder_status", width: 170 },
         { title: "Identificación", dataIndex: "identification", key: "identification", width: 150 },
         { title: "Nombre completo", dataIndex: "name", key: "name", width: 270 },
         { title: "Departamento", dataIndex: "depto", key: "depto", width: 130 },
@@ -423,6 +438,7 @@ export const SearchBeneficiaryInformation = () => {
             id: row.id,
             cub: row?.cub_id,
             cub_state: row?.estado_cub,
+            holder_status: row?.estado_titular || "---",
             identification: row?.identificacion,
             name: row?.nombre_completo,
             depto: row?.departamento,
@@ -467,7 +483,6 @@ export const SearchBeneficiaryInformation = () => {
      */
     const normalizeDatosCub = (datos) => {
         if (!datos) return null;
-
         return {
             cub: datos.cub_id,
             estado_cub: datos.estado_cub?.trim() || "",
@@ -481,6 +496,9 @@ export const SearchBeneficiaryInformation = () => {
             plan: datos.plan || "",
             Línea: datos.Línea || "",
             restriccion: datos.restriccion || "",
+            estado_titular: datos.estado_titular || "",
+            descripcion: datos.descripcion || "",
+            causal: datos.causal || "",
             nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
             identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
             sexo_beneficiario: datos.sexo_beneficiario || "NO APLICA",
@@ -991,11 +1009,19 @@ export const SearchBeneficiaryInformation = () => {
                     </Card.Body>
                 </Card>
             )}
+
+            <DocumentReportsSection
+                rows={documentReportsRows}
+                isVisible={Boolean(movements?.datos_cub) && shouldShowDocumentReportsSection}
+                documentViewer={documentViewer}
+                viewerTitle={viewerTitle}
+                viewerSubtitle={viewerSubtitle}
+                onOpenDocumentViewer={handleOpenDocumentViewer}
+                onCloseDocumentViewer={handleCloseDocumentViewer}
+                onDownloadViewerFile={handleDownloadViewerFile}
+            />
             </Container>
         </div>
     </>
     );
 };
-
-
-
