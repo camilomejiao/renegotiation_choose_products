@@ -413,7 +413,7 @@ export const SearchBeneficiaryInformation = () => {
         { title: "N°", dataIndex: "id", key: "id", width: 80 },
         { title: "Cub", dataIndex: "cub", key: "cub", width: 100 },
         { title: "Estado Cub", dataIndex: "cub_state", key: "cub_state", width: 140 },
-        { title: "Estado titular", dataIndex: "holder_status", key: "holder_status", width: 170 },
+        { title: "Estado PNIS", dataIndex: "holder_status", key: "holder_status", width: 250 },
         { title: "Identificación", dataIndex: "identification", key: "identification", width: 150 },
         { title: "Nombre completo", dataIndex: "name", key: "name", width: 270 },
         { title: "Departamento", dataIndex: "depto", key: "depto", width: 130 },

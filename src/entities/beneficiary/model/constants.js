@@ -9,9 +9,9 @@ export const TITULAR_STATUS = {
 export const GRADUATION_CAUSE = {
   DIFFERENTIAL_ATTENTION: "Atención Diferencial",
   NON_AGRICULTURAL_PRODUCTIVE_PROJECTS:
-    "Proyectos Productivos No Agropecuarios",
-  AGRICULTURAL_PRODUCTIVE_PROJECTS: "Proyectos Productivos Agropecuarios",
-  FINANCIAL_OBLIGATION_PAYMENT: "Pago de obligaciones financieras",
+    "RENEGOCIACION NO AGRO",
+  AGRICULTURAL_PRODUCTIVE_PROJECTS: "RENEGOCIACION AGRO",
+  FINANCIAL_OBLIGATION_PAYMENT: "ABONO BAC",
 };
 
 export const TITULAR_STATUS_COLORS = {

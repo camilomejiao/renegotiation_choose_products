@@ -3,7 +3,7 @@ import { BeneficiaryStatusPill } from "../../../entities/beneficiary";
 
 export const getDocumentReportsColumns = ({ onOpenDocumentViewer, DocumentActionButton }) => [
   {
-    title: "Estado titular",
+    title: "Estado PNIS",
     dataIndex: "holderStatus",
     key: "holderStatus",
     width: 180,
