@@ -23,10 +23,10 @@ export const TITULAR_STATUS_COLORS = {
 };
 
 export const TITULAR_STATUS_DESCRIPTIONS = {
-  [TITULAR_STATUS.RETIRED]: "El Cub Presenta Novedades en el Estado (Retirado).",
-  [TITULAR_STATUS.NOT_RENEGOTIATED]:
-    "El Cub Presenta Novedades en el Estado (Suspendido)",
-  [TITULAR_STATUS.SUSPENDED]: "No cuenta con PLAN DE INVERSION",
+  [TITULAR_STATUS.ATTENTION_FINALIZED]: " El Cub ha culimado la implementación. Genere el Formato Correspondiente a la Causal de Grado.",
+  [TITULAR_STATUS.RETIRED]: "El Cub Presenta Novedades en el Estado Retirado.",
+  [TITULAR_STATUS.NOT_RENEGOTIATED]: "El Cub No cuenta con PLAN DE INVERSION",
+  [TITULAR_STATUS.SUSPENDED]: "El Cub Presenta Novedades en el Estado Suspendido",
   [TITULAR_STATUS.IN_ATTENTION_PROCESS]:
-    "Cuenta con saldo para en algún componente, ver en Consultar Titular.",
+    "El Cub cuenta con saldo en algún componente, revisar detalle de Resumen de Pagos",
 };
