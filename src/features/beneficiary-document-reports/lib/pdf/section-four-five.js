@@ -99,7 +99,7 @@ const buildSupportTableOperations = ({
         drawPdfText({
           text: line,
           x: centerX,
-          y: topY - 8 - lineIndex * 11,
+          y: topY - 8 - fontSize - lineIndex * 11,
           font: "F2",
           fontSize,
           align: "center",

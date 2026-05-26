@@ -22,21 +22,28 @@ import {
   buildSectionThreeRowsFromAccountStatement,
   resolveM2ValidationOption,
 } from "./documentTemplateSelectors";
+import { getGraduationCause } from "../../../entities/beneficiary";
 
 export const buildClosureDocumentPdfViewModel = ({
   beneficiaryDetails,
   beneficiaryMovements,
   graduationCause,
 }) => {
-  const variant = getDocumentTemplateVariant(graduationCause);
+  const normalizedGraduationCause = getGraduationCause(graduationCause);
+  const variant = getDocumentTemplateVariant(normalizedGraduationCause);
 
   if (!variant) {
     return null;
   }
 
-  const sectionOneRows = buildSectionOneFields(beneficiaryDetails, graduationCause);
+  // El PDF necesita el nombre canónico de la causal, no el raw del servicio
+  const detailsForPdf = normalizedGraduationCause
+    ? { ...beneficiaryDetails, causal: normalizedGraduationCause }
+    : beneficiaryDetails;
+
+  const sectionOneRows = buildSectionOneFields(detailsForPdf, normalizedGraduationCause);
   const explicitSectionThreeRows = buildSectionThreeComponentRows(
-    beneficiaryDetails?.pai_family_components
+    detailsForPdf?.pai_family_components
   );
   const rawSectionThreeRows =
     explicitSectionThreeRows.length > 0
@@ -60,14 +67,14 @@ export const buildClosureDocumentPdfViewModel = ({
       title: SECTION_TWO_TITLE,
       label: SECTION_TWO_M2_LABEL,
       choices: SECTION_TWO_M2_CHOICES,
-      selectedOption: resolveM2ValidationOption(beneficiaryDetails?.tiene_m2),
+      selectedOption: resolveM2ValidationOption(detailsForPdf?.tiene_m2),
     },
     sectionThree: {
       title: SECTION_THREE_TITLE,
       columns: SECTION_THREE_COMPONENT_COLUMNS,
       rows: sectionThreeRows,
       balanceRows: buildSectionThreeBalanceRows(
-        beneficiaryDetails,
+        detailsForPdf,
         SECTION_THREE_BALANCE_FIELDS,
         beneficiaryMovements?.estado_cuenta
       ).map((row) => ({ ...row, value: "$0" })),

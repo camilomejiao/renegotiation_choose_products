@@ -16,7 +16,6 @@ import {
     DocumentReportsSection,
     useBeneficiaryDocumentReports,
 } from "../../../../../features/beneficiary-document-reports";
-import { getGraduationCause } from "../../../../../entities/beneficiary";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -503,7 +502,7 @@ export const SearchBeneficiaryInformation = () => {
             restriccion: datos.restriccion || "",
             estado_titular: datos.estado_titular || "",
             descripcion: datos.descripcion || "",
-            causal: getGraduationCause(datos.causal),
+            causal: datos.causal || "",
             nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
             identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
             sexo_beneficiario: datos.sexo_beneficiario || "NO APLICA",

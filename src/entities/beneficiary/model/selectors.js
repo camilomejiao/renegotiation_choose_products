@@ -20,6 +20,19 @@ const GRADUATION_CAUSE_BY_NORMALIZED_VALUE = Object.values(
   return acc;
 }, {});
 
+// Permite resolver también por KEY del enum (ej: "UNDOC_FAMILIES" → "RENEGOCIACION NO AGRO")
+const GRADUATION_CAUSE_BY_NORMALIZED_KEY = Object.entries(
+  GRADUATION_CAUSE
+).reduce((acc, [key, value]) => {
+  acc[normalizeComparableText(key)] = value;
+  return acc;
+}, {});
+
+const DOCUMENT_GENERATING_GRADUATION_CAUSE_VALUES = new Set([
+  GRADUATION_CAUSE.UNDOC_FAMILIES,
+  GRADUATION_CAUSE.RECOLECTOR,
+]);
+
 const TITULAR_STATUS_BY_NORMALIZED_VALUE = Object.values(
   TITULAR_STATUS
 ).reduce((acc, status) => {
@@ -56,6 +69,14 @@ export const getTitularStatusColor = (status, fallback = "default") =>
   TITULAR_STATUS_COLORS_BY_NORMALIZED_STATUS[normalizeComparableText(status)] ||
   fallback;
 
-export const getGraduationCause = (cause, fallback = "") =>
-  GRADUATION_CAUSE_BY_NORMALIZED_VALUE[normalizeComparableText(cause)] ||
-  fallback;
+export const getGraduationCause = (cause, fallback = "") => {
+  const normalized = normalizeComparableText(cause);
+  return (
+    GRADUATION_CAUSE_BY_NORMALIZED_VALUE[normalized] ||
+    GRADUATION_CAUSE_BY_NORMALIZED_KEY[normalized] ||
+    fallback
+  );
+};
+
+export const canGenerateDocumentFromGraduationCause = (cause) =>
+  DOCUMENT_GENERATING_GRADUATION_CAUSE_VALUES.has(getGraduationCause(cause));

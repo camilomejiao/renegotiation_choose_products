@@ -1,5 +1,5 @@
 import {
-  getGraduationCause,
+  canGenerateDocumentFromGraduationCause,
   getTitularStatusDescription,
   isTitularAttentionFinalized,
 } from "../../../entities/beneficiary";
@@ -22,7 +22,7 @@ export const getDocumentReportsDetails = (beneficiaryDetails) => {
       ...beneficiaryDetails,
       estado_titular: beneficiaryDetails.estado_titular || "",
       descripcion: beneficiaryDetails.descripcion || "",
-      causal: getGraduationCause(beneficiaryDetails.causal),
+      causal: beneficiaryDetails.causal || "",
     };
   }
 
@@ -32,17 +32,17 @@ export const getDocumentReportsDetails = (beneficiaryDetails) => {
       beneficiaryDetails.estado_titular || DOCUMENT_REPORTS_MOCK.estado_titular,
     descripcion:
       beneficiaryDetails.descripcion || DOCUMENT_REPORTS_MOCK.descripcion,
-    causal:
-      getGraduationCause(beneficiaryDetails.causal) || DOCUMENT_REPORTS_MOCK.causal,
+    causal: beneficiaryDetails.causal || "",
   };
 };
 
 export const canGenerateClosureDocument = (beneficiaryDetails) =>
-  isTitularAttentionFinalized(beneficiaryDetails?.estado_titular);
+  isTitularAttentionFinalized(beneficiaryDetails?.estado_titular) &&
+  canGenerateDocumentFromGraduationCause(beneficiaryDetails?.causal);
 
 export const shouldShowDocumentReportsSection = (beneficiaryDetails) =>
   IS_DOCUMENT_REPORTS_SECTION_TESTING_ENABLED ||
-  canGenerateClosureDocument(beneficiaryDetails);
+  isTitularAttentionFinalized(beneficiaryDetails?.estado_titular);
 
 export const buildDocumentReportsRows = (beneficiaryDetails) => {
   const details = getDocumentReportsDetails(beneficiaryDetails);
