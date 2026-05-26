@@ -38,10 +38,16 @@ export const buildClosureDocumentPdfViewModel = ({
   const explicitSectionThreeRows = buildSectionThreeComponentRows(
     beneficiaryDetails?.pai_family_components
   );
-  const sectionThreeRows =
+  const rawSectionThreeRows =
     explicitSectionThreeRows.length > 0
       ? explicitSectionThreeRows
       : buildSectionThreeRowsFromAccountStatement(beneficiaryMovements?.estado_cuenta);
+  const sectionThreeRows = rawSectionThreeRows.map((row) => ({
+    ...row,
+    totalExecuted: "$0",
+    operator: "No aplica",
+    lastDeliveryDate: "No aplica",
+  }));
 
   return {
     sectionOne: {
@@ -64,7 +70,7 @@ export const buildClosureDocumentPdfViewModel = ({
         beneficiaryDetails,
         SECTION_THREE_BALANCE_FIELDS,
         beneficiaryMovements?.estado_cuenta
-      ),
+      ).map((row) => ({ ...row, value: "$0" })),
     },
     sectionFour: {
       title: SECTION_FOUR_TITLE,
