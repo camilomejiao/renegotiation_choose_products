@@ -57,6 +57,10 @@ export const privateLayoutRoutes = [
     path: "/admin/product-price-quotes",
     contentMode: "fluid",
   },
+  {
+    path: "/admin/alerted-products",
+    contentMode: "fluid",
+  },
 ];
 
 export const resolvePrivateLayoutRoute = (pathname) => {

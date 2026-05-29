@@ -1,6 +1,11 @@
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 
 export const getSidebarMenu = (role, id) => {
+  const alertedProductsItem = {
+    path: "/admin/alerted-products",
+    iconKey: "boxOpen",
+    label: "Productos Alertados",
+  };
   const catalogManagementItem = {
     path: "/admin/list-products-by-convocation",
     iconKey: "tools",
@@ -37,6 +42,7 @@ export const getSidebarMenu = (role, id) => {
     ],
     [RolesEnum.SUPERVISION]: [
       { path: "/admin/products-supervision", iconKey: "userCheck", label: "Catálogo de productos" },
+      alertedProductsItem,
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
       { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
@@ -63,7 +69,10 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
     ],
-    [RolesEnum.TECHNICAL]: technicalMenu,
+    [RolesEnum.TECHNICAL]: [
+      ...technicalMenu,
+      alertedProductsItem,
+    ],
     [RolesEnum.TERRITORIAL_LINKS]: [
       { path: "/", iconKey: "home", label: "Inicio" },
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
@@ -101,6 +110,7 @@ export const getSidebarMenu = (role, id) => {
     ],
     [RolesEnum.ADMINISTRATIVA]: [
       ...technicalMenu,
+      alertedProductsItem,
     ],
     [RolesEnum.LEGAL]: [
       { path: "/admin/management", iconKey: "people", label: "Gestión integral del beneficiario" },

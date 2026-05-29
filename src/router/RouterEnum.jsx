@@ -36,6 +36,7 @@ export const RouterEnum = {
     ProductUpload: 'product-upload', //Nuevo proceso de cargue de productos
     ProductPriceQuotes: 'product-price-quotes',
     ReportByConvocation: 'report-by-convocation',
+    AlertedProducts: 'alerted-products',
 
     //Managment
     Management: 'management',
