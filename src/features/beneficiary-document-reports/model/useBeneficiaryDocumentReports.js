@@ -56,7 +56,7 @@ export const useBeneficiaryDocumentReports = ({
     if (!row?.isDocumentEnabled) {
       AlertComponent.info(
         "Documento no disponible",
-        "El documento de cierre solo se habilita para titulares con estado Atención Finalizada y causal UNDOC_FAMILIES o RECOLECTOR."
+        "El documento de cierre solo se habilita para titulares con estado Atención Finalizada y causal Atención Diferencial, ABONO BAC, RENEGOCIACION AGRO o RENEGOCIACION NO AGRO."
       );
       return;
     }
