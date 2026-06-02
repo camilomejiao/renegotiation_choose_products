@@ -1,63 +1,41 @@
-const toSerializableFile = (category, file) => {
+const DOCUMENT_TYPE_BY_CATEGORY = {
+  excel: 1,
+  pdf: 2,
+};
+
+const toDocumentMetadata = (category, file) => {
   if (!file) {
     return null;
   }
 
   return {
-    category,
-    fileName: file.name || "",
-    mimeType: file.type || "",
-    size: file.size || 0,
-    lastModified: file.lastModified || null,
+    campo: category,
+    tipo_archivo: DOCUMENT_TYPE_BY_CATEGORY[category],
+    nombre_archivo: file.name || "",
   };
 };
 
-const toSerializableHistoryEntry = (category, item) => ({
-  category,
-  fileName: item?.name || "",
-  uploadedAt: item?.uploadedAt || null,
-  uploadedBy: item?.user || "",
-  size: item?.size || 0,
-});
-
 export const buildAlertedProductsDocumentsPayload = ({
   filesByCategory = {},
-  historyByCategory = {},
-  currentUser = {},
   context = {},
 }) => {
-  const currentDocuments = Object.entries(filesByCategory)
-    .map(([category, file]) => toSerializableFile(category, file))
+  const documents = Object.entries(filesByCategory)
+    .map(([category, file]) => toDocumentMetadata(category, file))
     .filter(Boolean);
 
-  const uploadHistory = Object.entries(historyByCategory).flatMap(
-    ([category, items]) =>
-      (items || []).map((item) => toSerializableHistoryEntry(category, item))
-  );
-
   return {
-    context: {
-      journeyId: context?.journeyId ?? null,
-      journeyName: context?.journeyName ?? "",
-      alertedProductsIds: context?.alertedProductsIds ?? [],
-    },
-    requestedBy: {
-      id: currentUser?.id ?? currentUser?.user_id ?? null,
-      name: currentUser?.nombre || currentUser?.name || "Usuario actual",
-      roleId: currentUser?.rol_id ?? null,
-    },
-    requestedAt: new Date().toISOString(),
-    documents: currentDocuments,
-    history: uploadHistory,
+    documentos: documents,
   };
 };
 
 export const buildAlertedProductsDocumentsFormData = ({
   filesByCategory = {},
   payload,
+  context = {},
 }) => {
   const formData = new FormData();
 
+  formData.append("jornada_id", String(context?.journeyId ?? ""));
   formData.append("metadata", JSON.stringify(payload));
 
   Object.entries(filesByCategory).forEach(([category, file]) => {

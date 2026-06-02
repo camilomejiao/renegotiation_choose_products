@@ -6,7 +6,7 @@ export const DocumentsShell = styled(Card)`
   border-radius: 20px;
   border: 1px solid #dbe4f0;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-  height: 747px;
+  height: 790px;
   max-height: 920px;
   overflow: hidden;
 
@@ -15,20 +15,20 @@ export const DocumentsShell = styled(Card)`
     grid-template-rows: 1fr;
     padding: 20px 18px 18px;
     height: 100%;
-    max-height: 680px;
+    max-height: 738px;
     overflow: hidden;
   }
 `;
 
 export const DocumentsRoot = styled.section`
   display: grid;
-  gap: 2px;
+  gap: 8px;
   min-height: 0;
 `;
 
 export const DocumentsIntro = styled.div`
   display: grid;
-  gap: 2px;
+  gap: 6px;
 `;
 
 export const DocumentsHeader = styled.div`
@@ -65,13 +65,12 @@ export const DocumentsDescription = styled.p`
 `;
 
 export const DocumentsTabs = styled(AppTabs)`
-  margin-top: -10px;
+  margin-top: 0;
   padding: 0;
   width: 100%;
   min-width: 0;
   min-height: 0;
-  height: calc(100% - 8px);
-  overflow-x: hidden;
+  height: 100%;
 
   .ant-card {
     border-radius: 18px;
@@ -79,20 +78,17 @@ export const DocumentsTabs = styled(AppTabs)`
     box-shadow: none;
     height: 100%;
     min-width: 0;
-    overflow-x: hidden;
   }
 
   .ant-card-body {
     padding: 0;
-    height: 94%;
+    height: 100%;
     min-width: 0;
-    overflow-x: hidden;
   }
 
   .ant-tabs {
     height: 100%;
     min-width: 0;
-    overflow-x: hidden;
   }
 
   .ant-tabs-nav {
@@ -112,7 +108,7 @@ export const DocumentsTabs = styled(AppTabs)`
     border-top: 1px solid #e2e8f0;
     min-height: 0;
     min-width: 0;
-    overflow: hidden;
+    overflow-y: auto;
   }
 
   .ant-tabs-content,
@@ -122,7 +118,7 @@ export const DocumentsTabs = styled(AppTabs)`
   }
 
   .ant-tabs-tabpane {
-    overflow: hidden;
+    overflow: visible;
   }
 `;
 
@@ -241,6 +237,42 @@ export const HistoryLinkRow = styled.div`
   padding-top: 4px;
 `;
 
+export const SaveDocumentsRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 6px;
+  margin-bottom: -6px;
+`;
+
+export const SaveRequirements = styled.div`
+  display: grid;
+  gap: 6px;
+  padding-top: 4px;
+`;
+
+export const SaveRequirementItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: ${({ $isMet }) => ($isMet ? "#334155" : "#94a3b8")};
+  font-size: 0.84rem;
+  font-weight: 600;
+`;
+
+export const SaveRequirementIndicator = styled.span`
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid ${({ $isMet }) => ($isMet ? "#86efac" : "#cbd5e1")};
+  background: ${({ $isMet }) => ($isMet ? "#f0fdf4" : "#f8fafc")};
+  color: ${({ $isMet }) => ($isMet ? "#16a34a" : "#94a3b8")};
+  font-size: 0.72rem;
+  flex: 0 0 auto;
+`;
+
 export const HistoryLinkButton = styled(Button)`
   && {
     padding-inline: 0;
@@ -265,6 +297,37 @@ export const UploadButton = styled(Button)`
     border-color: #1e40af;
     background: #1e40af;
     color: #ffffff;
+  }
+`;
+
+export const SaveDocumentsButton = styled(Button)`
+  && {
+    height: 42px;
+    border-radius: 12px;
+    border-color: #1e3a8a;
+    background: #1e3a8a;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: none;
+  }
+
+  &&:hover,
+  &&:focus {
+    border-color: #1e40af;
+    background: #1e40af;
+    color: #ffffff;
+  }
+
+  &&[disabled],
+  &&[disabled]:hover,
+  &&[disabled]:focus,
+  &&.ant-btn-disabled,
+  &&.ant-btn-disabled:hover,
+  &&.ant-btn-disabled:focus {
+    border-color: #cbd5e1 !important;
+    background: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
   }
 `;
 

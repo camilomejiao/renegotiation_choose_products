@@ -1,4 +1,22 @@
-import { Tag } from "antd";
+import { StatusPill } from "../../../shared/ui/status-pill";
+
+const wrapColumnTitle = (...lines) => (
+  <span
+    style={{
+      display: "inline-block",
+      width: "100%",
+      whiteSpace: "normal",
+      lineHeight: 1.15,
+      textAlign: "center",
+    }}
+  >
+    {lines.map((line, index) => (
+      <span key={`${line}-${index}`} style={{ display: "block" }}>
+        {line}
+      </span>
+    ))}
+  </span>
+);
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("es-CO", {
@@ -8,115 +26,187 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(value || 0);
 
-const renderStatusTag = (value, color) => (
-  <Tag
-    color={color}
-    style={{
-      borderRadius: 999,
-      fontWeight: 700,
-      paddingInline: 10,
-    }}
-  >
-    {value}
-  </Tag>
-);
-
-const alertCategoryColors = {
-  Sobreprecio: "red",
-  "Sin estudio": "orange",
-  "Fuera de rango": "gold",
+const PILL_TOKENS = {
+  neutral: {
+    background: "#F3F4F6",
+    border: "#D1D5DB",
+    color: "#374151",
+  },
+  blue: {
+    background: "#E0F2FE",
+    border: "#7DD3FC",
+    color: "#075985",
+  },
+  cyan: {
+    background: "#DDFBFB",
+    border: "#6EE7E7",
+    color: "#155E75",
+  },
+  green: {
+    background: "#DCFCE7",
+    border: "#86EFAC",
+    color: "#166534",
+  },
+  amber: {
+    background: "#FEF3C7",
+    border: "#FCD34D",
+    color: "#92400E",
+  },
+  orange: {
+    background: "#FFEDD5",
+    border: "#FDBA74",
+    color: "#9A3412",
+  },
+  red: {
+    background: "#FEE2E2",
+    border: "#FCA5A5",
+    color: "#991B1B",
+  },
+  violet: {
+    background: "#EDE9FE",
+    border: "#C4B5FD",
+    color: "#5B21B6",
+  },
 };
 
-const managementTypeColors = {
-  "Mesa técnica": "blue",
-  "Ajuste de precios": "purple",
-  Validación: "green",
+const ALERT_CATEGORY_PILLS = {
+  5254: "neutral",
+  5255: "amber",
+  5256: "red",
+  5257: "blue",
+  5258: "orange",
 };
 
-const alertManagementColors = {
-  Asignada: "processing",
-  "En revisión": "warning",
-  Cerrada: "success",
+const MANAGEMENT_TYPE_PILLS = {
+  5275: "blue",
+  5276: "violet",
+  5277: "cyan",
+  5278: "neutral",
+  5279: "amber",
 };
+
+const ALERT_MANAGEMENT_PILLS = {
+  5259: "blue",
+  5260: "amber",
+  5261: "green",
+  5272: "neutral",
+};
+
+const renderPill = (label, tone = "neutral") => {
+  const tokens = PILL_TOKENS[tone] || PILL_TOKENS.neutral;
+
+  return (
+    <StatusPill
+      backgroundColor={tokens.background}
+      borderColor={tokens.border}
+      textColor={tokens.color}
+      minHeight="28px"
+      padding="4px 12px"
+      fontSize="12px"
+      fontWeight={800}
+      uppercase
+    >
+      {label || "NO DEFINIDO"}
+    </StatusPill>
+  );
+};
+
+const renderCatalogPill = (label, code, tonesByCode) =>
+  renderPill(label, tonesByCode[code] || "neutral");
 
 export const getAlertedProductsTableColumns = () => [
   {
     title: "Proveedor",
     dataIndex: "supplier",
     key: "supplier",
-    width: 170,
+    width: 150,
+    align: "center",
   },
   {
-    title: "ID producto",
+    title: wrapColumnTitle("ID", "producto"),
     dataIndex: "productId",
     key: "productId",
-    width: 120,
+    width: 100,
+    align: "center",
   },
   {
-    title: "Nombre producto",
+    title: wrapColumnTitle("Nombre", "producto"),
     dataIndex: "productName",
     key: "productName",
-    width: 210,
+    width: 180,
+    align: "center",
   },
   {
-    title: "Unidad de medida",
+    title: wrapColumnTitle("Unidad de", "medida"),
     dataIndex: "unitOfMeasure",
     key: "unitOfMeasure",
-    width: 140,
+    width: 120,
+    align: "center",
   },
   {
-    title: "Marca comercial",
+    title: wrapColumnTitle("Marca", "comercial"),
     dataIndex: "commercialBrand",
     key: "commercialBrand",
-    width: 140,
+    width: 120,
+    align: "center",
   },
   {
-    title: "Precio mínimo",
+    title: wrapColumnTitle("Precio", "minimo"),
     dataIndex: "minimumPrice",
     key: "minimumPrice",
-    width: 130,
+    width: 118,
+    align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: "Precio máximo",
+    title: wrapColumnTitle("Precio", "maximo"),
     dataIndex: "maximumPrice",
     key: "maximumPrice",
-    width: 130,
+    width: 118,
+    align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: "Valor unitario de venta",
+    title: wrapColumnTitle("Valor unitario", "de venta"),
     dataIndex: "saleUnitValue",
     key: "saleUnitValue",
-    width: 160,
+    width: 132,
+    align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: "Valor catálogo de feria",
+    title: wrapColumnTitle("Valor catalogo", "de feria"),
     dataIndex: "fairCatalogValue",
     key: "fairCatalogValue",
-    width: 160,
+    width: 132,
+    align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: "Categoría de alerta",
+    title: wrapColumnTitle("Categoria", "de alerta"),
     dataIndex: "alertCategory",
     key: "alertCategory",
-    width: 150,
-    render: (value) => renderStatusTag(value, alertCategoryColors[value] || "default"),
+    width: 240,
+    align: "center",
+    render: (value, record) =>
+      renderCatalogPill(value, record?.alertCategoryCode, ALERT_CATEGORY_PILLS),
   },
   {
-    title: "Tipo de gestión",
+    title: wrapColumnTitle("Tipo de", "gestion"),
     dataIndex: "managementType",
     key: "managementType",
-    width: 150,
-    render: (value) => renderStatusTag(value, managementTypeColors[value] || "default"),
+    width: 188,
+    align: "center",
+    render: (value, record) =>
+      renderCatalogPill(value, record?.managementTypeCode, MANAGEMENT_TYPE_PILLS),
   },
   {
-    title: "Gestión de alerta",
+    title: wrapColumnTitle("Gestion de", "alerta"),
     dataIndex: "alertManagement",
     key: "alertManagement",
-    width: 150,
-    render: (value) => renderStatusTag(value, alertManagementColors[value] || "default"),
+    width: 168,
+    align: "center",
+    render: (value, record) =>
+      renderCatalogPill(value, record?.alertManagementCode, ALERT_MANAGEMENT_PILLS),
   },
 ];

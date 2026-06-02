@@ -1,4 +1,6 @@
 import {
+  CheckOutlined,
+  CheckCircleOutlined,
   DeleteOutlined,
   InboxOutlined,
   PaperClipOutlined,
@@ -7,6 +9,8 @@ import {
 import { useState } from "react";
 import { Tabs, Tooltip } from "antd";
 
+import AlertComponent from "../../../helpers/alert/AlertComponent";
+import { filesServices } from "../../../helpers/services/FilesServices";
 import { Modal } from "../../../shared/ui/modal";
 import { useAlertedProductsDocuments } from "../model/useAlertedProductsDocuments";
 import {
@@ -40,6 +44,11 @@ import {
   HistoryTimeline,
   HistoryUser,
   RemoveFileButton,
+  SaveDocumentsButton,
+  SaveDocumentsRow,
+  SaveRequirementIndicator,
+  SaveRequirementItem,
+  SaveRequirements,
   SlotBadge,
   UploadErrorText,
   UploadPanel,
@@ -79,17 +88,28 @@ const formatTimestamp = (timestamp) => {
   }).format(new Date(timestamp));
 };
 
-export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
+export const AlertedProductsDocumentsWidget = ({
+  historyByCategory: initialHistoryByCategory,
+  journey,
+  onDocumentsSaved,
+}) => {
   const [uploadError, setUploadError] = useState("");
   const {
     closeHistoryModal,
+    canPersistDocuments,
     filesByCategory,
+    hasRequiredFiles,
     isHistoryModalOpen,
     historyByCategory,
     handleBeforeUpload,
     handleRemoveFile,
     openHistoryModal,
-  } = useAlertedProductsDocuments({ currentUser });
+    persistDocuments,
+    savingDocuments,
+  } = useAlertedProductsDocuments({
+    historyByCategory: initialHistoryByCategory,
+    journey,
+  });
 
   const uploadSlots = [
     {
@@ -107,8 +127,14 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
       accept: ".xls,.xlsx",
     },
   ];
+  const isUploadEnabled = Boolean(journey?.value);
 
   const buildBeforeUploadHandler = (category) => (file) => {
+    if (!isUploadEnabled) {
+      setUploadError("Primero selecciona una jornada y aplica los filtros.");
+      return false;
+    }
+
     const extension = file.name?.split(".").pop()?.toLowerCase();
     const isValid =
       (category === "pdf" && extension === "pdf") ||
@@ -149,6 +175,7 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
             showUploadList={false}
             beforeUpload={buildBeforeUploadHandler(slot.key)}
             accept={slot.accept}
+            disabled={!isUploadEnabled}
           >
             <UploadInner>
               <UploadIconBadge>
@@ -156,9 +183,11 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
               </UploadIconBadge>
               <UploadTitle>Arrastra el archivo o selecciónalo</UploadTitle>
               <UploadMeta>
-                Si cargas un nuevo archivo {slot.label}, reemplazará el actual.
+                {isUploadEnabled
+                  ? `Si cargas un nuevo archivo ${slot.label}, reemplazará el actual.`
+                  : "Selecciona una jornada y aplica los filtros para habilitar la carga."}
               </UploadMeta>
-              <UploadButton icon={<UploadOutlined />}>
+              <UploadButton icon={<UploadOutlined />} disabled={!isUploadEnabled}>
                 Seleccionar archivo
               </UploadButton>
             </UploadInner>
@@ -214,6 +243,24 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
                   <HistoryName>{item.name}</HistoryName>
                   <HistoryMeta>{formatTimestamp(item.uploadedAt)}</HistoryMeta>
                   <HistoryUser>{item.user || "---"}</HistoryUser>
+                  {item.route ? (
+                    <HistoryLinkButton
+                      type="link"
+                      onClick={async () => {
+                        const response = await filesServices.downloadFile(item.route);
+
+                        if (!response?.blob) {
+                          return;
+                        }
+
+                        const url = URL.createObjectURL(response.blob);
+                        window.open(url, "_blank", "noopener,noreferrer");
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                      }}
+                    >
+                      Ver documento
+                    </HistoryLinkButton>
+                  ) : null}
                 </HistoryItem>
               ),
             }))}
@@ -228,6 +275,29 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
   });
 
   const hasAnyHistory = uploadSlots.some((slot) => historyByCategory[slot.key].length);
+  const hasSelectedJourney = Boolean(journey?.value);
+  const hasSelectedPdf = Boolean(filesByCategory.pdf);
+  const hasSelectedExcel = Boolean(filesByCategory.excel);
+
+  const handlePersistDocuments = async () => {
+    if (!journey?.value) {
+      AlertComponent.warning("Atención", "Debes aplicar una jornada antes de guardar documentos");
+      return;
+    }
+
+    if (!canPersistDocuments) {
+      AlertComponent.warning("Atención", "Debes adjuntar un archivo PDF y un archivo Excel");
+      return;
+    }
+
+    try {
+      await persistDocuments();
+      await onDocumentsSaved?.(journey.value);
+      AlertComponent.success("Bien hecho!", "Los documentos se guardaron correctamente");
+    } catch (_error) {
+      AlertComponent.error("Error", "No fue posible guardar los documentos");
+    }
+  };
 
   return (
     <DocumentsShell bordered={false}>
@@ -256,6 +326,41 @@ export const AlertedProductsDocumentsWidget = ({ currentUser }) => {
             </HistoryLinkButton>
           </HistoryLinkRow>
         ) : null}
+
+        <SaveRequirements>
+          <SaveRequirementItem $isMet={hasSelectedJourney}>
+            <SaveRequirementIndicator $isMet={hasSelectedJourney}>
+              {hasSelectedJourney ? <CheckCircleOutlined /> : <CheckOutlined />}
+            </SaveRequirementIndicator>
+            Jornada seleccionada
+          </SaveRequirementItem>
+
+          <SaveRequirementItem $isMet={hasSelectedPdf}>
+            <SaveRequirementIndicator $isMet={hasSelectedPdf}>
+              {hasSelectedPdf ? <CheckCircleOutlined /> : <CheckOutlined />}
+            </SaveRequirementIndicator>
+            PDF seleccionado
+          </SaveRequirementItem>
+
+          <SaveRequirementItem $isMet={hasSelectedExcel}>
+            <SaveRequirementIndicator $isMet={hasSelectedExcel}>
+              {hasSelectedExcel ? <CheckCircleOutlined /> : <CheckOutlined />}
+            </SaveRequirementIndicator>
+            Excel seleccionado
+          </SaveRequirementItem>
+        </SaveRequirements>
+
+        <SaveDocumentsRow>
+          <SaveDocumentsButton
+            type="primary"
+            icon={<CheckOutlined />}
+            onClick={handlePersistDocuments}
+            disabled={!hasRequiredFiles || !journey?.value || savingDocuments}
+            loading={savingDocuments}
+          >
+            Guardar Documentos
+          </SaveDocumentsButton>
+        </SaveDocumentsRow>
 
         {uploadError ? <UploadErrorText>{uploadError}</UploadErrorText> : null}
       </DocumentsRoot>

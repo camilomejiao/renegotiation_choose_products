@@ -32,21 +32,32 @@ import {
 
 const TABLE_SCROLL_X = 1800;
 
-export const AlertedProductsTableWidget = ({ onRaiseAlert }) => {
+export const AlertedProductsTableWidget = ({
+  assigningManagementType = false,
+  dataSource = [],
+  emptyText,
+  loading = false,
+  onAssignManagementType,
+  onRaiseAlert,
+}) => {
   const {
     canRaiseAlert,
     closeAssignmentModal,
     columns,
-    dataSource,
     handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
+    isSelectableRow,
     isAssignmentModalOpen,
     openAssignmentModal,
     selectedManagementType,
     selectedRowKeys,
     setSelectedManagementType,
     handleRowSelectionChange,
-  } = useAlertedProductsTable({ onRaiseAlert });
+  } = useAlertedProductsTable({
+    onAssignManagementType,
+    onRaiseAlert,
+    initialDataSource: dataSource,
+  });
 
   return (
     <TableCard bordered={false}>
@@ -65,14 +76,14 @@ export const AlertedProductsTableWidget = ({ onRaiseAlert }) => {
                 type="primary"
                 icon={<CheckSquareOutlined />}
                 onClick={openAssignmentModal}
-                disabled={!selectedRowKeys.length}
+                disabled={!selectedRowKeys.length || assigningManagementType || loading}
               >
                 Asignar Tipo de Gestión
               </AssignManagementButton>
 
               <RaiseAlertButton
                 onClick={handleRaiseAlert}
-                disabled={!canRaiseAlert}
+                disabled={!canRaiseAlert || assigningManagementType || loading}
               >
                 Levantar alerta
               </RaiseAlertButton>
@@ -82,6 +93,7 @@ export const AlertedProductsTableWidget = ({ onRaiseAlert }) => {
 
         <TableContent>
           <SmartTable
+            loading={loading}
             rowKey="id"
             columns={columns}
             columnWidthMode="fixed"
@@ -92,12 +104,18 @@ export const AlertedProductsTableWidget = ({ onRaiseAlert }) => {
             defaultPageSize="10"
             enableRowSelection
             rowSelectionType="checkbox"
+            rowSelectionConfig={{
+              getCheckboxProps: (record) => ({
+                disabled: !isSelectableRow(record),
+              }),
+            }}
             defaultSelectedRows={{ keys: selectedRowKeys, records: [] }}
             onRowSelectionChange={handleRowSelectionChange}
             showToolbar={false}
             showColumnSettings={false}
             showTableResize={false}
             showReload={false}
+            emptyText={emptyText}
             scroll={{ x: TABLE_SCROLL_X, y: 520 }}
           />
         </TableContent>
@@ -153,6 +171,8 @@ export const AlertedProductsTableWidget = ({ onRaiseAlert }) => {
             <AssignmentPrimaryButton
               type="primary"
               onClick={handleConfirmManagementTypeAssignment}
+              loading={assigningManagementType}
+              disabled={assigningManagementType}
             >
               Confirmar asignación
             </AssignmentPrimaryButton>

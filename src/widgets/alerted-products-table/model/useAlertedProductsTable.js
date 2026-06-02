@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { alertedProductsTableData } from "./alertedProductsTableData";
 import { getAlertedProductsTableColumns } from "./getAlertedProductsTableColumns";
@@ -7,8 +7,14 @@ import {
   managementTypeAssignmentOptions,
 } from "./managementTypeOptions";
 
-export const useAlertedProductsTable = ({ onRaiseAlert } = {}) => {
-  const [dataSource, setDataSource] = useState(alertedProductsTableData);
+const ELIGIBLE_ALERT_CATEGORY = "SIN ALERTA";
+const ELIGIBLE_ALERT_MANAGEMENT = "SIN GESTIÓN";
+
+export const useAlertedProductsTable = ({
+  onAssignManagementType,
+  onRaiseAlert,
+  initialDataSource = alertedProductsTableData,
+} = {}) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
@@ -18,39 +24,34 @@ export const useAlertedProductsTable = ({ onRaiseAlert } = {}) => {
 
   const columns = useMemo(() => getAlertedProductsTableColumns(), []);
 
+  useEffect(() => {
+    setSelectedRowKeys([]);
+    setSelectedRows([]);
+  }, [initialDataSource]);
+
+  const isSelectableRow = (row) =>
+    row?.alertCategory !== ELIGIBLE_ALERT_CATEGORY &&
+    row?.alertManagement === ELIGIBLE_ALERT_MANAGEMENT;
+
   const handleRowSelectionChange = (keys, rows) => {
-    setSelectedRowKeys(keys);
-    setSelectedRows(rows);
+    const eligibleRows = rows.filter(isSelectableRow);
+    setSelectedRowKeys(eligibleRows.map((row) => row.id));
+    setSelectedRows(eligibleRows);
   };
 
-  const handleConfirmManagementTypeAssignment = () => {
-    const nextManagementTypeLabel = getManagementTypeAssignmentLabel(selectedManagementType);
-
-    setDataSource((currentRows) =>
-      currentRows.map((row) =>
-        selectedRowKeys.includes(row.id)
-          ? {
-              ...row,
-              managementType: nextManagementTypeLabel,
-              hasAssignedManagementType: true,
-            }
-          : row
-      )
-    );
-
-    setSelectedRows((currentRows) =>
-      currentRows.map((row) => ({
-        ...row,
-        managementType: nextManagementTypeLabel,
-        hasAssignedManagementType: true,
-      }))
-    );
+  const handleConfirmManagementTypeAssignment = async () => {
+    await onAssignManagementType?.({
+      managementTypeId: selectedManagementType,
+      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+      selectedRowKeys,
+      selectedRows,
+    });
     setIsAssignmentModalOpen(false);
   };
 
   const canRaiseAlert =
     selectedRowKeys.length > 0 &&
-    dataSource
+    initialDataSource
       .filter((row) => selectedRowKeys.includes(row.id))
       .every((row) => row.hasAssignedManagementType);
 
@@ -69,9 +70,9 @@ export const useAlertedProductsTable = ({ onRaiseAlert } = {}) => {
   return {
     columns,
     canRaiseAlert,
-    dataSource,
     handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
+    isSelectableRow,
     isAssignmentModalOpen,
     selectedManagementType,
     selectedRowKeys,

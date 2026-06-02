@@ -1,4 +1,5 @@
-import { ObservationText, StatusTag, WrappedText } from "./ReviewTableCells.styles";
+import { StatusPill } from "../status-pill";
+import { ObservationText, WrappedText } from "./ReviewTableCells.styles";
 
 const STATUS_COLORS = {
   Aprobado: "success",
@@ -28,7 +29,7 @@ export const CurrencyCell = ({ value }) => {
 
 export const StatusCell = ({ value }) => {
   const normalized = value || "Pendiente";
-  return <StatusTag color={STATUS_COLORS[normalized] || "default"}>{normalized}</StatusTag>;
+  return <StatusPill color={STATUS_COLORS[normalized] || "default"}>{normalized}</StatusPill>;
 };
 
 export const ObservationCell = ({ value }) => {

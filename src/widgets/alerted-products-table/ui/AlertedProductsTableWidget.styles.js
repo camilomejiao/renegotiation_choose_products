@@ -59,6 +59,20 @@ export const TableContent = styled.div`
   .ant-table-wrapper {
     min-width: 0;
   }
+
+  .ant-table-thead > tr > th {
+    vertical-align: middle;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .ant-table-thead .ant-table-column-title {
+    display: block;
+    width: 100%;
+    white-space: normal;
+    line-height: 1.15;
+    text-align: center;
+  }
 `;
 
 export const AssignManagementButton = styled(Button)`

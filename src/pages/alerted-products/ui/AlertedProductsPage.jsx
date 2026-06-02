@@ -1,10 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
 import { HeaderImage } from "../../../components/layout/shared/header_image/HeaderImage";
 import { PageNotFound } from "../../../components/layout/page404/PageNotFound";
+import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
+import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocumentsApi";
+import {
+  assignAlertedProductsManagementType,
+  getAlertedProductsPage,
+} from "../api/alertedProductsTableApi";
 import { AlertedProductsCentralizationWidget } from "../../../widgets/alerted-products-centralization";
 import { Page } from "../../../shared/ui/page";
 import { AlertedProductsDocumentsWidget } from "../../../widgets/alerted-products-documents";
@@ -33,6 +39,14 @@ const allowedRoles = [
 
 export const AlertedProductsPage = () => {
   const { userAuth } = useOutletContext();
+  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [tableDataSource, setTableDataSource] = useState([]);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [assigningManagementType, setAssigningManagementType] = useState(false);
+  const [historyByCategory, setHistoryByCategory] = useState({
+    pdf: [],
+    excel: [],
+  });
   const {
     assignment,
     currentStep,
@@ -57,6 +71,88 @@ export const AlertedProductsPage = () => {
     return <PageNotFound />;
   }
 
+  const shouldShowTable = tableLoading || Boolean(appliedFilters);
+  const tableEmptyText = "No hay productos alertados para los filtros aplicados.";
+
+  const reloadAlertedProductsTable = async (filtersToApply) => {
+    const productsResult = await getAlertedProductsPage(filtersToApply);
+    setTableDataSource(productsResult.rows);
+    return productsResult;
+  };
+
+  const handleApplyFilters = async (nextFilters) => {
+    if (!nextFilters?.operationalDay?.value) {
+      return;
+    }
+
+    setTableLoading(true);
+    setAppliedFilters(nextFilters);
+
+    const [productsResult, documentsResult] = await Promise.allSettled([
+      reloadAlertedProductsTable(nextFilters),
+      getAlertedProductsJourneyDocuments(nextFilters.operationalDay.value),
+    ]);
+
+    if (productsResult.status === "fulfilled") {
+    } else {
+      setTableDataSource([]);
+      AlertComponent.error("Error", "No fue posible cargar los productos alertados");
+    }
+
+    if (documentsResult.status === "fulfilled") {
+      setHistoryByCategory(documentsResult.value.historyByCategory);
+    } else {
+      setHistoryByCategory({ pdf: [], excel: [] });
+      AlertComponent.error("Error", "No fue posible cargar el historial de documentos");
+    }
+
+    setTableLoading(false);
+  };
+
+  const handleResetFilters = () => {
+    setAppliedFilters(null);
+    setTableDataSource([]);
+    setHistoryByCategory({ pdf: [], excel: [] });
+  };
+
+  const reloadJourneyDocuments = async (journeyId) => {
+    const documentsResult = await getAlertedProductsJourneyDocuments(journeyId);
+    setHistoryByCategory(documentsResult.historyByCategory);
+  };
+
+  const handleAssignManagementType = async ({
+    managementTypeId,
+    selectedRows,
+  }) => {
+    if (!appliedFilters) {
+      return;
+    }
+
+    setAssigningManagementType(true);
+
+    try {
+      const response = await assignAlertedProductsManagementType({
+        managementTypeId,
+        selectedRows,
+      });
+
+      await reloadAlertedProductsTable(appliedFilters);
+
+      AlertComponent.success(
+        "Tipo de gestión actualizado",
+        response?.mensaje || "La actualización se realizó correctamente."
+      );
+    } catch (error) {
+      AlertComponent.error(
+        "Error",
+        error?.data?.mensaje || "No fue posible actualizar el tipo de gestión."
+      );
+      throw error;
+    } finally {
+      setAssigningManagementType(false);
+    }
+  };
+
   return (
     <Page showPageHeader header={pageHeader} contentPadding="0" minHeight="auto">
       <HeaderSection>
@@ -77,12 +173,29 @@ export const AlertedProductsPage = () => {
           {currentStep === 0 ? (
             <AlertedProductsContentGrid>
               <AlertedProductsSidebar>
-                <AlertedProductsDocumentsWidget currentUser={userAuth} />
+                <AlertedProductsDocumentsWidget
+                  historyByCategory={historyByCategory}
+                  journey={appliedFilters?.operationalDay ?? null}
+                  onDocumentsSaved={reloadJourneyDocuments}
+                />
               </AlertedProductsSidebar>
 
               <AlertedProductsMainContent>
-                <AlertedProductsFiltersWidget />
-                <AlertedProductsTableWidget onRaiseAlert={handleRaiseAlert} />
+                <AlertedProductsFiltersWidget
+                  loading={tableLoading}
+                  onApply={handleApplyFilters}
+                  onReset={handleResetFilters}
+                />
+                {shouldShowTable ? (
+                  <AlertedProductsTableWidget
+                    dataSource={tableDataSource}
+                    emptyText={tableEmptyText}
+                    assigningManagementType={assigningManagementType}
+                    loading={tableLoading}
+                    onAssignManagementType={handleAssignManagementType}
+                    onRaiseAlert={handleRaiseAlert}
+                  />
+                ) : null}
               </AlertedProductsMainContent>
             </AlertedProductsContentGrid>
           ) : null}

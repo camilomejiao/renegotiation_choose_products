@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { Tag } from "antd";
 
 export const WrappedText = styled.span`
   display: block;
@@ -12,9 +11,4 @@ export const WrappedText = styled.span`
 
 export const ObservationText = styled(WrappedText)`
   font-size: 12px;
-`;
-
-export const StatusTag = styled(Tag)`
-  margin-inline-end: 0;
-  font-weight: 600;
 `;

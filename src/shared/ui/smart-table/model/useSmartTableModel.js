@@ -10,6 +10,7 @@ export const useSmartTableModel = ({
   onRowSelectionChange,
   rowSelectionType = "checkbox",
   enableRowSelection = true,
+  rowSelectionConfig,
   defaultSelectedRows,
   showPagination = true,
   total,
@@ -80,8 +81,15 @@ export const useSmartTableModel = ({
       type: rowSelectionType,
       selectedRowKeys,
       onChange: onSelectChange,
+      ...rowSelectionConfig,
     };
-  }, [enableRowSelection, onSelectChange, rowSelectionType, selectedRowKeys]);
+  }, [
+    enableRowSelection,
+    onSelectChange,
+    rowSelectionConfig,
+    rowSelectionType,
+    selectedRowKeys,
+  ]);
 
   const antdColumns = useMemo(
     () => mapToAntdColumns({ columns: columnConfig, defaultText, columnWidthMode }),

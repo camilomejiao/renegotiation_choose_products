@@ -24,7 +24,11 @@ import {
   SecondaryFilterButton,
 } from "./AlertedProductsFiltersWidget.styles";
 
-export const AlertedProductsFiltersWidget = () => {
+export const AlertedProductsFiltersWidget = ({
+  onApply,
+  onReset,
+  loading = false,
+} = {}) => {
   const {
     alertCategoryOptions,
     alertManagementOptions,
@@ -51,6 +55,21 @@ export const AlertedProductsFiltersWidget = () => {
     updateProducts,
     updateSupplier,
   } = useAlertedProductsFilters();
+
+  const isApplyDisabled = !filters.operationalDay?.value || loading;
+
+  const handleApply = () => {
+    if (isApplyDisabled) {
+      return;
+    }
+
+    onApply?.(filters);
+  };
+
+  const handleReset = () => {
+    resetFilters();
+    onReset?.();
+  };
 
   return (
     <FiltersCard bordered={false}>
@@ -190,10 +209,14 @@ export const AlertedProductsFiltersWidget = () => {
           </FiltersGrid>
 
           <FiltersActions>
-            <PrimaryFilterButton icon={<SearchOutlined />}>
+            <PrimaryFilterButton
+              icon={<SearchOutlined />}
+              onClick={handleApply}
+              disabled={isApplyDisabled}
+            >
               Aplicar filtros
             </PrimaryFilterButton>
-            <SecondaryFilterButton onClick={resetFilters}>
+            <SecondaryFilterButton onClick={handleReset} disabled={loading}>
               Limpiar búsqueda
             </SecondaryFilterButton>
           </FiltersActions>
