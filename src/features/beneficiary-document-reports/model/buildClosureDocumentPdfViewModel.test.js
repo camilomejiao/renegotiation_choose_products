@@ -37,4 +37,39 @@ describe("buildClosureDocumentPdfViewModel", () => {
     expect(viewModel.sectionFour.subtitle).toBeDefined();
     expect(viewModel.sectionFive.rows).toHaveLength(9);
   });
+
+  it("maps generic productive projects to the agricultural productive-project template", () => {
+    const viewModel = buildClosureDocumentPdfViewModel({
+      beneficiaryDetails: {
+        cub: "123",
+        nombre_completo: "Maria Perez",
+        identificacion: "100",
+        nombre_completo_beneficiario: "Juan Perez",
+        identificacion_beneficiario: "200",
+        departamento: "Meta",
+        municipio: "Granada",
+        vereda: "Centro",
+        causal: GRADUATION_CAUSE.PRODUCTIVE_PROJECTS,
+        plan: "Plan A",
+        linea: "Linea B",
+        condicionante_ambiental: "No aplica",
+        tiene_m2: "SI",
+      },
+      beneficiaryMovements: {
+        estado_cuenta: [],
+      },
+      graduationCause: GRADUATION_CAUSE.PRODUCTIVE_PROJECTS,
+    });
+
+    expect(viewModel.sectionOne.heading).toBe(
+      GRADUATION_CAUSE.AGRICULTURAL_PRODUCTIVE_PROJECTS
+    );
+    expect(viewModel.sectionOne.rows).toEqual(
+      expect.arrayContaining([
+        { label: "Plan de inversion", value: "Plan A" },
+        { label: "Linea productiva", value: "Linea B" },
+        { label: "Condicionante ambiental", value: "No aplica" },
+      ])
+    );
+  });
 });
