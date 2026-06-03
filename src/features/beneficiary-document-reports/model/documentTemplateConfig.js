@@ -208,8 +208,15 @@ export const DOCUMENT_TEMPLATE_VARIANTS = {
   },
 };
 
+const DOCUMENT_TEMPLATE_VARIANT_ALIAS = {
+  [GRADUATION_CAUSE.PRODUCTIVE_PROJECTS]:
+    GRADUATION_CAUSE.AGRICULTURAL_PRODUCTIVE_PROJECTS,
+};
+
 export const getDocumentTemplateVariant = (graduationCause) =>
-  DOCUMENT_TEMPLATE_VARIANTS[graduationCause] || null;
+  DOCUMENT_TEMPLATE_VARIANTS[
+    DOCUMENT_TEMPLATE_VARIANT_ALIAS[graduationCause] || graduationCause
+  ] || null;
 
 export const buildSectionOneFields = (beneficiaryDetails, graduationCause) => {
   const variant = getDocumentTemplateVariant(graduationCause);
