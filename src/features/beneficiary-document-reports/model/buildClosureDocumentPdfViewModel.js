@@ -18,8 +18,7 @@ import {
 } from "./documentTemplateConfig";
 import {
   buildSectionThreeBalanceRows,
-  buildSectionThreeComponentRows,
-  buildSectionThreeRowsFromAccountStatement,
+  buildSectionThreeRowsFromPagoDetalle,
   resolveM2ValidationOption,
 } from "./documentTemplateSelectors";
 
@@ -35,13 +34,7 @@ export const buildClosureDocumentPdfViewModel = ({
   }
 
   const sectionOneRows = buildSectionOneFields(beneficiaryDetails, graduationCause);
-  const explicitSectionThreeRows = buildSectionThreeComponentRows(
-    beneficiaryDetails?.pai_family_components
-  );
-  const sectionThreeRows =
-    explicitSectionThreeRows.length > 0
-      ? explicitSectionThreeRows
-      : buildSectionThreeRowsFromAccountStatement(beneficiaryMovements?.estado_cuenta);
+  const sectionThreeRows = buildSectionThreeRowsFromPagoDetalle(beneficiaryMovements?.pago_detalle);
 
   return {
     sectionOne: {

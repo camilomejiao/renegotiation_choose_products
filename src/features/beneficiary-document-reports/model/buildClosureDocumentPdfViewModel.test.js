@@ -17,12 +17,23 @@ describe("buildClosureDocumentPdfViewModel", () => {
         tiene_m2: "SI",
       },
       beneficiaryMovements: {
-        estado_cuenta: [
+        estado_cuenta: [],
+        pago_detalle: [
           {
-            component: "Asistencia Alimentaria Inmediata AAI",
-            pay: "$ 100",
-            payNum: 100,
-            debtNum: 10,
+            descripcion: "Asistencia Alimentaria",
+            secundatio: "AAI",
+            contrato: "C-001",
+            detallePago: "Pago primer ciclo",
+            valor: 1000000,
+            fechaActividad: "2024-01-15",
+          },
+          {
+            descripcion: "Autosostenimiento",
+            secundatio: "ASA",
+            contrato: "C-002",
+            detallePago: "Pago segundo ciclo",
+            valor: 2000000,
+            fechaActividad: "2024-03-10",
           },
         ],
       },
@@ -33,7 +44,9 @@ describe("buildClosureDocumentPdfViewModel", () => {
       expect.arrayContaining([{ label: "CUB", value: "123" }])
     );
     expect(viewModel.sectionTwo.selectedOption).toBe("yes");
-    expect(viewModel.sectionThree.rows).toHaveLength(6);
+    expect(viewModel.sectionThree.rows).toHaveLength(2);
+    expect(viewModel.sectionThree.rows[0].componente).toBe("Asistencia Alimentaria");
+    expect(viewModel.sectionThree.rows[0].valorTotalPagado).toMatch(/1\.000\.000/);
     expect(viewModel.sectionFour.subtitle).toBeDefined();
     expect(viewModel.sectionFive.rows).toHaveLength(9);
   });

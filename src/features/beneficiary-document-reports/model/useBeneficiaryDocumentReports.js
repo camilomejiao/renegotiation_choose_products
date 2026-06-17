@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { createClosureDocumentPdfBlob } from "../lib/createClosureDocumentPdfBlob";
 import {
+  DOCUMENT_UNAVAILABLE_MODAL_TITLE,
   DOCUMENT_VIEWER_TITLE,
   DOCUMENT_VIEWER_SUBTITLE,
 } from "./constants";
 import {
   buildDocumentReportsRows,
   getDocumentReportsDetails,
+  getDocumentUnavailableReason,
   shouldShowDocumentReportsSection,
 } from "./selectors";
 
@@ -19,6 +20,12 @@ export const useBeneficiaryDocumentReports = ({
     isOpen: false,
     fileName: "",
     url: "",
+  });
+
+  const [documentUnavailableModal, setDocumentUnavailableModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
   });
 
   const resolvedBeneficiaryDetails = getDocumentReportsDetails(beneficiaryDetails);
@@ -52,12 +59,16 @@ export const useBeneficiaryDocumentReports = ({
     document.body.removeChild(link);
   };
 
+  const handleCloseDocumentUnavailableModal = () =>
+    setDocumentUnavailableModal({ isOpen: false, title: "", message: "" });
+
   const handleOpenDocumentViewer = (row) => {
     if (!row?.isDocumentEnabled) {
-      AlertComponent.info(
-        "Documento no disponible",
-        "El documento de cierre solo se habilita cuando el estado PNIS del titular es Atención Finalizada."
-      );
+      setDocumentUnavailableModal({
+        isOpen: true,
+        title: DOCUMENT_UNAVAILABLE_MODAL_TITLE,
+        message: getDocumentUnavailableReason(row?.holderStatus),
+      });
       return;
     }
 
@@ -94,10 +105,12 @@ export const useBeneficiaryDocumentReports = ({
     rows,
     shouldShowSection,
     documentViewer,
+    documentUnavailableModal,
     viewerTitle: DOCUMENT_VIEWER_TITLE,
     viewerSubtitle: DOCUMENT_VIEWER_SUBTITLE,
     handleOpenDocumentViewer,
     handleCloseDocumentViewer: closeDocumentViewer,
+    handleCloseDocumentUnavailableModal,
     handleDownloadViewerFile,
   };
 };

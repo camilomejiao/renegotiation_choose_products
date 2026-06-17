@@ -2,7 +2,7 @@ import { drawPdfFilledRect, PDF_COLORS, PDF_PAGE } from "../pdfPrimitives";
 
 export const SECTION_ONE_LAYOUT = {
   headingY: 734,
-  titleY: 696,
+  titleY: 734,
   titleWidth: 360,
   titleLineStep: 20,
   tableX: 84,
@@ -15,9 +15,9 @@ export const SECTION_ONE_LAYOUT = {
   rowTextStep: 12,
   rowPadding: 8,
   justificationGap: 42,
-  justificationTitleX: 88,
+  justificationTitleX: 26,
   justificationTitleGap: 26,
-  paragraphWidth: 440,
+  paragraphWidth: 560,
   paragraphLineStep: 16,
   paragraphGap: 22,
 };
@@ -58,10 +58,10 @@ export const SECTION_THREE_LAYOUT = {
 };
 
 export const SECTION_FOUR_LAYOUT = {
-  titleX: 88,
-  paragraphX: 88,
-  paragraphWidth: 440,
-  titleWidth: 440,
+  titleX: 26,
+  paragraphX: 26,
+  paragraphWidth: 560,
+  titleWidth: 560,
   paragraphTopGap: 24,
   paragraphLineStep: 19,
   paragraphGap: 22,

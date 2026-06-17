@@ -1,245 +1,204 @@
-import { drawPdfFilledRect, drawPdfLine, drawPdfText, PDF_COLORS, PDF_PAGE, wrapPdfTextToWidth } from "../pdfPrimitives";
+import { drawPdfLine, drawPdfText, wrapPdfTextToWidth, PDF_COLORS } from "../pdfPrimitives";
 import { SECTION_THREE_LAYOUT } from "./layout";
 
-const buildSectionThreeTableOperations = ({
-  columns,
-  rows,
-  x,
-  topY,
-  headerHeight,
-  rowMinHeight,
-  fontSize = 12,
-  headerFontSize = 10,
-  valueColor = PDF_COLORS.muted,
-}) => {
-  const tableWidth = columns.reduce((total, column) => total + column.width, 0);
-  const headerLinesByColumn = columns.map((column) =>
-    wrapPdfTextToWidth(
-      column.label,
-      column.width - SECTION_THREE_LAYOUT.cellPaddingX * 2,
-      headerFontSize
-    )
-  );
-  const computedHeaderHeight = Math.max(
-    headerHeight,
-    Math.max(...headerLinesByColumn.map((lines) => lines.length)) *
-      SECTION_THREE_LAYOUT.lineStep +
-      SECTION_THREE_LAYOUT.cellPaddingY * 2 +
-      headerFontSize
-  );
-  const computedRows = rows.map((row) => {
-    const cellLines = columns.map((column) =>
-      wrapPdfTextToWidth(
-        row?.[column.key] ?? "",
-        column.width - SECTION_THREE_LAYOUT.cellPaddingX * 2,
-        fontSize
-      )
-    );
-    const maxLines = Math.max(1, ...cellLines.map((lines) => lines.length));
+const S3 = SECTION_THREE_LAYOUT;
+const BODY_FONT = 9;
+const HEADER_FONT = 9;
 
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+const wrapWidth = (colWidth) => Math.max(20, colWidth - S3.cellPaddingX * 2 - 14);
+
+const computeHeaderMeta = (columns) => {
+  const linesByCol = columns.map((col) =>
+    wrapPdfTextToWidth(col.label, wrapWidth(col.width), HEADER_FONT)
+  );
+  const maxLines = Math.max(...linesByCol.map((l) => l.length));
+  const height = Math.max(
+    S3.headerHeight,
+    (maxLines - 1) * S3.lineStep + HEADER_FONT + S3.cellPaddingY * 2
+  );
+  return { linesByCol, height };
+};
+
+const computeRowsMeta = (columns, rows) =>
+  rows.map((row) => {
+    const cellLines = columns.map((col) =>
+      wrapPdfTextToWidth(row?.[col.key] ?? "", wrapWidth(col.width), BODY_FONT)
+    );
+    const maxLines = Math.max(1, ...cellLines.map((l) => l.length));
     return {
       cellLines,
       height: Math.max(
-        rowMinHeight,
-        maxLines * SECTION_THREE_LAYOUT.lineStep +
-          SECTION_THREE_LAYOUT.cellPaddingY * 2 +
-          fontSize
+        S3.rowMinHeight,
+        (maxLines - 1) * S3.lineStep + BODY_FONT + S3.cellPaddingY * 2
       ),
     };
   });
 
-  const bodyHeight = computedRows.reduce((total, row) => total + row.height, 0);
-  const bottomY = topY - computedHeaderHeight - bodyHeight;
-  const operations = [
-    drawPdfLine({ x1: x, y1: topY, x2: x + tableWidth, y2: topY }),
-    drawPdfLine({
-      x1: x,
-      y1: topY - computedHeaderHeight,
-      x2: x + tableWidth,
-      y2: topY - computedHeaderHeight,
-    }),
-    drawPdfLine({ x1: x, y1: bottomY, x2: x + tableWidth, y2: bottomY }),
+const tableWidth = (columns) => columns.reduce((s, c) => s + c.width, 0);
+
+// Draws the header row (top line + bottom line + vertical separators + labels).
+// Returns ops array. Does NOT draw the outer left/right borders (those span rows too).
+const drawHeader = (columns, x, topY, linesByCol, height) => {
+  const tw = tableWidth(columns);
+  const bottomY = topY - height;
+  const ops = [
+    drawPdfLine({ x1: x, y1: topY, x2: x + tw, y2: topY }),
+    drawPdfLine({ x1: x, y1: bottomY, x2: x + tw, y2: bottomY }),
     drawPdfLine({ x1: x, y1: topY, x2: x, y2: bottomY }),
-    drawPdfLine({
-      x1: x + tableWidth,
-      y1: topY,
-      x2: x + tableWidth,
-      y2: bottomY,
-    }),
+    drawPdfLine({ x1: x + tw, y1: topY, x2: x + tw, y2: bottomY }),
   ];
 
-  let currentX = x;
-  columns.forEach((column, index) => {
-    const centerX = currentX + column.width / 2;
+  let cx = x;
+  columns.forEach((col, i) => {
+    const lines = linesByCol[i];
+    const blockH = (lines.length - 1) * S3.lineStep + HEADER_FONT;
+    const topOffset = (height - blockH) / 2;
+    const centerX = cx + col.width / 2;
 
-    headerLinesByColumn[index].forEach((line, lineIndex) => {
-      operations.push(
+    lines.forEach((line, li) => {
+      ops.push(
         drawPdfText({
           text: line,
           x: centerX,
-          y:
-            topY -
-            SECTION_THREE_LAYOUT.cellPaddingY -
-            headerFontSize -
-            lineIndex * SECTION_THREE_LAYOUT.lineStep,
+          y: topY - topOffset - HEADER_FONT - li * S3.lineStep,
           font: "F2",
-          fontSize: headerFontSize,
+          fontSize: HEADER_FONT,
           align: "center",
         })
       );
     });
 
-    currentX += column.width;
-    if (index < columns.length - 1) {
-      operations.push(
-        drawPdfLine({
-          x1: currentX,
-          y1: topY,
-          x2: currentX,
-          y2: bottomY,
-        })
-      );
+    cx += col.width;
+    if (i < columns.length - 1) {
+      ops.push(drawPdfLine({ x1: cx, y1: topY, x2: cx, y2: bottomY }));
     }
   });
 
-  let currentY = topY - computedHeaderHeight;
-  computedRows.forEach((computedRow, rowIndex) => {
-    if (rowIndex > 0) {
-      operations.push(
-        drawPdfLine({
-          x1: x,
-          y1: currentY,
-          x2: x + tableWidth,
-          y2: currentY,
-        })
-      );
+  return ops;
+};
+
+// Draws a contiguous slice of data rows between topY and topY-totalHeight.
+// Draws outer left/right/bottom borders + column separators + row separators + cell text.
+const drawRowsSegment = (columns, computedRows, x, topY) => {
+  if (computedRows.length === 0) return [];
+  const tw = tableWidth(columns);
+  const segHeight = computedRows.reduce((s, r) => s + r.height, 0);
+  const bottomY = topY - segHeight;
+
+  const ops = [
+    drawPdfLine({ x1: x, y1: topY, x2: x, y2: bottomY }),
+    drawPdfLine({ x1: x + tw, y1: topY, x2: x + tw, y2: bottomY }),
+    drawPdfLine({ x1: x, y1: bottomY, x2: x + tw, y2: bottomY }),
+  ];
+
+  // vertical column separators
+  let sepX = x;
+  columns.forEach((col, i) => {
+    sepX += col.width;
+    if (i < columns.length - 1) {
+      ops.push(drawPdfLine({ x1: sepX, y1: topY, x2: sepX, y2: bottomY }));
+    }
+  });
+
+  let currentY = topY;
+  computedRows.forEach((row, rowIdx) => {
+    if (rowIdx > 0) {
+      ops.push(drawPdfLine({ x1: x, y1: currentY, x2: x + tw, y2: currentY }));
     }
 
-    let columnX = x;
-    columns.forEach((column, columnIndex) => {
-      const cellX =
-        column.align === "center"
-          ? columnX + column.width / 2
-          : columnX + SECTION_THREE_LAYOUT.cellPaddingX;
+    let colX = x;
+    columns.forEach((col, colIdx) => {
+      const lines = row.cellLines[colIdx];
+      const blockH = (lines.length - 1) * S3.lineStep + BODY_FONT;
+      const topOffset = (row.height - blockH) / 2;
+      const textX =
+        col.align === "center"
+          ? colX + col.width / 2
+          : colX + S3.cellPaddingX;
 
-      computedRow.cellLines[columnIndex].forEach((line, lineIndex) => {
-        operations.push(
+      lines.forEach((line, li) => {
+        ops.push(
           drawPdfText({
             text: line,
-            x: cellX,
-            y:
-              currentY -
-              SECTION_THREE_LAYOUT.cellPaddingY -
-              fontSize -
-              lineIndex * SECTION_THREE_LAYOUT.lineStep,
+            x: textX,
+            y: currentY - topOffset - BODY_FONT - li * S3.lineStep,
             font: line ? "F3" : "F1",
-            fontSize,
-            color: line ? valueColor : PDF_COLORS.white,
-            align: column.align === "center" ? "center" : "left",
+            fontSize: BODY_FONT,
+            color: line ? PDF_COLORS.muted : PDF_COLORS.white,
+            align: col.align === "center" ? "center" : "left",
           })
         );
       });
-      columnX += column.width;
+
+      colX += col.width;
     });
 
-    currentY -= computedRow.height;
+    currentY -= row.height;
   });
 
-  return { operations, bottomY };
+  return ops;
 };
 
-const buildSectionThreeBalanceTableOperations = (rows, topY) => {
-  const {
-    secondTableX,
-    secondTableWidth,
-    secondTableLabelWidth,
-    secondTableRowHeight,
-    secondTableValueWidth,
-  } = SECTION_THREE_LAYOUT;
-  const valueColumnX = secondTableX + secondTableLabelWidth;
-  const computedRows = rows.map((row) => {
-    const valueLines = wrapPdfTextToWidth(row.value, secondTableValueWidth - 16, 12);
+// ── balance table (second table) ──────────────────────────────────────────────
 
+const buildBalanceTableOps = (rows, topY) => {
+  const { secondTableX: x, secondTableWidth: tw, secondTableLabelWidth: labelW,
+    secondTableValueWidth: valueW, secondTableRowHeight, cellPaddingY, lineStep } = S3;
+  const fontSize = 9;
+  const valueColumnX = x + labelW;
+
+  const computedRows = rows.map((row) => {
+    const valueLines = wrapPdfTextToWidth(row.value, valueW - S3.cellPaddingX * 2, fontSize);
     return {
       ...row,
       valueLines,
       height: Math.max(
         secondTableRowHeight,
-        valueLines.length * SECTION_THREE_LAYOUT.lineStep +
-          SECTION_THREE_LAYOUT.cellPaddingY * 2 +
-          12
+        (valueLines.length - 1) * lineStep + fontSize + cellPaddingY * 2
       ),
     };
   });
-  const bottomY = topY - computedRows.reduce((total, row) => total + row.height, 0);
-  const operations = [
-    drawPdfLine({
-      x1: secondTableX,
-      y1: topY,
-      x2: secondTableX + secondTableWidth,
-      y2: topY,
-    }),
-    drawPdfLine({
-      x1: secondTableX,
-      y1: bottomY,
-      x2: secondTableX + secondTableWidth,
-      y2: bottomY,
-    }),
-    drawPdfLine({
-      x1: secondTableX,
-      y1: topY,
-      x2: secondTableX,
-      y2: bottomY,
-    }),
-    drawPdfLine({
-      x1: secondTableX + secondTableWidth,
-      y1: topY,
-      x2: secondTableX + secondTableWidth,
-      y2: bottomY,
-    }),
-    drawPdfLine({
-      x1: valueColumnX,
-      y1: topY,
-      x2: valueColumnX,
-      y2: bottomY,
-    }),
+
+  const totalH = computedRows.reduce((s, r) => s + r.height, 0);
+  const bottomY = topY - totalH;
+
+  const ops = [
+    drawPdfLine({ x1: x, y1: topY, x2: x + tw, y2: topY }),
+    drawPdfLine({ x1: x, y1: bottomY, x2: x + tw, y2: bottomY }),
+    drawPdfLine({ x1: x, y1: topY, x2: x, y2: bottomY }),
+    drawPdfLine({ x1: x + tw, y1: topY, x2: x + tw, y2: bottomY }),
+    drawPdfLine({ x1: valueColumnX, y1: topY, x2: valueColumnX, y2: bottomY }),
   ];
 
   let currentY = topY;
-  computedRows.forEach((row, index) => {
-    if (index > 0) {
-      operations.push(
-        drawPdfLine({
-          x1: secondTableX,
-          y1: currentY,
-          x2: secondTableX + secondTableWidth,
-          y2: currentY,
-        })
-      );
+  computedRows.forEach((row, idx) => {
+    if (idx > 0) {
+      ops.push(drawPdfLine({ x1: x, y1: currentY, x2: x + tw, y2: currentY }));
     }
 
-    operations.push(
+    const blockH = (row.valueLines.length - 1) * lineStep + fontSize;
+    const offset = (row.height - blockH) / 2;
+
+    ops.push(
       drawPdfText({
         text: row.label,
-        x: secondTableX + 8,
-        y: currentY - SECTION_THREE_LAYOUT.cellPaddingY - 12,
+        x: x + S3.cellPaddingX,
+        y: currentY - offset - fontSize,
         font: "F2",
-        fontSize: 12,
+        fontSize,
       })
     );
 
-    row.valueLines.forEach((line, lineIndex) => {
-      operations.push(
+    row.valueLines.forEach((line, li) => {
+      ops.push(
         drawPdfText({
           text: line,
-          x: valueColumnX + 8,
-          y:
-            currentY -
-            SECTION_THREE_LAYOUT.cellPaddingY -
-            12 -
-            lineIndex * SECTION_THREE_LAYOUT.lineStep,
+          x: valueColumnX + S3.cellPaddingX,
+          y: currentY - offset - fontSize - li * lineStep,
           font: "F3",
-          fontSize: 12,
+          fontSize,
           color: PDF_COLORS.muted,
         })
       );
@@ -248,56 +207,98 @@ const buildSectionThreeBalanceTableOperations = (rows, topY) => {
     currentY -= row.height;
   });
 
-  return { operations, bottomY };
+  return { ops, bottomY };
 };
 
-export const buildSectionThreeOperations = (sectionThree, startY, withBackground = true) => {
-  const titleY = startY - SECTION_THREE_LAYOUT.topGap;
-  const firstTableTopY = titleY - SECTION_THREE_LAYOUT.titleToTableGap;
-  const operations = [];
+// ── main export ───────────────────────────────────────────────────────────────
 
-  if (withBackground) {
-    operations.push(
-      drawPdfFilledRect({
-        x: 0,
-        y: 0,
-        width: PDF_PAGE.width,
-        height: PDF_PAGE.height,
-        color: PDF_COLORS.background,
-      })
-    );
-  }
+/**
+ * Builds section-3 content split into page chunks.
+ * Each chunk is a plain array of PDF operation strings (no background rect).
+ * Caller wraps with createBackgroundPageOperations.
+ *
+ * @param sectionThree  view-model object with { title, columns, rows, balanceRows }
+ * @param startY        Y to start drawing on the first chunk's page
+ * @param topGap        space above the title (use smaller value when continuing same page)
+ * @param safeBottomY   minimum Y before a page break is forced
+ * @param newPageTopY   Y to restart on continuation pages
+ */
+export const buildSectionThreeChunks = (
+  sectionThree,
+  startY,
+  topGap,
+  safeBottomY,
+  newPageTopY
+) => {
+  const { linesByCol: headerLinesByCol, height: headerH } = computeHeaderMeta(sectionThree.columns);
+  const allRows = computeRowsMeta(sectionThree.columns, sectionThree.rows);
 
-  operations.push(
+  const chunks = [];
+  let currentOps = [];
+
+  // ── start first chunk ──────────────────────────────────────────────────────
+  const titleY = startY - topGap;
+  currentOps.push(
     drawPdfText({
       text: sectionThree.title,
-      x: SECTION_THREE_LAYOUT.titleX,
+      x: S3.titleX,
       y: titleY,
       font: "F2",
-      fontSize: 15,
+      fontSize: 13,
     })
   );
 
-  const firstTable = buildSectionThreeTableOperations({
-    columns: sectionThree.columns,
-    rows: sectionThree.rows,
-    x: SECTION_THREE_LAYOUT.firstTableX,
-    topY: firstTableTopY,
-    headerHeight: SECTION_THREE_LAYOUT.headerHeight,
-    rowMinHeight: SECTION_THREE_LAYOUT.rowMinHeight,
-    fontSize: 12,
-    headerFontSize: 10,
-  });
-  operations.push(...firstTable.operations);
+  let currentY = titleY - S3.titleToTableGap;
 
-  const balanceTable = buildSectionThreeBalanceTableOperations(
-    sectionThree.balanceRows,
-    firstTable.bottomY - SECTION_THREE_LAYOUT.secondTableTopGap
-  );
-  operations.push(...balanceTable.operations);
+  // draw header on current page
+  currentOps.push(...drawHeader(sectionThree.columns, S3.firstTableX, currentY, headerLinesByCol, headerH));
+  currentY -= headerH;
 
-  return {
-    operations,
-    nextY: balanceTable.bottomY,
+  // ── distribute rows across pages ──────────────────────────────────────────
+  let chunkStartY = currentY; // top of first rows segment on this page
+  let chunkRows = [];
+
+  const flushChunk = () => {
+    if (chunkRows.length > 0) {
+      currentOps.push(...drawRowsSegment(sectionThree.columns, chunkRows, S3.firstTableX, chunkStartY));
+    }
   };
+
+  const startNewPage = () => {
+    flushChunk();
+    chunks.push(currentOps);
+    currentOps = [];
+    chunkRows = [];
+
+    currentY = newPageTopY - S3.topGap;
+    currentOps.push(
+      drawPdfText({
+        text: sectionThree.title,
+        x: S3.titleX,
+        y: currentY,
+        font: "F2",
+        fontSize: 13,
+      })
+    );
+    currentY -= S3.titleToTableGap;
+    currentOps.push(...drawHeader(sectionThree.columns, S3.firstTableX, currentY, headerLinesByCol, headerH));
+    currentY -= headerH;
+    chunkStartY = currentY;
+  };
+
+  allRows.forEach((row) => {
+    // Check if this row (plus some margin for balance table) fits
+    if (currentY - row.height < safeBottomY) {
+      startNewPage();
+    }
+    chunkRows.push(row);
+    currentY -= row.height;
+  });
+
+  // Flush last rows segment
+  flushChunk();
+
+  chunks.push(currentOps);
+
+  return { chunks, nextY: currentY };
 };

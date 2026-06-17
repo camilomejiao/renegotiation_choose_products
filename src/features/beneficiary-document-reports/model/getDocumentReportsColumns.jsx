@@ -14,6 +14,9 @@ export const getDocumentReportsColumns = ({ onOpenDocumentViewer, DocumentAction
     dataIndex: "description",
     key: "description",
     width: 320,
+    render: (value) => (
+      <div style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{value}</div>
+    ),
   },
   {
     title: "Causal de Graduación",
@@ -31,7 +34,6 @@ export const getDocumentReportsColumns = ({ onOpenDocumentViewer, DocumentAction
         type="primary"
         icon={<FileTextOutlined />}
         onClick={() => onOpenDocumentViewer(row)}
-        disabled={!row?.isDocumentEnabled}
       >
         Documento
       </DocumentActionButton>

@@ -6,6 +6,7 @@ import {
 import {
   DOCUMENT_REPORTS_EMPTY_TEXT,
   DOCUMENT_REPORTS_MOCK,
+  DOCUMENT_UNAVAILABLE_REASONS,
   IS_DOCUMENT_REPORTS_MOCK_ENABLED,
   IS_DOCUMENT_REPORTS_SECTION_TESTING_ENABLED,
 } from "./constants";
@@ -39,6 +40,10 @@ export const getDocumentReportsDetails = (beneficiaryDetails) => {
 
 export const canGenerateClosureDocument = (beneficiaryDetails) =>
   isTitularAttentionFinalized(beneficiaryDetails?.estado_titular);
+
+export const getDocumentUnavailableReason = (holderStatus) =>
+  DOCUMENT_UNAVAILABLE_REASONS[holderStatus] ||
+  "El documento de cierre no está disponible para el estado actual del titular.";
 
 export const shouldShowDocumentReportsSection = (beneficiaryDetails) =>
   IS_DOCUMENT_REPORTS_SECTION_TESTING_ENABLED ||

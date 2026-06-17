@@ -146,16 +146,7 @@ export const buildSectionOnePdfOperations = ({
   rows,
   justificationParagraphs,
 }) => {
-  const operations = [
-    drawPdfText({
-      text: getOptionalPdfText(heading).toUpperCase(),
-      x: 306,
-      y: SECTION_ONE_LAYOUT.headingY,
-      font: "F2",
-      fontSize: 15,
-      align: "center",
-    }),
-  ];
+  const operations = [];
 
   wrapPdfTextToWidth(title, SECTION_ONE_LAYOUT.titleWidth, 13).forEach(
     (line, index) => {

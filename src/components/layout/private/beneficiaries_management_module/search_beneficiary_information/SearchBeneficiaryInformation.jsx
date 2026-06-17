@@ -16,7 +16,7 @@ import {
     DocumentReportsSection,
     useBeneficiaryDocumentReports,
 } from "../../../../../features/beneficiary-document-reports";
-import { getGraduationCause } from "../../../../../entities/beneficiary";
+import { getGraduationCause, getTitularStatus } from "../../../../../entities/beneficiary";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
@@ -89,15 +89,18 @@ export const SearchBeneficiaryInformation = () => {
         datos_cub: null,
         estado_cuenta: [],
         resumen_pagos: [],
+        pago_detalle: [],
     });
     const {
         rows: documentReportsRows,
         shouldShowSection: shouldShowDocumentReportsSection,
         documentViewer,
+        documentUnavailableModal,
         viewerTitle,
         viewerSubtitle,
         handleOpenDocumentViewer,
         handleCloseDocumentViewer,
+        handleCloseDocumentUnavailableModal,
         handleDownloadViewerFile,
     } = useBeneficiaryDocumentReports({
         beneficiaryDetails: movements?.datos_cub,
@@ -189,6 +192,7 @@ export const SearchBeneficiaryInformation = () => {
                 datos_cub: null,
                 estado_cuenta: [],
                 resumen_pagos: [],
+                pago_detalle: [],
             });
 
             setSearchParams({
@@ -501,7 +505,7 @@ export const SearchBeneficiaryInformation = () => {
             condicionante_ambiental: datos.condicionante_ambiental || "",
             tiene_m2: datos.tiene_m2 || "",
             restriccion: datos.restriccion || "",
-            estado_titular: datos.estado_titular || "",
+            estado_titular: getTitularStatus(datos.estado_titular) || datos.estado_titular || "",
             descripcion: datos.descripcion || "",
             causal: getGraduationCause(datos.causal),
             nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
@@ -602,12 +606,25 @@ export const SearchBeneficiaryInformation = () => {
         }));
     };
 
+    const normalizePagoDetalleRows = (data = []) => {
+        if (!Array.isArray(data)) return [];
+        return data.map((item) => ({
+            descripcion: item?.descripcion ?? "",
+            secundatio: item?.secundatio ?? "",
+            contrato: item?.contrato ?? "",
+            detallePago: item?.detallePago ?? "",
+            valor: item?.valor ?? 0,
+            fechaActividad: item?.fechaActividad ?? "",
+        }));
+    };
+
     /**
      * Normaliza la respuesta completa del endpoint de detalle.
-     * Unifica en un solo objeto los tres bloques usados por la UI:
+     * Unifica en un solo objeto los bloques usados por la UI:
      * - datos_cub
      * - estado_cuenta
      * - resumen_pagos
+     * - pago_detalle
      *
      * @param {Object} data - Respuesta cruda del backend.
      * @returns {Object} Objeto normalizado para setear en `movements`.
@@ -616,6 +633,7 @@ export const SearchBeneficiaryInformation = () => {
         datos_cub: normalizeDatosCub(data?.datos_cub),
         estado_cuenta: normalizeAccountStatementRows(data?.estado_cuenta),
         resumen_pagos: normalizePaymentSummaryRows(data?.resumen_pagos),
+        pago_detalle: normalizePagoDetalleRows(data?.pago_detalle),
     });
 
     useEffect(() => {
@@ -1019,10 +1037,12 @@ export const SearchBeneficiaryInformation = () => {
                 rows={documentReportsRows}
                 isVisible={Boolean(movements?.datos_cub) && shouldShowDocumentReportsSection}
                 documentViewer={documentViewer}
+                documentUnavailableModal={documentUnavailableModal}
                 viewerTitle={viewerTitle}
                 viewerSubtitle={viewerSubtitle}
                 onOpenDocumentViewer={handleOpenDocumentViewer}
                 onCloseDocumentViewer={handleCloseDocumentViewer}
+                onCloseDocumentUnavailableModal={handleCloseDocumentUnavailableModal}
                 onDownloadViewerFile={handleDownloadViewerFile}
             />
             </Container>

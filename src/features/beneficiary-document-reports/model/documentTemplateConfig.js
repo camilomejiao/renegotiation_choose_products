@@ -41,20 +41,12 @@ export const SECTION_THREE_TITLE =
   "DETALLE DE LOS COMPONENTES DEL PAI FAMILIAR EJECUTADOS AL CUB:";
 
 export const SECTION_THREE_COMPONENT_COLUMNS = [
-  { key: "component", label: "Componente", width: 176, align: "left" },
-  {
-    key: "totalExecuted",
-    label: "Valor total ejecutado ($)",
-    width: 138,
-    align: "center",
-  },
-  { key: "operator", label: "Operador", width: 112, align: "center" },
-  {
-    key: "lastDeliveryDate",
-    label: "Fecha de ultima entrega",
-    width: 118,
-    align: "center",
-  },
+  { key: "componente", label: "Componente", width: 100, align: "left" },
+  { key: "componenteSecundario", label: "Componente secundario", width: 78, align: "left" },
+  { key: "contrato", label: "Contrato", width: 68, align: "center" },
+  { key: "detallePago", label: "Detalle del pago", width: 132, align: "left" },
+  { key: "valorTotalPagado", label: "Valor total pagado ($)", width: 88, align: "center" },
+  { key: "fechaEntrega", label: "Fecha entrega", width: 78, align: "center" },
 ];
 
 export const SECTION_THREE_TEMPLATE_COMPONENT_ROWS = [
@@ -185,22 +177,22 @@ export const GRADUATION_CAUSE_GROUPS = {
 
 export const DOCUMENT_TEMPLATE_VARIANTS = {
   [GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION]: {
-    heading: GRADUATION_CAUSE.DIFFERENTIAL_ATTENTION,
+    heading: "ATENCIÓN DIFERENCIAL",
     sectionOneFields: SECTION_ONE_BASE_FIELDS,
   },
   [GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT]: {
-    heading: GRADUATION_CAUSE.FINANCIAL_OBLIGATION_PAYMENT,
+    heading: "PAGO OBLIGACIONES FINANCIERAS",
     sectionOneFields: SECTION_ONE_BASE_FIELDS,
   },
   [GRADUATION_CAUSE.NON_AGRICULTURAL_PRODUCTIVE_PROJECTS]: {
-    heading: GRADUATION_CAUSE.NON_AGRICULTURAL_PRODUCTIVE_PROJECTS,
+    heading: "PROYECTOS PRODUCTIVOS NO AGROPECUARIOS",
     sectionOneFields: [
       ...SECTION_ONE_BASE_FIELDS,
       ...PRODUCTIVE_PROJECT_SECTION_ONE_FIELDS,
     ],
   },
   [GRADUATION_CAUSE.AGRICULTURAL_PRODUCTIVE_PROJECTS]: {
-    heading: GRADUATION_CAUSE.AGRICULTURAL_PRODUCTIVE_PROJECTS,
+    heading: "PROYECTOS PRODUCTIVOS AGROPECUARIOS",
     sectionOneFields: [
       ...SECTION_ONE_BASE_FIELDS,
       ...PRODUCTIVE_PROJECT_SECTION_ONE_FIELDS,
