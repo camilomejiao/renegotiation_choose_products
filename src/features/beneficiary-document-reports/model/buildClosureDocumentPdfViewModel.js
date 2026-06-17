@@ -18,43 +18,23 @@ import {
 } from "./documentTemplateConfig";
 import {
   buildSectionThreeBalanceRows,
-  buildSectionThreeComponentRows,
-  buildSectionThreeRowsFromAccountStatement,
+  buildSectionThreeRowsFromPagoDetalle,
   resolveM2ValidationOption,
 } from "./documentTemplateSelectors";
-import { getGraduationCause } from "../../../entities/beneficiary";
 
 export const buildClosureDocumentPdfViewModel = ({
   beneficiaryDetails,
   beneficiaryMovements,
   graduationCause,
 }) => {
-  const normalizedGraduationCause = getGraduationCause(graduationCause);
-  const variant = getDocumentTemplateVariant(normalizedGraduationCause);
+  const variant = getDocumentTemplateVariant(graduationCause);
 
   if (!variant) {
     return null;
   }
 
-  // El PDF necesita el nombre canónico de la causal, no el raw del servicio
-  const detailsForPdf = normalizedGraduationCause
-    ? { ...beneficiaryDetails, causal: normalizedGraduationCause }
-    : beneficiaryDetails;
-
-  const sectionOneRows = buildSectionOneFields(detailsForPdf, normalizedGraduationCause);
-  const explicitSectionThreeRows = buildSectionThreeComponentRows(
-    detailsForPdf?.pai_family_components
-  );
-  const rawSectionThreeRows =
-    explicitSectionThreeRows.length > 0
-      ? explicitSectionThreeRows
-      : buildSectionThreeRowsFromAccountStatement(beneficiaryMovements?.estado_cuenta);
-  const sectionThreeRows = rawSectionThreeRows.map((row) => ({
-    ...row,
-    totalExecuted: "$0",
-    operator: "No aplica",
-    lastDeliveryDate: "No aplica",
-  }));
+  const sectionOneRows = buildSectionOneFields(beneficiaryDetails, graduationCause);
+  const sectionThreeRows = buildSectionThreeRowsFromPagoDetalle(beneficiaryMovements?.pago_detalle);
 
   return {
     sectionOne: {
@@ -67,17 +47,17 @@ export const buildClosureDocumentPdfViewModel = ({
       title: SECTION_TWO_TITLE,
       label: SECTION_TWO_M2_LABEL,
       choices: SECTION_TWO_M2_CHOICES,
-      selectedOption: resolveM2ValidationOption(detailsForPdf?.tiene_m2),
+      selectedOption: resolveM2ValidationOption(beneficiaryDetails?.tiene_m2),
     },
     sectionThree: {
       title: SECTION_THREE_TITLE,
       columns: SECTION_THREE_COMPONENT_COLUMNS,
       rows: sectionThreeRows,
       balanceRows: buildSectionThreeBalanceRows(
-        detailsForPdf,
+        beneficiaryDetails,
         SECTION_THREE_BALANCE_FIELDS,
         beneficiaryMovements?.estado_cuenta
-      ).map((row) => ({ ...row, value: "$0" })),
+      ),
     },
     sectionFour: {
       title: SECTION_FOUR_TITLE,

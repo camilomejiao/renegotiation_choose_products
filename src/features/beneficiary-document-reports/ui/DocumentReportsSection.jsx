@@ -9,16 +9,19 @@ import {
 } from "../model/constants";
 import { getDocumentReportsColumns } from "../model/getDocumentReportsColumns";
 import { DocumentActionButton } from "./DocumentReportsSection.styles";
+import { DocumentUnavailableModal } from "./DocumentUnavailableModal";
 import { DocumentViewerModal } from "./DocumentViewerModal";
 
 export const DocumentReportsSection = ({
   rows,
   isVisible,
   documentViewer,
+  documentUnavailableModal,
   viewerTitle,
   viewerSubtitle,
   onOpenDocumentViewer,
   onCloseDocumentViewer,
+  onCloseDocumentUnavailableModal,
   onDownloadViewerFile,
 }) => {
   if (!isVisible) {
@@ -59,6 +62,13 @@ export const DocumentReportsSection = ({
           </div>
         </Card.Body>
       </Card>
+
+      <DocumentUnavailableModal
+        isOpen={documentUnavailableModal.isOpen}
+        title={documentUnavailableModal.title}
+        message={documentUnavailableModal.message}
+        onClose={onCloseDocumentUnavailableModal}
+      />
 
       <DocumentViewerModal
         isOpen={documentViewer.isOpen}

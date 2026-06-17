@@ -75,6 +75,21 @@ export const buildSectionThreeComponentRows = (rows = []) => {
   }));
 };
 
+export const buildSectionThreeRowsFromPagoDetalle = (pagoDetalle = []) => {
+  if (!Array.isArray(pagoDetalle) || pagoDetalle.length === 0) {
+    return [];
+  }
+
+  return pagoDetalle.map((item) => ({
+    componente: item?.descripcion ?? "",
+    componenteSecundario: item?.secundatio ?? "",
+    contrato: item?.contrato ?? "",
+    detallePago: item?.detallePago ?? "",
+    valorTotalPagado: formatCurrency(item?.valor),
+    fechaEntrega: item?.fechaActividad ?? "",
+  }));
+};
+
 export const buildSectionThreeRowsFromAccountStatement = (accountStatementRows = []) =>
   SECTION_THREE_TEMPLATE_COMPONENT_ROWS.map((template) =>
     buildDerivedComponentRow(template, accountStatementRows)

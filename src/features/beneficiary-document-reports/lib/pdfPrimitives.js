@@ -26,7 +26,7 @@ export const getOptionalPdfText = (value) =>
   normalizePdfText(String(value ?? "").trim());
 
 export const estimateTextWidth = (text, fontSize) =>
-  sanitizePdfText(text).length * fontSize * 0.52;
+  normalizePdfText(String(text ?? "")).length * fontSize * 0.52;
 
 export const wrapPdfText = (text, maxChars) => {
   const content = getOptionalPdfText(text);
@@ -105,7 +105,7 @@ export const drawPdfText = ({
 }) => {
   const safeText = sanitizePdfText(text);
   const resolvedX =
-    align === "center" ? x - estimateTextWidth(safeText, fontSize) / 2 : x;
+    align === "center" ? x - estimateTextWidth(text, fontSize) / 2 : x;
 
   return `BT /${font} ${fontSize} Tf ${color.join(" ")} rg 1 0 0 1 ${resolvedX.toFixed(
     2

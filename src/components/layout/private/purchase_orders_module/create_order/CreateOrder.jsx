@@ -97,6 +97,43 @@ export const CreateOrder = () => {
         AlertComponent.Error(title, buildProductMarketErrorHtml(errorMessage, productNames));
     };
 
+    const buildOrderSaveErrorHtml = (errorData) => {
+        const safeMessage = escapeHtml(
+            errorData?.detalle || "No fue posible guardar los productos."
+        );
+        const invalidPrices = Array.isArray(errorData?.precios_fuera_rango)
+            ? errorData.precios_fuera_rango
+            : [];
+
+        if (!invalidPrices.length) {
+            return `<p style="margin: 0; text-align: left;">${safeMessage}</p>`;
+        }
+
+        const items = invalidPrices
+            .map((item) => {
+                const productName = escapeHtml(item?.nombre || `Producto ${item?.producto_id || ""}`.trim());
+                const productMessage = escapeHtml(item?.mensaje || "Precio fuera del rango permitido.");
+
+                return `
+                    <li style="margin: 0 0 8px 0;">
+                        <div style="font-weight: 600;">${productName}</div>
+                        <div>${productMessage}</div>
+                    </li>
+                `;
+            })
+            .join("");
+
+        return `
+            <div style="text-align: left;">
+                <p style="margin: 0 0 8px 0;">${safeMessage}</p>
+                <div style="margin: 0 0 6px 0; font-weight: 600;">Productos con precio fuera de rango:</div>
+                <div style="max-height: 160px; overflow: auto; padding-right: 4px;">
+                    <ul style="margin: 0 0 0 16px; padding: 0;">${items}</ul>
+                </div>
+            </div>
+        `;
+    };
+
     //Obtener la información del usuario
     const getUserInformation = async (cubId) => {
         try {
@@ -269,7 +306,10 @@ export const CreateOrder = () => {
         }
 
         if (status === ResponseStatusEnum.BAD_REQUEST) {
-            AlertComponent.error('Error al guardar los productos', data);
+            AlertComponent.Error(
+                'Error al guardar los productos',
+                buildOrderSaveErrorHtml(data)
+            );
         }
     };
 

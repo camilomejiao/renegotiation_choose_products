@@ -50,6 +50,21 @@ describe("getSectionOneTableRows", () => {
     );
   });
 
+  it("reuses the agricultural template for generic productive projects", () => {
+    const rows = getSectionOneTableRows(
+      beneficiaryDetails,
+      GRADUATION_CAUSE.PRODUCTIVE_PROJECTS
+    );
+
+    expect(rows).toEqual(
+      expect.arrayContaining([
+        { label: "Plan de inversion", value: "Plan A" },
+        { label: "Linea productiva", value: "Linea B" },
+        { label: "Condicionante ambiental", value: "No aplica" },
+      ])
+    );
+  });
+
   it("keeps the shorter section 1 for attention differential", () => {
     const rows = getSectionOneTableRows(
       beneficiaryDetails,

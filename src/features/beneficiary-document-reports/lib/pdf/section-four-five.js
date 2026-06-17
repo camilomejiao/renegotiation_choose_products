@@ -1,4 +1,4 @@
-import { drawPdfLine, drawPdfText, PDF_COLORS, wrapPdfTextToWidth } from "../pdfPrimitives";
+import { drawPdfJustifiedText, drawPdfLine, drawPdfText, PDF_COLORS, wrapPdfTextToWidth } from "../pdfPrimitives";
 import { SECTION_FOUR_LAYOUT } from "./layout";
 
 const buildParagraphBlockOperations = ({
@@ -18,14 +18,13 @@ const buildParagraphBlockOperations = ({
     lines.forEach((line, index) => {
       operations.push(
         index < lines.length - 1
-          ? drawPdfText({
+          ? drawPdfJustifiedText({
               text: line,
               x,
               y: currentY,
               width,
               font: "F1",
               fontSize: 11,
-              color: PDF_COLORS.white,
             })
           : drawPdfText({
               text: line,
@@ -58,21 +57,22 @@ const buildSupportTableOperations = ({
 }) => {
   const tableWidth = columns.reduce((total, column) => total + column.width, 0);
   const headerLinesByColumn = columns.map((column) =>
-    wrapPdfTextToWidth(column.label, column.width - 12, fontSize)
+    wrapPdfTextToWidth(column.label, column.width - 16, fontSize)
   );
+  const maxHeaderLines = Math.max(...headerLinesByColumn.map((lines) => lines.length));
   const computedHeaderHeight = Math.max(
     headerHeight,
-    Math.max(...headerLinesByColumn.map((lines) => lines.length)) * 11 + 18
+    (maxHeaderLines - 1) * 11 + fontSize + 18
   );
   const computedRows = rows.map((row) => {
     const cellLines = columns.map((column) =>
-      wrapPdfTextToWidth(row?.[column.key] ?? "", column.width - 12, fontSize)
+      wrapPdfTextToWidth(row?.[column.key] ?? "", column.width - 16, fontSize)
     );
     const maxLines = Math.max(1, ...cellLines.map((lines) => lines.length));
 
     return {
       cellLines,
-      height: Math.max(rowMinHeight, maxLines * 11 + 14),
+      height: Math.max(rowMinHeight, (maxLines - 1) * 11 + fontSize + 16),
     };
   });
 
@@ -93,13 +93,17 @@ const buildSupportTableOperations = ({
 
   let currentX = x;
   columns.forEach((column, index) => {
+    const lines = headerLinesByColumn[index];
+    const blockH = (lines.length - 1) * 11 + fontSize;
+    const topOffset = (computedHeaderHeight - blockH) / 2;
     const centerX = currentX + column.width / 2;
-    headerLinesByColumn[index].forEach((line, lineIndex) => {
+
+    lines.forEach((line, lineIndex) => {
       operations.push(
         drawPdfText({
           text: line,
           x: centerX,
-          y: topY - 8 - fontSize - lineIndex * 11,
+          y: topY - topOffset - fontSize - lineIndex * 11,
           font: "F2",
           fontSize,
           align: "center",
@@ -134,17 +138,22 @@ const buildSupportTableOperations = ({
 
     let columnX = x;
     columns.forEach((column, columnIndex) => {
-      const cellX = centerContent ? columnX + column.width / 2 : column.align === "center" ? columnX + column.width / 2 : columnX + 6;
-      computedRow.cellLines[columnIndex].forEach((line, lineIndex) => {
+      const isCenter = centerContent || column.align === "center";
+      const cellX = isCenter ? columnX + column.width / 2 : columnX + 8;
+      const cellLines = computedRow.cellLines[columnIndex];
+      const blockH = (cellLines.length - 1) * 11 + fontSize;
+      const topOffset = (computedRow.height - blockH) / 2;
+
+      cellLines.forEach((line, lineIndex) => {
         operations.push(
           drawPdfText({
             text: line,
             x: cellX,
-            y: currentY - 8 - fontSize - lineIndex * 11,
+            y: currentY - topOffset - fontSize - lineIndex * 11,
             font: "F3",
             fontSize,
             color: PDF_COLORS.white,
-            align: centerContent || column.align === "center" ? "center" : "left",
+            align: isCenter ? "center" : "left",
           })
         );
       });
@@ -240,7 +249,7 @@ export const buildSectionFiveOperations = (sectionFive, startY) => {
     headerHeight: 18,
     rowMinHeight: 22,
     fontSize: 10,
-    centerContent: true,
+    centerContent: false,
   });
 
   return {
