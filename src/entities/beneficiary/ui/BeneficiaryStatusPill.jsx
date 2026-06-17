@@ -1,9 +1,9 @@
 import { Tag } from "antd";
 import styled from "@emotion/styled";
-import { TITULAR_STATUS_COLORS } from "../model/constants";
+import { getTitularStatusColor } from "../model/selectors";
 
 export const BeneficiaryStatusPill = ({ status }) => (
-  <StyledStatusTag color={TITULAR_STATUS_COLORS[status] || "default"}>
+  <StyledStatusTag color={getTitularStatusColor(status)}>
     {status || "---"}
   </StyledStatusTag>
 );
