@@ -80,7 +80,12 @@ export const buildSectionThreeRowsFromPagoDetalle = (pagoDetalle = []) => {
     return [];
   }
 
-  return pagoDetalle.map((item) => ({
+  const sorted = [...pagoDetalle].sort((a, b) => {
+    if (a.componentId !== b.componentId) return (a.componentId ?? 0) - (b.componentId ?? 0);
+    return (a.orden ?? 0) - (b.orden ?? 0);
+  });
+
+  return sorted.map((item) => ({
     componente: item?.descripcion ?? "",
     componenteSecundario: item?.secundario ?? "",
     contrato: item?.contrato ?? "",
