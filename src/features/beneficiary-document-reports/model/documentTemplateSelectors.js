@@ -82,7 +82,7 @@ export const buildSectionThreeRowsFromPagoDetalle = (pagoDetalle = []) => {
 
   return pagoDetalle.map((item) => ({
     componente: item?.descripcion ?? "",
-    componenteSecundario: item?.secundatio ?? "",
+    componenteSecundario: item?.secundario ?? "",
     contrato: item?.contrato ?? "",
     detallePago: item?.detallePago ?? "",
     valorTotalPagado: formatCurrency(item?.valor),
