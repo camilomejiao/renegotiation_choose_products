@@ -615,7 +615,7 @@ export const SearchBeneficiaryInformation = () => {
             detallePago: item?.detallePago ?? "",
             valor: item?.valor ?? 0,
             fechaActividad: item?.fechaActividad ?? "",
-            componentId: item?.componentId ?? null,
+            componenteId: item?.componenteId ?? null,
             orden: item?.orden ?? null,
         }));
     };

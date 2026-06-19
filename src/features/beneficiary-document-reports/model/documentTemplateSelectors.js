@@ -81,7 +81,7 @@ export const buildSectionThreeRowsFromPagoDetalle = (pagoDetalle = []) => {
   }
 
   const sorted = [...pagoDetalle].sort((a, b) => {
-    if (a.componentId !== b.componentId) return (a.componentId ?? 0) - (b.componentId ?? 0);
+    if (a.componenteId !== b.componenteId) return (a.componenteId ?? 0) - (b.componenteId ?? 0);
     return (a.orden ?? 0) - (b.orden ?? 0);
   });
 
