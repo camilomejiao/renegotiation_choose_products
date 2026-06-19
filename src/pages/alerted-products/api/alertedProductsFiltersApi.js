@@ -25,6 +25,20 @@ export const getAlertedProductsParameterCatalog = async (parameterTypeId) => {
   return normalizeParameterOptions(response?.data ?? []);
 };
 
+export const getAlertedProductsDocumentFileNames = async () => {
+  const response = await parameterServices.getByTypeId(38);
+
+  if (response?.status !== ResponseStatusEnum.OK) {
+    return { pdf: null, excel: null };
+  }
+
+  const options = normalizeParameterOptions(response?.data ?? []);
+  return {
+    pdf: options[0]?.label ?? null,
+    excel: options[1]?.label ?? null,
+  };
+};
+
 const normalizeSupplierOptions = (rows = []) =>
   rows
     .map((row) => {

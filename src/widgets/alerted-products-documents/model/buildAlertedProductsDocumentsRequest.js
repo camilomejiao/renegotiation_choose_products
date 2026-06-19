@@ -30,13 +30,11 @@ export const buildAlertedProductsDocumentsPayload = ({
 
 export const buildAlertedProductsDocumentsFormData = ({
   filesByCategory = {},
-  payload,
   context = {},
 }) => {
   const formData = new FormData();
 
   formData.append("jornada_id", String(context?.journeyId ?? ""));
-  formData.append("metadata", JSON.stringify(payload));
 
   Object.entries(filesByCategory).forEach(([category, file]) => {
     if (!file) {

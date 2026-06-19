@@ -77,6 +77,12 @@ const formatFileSize = (sizeInBytes = 0) => {
   return `${(sizeInKb / 1024).toFixed(2)} MB`;
 };
 
+const extractDocumentPartName = (fileName = "") => {
+  const withoutExtension = fileName.replace(/\.[^.]+$/, "");
+  const parts = withoutExtension.split("_");
+  return parts[2] ?? parts[parts.length - 1] ?? fileName;
+};
+
 const formatTimestamp = (timestamp) => {
   if (!timestamp) {
     return "";
@@ -229,36 +235,48 @@ export const AlertedProductsDocumentsWidget = ({
 
   const fullHistoryTabs = uploadSlots.map((slot) => {
     const history = historyByCategory[slot.key];
+    const isPdf = slot.key === "pdf";
+
+    const handleOpenPdf = async (item) => {
+      const response = await filesServices.downloadFile(item.route);
+      if (!response?.blob) return;
+      const url = URL.createObjectURL(response.blob);
+      window.open(url, "_blank", "noopener,noreferrer");
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    const handleDownloadExcel = async (item) => {
+      const response = await filesServices.downloadFile(item.route);
+      if (!response?.blob) return;
+      const url = URL.createObjectURL(response.blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = item.name || "documento.xlsx";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
 
     return {
       key: `history-${slot.key}`,
-      label: slot.key === "pdf" ? "Historial PDF" : "Historial Excel",
+      label: isPdf ? "Historial PDF" : "Historial Excel",
       children: history.length ? (
         <FullHistoryPanel>
           <HistoryTimeline
-            items={history.map((item) => ({
+            items={history.map((item, index) => ({
               color: "blue",
               children: (
                 <HistoryItem key={item.uid}>
-                  <HistoryName>{item.name}</HistoryName>
-                  <HistoryMeta>{formatTimestamp(item.uploadedAt)}</HistoryMeta>
+                  <HistoryName>{extractDocumentPartName(item.name)}</HistoryName>
+                  <HistoryMeta><strong>Versión {history.length - index}</strong> · {formatTimestamp(item.uploadedAt)}</HistoryMeta>
                   <HistoryUser>{item.user || "---"}</HistoryUser>
                   {item.route ? (
                     <HistoryLinkButton
                       type="link"
-                      onClick={async () => {
-                        const response = await filesServices.downloadFile(item.route);
-
-                        if (!response?.blob) {
-                          return;
-                        }
-
-                        const url = URL.createObjectURL(response.blob);
-                        window.open(url, "_blank", "noopener,noreferrer");
-                        setTimeout(() => URL.revokeObjectURL(url), 1000);
-                      }}
+                      onClick={() => isPdf ? handleOpenPdf(item) : handleDownloadExcel(item)}
                     >
-                      Ver documento
+                      {isPdf ? "Ver documento" : "Descargar"}
                     </HistoryLinkButton>
                   ) : null}
                 </HistoryItem>
@@ -268,7 +286,7 @@ export const AlertedProductsDocumentsWidget = ({
         </FullHistoryPanel>
       ) : (
         <FullHistoryEmpty>
-          No hay registros en el historial de {slot.key === "pdf" ? "PDF" : "Excel"}.
+          No hay registros en el historial de {isPdf ? "PDF" : "Excel"}.
         </FullHistoryEmpty>
       ),
     };

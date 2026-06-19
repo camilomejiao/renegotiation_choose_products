@@ -5,6 +5,19 @@ import {
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
 
+const resolveDocumentCategory = (row = {}) => {
+  const campo = String(row?.campo ?? "").toLowerCase();
+  if (campo === "pdf" || campo === "excel") {
+    return campo;
+  }
+
+  const ext = String(row?.nombre_archivo ?? "").split(".").pop().toLowerCase();
+  if (ext === "pdf") return "pdf";
+  if (ext === "xlsx" || ext === "xls") return "excel";
+
+  return Number(row?.tipo_archivo) === 1 ? "excel" : "pdf";
+};
+
 const normalizeDocumentHistoryItem = (row = {}) => ({
   uid: row?.id ?? `${row?.tipo_archivo ?? "doc"}-${row?.nombre_archivo ?? ""}`,
   name: row?.nombre_archivo ?? "",
@@ -44,7 +57,7 @@ export const getAlertedProductsJourneyDocuments = async (journeyId) => {
 
   const historyByCategory = documents.reduce(
     (accumulator, row) => {
-      const category = Number(row?.tipo_archivo) === 2 ? "pdf" : "excel";
+      const category = resolveDocumentCategory(row);
       accumulator[category].push(normalizeDocumentHistoryItem(row));
       return accumulator;
     },
@@ -79,7 +92,6 @@ export const createAlertedProductsDocumentsRequest = ({
 
   const formData = buildAlertedProductsDocumentsFormData({
     filesByCategory,
-    payload,
     context,
   });
 

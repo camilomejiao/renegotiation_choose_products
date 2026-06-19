@@ -35,7 +35,7 @@ class AlertedProductsServices {
   }
 
   saveJourneyDocuments(formData) {
-    return authTokenService.fetchWithAuth(this.buildUrl("jornada/documentos"), {
+    return authTokenService.fetchWithAuth(this.buildUrl("jornada/documentos/"), {
       method: "POST",
       body: formData,
     });

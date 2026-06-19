@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createAlertedProductsDocumentsRequest,
   persistAlertedProductsJourneyDocuments,
 } from "../../../pages/alerted-products/api/alertedProductsDocumentsApi";
+import { getAlertedProductsDocumentFileNames } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
 
 const getFileCategory = (file) => {
   const extension = file.name?.split(".").pop()?.toLowerCase();
@@ -34,6 +35,13 @@ export const useAlertedProductsDocuments = ({
   const [historyByCategory, setHistoryByCategory] = useState(EMPTY_HISTORY);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [savingDocuments, setSavingDocuments] = useState(false);
+  const documentFileNamesRef = useRef({ pdf: null, excel: null });
+
+  useEffect(() => {
+    getAlertedProductsDocumentFileNames()
+      .then((names) => { documentFileNamesRef.current = names; })
+      .catch(() => {});
+  }, []);
 
   const normalizedExternalHistory = useMemo(
     () => externalHistoryByCategory ?? EMPTY_HISTORY,
@@ -58,9 +66,15 @@ export const useAlertedProductsDocuments = ({
       return false;
     }
 
+    const baseName = documentFileNamesRef.current[category];
+    const ext = file.name.split(".").pop();
+    const renamedFile = baseName
+      ? new File([file], `${baseName}.${ext}`, { type: file.type })
+      : file;
+
     setFilesByCategory((currentFiles) => ({
       ...currentFiles,
-      [category]: file,
+      [category]: renamedFile,
     }));
 
     return false;
