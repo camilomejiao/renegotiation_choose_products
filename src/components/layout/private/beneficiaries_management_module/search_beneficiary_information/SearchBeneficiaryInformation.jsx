@@ -12,11 +12,14 @@ import { HeaderImage } from "../../../shared/header_image/HeaderImage";
 import imgDCSIPeople from "../../../../../assets/image/addProducts/people1.jpg";
 import imgAdd from "../../../../../assets/image/payments/imgPay.png";
 import { Loading } from "../../../shared/loading/Loading";
+import {
+    DocumentReportsSection,
+    useBeneficiaryDocumentReports,
+} from "../../../../../features/beneficiary-document-reports";
+import { getGraduationCause, getTitularStatus } from "../../../../../entities/beneficiary";
 
 //Enum
 import { ResponseStatusEnum } from "../../../../../helpers/GlobalEnum";
-
-//Services
 import { locationServices } from "../../../../../helpers/services/LocationServices";
 import { beneficiaryInformationServices } from "../../../../../helpers/services/BeneficiaryInformationServices";
 
@@ -86,6 +89,22 @@ export const SearchBeneficiaryInformation = () => {
         datos_cub: null,
         estado_cuenta: [],
         resumen_pagos: [],
+        pago_detalle: [],
+    });
+    const {
+        rows: documentReportsRows,
+        shouldShowSection: shouldShowDocumentReportsSection,
+        documentViewer,
+        documentUnavailableModal,
+        viewerTitle,
+        viewerSubtitle,
+        handleOpenDocumentViewer,
+        handleCloseDocumentViewer,
+        handleCloseDocumentUnavailableModal,
+        handleDownloadViewerFile,
+    } = useBeneficiaryDocumentReports({
+        beneficiaryDetails: movements?.datos_cub,
+        beneficiaryMovements: movements,
     });
 
     // cache de municipios por depto
@@ -173,6 +192,7 @@ export const SearchBeneficiaryInformation = () => {
                 datos_cub: null,
                 estado_cuenta: [],
                 resumen_pagos: [],
+                pago_detalle: [],
             });
 
             setSearchParams({
@@ -397,6 +417,7 @@ export const SearchBeneficiaryInformation = () => {
         { title: "N°", dataIndex: "id", key: "id", width: 80 },
         { title: "Cub", dataIndex: "cub", key: "cub", width: 100 },
         { title: "Estado Cub", dataIndex: "cub_state", key: "cub_state", width: 140 },
+        { title: "Estado PNIS", dataIndex: "holder_status", key: "holder_status", width: 250 },
         { title: "Identificación", dataIndex: "identification", key: "identification", width: 150 },
         { title: "Nombre completo", dataIndex: "name", key: "name", width: 270 },
         { title: "Departamento", dataIndex: "depto", key: "depto", width: 130 },
@@ -423,6 +444,7 @@ export const SearchBeneficiaryInformation = () => {
             id: row.id,
             cub: row?.cub_id,
             cub_state: row?.estado_cub,
+            holder_status: row?.estado_titular || "---",
             identification: row?.identificacion,
             name: row?.nombre_completo,
             depto: row?.departamento,
@@ -467,7 +489,6 @@ export const SearchBeneficiaryInformation = () => {
      */
     const normalizeDatosCub = (datos) => {
         if (!datos) return null;
-
         return {
             cub: datos.cub_id,
             estado_cub: datos.estado_cub?.trim() || "",
@@ -479,8 +500,14 @@ export const SearchBeneficiaryInformation = () => {
             nombre_completo: datos.nombre_completo || "",
             sexo: datos.sexo || "",
             plan: datos.plan || "",
-            Línea: datos.Línea || "",
+            linea: datos.linea || datos.Línea || "",
+            Línea: datos.linea || datos.Línea || "",
+            condicionante_ambiental: datos.condicionante_ambiental || "",
+            tiene_m2: datos.tiene_m2 || "",
             restriccion: datos.restriccion || "",
+            estado_titular: getTitularStatus(datos.estado_titular) || datos.estado_titular || "",
+            descripcion: datos.descripcion || "",
+            causal: getGraduationCause(datos.causal),
             nombre_completo_beneficiario: datos.nombre_completo_beneficiario || "NO APLICA",
             identificacion_beneficiario: datos.identificacion_beneficiario || "NO APLICA",
             sexo_beneficiario: datos.sexo_beneficiario || "NO APLICA",
@@ -579,12 +606,27 @@ export const SearchBeneficiaryInformation = () => {
         }));
     };
 
+    const normalizePagoDetalleRows = (data = []) => {
+        if (!Array.isArray(data)) return [];
+        return data.map((item) => ({
+            descripcion: item?.descripcion ?? "",
+            secundario: item?.secundario ?? "",
+            contrato: item?.contrato ?? "",
+            detallePago: item?.detallePago ?? "",
+            valor: item?.valor ?? 0,
+            fechaActividad: item?.fechaActividad ?? "",
+            componenteId: item?.componenteId ?? null,
+            orden: item?.orden ?? null,
+        }));
+    };
+
     /**
      * Normaliza la respuesta completa del endpoint de detalle.
-     * Unifica en un solo objeto los tres bloques usados por la UI:
+     * Unifica en un solo objeto los bloques usados por la UI:
      * - datos_cub
      * - estado_cuenta
      * - resumen_pagos
+     * - pago_detalle
      *
      * @param {Object} data - Respuesta cruda del backend.
      * @returns {Object} Objeto normalizado para setear en `movements`.
@@ -593,6 +635,7 @@ export const SearchBeneficiaryInformation = () => {
         datos_cub: normalizeDatosCub(data?.datos_cub),
         estado_cuenta: normalizeAccountStatementRows(data?.estado_cuenta),
         resumen_pagos: normalizePaymentSummaryRows(data?.resumen_pagos),
+        pago_detalle: normalizePagoDetalleRows(data?.pago_detalle),
     });
 
     useEffect(() => {
@@ -991,11 +1034,21 @@ export const SearchBeneficiaryInformation = () => {
                     </Card.Body>
                 </Card>
             )}
+
+            <DocumentReportsSection
+                rows={documentReportsRows}
+                isVisible={Boolean(movements?.datos_cub) && shouldShowDocumentReportsSection}
+                documentViewer={documentViewer}
+                documentUnavailableModal={documentUnavailableModal}
+                viewerTitle={viewerTitle}
+                viewerSubtitle={viewerSubtitle}
+                onOpenDocumentViewer={handleOpenDocumentViewer}
+                onCloseDocumentViewer={handleCloseDocumentViewer}
+                onCloseDocumentUnavailableModal={handleCloseDocumentUnavailableModal}
+                onDownloadViewerFile={handleDownloadViewerFile}
+            />
             </Container>
         </div>
     </>
     );
 };
-
-
-
