@@ -40,6 +40,7 @@ const allowedRoles = [
 export const AlertedProductsPage = () => {
   const { userAuth } = useOutletContext();
   const [appliedFilters, setAppliedFilters] = useState(null);
+  const [selectedJourney, setSelectedJourney] = useState(null);
   const [tableDataSource, setTableDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [assigningManagementType, setAssigningManagementType] = useState(false);
@@ -109,6 +110,20 @@ export const AlertedProductsPage = () => {
     setTableLoading(false);
   };
 
+  const handleJourneyChange = async (journey) => {
+    setSelectedJourney(journey);
+    if (!journey?.value) {
+      setHistoryByCategory({ pdf: [], excel: [] });
+      return;
+    }
+    try {
+      const documentsResult = await getAlertedProductsJourneyDocuments(journey.value);
+      setHistoryByCategory(documentsResult.historyByCategory);
+    } catch {
+      setHistoryByCategory({ pdf: [], excel: [] });
+    }
+  };
+
   const handleResetFilters = () => {
     setAppliedFilters(null);
     setTableDataSource([]);
@@ -175,7 +190,7 @@ export const AlertedProductsPage = () => {
               <AlertedProductsSidebar>
                 <AlertedProductsDocumentsWidget
                   historyByCategory={historyByCategory}
-                  journey={appliedFilters?.operationalDay ?? null}
+                  journey={selectedJourney}
                   onDocumentsSaved={reloadJourneyDocuments}
                 />
               </AlertedProductsSidebar>
@@ -185,6 +200,7 @@ export const AlertedProductsPage = () => {
                   loading={tableLoading}
                   onApply={handleApplyFilters}
                   onReset={handleResetFilters}
+                  onJourneyChange={handleJourneyChange}
                 />
                 {shouldShowTable ? (
                   <AlertedProductsTableWidget

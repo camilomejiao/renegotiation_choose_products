@@ -27,6 +27,7 @@ import {
 export const AlertedProductsFiltersWidget = ({
   onApply,
   onReset,
+  onJourneyChange,
   loading = false,
 } = {}) => {
   const {
@@ -66,8 +67,14 @@ export const AlertedProductsFiltersWidget = ({
     onApply?.(filters);
   };
 
+  const handleJourneyChange = (value) => {
+    updateOperationalDay(value);
+    onJourneyChange?.(value);
+  };
+
   const handleReset = () => {
     resetFilters();
+    onJourneyChange?.(null);
     onReset?.();
   };
 
@@ -92,7 +99,7 @@ export const AlertedProductsFiltersWidget = ({
                 <FiltersSelect
                   value={filters.operationalDay}
                   options={journeyOptions}
-                  onChange={updateOperationalDay}
+                  onChange={handleJourneyChange}
                   placeholder="Selecciona una jornada"
                   isLoading={loadingJourneys}
                   isClearable={false}

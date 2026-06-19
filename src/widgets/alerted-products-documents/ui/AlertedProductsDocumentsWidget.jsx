@@ -100,6 +100,10 @@ export const AlertedProductsDocumentsWidget = ({
   onDocumentsSaved,
 }) => {
   const [uploadError, setUploadError] = useState("");
+  const [isEmptyHistoryModalOpen, setIsEmptyHistoryModalOpen] = useState(false);
+
+  const openEmptyHistoryModal = () => setIsEmptyHistoryModalOpen(true);
+  const closeEmptyHistoryModal = () => setIsEmptyHistoryModalOpen(false);
   const {
     closeHistoryModal,
     canPersistDocuments,
@@ -337,14 +341,6 @@ export const AlertedProductsDocumentsWidget = ({
           <Tabs defaultActiveKey="pdf" items={documentTabs} />
         </DocumentsTabs>
 
-        {hasAnyHistory ? (
-          <HistoryLinkRow>
-            <HistoryLinkButton type="link" onClick={openHistoryModal}>
-              Ver historial completo
-            </HistoryLinkButton>
-          </HistoryLinkRow>
-        ) : null}
-
         <SaveRequirements>
           <SaveRequirementItem $isMet={hasSelectedJourney}>
             <SaveRequirementIndicator $isMet={hasSelectedJourney}>
@@ -380,6 +376,16 @@ export const AlertedProductsDocumentsWidget = ({
           </SaveDocumentsButton>
         </SaveDocumentsRow>
 
+        <HistoryLinkRow>
+          <HistoryLinkButton
+            type="link"
+            disabled={!hasSelectedJourney}
+            onClick={hasAnyHistory ? openHistoryModal : openEmptyHistoryModal}
+          >
+            Ver historial completo
+          </HistoryLinkButton>
+        </HistoryLinkRow>
+
         {uploadError ? <UploadErrorText>{uploadError}</UploadErrorText> : null}
       </DocumentsRoot>
 
@@ -397,6 +403,19 @@ export const AlertedProductsDocumentsWidget = ({
         <FullHistoryTabs>
           <Tabs defaultActiveKey="history-pdf" items={fullHistoryTabs} />
         </FullHistoryTabs>
+      </Modal>
+
+      <Modal
+        title="Historial de documentos"
+        isOpen={isEmptyHistoryModalOpen}
+        onCloseModal={closeEmptyHistoryModal}
+        footer={null}
+        centered
+        destroyOnClose={false}
+      >
+        <FullHistoryEmpty>
+          La Jornada seleccionada no tiene documentos asociados.
+        </FullHistoryEmpty>
       </Modal>
     </DocumentsShell>
   );
