@@ -610,11 +610,13 @@ export const SearchBeneficiaryInformation = () => {
         if (!Array.isArray(data)) return [];
         return data.map((item) => ({
             descripcion: item?.descripcion ?? "",
-            secundatio: item?.secundatio ?? "",
+            secundario: item?.secundario ?? "",
             contrato: item?.contrato ?? "",
             detallePago: item?.detallePago ?? "",
             valor: item?.valor ?? 0,
             fechaActividad: item?.fechaActividad ?? "",
+            componenteId: item?.componenteId ?? null,
+            orden: item?.orden ?? null,
         }));
     };
 

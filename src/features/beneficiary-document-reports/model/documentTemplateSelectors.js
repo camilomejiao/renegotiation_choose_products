@@ -80,13 +80,20 @@ export const buildSectionThreeRowsFromPagoDetalle = (pagoDetalle = []) => {
     return [];
   }
 
-  return pagoDetalle.map((item) => ({
-    componente: item?.descripcion ?? "",
-    componenteSecundario: item?.secundatio ?? "",
-    contrato: item?.contrato ?? "",
-    detallePago: item?.detallePago ?? "",
+  const sorted = [...pagoDetalle].sort((a, b) => {
+    if (a.componenteId !== b.componenteId) return (a.componenteId ?? 0) - (b.componenteId ?? 0);
+    return (a.orden ?? 0) - (b.orden ?? 0);
+  });
+
+  const empty = (val) => (val === null || val === undefined || val === "" ? "---" : val);
+
+  return sorted.map((item) => ({
+    componente: empty(item?.descripcion),
+    componenteSecundario: empty(item?.secundario),
+    contrato: empty(item?.contrato),
+    detallePago: empty(item?.detallePago),
     valorTotalPagado: formatCurrency(item?.valor),
-    fechaEntrega: item?.fechaActividad ?? "",
+    fechaEntrega: empty(item?.fechaActividad),
   }));
 };
 
