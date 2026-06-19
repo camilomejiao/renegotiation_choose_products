@@ -6,16 +6,16 @@ export const DocumentsShell = styled(Card)`
   border-radius: 20px;
   border: 1px solid #dbe4f0;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-  height: 790px;
-  max-height: 920px;
+  height: 920px;
+  max-height: 1060px;
   overflow: hidden;
 
   .ant-card-body {
     display: grid;
     grid-template-rows: 1fr;
-    padding: 20px 18px 18px;
+    padding: 20px 18px 24px;
     height: 100%;
-    max-height: 738px;
+    max-height: 868px;
     overflow: hidden;
   }
 `;
@@ -104,7 +104,7 @@ export const DocumentsTabs = styled(AppTabs)`
   }
 
   .ant-tabs-content-holder {
-    padding: 8px 16px 16px;
+    padding: 8px 16px 24px;
     border-top: 1px solid #e2e8f0;
     min-height: 0;
     min-width: 0;
