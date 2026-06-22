@@ -181,11 +181,7 @@ export const useAlertedProductsFilters = () => {
   }, [filters.department?.value, loadMunicipalityOptions]);
 
   const resetFilters = () => {
-    setFilters({
-      ...defaultAlertedProductsFilters,
-      supplier: null,
-      products: [],
-    });
+    setFilters(defaultAlertedProductsFilters);
   };
 
   return {
@@ -207,6 +203,8 @@ export const useAlertedProductsFilters = () => {
     resetFilters,
     updateAlertCategory: updateFilter("alertCategory"),
     updateAlertManagement: updateFilter("alertManagement"),
+    updateCub: updateFilter("cub"),
+    updateDocumentoTitular: updateFilter("documentoTitular"),
     updateDepartment: (nextValue) => {
       setFilters((currentFilters) => ({
         ...currentFilters,
@@ -214,9 +212,11 @@ export const useAlertedProductsFilters = () => {
         municipality: null,
       }));
     },
+    updateIdProducto: updateFilter("idProducto"),
     updateManagementType: updateFilter("managementType"),
     updateMunicipality: updateFilter("municipality"),
     updateOperationalDay: updateFilter("operationalDay"),
+    updateOrdenNumero: updateFilter("ordenNumero"),
     updateProducts: updateFilter("products"),
     updateSupplier: updateFilter("supplier"),
   };

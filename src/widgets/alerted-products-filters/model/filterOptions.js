@@ -7,11 +7,15 @@ export const productOptions = [
 
 export const defaultAlertedProductsFilters = {
   operationalDay: null,
+  alertCategory: null,
+  managementType: null,
+  alertManagement: null,
+  documentoTitular: "",
+  cub: "",
+  ordenNumero: "",
   department: null,
   municipality: null,
-  alertCategory: null,
-  alertManagement: null,
-  managementType: null,
-  supplier: null,
+  idProducto: "",
+  supplier: [],
   products: [],
 };

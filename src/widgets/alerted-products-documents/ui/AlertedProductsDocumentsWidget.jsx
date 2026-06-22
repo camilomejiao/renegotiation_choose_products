@@ -6,12 +6,13 @@ import {
   PaperClipOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, Tooltip } from "antd";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
 import { Modal } from "../../../shared/ui/modal";
+import { getAlertedProductsHistoryTabNames } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
 import { useAlertedProductsDocuments } from "../model/useAlertedProductsDocuments";
 import {
   DocumentsDescription,
@@ -101,6 +102,16 @@ export const AlertedProductsDocumentsWidget = ({
 }) => {
   const [uploadError, setUploadError] = useState("");
   const [isEmptyHistoryModalOpen, setIsEmptyHistoryModalOpen] = useState(false);
+  const [historyTabNames, setHistoryTabNames] = useState({
+    pdf: "Historial PDF",
+    excel: "Historial Excel",
+  });
+
+  useEffect(() => {
+    getAlertedProductsHistoryTabNames()
+      .then(setHistoryTabNames)
+      .catch(() => {});
+  }, []);
 
   const openEmptyHistoryModal = () => setIsEmptyHistoryModalOpen(true);
   const closeEmptyHistoryModal = () => setIsEmptyHistoryModalOpen(false);
@@ -264,7 +275,7 @@ export const AlertedProductsDocumentsWidget = ({
 
     return {
       key: `history-${slot.key}`,
-      label: isPdf ? "Historial PDF" : "Historial Excel",
+      label: isPdf ? historyTabNames.pdf : historyTabNames.excel,
       children: history.length ? (
         <FullHistoryPanel>
           <HistoryTimeline

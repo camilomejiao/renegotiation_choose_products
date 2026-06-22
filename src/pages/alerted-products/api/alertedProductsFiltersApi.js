@@ -39,6 +39,20 @@ export const getAlertedProductsDocumentFileNames = async () => {
   };
 };
 
+export const getAlertedProductsHistoryTabNames = async () => {
+  const response = await parameterServices.getByTypeId(38);
+
+  if (response?.status !== ResponseStatusEnum.OK) {
+    return { pdf: "Historial PDF", excel: "Historial Excel" };
+  }
+
+  const options = normalizeParameterOptions(response?.data ?? []);
+  return {
+    pdf: options[0]?.label ?? "Historial PDF",
+    excel: options[1]?.label ?? "Historial Excel",
+  };
+};
+
 const normalizeSupplierOptions = (rows = []) =>
   rows
     .map((row) => {

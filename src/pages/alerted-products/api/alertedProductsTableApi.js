@@ -23,10 +23,15 @@ const appendRepeatedQueryParams = (params, key, values = []) => {
 const buildAlertedProductsQuery = ({
   operationalDay,
   alertCategory,
+  managementType,
   alertManagement,
+  documentoTitular,
+  cub,
+  ordenNumero,
   department,
   municipality,
-  supplier,
+  idProducto,
+  supplier = [],
   products = [],
 }) => {
   const params = new URLSearchParams();
@@ -39,8 +44,24 @@ const buildAlertedProductsQuery = ({
     params.set("categoria_alerta", String(alertCategory.value));
   }
 
+  if (managementType?.value != null) {
+    params.set("tipo_gestion", String(managementType.value));
+  }
+
   if (alertManagement?.value != null) {
     params.set("gestion_alerta", String(alertManagement.value));
+  }
+
+  if (documentoTitular?.trim()) {
+    params.set("documento_titular", documentoTitular.trim());
+  }
+
+  if (cub?.trim()) {
+    params.set("cub", cub.trim());
+  }
+
+  if (ordenNumero?.trim()) {
+    params.set("numero_orden", ordenNumero.trim());
   }
 
   if (department?.label) {
@@ -51,9 +72,15 @@ const buildAlertedProductsQuery = ({
     params.set("municipio", String(municipality.label));
   }
 
-  if (supplier?.supplierName || supplier?.label) {
-    params.append("proveedor", String(supplier.supplierName || supplier.label));
+  if (idProducto?.trim()) {
+    params.set("id_producto", idProducto.trim());
   }
+
+  appendRepeatedQueryParams(
+    params,
+    "proveedor",
+    supplier.map((s) => s?.supplierName || s?.label)
+  );
 
   appendRepeatedQueryParams(
     params,

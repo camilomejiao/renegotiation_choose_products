@@ -15,6 +15,7 @@ import {
   FiltersGrid,
   FiltersHeader,
   FiltersHeaderIcon,
+  FiltersInput,
   FiltersMultiSelect,
   FiltersRoot,
   FiltersSelect,
@@ -49,10 +50,14 @@ export const AlertedProductsFiltersWidget = ({
     resetFilters,
     updateAlertCategory,
     updateAlertManagement,
+    updateCub,
+    updateDocumentoTitular,
     updateDepartment,
+    updateIdProducto,
     updateManagementType,
     updateMunicipality,
     updateOperationalDay,
+    updateOrdenNumero,
     updateProducts,
     updateSupplier,
   } = useAlertedProductsFilters();
@@ -102,7 +107,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={handleJourneyChange}
                   placeholder="Selecciona una jornada"
                   isLoading={loadingJourneys}
-                  isClearable={false}
+                  isClearable={true}
                   showSearch={false}
                 />
               </FiltersFieldGroup>
@@ -117,7 +122,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={updateAlertCategory}
                   placeholder="Selecciona una categoría"
                   showSearch={false}
-                  isClearable={false}
+                  isClearable={true}
                   isLoading={loadingAlertCategoryOptions}
                 />
               </FiltersFieldGroup>
@@ -132,7 +137,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={updateManagementType}
                   placeholder="Selecciona un tipo"
                   showSearch={false}
-                  isClearable={false}
+                  isClearable={true}
                   isLoading={loadingManagementTypeOptions}
                 />
               </FiltersFieldGroup>
@@ -147,8 +152,44 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={updateAlertManagement}
                   placeholder="Selecciona una gestión"
                   showSearch={false}
-                  isClearable={false}
+                  isClearable={true}
                   isLoading={loadingAlertManagementOptions}
+                />
+              </FiltersFieldGroup>
+            </FiltersCol>
+
+            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+              <FiltersFieldGroup>
+                <FiltersFieldLabel>Documento titular</FiltersFieldLabel>
+                <FiltersInput
+                  value={filters.documentoTitular}
+                  onChange={(e) => updateDocumentoTitular(e.target.value)}
+                  placeholder="Nº documento del titular"
+                  allowClear
+                />
+              </FiltersFieldGroup>
+            </FiltersCol>
+
+            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+              <FiltersFieldGroup>
+                <FiltersFieldLabel>CUB</FiltersFieldLabel>
+                <FiltersInput
+                  value={filters.cub}
+                  onChange={(e) => updateCub(e.target.value)}
+                  placeholder="Código único de beneficiario"
+                  allowClear
+                />
+              </FiltersFieldGroup>
+            </FiltersCol>
+
+            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+              <FiltersFieldGroup>
+                <FiltersFieldLabel>N° de orden</FiltersFieldLabel>
+                <FiltersInput
+                  value={filters.ordenNumero}
+                  onChange={(e) => updateOrdenNumero(e.target.value)}
+                  placeholder="Número de orden"
+                  allowClear
                 />
               </FiltersFieldGroup>
             </FiltersCol>
@@ -162,7 +203,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={updateDepartment}
                   placeholder="Selecciona un departamento"
                   showSearch={false}
-                  isClearable={false}
+                  isClearable={true}
                   isLoading={loadingDepartmentOptions}
                 />
               </FiltersFieldGroup>
@@ -177,7 +218,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={updateMunicipality}
                   placeholder="Selecciona un municipio"
                   showSearch={false}
-                  isClearable={false}
+                  isClearable={true}
                   isLoading={loadingMunicipalityOptions}
                   isDisabled={!filters.department?.value}
                 />
@@ -186,15 +227,28 @@ export const AlertedProductsFiltersWidget = ({
 
             <FiltersCol xs={24} sm={12} lg={8} xl={6}>
               <FiltersFieldGroup>
+                <FiltersFieldLabel>ID producto</FiltersFieldLabel>
+                <FiltersInput
+                  value={filters.idProducto}
+                  onChange={(e) => updateIdProducto(e.target.value)}
+                  placeholder="Identificador del producto"
+                  allowClear
+                />
+              </FiltersFieldGroup>
+            </FiltersCol>
+
+            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+              <FiltersFieldGroup>
                 <FiltersFieldLabel>Proveedor</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.supplier}
+                <FiltersMultiSelect
+                  mode="multiple"
+                  value={filters.supplier.map((s) => s.value)}
                   options={supplierOptions}
-                  onChange={updateSupplier}
+                  onChange={(_, options) => updateSupplier(Array.isArray(options) ? options : [])}
                   placeholder="Proveedor (nombre o NIT)"
                   filterOption={matchesSupplierSelectOption}
-                  isClearable={false}
-                  isLoading={loadingSupplierOptions}
+                  allowClear
+                  loading={loadingSupplierOptions}
                 />
               </FiltersFieldGroup>
             </FiltersCol>

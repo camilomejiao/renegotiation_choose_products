@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, Card, Col, Row, Select } from "antd";
+import { Button, Card, Col, Input, Row, Select } from "antd";
 import { AppSelect } from "../../../shared/ui/select";
 
 export const FiltersCard = styled(Card)`
@@ -74,6 +74,31 @@ export const RequiredMark = styled.span`
 
 export const FiltersSelect = styled(AppSelect)`
   width: 100%;
+`;
+
+export const FiltersInput = styled(Input)`
+  && {
+    height: 44px;
+    border-radius: 12px;
+    border-color: #cbd5e1;
+    font-size: 0.94rem;
+    color: #0f172a;
+    box-shadow: none;
+
+    &:hover {
+      border-color: #94a3b8;
+    }
+
+    &:focus,
+    &.ant-input-focused {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+  }
 `;
 
 export const FiltersMultiSelect = styled(Select)`
