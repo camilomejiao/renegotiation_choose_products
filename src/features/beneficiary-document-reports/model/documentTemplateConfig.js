@@ -1,38 +1,38 @@
 import { GRADUATION_CAUSE } from "../../../entities/beneficiary";
 
 export const DOCUMENT_TEMPLATE_TITLE =
-  "FORMALIZACION DEL CIERRE DE LA IMPLEMENTACION DEL PROGRAMA NACIONAL DE SUSTITUCION DE CULTIVOS DE USO ILICITO - PNIS";
+  "FORMALIZACIÓN DEL CIERRE DE LA IMPLEMENTACIÓN DEL PROGRAMA NACIONAL DE SUSTITUCIÓN DE CULTIVOS DE USO ILÍCITO - PNIS";
 
 export const DOCUMENT_JUSTIFICATION_PARAGRAPHS = [
-  "Con fundamento en la informacion registrada en los sistemas de informacion institucionales y los soportes documentales asociados al expediente del titular, se deja constancia que la Direccion de Sustitucion de Cultivos de Uso Ilicito (DSCI) adelanto las acciones que se encontraban a su cargo en el marco de la implementacion de los componentes del Programa Nacional Integral de Sustitucion de Cultivos de Uso Ilicito (PNIS).",
-  "En este contexto, el presente formato constituye el instrumento de consolidacion de la informacion tecnica, administrativa y financiera del proceso de atencion, mediante el cual se documentan las acciones ejecutadas, se verifica el cumplimiento de las obligaciones a cargo de las partes y se formaliza el cierre de la implementacion del programa en el proceso del titular.",
+  "Con fundamento en la información registrada en los sistemas de información institucionales y los soportes documentales asociados al expediente del titular, se deja constancia que la Dirección de Sustitución de Cultivos de Uso Ilícito (DSCI) adelantó las acciones que se encontraban a su cargo en el marco de la implementación de los componentes del Programa Nacional Integral de Sustitución de Cultivos de Uso Ilícito (PNIS).",
+  "En este contexto, el presente formato constituye el instrumento de consolidación de la información técnica, administrativa y financiera del proceso de atención, mediante el cual se documentan las acciones ejecutadas, se verifica el cumplimiento de las obligaciones a cargo de las partes y se formaliza el cierre de la implementación del programa en el proceso del titular.",
 ];
 
 export const SECTION_ONE_BASE_FIELDS = [
   { label: "CUB", sourceKey: "cub" },
   { label: "Nombre del Titular:", sourceKey: "nombre_completo" },
-  { label: "Cedula del titular", sourceKey: "identificacion" },
+  { label: "Cédula del titular", sourceKey: "identificacion" },
   { label: "Nombre del beneficiario", sourceKey: "nombre_completo_beneficiario" },
-  { label: "Cedula del beneficiario", sourceKey: "identificacion_beneficiario" },
+  { label: "Cédula del beneficiario", sourceKey: "identificacion_beneficiario" },
   { label: "Departamento", sourceKey: "departamento" },
   { label: "Municipio:", sourceKey: "municipio" },
   { label: "Vereda:", sourceKey: "vereda" },
-  { label: "Tipo de atencion", sourceKey: "causal" },
+  { label: "Tipo de atención", sourceKey: "causal" },
 ];
 
 export const PRODUCTIVE_PROJECT_SECTION_ONE_FIELDS = [
-  { label: "Plan de inversion", sourceKey: "plan" },
-  { label: "Linea productiva", sourceKey: "linea" },
+  { label: "Plan de inversión", sourceKey: "plan" },
+  { label: "Línea productiva", sourceKey: "linea" },
   { label: "Condicionante ambiental", sourceKey: "condicionante_ambiental" },
 ];
 
 export const SECTION_TWO_M2_LABEL =
-  "¿Cuenta con validacion de M22? (No aplica para no cultivadores y recolectores)";
+  "¿Cuenta con validación de M2? (No aplica para no cultivadores y recolectores)";
 
 export const SECTION_TWO_TITLE = "VISITA DE MONITOREO DE ERRADICACION";
 
 export const SECTION_TWO_M2_CHOICES = [
-  { id: "yes", label: "Si" },
+  { id: "yes", label: "Sí" },
   { id: "no", label: "No" },
   { id: "not_applicable", label: "No aplica" },
 ];
@@ -59,28 +59,28 @@ export const SECTION_THREE_TEMPLATE_COMPONENT_ROWS = [
   {
     key: "asa_before_renegotiation",
     component:
-      "Autosostenimiento y Seguridad Alimentaria-ASA (anterior a la renegociacion)",
+      "Autosostenimiento y Seguridad Alimentaria-ASA (anterior a la renegociación)",
     matchers: ["AUTOSOSTENIMIENTO", "SEGURIDAD ALIMENTARIA", "ASA"],
     balanceSourceKeys: ["saldo_componente_asa"],
   },
   {
     key: "ppcc_before_renegotiation",
     component:
-      "Proyecto Productivo Ciclo Corto PPCC (anterior a la renegociacion)",
+      "Proyecto Productivo Ciclo Corto PPCC (anterior a la renegociación)",
     matchers: ["PROYECTO PRODUCTIVO CICLO CORTO", "PPCC"],
     balanceSourceKeys: ["saldo_componente_ppcc"],
   },
   {
     key: "ppcl_before_renegotiation",
     component:
-      "Proyecto Productivo Ciclo Largo PPCL (anterior a la renegociacion)",
+      "Proyecto Productivo Ciclo Largo PPCL (anterior a la renegociación)",
     matchers: ["PROYECTO PRODUCTIVO CICLO LARGO", "PPCL"],
     balanceSourceKeys: ["saldo_componente_ppcl"],
   },
   {
     key: "after_renegotiation",
     component:
-      "Autosostenimiento y Seguridad Alimentaria-ASA, Proyecto Productivo Ciclo Corto PPCC, Proyecto Productivo Ciclo Largo PPCL (despues a la renegociacion)",
+      "Autosostenimiento y Seguridad Alimentaria-ASA, Proyecto Productivo Ciclo Corto PPCC, Proyecto Productivo Ciclo Largo PPCL (después a la renegociación)",
     matchers: ["RENEGOCI"],
     fallbackOperator: "No aplica",
     matchMode: "aggregate",
@@ -101,16 +101,16 @@ export const SECTION_THREE_BALANCE_FIELDS = [
 ];
 
 export const SECTION_FOUR_TITLE =
-  "CONSOLIDACION Y TRAZABILIDAD DE LA INFORMACION";
+  "CONSOLIDACIÓN Y TRAZABILIDAD DE LA INFORMACIÓN";
 
 export const SECTION_FOUR_PARAGRAPHS = [
-  "Se deja constancia que los soportes que acreditan la ejecucion de los componentes, las verificaciones realizadas y demas actuaciones adelantadas en el marco del PNIS se encuentran almacenados en los repositorios oficiales de la DSCI; los cuales hacen parte integral del expediente del titular, garantizandose la trazabilidad, conservacion e integridad de la informacion asociada al proceso de atencion.",
+  "Se deja constancia que los soportes que acreditan la ejecución de los componentes, las verificaciones realizadas y demás actuaciones adelantadas en el marco del PNIS se encuentran almacenados en los repositorios oficiales de la DSCI; los cuales hacen parte integral del expediente del titular, garantizándose la trazabilidad, conservación e integridad de la información asociada al proceso de atención.",
 ];
 
 export const SECTION_FOUR_SUBTITLE = "SOPORTE DOCUMENTAL DEL PROCESO";
 
 export const SECTION_FOUR_SUBTITLE_PARAGRAPHS = [
-  "La informacion relacionada con la ejecucion de los componentes y la verificacion de compromisos se encuentra relacionada en los siguientes soportes documentales, los cuales reposan los siguientes sistemas y en SISPINIS:",
+  "La información relacionada con la ejecución de los componentes y la verificación de compromisos se encuentra relacionada en los siguientes soportes documentales, los cuales reposan los siguientes sistemas y en SISPINIS:",
 ];
 
 export const SECTION_FIVE_SUPPORT_COLUMNS = [
@@ -122,7 +122,7 @@ export const SECTION_FIVE_SUPPORT_COLUMNS = [
 export const SECTION_FIVE_SUPPORT_ROWS = [
   {
     item: "1",
-    document: "Acuerdo de sustitucion (acuerdo de no resiembra)",
+    document: "Acuerdo de sustitución (acuerdo de no resiembra)",
     repository: "Sistema Gestion documental DSCI",
   },
   {
@@ -132,7 +132,7 @@ export const SECTION_FIVE_SUPPORT_ROWS = [
   },
   {
     item: "3",
-    document: "Informe de verificacion: Informe visita M2",
+    document: "Informe de verificación: Informe visita M2",
     repository: "SIG-Sistema Gestion documental DSCI",
   },
   {
@@ -153,12 +153,12 @@ export const SECTION_FIVE_SUPPORT_ROWS = [
   {
     item: "7",
     document:
-      "Resolucion de la atencion diferenciada y documentos soporte: copia de cedula de ciudadania o certificado de discapacidad emitido por el Ministerio de Salud",
+      "Resolución de la atención diferenciada y documentos soporte: copia de cédula de ciudadanía o certificado de discapacidad emitido por el Ministerio de Salud",
     repository: "Juridica- Sistema Gestion documental DSCI",
   },
   {
     item: "8",
-    document: "Soportes de entregas de componentes por renegociacion",
+    document: "Soportes de entregas de componentes por renegociación",
     repository: "Portal de Proveedores (Sistemas)",
   },
   {

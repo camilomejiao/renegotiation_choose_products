@@ -7,9 +7,9 @@ export const PDF_PAGE = {
 };
 
 export const PDF_COLORS = {
-  background: [0.12, 0.12, 0.12],
-  white: [1, 1, 1],
-  muted: [0.76, 0.78, 0.82],
+  background: [1, 1, 1],
+  white: [0, 0, 0],
+  muted: [0.25, 0.25, 0.25],
 };
 
 export const normalizePdfText = (value = "") =>

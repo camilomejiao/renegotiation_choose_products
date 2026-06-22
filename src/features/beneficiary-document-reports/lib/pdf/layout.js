@@ -68,7 +68,7 @@ export const SECTION_FOUR_LAYOUT = {
   subtitleTopGap: 20,
   subtitleParagraphTopGap: 28,
   tableTopGap: 18,
-  topGap: 2,
+  topGap: 26,
   titleLineStep: 18,
   nextSectionGap: 22,
 };

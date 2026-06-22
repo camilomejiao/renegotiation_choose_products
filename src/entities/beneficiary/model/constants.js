@@ -25,7 +25,7 @@ export const TITULAR_STATUS_COLORS = {
 };
 
 export const TITULAR_STATUS_DESCRIPTIONS = {
-    [TITULAR_STATUS.ATTENTION_FINALIZED]: " El Cub ha culimado la implementación. Genere el Formato Correspondiente a la Causal de Grado.",
+    [TITULAR_STATUS.ATTENTION_FINALIZED]: " El Cub ha culminado la implementación. Genere el Formato Correspondiente a la Causal de Grado.",
     [TITULAR_STATUS.RETIRED]: "El Cub Presenta Novedades en el Estado Retirado.",
     [TITULAR_STATUS.NOT_RENEGOTIATED]: "El Cub No cuenta con PLAN DE INVERSION",
     [TITULAR_STATUS.SUSPENDED]: "El Cub Presenta Novedades en el Estado Suspendido",

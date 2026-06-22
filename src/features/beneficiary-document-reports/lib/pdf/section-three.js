@@ -271,23 +271,12 @@ export const buildSectionThreeChunks = (
     chunkRows = [];
 
     currentY = newPageTopY - S3.topGap;
-    currentOps.push(
-      drawPdfText({
-        text: sectionThree.title,
-        x: S3.titleX,
-        y: currentY,
-        font: "F2",
-        fontSize: 13,
-      })
-    );
-    currentY -= S3.titleToTableGap;
     currentOps.push(...drawHeader(sectionThree.columns, S3.firstTableX, currentY, headerLinesByCol, headerH));
     currentY -= headerH;
     chunkStartY = currentY;
   };
 
   allRows.forEach((row) => {
-    // Check if this row (plus some margin for balance table) fits
     if (currentY - row.height < safeBottomY) {
       startNewPage();
     }
@@ -298,7 +287,34 @@ export const buildSectionThreeChunks = (
   // Flush last rows segment
   flushChunk();
 
-  chunks.push(currentOps);
+  // ── balance table ─────────────────────────────────────────────────────────
+  // Draw the second table and use its bottom Y as the true end of section 3,
+  // so the caller positions section 4 correctly without overlap.
+  let finalY = currentY;
+  if (sectionThree.balanceRows?.length > 0) {
+    const balanceTopY = currentY - S3.secondTableTopGap;
+    const { ops: balanceOps, bottomY: balanceBottomY } = buildBalanceTableOps(
+      sectionThree.balanceRows,
+      balanceTopY
+    );
 
-  return { chunks, nextY: currentY };
+    if (balanceBottomY >= safeBottomY) {
+      currentOps.push(...balanceOps);
+      finalY = balanceBottomY;
+      chunks.push(currentOps);
+    } else {
+      // Balance table doesn't fit on current page — put it on its own page.
+      chunks.push(currentOps);
+      const { ops: newPageOps, bottomY: newPageBottomY } = buildBalanceTableOps(
+        sectionThree.balanceRows,
+        newPageTopY - S3.topGap
+      );
+      chunks.push([...newPageOps]);
+      finalY = newPageBottomY;
+    }
+  } else {
+    chunks.push(currentOps);
+  }
+
+  return { chunks, nextY: finalY };
 };
