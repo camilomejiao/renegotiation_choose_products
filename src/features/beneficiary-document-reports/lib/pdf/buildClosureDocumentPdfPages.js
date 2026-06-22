@@ -7,9 +7,6 @@ import { buildSectionFourOperations, buildSectionFiveOperations } from "./sectio
 // Minimum space (px) needed to start section 3 title + header on the same page as section 2
 const MIN_S3_INLINE = 16 + 18 + SECTION_THREE_LAYOUT.titleToTableGap + SECTION_THREE_LAYOUT.headerHeight;
 
-// Minimum space (px) needed to start section 4 title on the same page as the last section 3 chunk
-const MIN_S4_INLINE = 80;
-
 export const buildClosureDocumentPdfPages = (viewModel) => {
   if (!viewModel?.sectionOne) {
     return null;
@@ -53,29 +50,19 @@ export const buildClosureDocumentPdfPages = (viewModel) => {
   }
 
   // ── Sections 4 & 5 ────────────────────────────────────────────────────────
-  // Try to continue section 4 on the last section-3 page when there is room.
-  const s4StartsInline = s3EndY - MIN_S4_INLINE >= PDF_LAYOUT.safeBottomY;
+  // Compute section 4 at the inline position and check if it actually fits before
+  // appending to the last section-3 page. A fixed pixel threshold is not enough
+  // because section 4 height depends on its content length.
+  const s4AtInline = buildSectionFourOperations(viewModel.sectionFour, s3EndY);
+  const s4FitsInline = s4AtInline.nextY >= PDF_LAYOUT.safeBottomY;
 
-  let s4StartY;
-  let s4PageOps;
-
-  if (s4StartsInline) {
-    // Append section 4 ops to the last page already pushed
-    s4StartY = s3EndY;
+  if (s4FitsInline) {
     const lastPage = pages[pages.length - 1];
-    const s4 = buildSectionFourOperations(viewModel.sectionFour, s4StartY);
-    lastPage.push(...s4.operations);
+    lastPage.push(...s4AtInline.operations);
 
-    const s5StartY = s4.nextY;
-    if (s5StartY >= PDF_LAYOUT.safeBottomY + 60) {
-      const s5 = buildSectionFiveOperations(viewModel.sectionFive, s5StartY);
-      if (s5.nextY >= PDF_LAYOUT.safeBottomY) {
-        lastPage.push(...s5.operations);
-      } else {
-        pages.push(createBackgroundPageOperations(
-          buildSectionFiveOperations(viewModel.sectionFive, PDF_LAYOUT.sectionFivePageStartY).operations
-        ));
-      }
+    const s5AtInline = buildSectionFiveOperations(viewModel.sectionFive, s4AtInline.nextY);
+    if (s5AtInline.nextY >= PDF_LAYOUT.safeBottomY) {
+      lastPage.push(...s5AtInline.operations);
     } else {
       pages.push(createBackgroundPageOperations(
         buildSectionFiveOperations(viewModel.sectionFive, PDF_LAYOUT.sectionFivePageStartY).operations
