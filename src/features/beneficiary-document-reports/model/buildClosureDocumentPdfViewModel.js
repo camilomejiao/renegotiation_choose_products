@@ -53,11 +53,7 @@ export const buildClosureDocumentPdfViewModel = ({
       title: SECTION_THREE_TITLE,
       columns: SECTION_THREE_COMPONENT_COLUMNS,
       rows: sectionThreeRows,
-      balanceRows: buildSectionThreeBalanceRows(
-        beneficiaryDetails,
-        SECTION_THREE_BALANCE_FIELDS,
-        beneficiaryMovements?.estado_cuenta
-      ),
+      balanceRows: [],
     },
     sectionFour: {
       title: SECTION_FOUR_TITLE,

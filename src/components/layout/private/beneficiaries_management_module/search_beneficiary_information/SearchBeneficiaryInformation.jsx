@@ -502,7 +502,7 @@ export const SearchBeneficiaryInformation = () => {
             plan: datos.plan || "",
             linea: datos.linea || datos.Línea || "",
             Línea: datos.linea || datos.Línea || "",
-            condicionante_ambiental: datos.condicionante_ambiental || "",
+            condicionante_ambiental: datos.restriccion || "",
             tiene_m2: datos.tiene_m2 || "",
             restriccion: datos.restriccion || "",
             estado_titular: getTitularStatus(datos.estado_titular) || datos.estado_titular || "",

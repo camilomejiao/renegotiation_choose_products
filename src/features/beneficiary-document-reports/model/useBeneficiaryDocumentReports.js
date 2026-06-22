@@ -37,19 +37,12 @@ export const useBeneficiaryDocumentReports = ({
       if (current.url) {
         URL.revokeObjectURL(current.url);
       }
-
-      return {
-        isOpen: false,
-        fileName: "",
-        url: "",
-      };
+      return { isOpen: false, fileName: "", url: "" };
     });
   };
 
   const handleDownloadViewerFile = () => {
-    if (!documentViewer.url) {
-      return;
-    }
+    if (!documentViewer.url) return;
 
     const link = document.createElement("a");
     link.href = documentViewer.url;
@@ -84,12 +77,7 @@ export const useBeneficiaryDocumentReports = ({
       if (current.url) {
         URL.revokeObjectURL(current.url);
       }
-
-      return {
-        isOpen: true,
-        fileName,
-        url,
-      };
+      return { isOpen: true, fileName, url };
     });
   };
 
