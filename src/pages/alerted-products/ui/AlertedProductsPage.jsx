@@ -219,6 +219,7 @@ export const AlertedProductsPage = () => {
           {currentStep === 1 ? (
             <AlertedProductsManagementWidget
               assignment={assignment}
+              historyByCategory={historyByCategory}
               onBack={goToPreparation}
               onContinue={goToCentralization}
             />
