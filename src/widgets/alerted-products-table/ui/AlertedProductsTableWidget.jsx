@@ -6,6 +6,7 @@ import { SmartTable } from "../../../shared/ui/smart-table";
 import { managementTypeAssignmentOptions } from "../model/managementTypeOptions";
 import { useAlertedProductsTable } from "../model/useAlertedProductsTable";
 import {
+  AssignmentAndRaiseButton,
   AssignmentDescription,
   AssignmentFooter,
   AssignmentHint,
@@ -44,6 +45,7 @@ export const AlertedProductsTableWidget = ({
     canRaiseAlert,
     closeAssignmentModal,
     columns,
+    handleAssignAndRaiseAlert,
     handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
     isSelectableRow,
@@ -176,6 +178,14 @@ export const AlertedProductsTableWidget = ({
             >
               Confirmar asignación
             </AssignmentPrimaryButton>
+            <AssignmentAndRaiseButton
+              type="primary"
+              onClick={handleAssignAndRaiseAlert}
+              loading={assigningManagementType}
+              disabled={assigningManagementType}
+            >
+              Asignar y Levantar Alerta
+            </AssignmentAndRaiseButton>
           </AssignmentFooter>
         </AssignmentModalContent>
       </Modal>

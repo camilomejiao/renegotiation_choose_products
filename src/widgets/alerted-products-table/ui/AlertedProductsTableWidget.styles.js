@@ -185,3 +185,20 @@ export const AssignmentPrimaryButton = styled(Button)`
     box-shadow: none;
   }
 `;
+
+export const AssignmentAndRaiseButton = styled(Button)`
+  && {
+    height: 42px;
+    min-width: 200px;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: none;
+    background: #059669;
+    border-color: #059669;
+
+    &:hover:not(:disabled) {
+      background: #047857 !important;
+      border-color: #047857 !important;
+    }
+  }
+`;

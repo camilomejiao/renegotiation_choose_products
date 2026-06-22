@@ -2,6 +2,8 @@ import {
   CheckOutlined,
   CheckCircleOutlined,
   DeleteOutlined,
+  DownloadOutlined,
+  EyeOutlined,
   InboxOutlined,
   PaperClipOutlined,
   UploadOutlined,
@@ -12,6 +14,7 @@ import { Tabs, Tooltip } from "antd";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
 import { Modal } from "../../../shared/ui/modal";
+import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
 import { getAlertedProductsHistoryTabNames } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
 import { useAlertedProductsDocuments } from "../model/useAlertedProductsDocuments";
 import {
@@ -37,11 +40,16 @@ import {
   FullHistoryEmpty,
   FullHistoryPanel,
   FullHistoryTabs,
+  HistoryActionButton,
+  HistoryActions,
+  HistoryActiveBadge,
   HistoryItem,
+  HistoryItemContent,
   HistoryLinkButton,
   HistoryLinkRow,
   HistoryMeta,
   HistoryName,
+  HistoryNameRow,
   HistoryTimeline,
   HistoryUser,
   RemoveFileButton,
@@ -106,6 +114,22 @@ export const AlertedProductsDocumentsWidget = ({
     pdf: "Historial PDF",
     excel: "Historial Excel",
   });
+  const [pdfViewer, setPdfViewer] = useState({ isOpen: false, url: null, title: "" });
+
+  const closePdfViewer = () => {
+    if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
+    setPdfViewer({ isOpen: false, url: null, title: "" });
+  };
+
+  const handleDownloadFromViewer = () => {
+    if (!pdfViewer.url) return;
+    const anchor = document.createElement("a");
+    anchor.href = pdfViewer.url;
+    anchor.download = pdfViewer.title || "documento.pdf";
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
 
   useEffect(() => {
     getAlertedProductsHistoryTabNames()
@@ -256,17 +280,16 @@ export const AlertedProductsDocumentsWidget = ({
       const response = await filesServices.downloadFile(item.route);
       if (!response?.blob) return;
       const url = URL.createObjectURL(response.blob);
-      window.open(url, "_blank", "noopener,noreferrer");
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setPdfViewer({ isOpen: true, url, title: item.name || "documento.pdf" });
     };
 
-    const handleDownloadExcel = async (item) => {
+    const handleDownloadFile = async (item) => {
       const response = await filesServices.downloadFile(item.route);
       if (!response?.blob) return;
       const url = URL.createObjectURL(response.blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = item.name || "documento.xlsx";
+      anchor.download = item.name || (isPdf ? "documento.pdf" : "documento.xlsx");
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
@@ -279,24 +302,44 @@ export const AlertedProductsDocumentsWidget = ({
       children: history.length ? (
         <FullHistoryPanel>
           <HistoryTimeline
-            items={history.map((item, index) => ({
-              color: "blue",
-              children: (
-                <HistoryItem key={item.uid}>
-                  <HistoryName>{extractDocumentPartName(item.name)}</HistoryName>
-                  <HistoryMeta><strong>Versión {history.length - index}</strong> · {formatTimestamp(item.uploadedAt)}</HistoryMeta>
-                  <HistoryUser>{item.user || "---"}</HistoryUser>
-                  {item.route ? (
-                    <HistoryLinkButton
-                      type="link"
-                      onClick={() => isPdf ? handleOpenPdf(item) : handleDownloadExcel(item)}
-                    >
-                      {isPdf ? "Ver documento" : "Descargar"}
-                    </HistoryLinkButton>
-                  ) : null}
-                </HistoryItem>
-              ),
-            }))}
+            items={history.map((item, index) => {
+              const isActive = index === 0;
+              return {
+                color: isActive ? "green" : "blue",
+                children: (
+                  <HistoryItem key={item.uid}>
+                    <HistoryItemContent>
+                      <HistoryNameRow>
+                        <HistoryName>{extractDocumentPartName(item.name)}</HistoryName>
+                        {isActive && <HistoryActiveBadge>Activo</HistoryActiveBadge>}
+                      </HistoryNameRow>
+                      <HistoryMeta><strong>Versión {history.length - index}</strong> · {formatTimestamp(item.uploadedAt)}</HistoryMeta>
+                      <HistoryUser>{item.user || "---"}</HistoryUser>
+                    </HistoryItemContent>
+                    {item.route ? (
+                      <HistoryActions>
+                        {isPdf && (
+                          <Tooltip title="Visualizar">
+                            <HistoryActionButton
+                              type="text"
+                              icon={<EyeOutlined />}
+                              onClick={() => handleOpenPdf(item)}
+                            />
+                          </Tooltip>
+                        )}
+                        <Tooltip title="Descargar">
+                          <HistoryActionButton
+                            type="text"
+                            icon={<DownloadOutlined />}
+                            onClick={() => handleDownloadFile(item)}
+                          />
+                        </Tooltip>
+                      </HistoryActions>
+                    ) : null}
+                  </HistoryItem>
+                ),
+              };
+            })}
           />
         </FullHistoryPanel>
       ) : (
@@ -428,6 +471,15 @@ export const AlertedProductsDocumentsWidget = ({
           La Jornada seleccionada no tiene documentos asociados.
         </FullHistoryEmpty>
       </Modal>
+
+      <DocumentViewerModal
+        isOpen={pdfViewer.isOpen}
+        title="Visor de documento"
+        subtitle={pdfViewer.title}
+        documentUrl={pdfViewer.url}
+        onClose={closePdfViewer}
+        onDownload={handleDownloadFromViewer}
+      />
     </DocumentsShell>
   );
 };

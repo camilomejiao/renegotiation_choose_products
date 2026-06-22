@@ -49,6 +49,21 @@ export const useAlertedProductsTable = ({
     setIsAssignmentModalOpen(false);
   };
 
+  const handleAssignAndRaiseAlert = async () => {
+    await onAssignManagementType?.({
+      managementTypeId: selectedManagementType,
+      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+      selectedRowKeys,
+      selectedRows,
+    });
+    setIsAssignmentModalOpen(false);
+    onRaiseAlert?.({
+      selectedRowKeys,
+      selectedRows,
+      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+    });
+  };
+
   const canRaiseAlert =
     selectedRowKeys.length > 0 &&
     initialDataSource
@@ -70,6 +85,7 @@ export const useAlertedProductsTable = ({
   return {
     columns,
     canRaiseAlert,
+    handleAssignAndRaiseAlert,
     handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
     isSelectableRow,
