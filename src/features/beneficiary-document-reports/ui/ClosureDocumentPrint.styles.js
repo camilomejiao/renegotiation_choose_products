@@ -12,12 +12,12 @@ export const PrintRoot = styled.div`
   color: ${C.primary};
   font-family: Helvetica, Arial, sans-serif;
   font-size: 9pt;
-  padding: 32px 40px;
+  padding: 28px 36px;
 
   @media print {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    padding: 0;
+    padding: 8mm;
   }
 `;
 
@@ -34,6 +34,10 @@ export const SectionTitle = styled.div`
   font-weight: bold;
   color: ${C.primary};
   margin: 22px 0 10px;
+
+  @media print {
+    margin-top: 12mm;
+  }
 `;
 
 export const LargeSectionTitle = styled.div`
@@ -41,6 +45,10 @@ export const LargeSectionTitle = styled.div`
   font-weight: bold;
   color: ${C.primary};
   margin: 22px 0 10px;
+
+  @media print {
+    margin-top: 12mm;
+  }
 `;
 
 export const JustTitle = styled.div`
@@ -48,6 +56,10 @@ export const JustTitle = styled.div`
   font-weight: bold;
   color: ${C.primary};
   margin: 18px 0 10px;
+
+  @media print {
+    margin-top: 12mm;
+  }
 `;
 
 export const DocParagraph = styled.p`
@@ -64,6 +76,7 @@ const baseTableCss = `
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 12px;
+  table-layout: fixed;
 
   thead {
     display: table-header-group;
@@ -72,6 +85,17 @@ const baseTableCss = `
   tr {
     page-break-inside: avoid;
     break-inside: avoid;
+  }
+
+  th, td {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  @media print {
+    thead tr th {
+      padding-top: 12mm;
+    }
   }
 `;
 
@@ -98,7 +122,6 @@ export const InfoTable = styled.table`
 
 export const DataTable = styled.table`
   ${baseTableCss}
-  table-layout: fixed;
 
   th {
     border: 1px solid ${C.border};

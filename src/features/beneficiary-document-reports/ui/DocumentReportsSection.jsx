@@ -74,9 +74,9 @@ export const DocumentReportsSection = ({
         isOpen={documentViewer.isOpen}
         title={viewerTitle}
         subtitle={viewerSubtitle}
-        viewModel={documentViewer.viewModel}
-        fileName={documentViewer.fileName}
+        documentUrl={documentViewer.url}
         onClose={onCloseDocumentViewer}
+        onDownload={onDownloadViewerFile}
       />
     </>
   );
