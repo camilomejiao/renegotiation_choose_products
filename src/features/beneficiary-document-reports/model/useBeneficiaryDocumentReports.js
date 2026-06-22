@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { createClosureDocumentPdfBlob } from "../lib/createClosureDocumentPdfBlob";
+import { useState } from "react";
+import { buildClosureDocumentPdfViewModel } from "./buildClosureDocumentPdfViewModel";
 import {
   DOCUMENT_UNAVAILABLE_MODAL_TITLE,
   DOCUMENT_VIEWER_TITLE,
@@ -19,7 +19,7 @@ export const useBeneficiaryDocumentReports = ({
   const [documentViewer, setDocumentViewer] = useState({
     isOpen: false,
     fileName: "",
-    url: "",
+    viewModel: null,
   });
 
   const [documentUnavailableModal, setDocumentUnavailableModal] = useState({
@@ -32,32 +32,8 @@ export const useBeneficiaryDocumentReports = ({
   const rows = buildDocumentReportsRows(beneficiaryDetails);
   const shouldShowSection = shouldShowDocumentReportsSection(resolvedBeneficiaryDetails);
 
-  const closeDocumentViewer = () => {
-    setDocumentViewer((current) => {
-      if (current.url) {
-        URL.revokeObjectURL(current.url);
-      }
-
-      return {
-        isOpen: false,
-        fileName: "",
-        url: "",
-      };
-    });
-  };
-
-  const handleDownloadViewerFile = () => {
-    if (!documentViewer.url) {
-      return;
-    }
-
-    const link = document.createElement("a");
-    link.href = documentViewer.url;
-    link.download = documentViewer.fileName || "documento-cierre.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const closeDocumentViewer = () =>
+    setDocumentViewer({ isOpen: false, fileName: "", viewModel: null });
 
   const handleCloseDocumentUnavailableModal = () =>
     setDocumentUnavailableModal({ isOpen: false, title: "", message: "" });
@@ -73,33 +49,14 @@ export const useBeneficiaryDocumentReports = ({
     }
 
     const fileName = `documento-cierre-${row?.cub || resolvedBeneficiaryDetails?.cub || "titular"}.pdf`;
-    const blob = createClosureDocumentPdfBlob({
+    const viewModel = buildClosureDocumentPdfViewModel({
       beneficiaryDetails: resolvedBeneficiaryDetails,
       beneficiaryMovements,
-      row,
+      graduationCause: row?.graduationCause,
     });
-    const url = URL.createObjectURL(blob);
 
-    setDocumentViewer((current) => {
-      if (current.url) {
-        URL.revokeObjectURL(current.url);
-      }
-
-      return {
-        isOpen: true,
-        fileName,
-        url,
-      };
-    });
+    setDocumentViewer({ isOpen: true, fileName, viewModel });
   };
-
-  useEffect(() => {
-    return () => {
-      if (documentViewer.url) {
-        URL.revokeObjectURL(documentViewer.url);
-      }
-    };
-  }, [documentViewer.url]);
 
   return {
     rows,
@@ -111,6 +68,6 @@ export const useBeneficiaryDocumentReports = ({
     handleOpenDocumentViewer,
     handleCloseDocumentViewer: closeDocumentViewer,
     handleCloseDocumentUnavailableModal,
-    handleDownloadViewerFile,
+    handleDownloadViewerFile: () => {},
   };
 };
