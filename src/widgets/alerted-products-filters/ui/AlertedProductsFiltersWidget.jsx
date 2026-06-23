@@ -30,6 +30,7 @@ export const AlertedProductsFiltersWidget = ({
   onReset,
   onJourneyChange,
   loading = false,
+  initialFilters,
 } = {}) => {
   const {
     alertCategoryOptions,
@@ -60,7 +61,7 @@ export const AlertedProductsFiltersWidget = ({
     updateOrdenNumero,
     updateProducts,
     updateSupplier,
-  } = useAlertedProductsFilters();
+  } = useAlertedProductsFilters({ initialFilters });
 
   const isApplyDisabled = !filters.operationalDay?.value || loading;
 

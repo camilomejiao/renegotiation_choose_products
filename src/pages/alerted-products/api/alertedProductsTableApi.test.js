@@ -1,8 +1,6 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
-import { alertedProductsTableData } from "../../../widgets/alerted-products-table/model/alertedProductsTableData";
 import {
-  __resetAlertedProductsTableMockStateForTests,
   assignAlertedProductsManagementType,
   buildAlertedProductsManagementTypeRequest,
   getAlertedProductsPage,
@@ -18,21 +16,17 @@ jest.mock("../../../helpers/services/AlertedProductsServices", () => ({
 describe("getAlertedProductsPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    __resetAlertedProductsTableMockStateForTests();
   });
 
-  it("returns mock rows when the backend responds with an error", async () => {
+  it("throws when the backend responds with an error", async () => {
     alertedProductsServices.getProducts.mockResolvedValue({
       status: ResponseStatusEnum.NOT_FOUND,
     });
 
-    const result = await getAlertedProductsPage();
-
-    expect(result.rows).toEqual(alertedProductsTableData);
-    expect(result.meta.source).toBe("mock");
+    await expect(getAlertedProductsPage()).rejects.toBeTruthy();
   });
 
-  it("returns mock rows when the backend responds without products", async () => {
+  it("returns empty rows when the backend responds without products", async () => {
     alertedProductsServices.getProducts.mockResolvedValue({
       status: ResponseStatusEnum.OK,
       data: {
@@ -43,8 +37,7 @@ describe("getAlertedProductsPage", () => {
 
     const result = await getAlertedProductsPage();
 
-    expect(result.rows).toEqual(alertedProductsTableData);
-    expect(result.meta.source).toBe("mock");
+    expect(result.rows).toEqual([]);
   });
 
   it("normalizes backend rows when the service responds with data", async () => {
@@ -62,19 +55,10 @@ describe("getAlertedProductsPage", () => {
             precio_minimo: 120000,
             precio_maximo: 150000,
             valor_unitario_venta: 168000,
-            valor_catalogo_feria: 168000,
-            categoria_alerta: {
-              id: 5256,
-              nombre: "POR ENCIMA PRECIO MAXIMO",
-            },
-            tipo_gestion: {
-              id: 5275,
-              nombre: "ACTA COMPLEMENTARIA",
-            },
-            gestion_alerta: {
-              id: 5272,
-              nombre: "SIN GESTIÓN",
-            },
+            valor_catalogo_jornada: 168000,
+            categoria_alerta: { id: 5256, nombre: "POR ENCIMA PRECIO MAXIMO" },
+            tipo_gestion: { id: 5275, nombre: "ACTA COMPLEMENTARIA" },
+            gestion_alerta: { id: 5272, nombre: "SIN GESTIÓN" },
           },
         ],
       },
@@ -102,6 +86,9 @@ describe("getAlertedProductsPage", () => {
         managementTypeCode: 5275,
         alertManagementCode: 5272,
         hasAssignedManagementType: true,
+        documentoTitular: "",
+        cub: "",
+        ordenNumero: "",
       },
     ]);
   });
@@ -109,7 +96,13 @@ describe("getAlertedProductsPage", () => {
   it("builds the management type request expected by the service contract", () => {
     const request = buildAlertedProductsManagementTypeRequest({
       managementTypeId: 5275,
-      selectedRows: [alertedProductsTableData[0]],
+      selectedRows: [
+        {
+          productId: "133458",
+          alertCategoryCode: 5256,
+          alertCategory: "POR ENCIMA PRECIO MAXIMO",
+        },
+      ],
     });
 
     expect(request).toEqual({
@@ -126,24 +119,16 @@ describe("getAlertedProductsPage", () => {
     });
   });
 
-  it("falls back to mock assignment and the next table load reflects the updated management type", async () => {
+  it("throws when assignAlertedProductsManagementType gets a backend error", async () => {
     alertedProductsServices.updateProductsManagementType.mockResolvedValue({
       status: ResponseStatusEnum.NOT_FOUND,
     });
-    alertedProductsServices.getProducts.mockResolvedValue({
-      status: ResponseStatusEnum.NOT_FOUND,
-    });
 
-    await assignAlertedProductsManagementType({
-      managementTypeId: 5279,
-      selectedRows: [alertedProductsTableData[0]],
-    });
-
-    const result = await getAlertedProductsPage();
-    const updatedRow = result.rows.find((row) => row.productId === "133458");
-
-    expect(updatedRow.managementType).toBe("AJUSTE DE PRECIO");
-    expect(updatedRow.managementTypeCode).toBe(5279);
-    expect(updatedRow.hasAssignedManagementType).toBe(true);
+    await expect(
+      assignAlertedProductsManagementType({
+        managementTypeId: 5279,
+        selectedRows: [{ productId: "133458", alertCategoryCode: 5256, alertCategory: "POR ENCIMA PRECIO MAXIMO" }],
+      })
+    ).rejects.toBeTruthy();
   });
 });

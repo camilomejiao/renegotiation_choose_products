@@ -1,17 +1,5 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
-import {
-  alertedProductsTableResponseMock,
-} from "../../../widgets/alerted-products-table/model/alertedProductsTableData";
-import { getManagementTypeAssignmentLabel } from "../../../widgets/alerted-products-table/model/managementTypeOptions";
-
-// Mantiene operativa la vista mientras el backend real de productos alertados
-// no exista o responda sin datos.
-const ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK = true;
-const createMockAlertedProductsResponseState = () =>
-  JSON.parse(JSON.stringify(alertedProductsTableResponseMock));
-
-let alertedProductsTableResponseState = createMockAlertedProductsResponseState();
 
 const appendRepeatedQueryParams = (params, key, values = []) => {
   values
@@ -105,7 +93,7 @@ const normalizeAlertedProductRow = (row = {}) => ({
   minimumPrice: Number(row?.precio_minimo ?? 0),
   maximumPrice: Number(row?.precio_maximo ?? 0),
   saleUnitValue: Number(row?.valor_unitario_venta ?? 0),
-  fairCatalogValue: Number(row?.valor_catalogo_feria ?? 0),
+  fairCatalogValue: Number(row?.valor_catalogo_jornada ?? row?.valor_catalogo_feria ?? 0),
   alertCategory: row?.categoria_alerta?.nombre ?? "",
   managementType: row?.tipo_gestion?.nombre ?? "",
   alertManagement: row?.gestion_alerta?.nombre ?? "",
@@ -121,85 +109,22 @@ const normalizeAlertedProductRow = (row = {}) => ({
 const getNormalizedAlertedProductsRows = (rows = []) =>
   rows.map(normalizeAlertedProductRow).filter((row) => row.id);
 
-const normalizeText = (value) => String(value ?? "").trim().toLowerCase();
+export const getAlertedProductsPage = async (filters = {}) => {
+  const response = await alertedProductsServices.getProducts(
+    buildAlertedProductsQuery(filters)
+  );
 
-const matchesSingleValue = (currentValue, expectedValue) => {
-  if (!expectedValue) {
-    return true;
+  if (response?.status !== ResponseStatusEnum.OK) {
+    throw response;
   }
 
-  return normalizeText(currentValue) === normalizeText(expectedValue);
-};
-
-const matchesAnyValue = (currentValue, expectedValues = []) => {
-  if (!Array.isArray(expectedValues) || expectedValues.length === 0) {
-    return true;
-  }
-
-  const normalizedCurrentValue = normalizeText(currentValue);
-  return expectedValues.some((value) => normalizeText(value) === normalizedCurrentValue);
-};
-
-const getMockAlertedProductsRows = (filters = {}) =>
-  getNormalizedAlertedProductsRows(alertedProductsTableResponseState.productos).filter((row) => {
-    const selectedProducts = (filters.products ?? []).map(
-      (product) => product?.label || product?.value
-    );
-
-    return (
-      matchesSingleValue(row.supplier, filters.supplier?.supplierName || filters.supplier?.label) &&
-      matchesSingleValue(row.alertCategory, filters.alertCategory?.label) &&
-      matchesSingleValue(row.managementType, filters.managementType?.label) &&
-      matchesSingleValue(row.alertManagement, filters.alertManagement?.label) &&
-      matchesAnyValue(row.productName, selectedProducts)
-    );
-  });
-
-const buildMockAlertedProductsPage = (filters = {}) => {
-  const rows = getMockAlertedProductsRows(filters);
+  const data = response?.data ?? {};
+  const rows = Array.isArray(data?.productos) ? data.productos : [];
 
   return {
-    meta: { ...alertedProductsTableResponseMock.meta, size: rows.length, total_registros: rows.length, total_pages: rows.length > 0 ? 1 : 0, source: "mock" },
-    rows,
+    meta: data?.meta ?? {},
+    rows: getNormalizedAlertedProductsRows(rows),
   };
-};
-
-export const getAlertedProductsPage = async (filters = {}) => {
-  try {
-    const response = await alertedProductsServices.getProducts(
-      buildAlertedProductsQuery(filters)
-    );
-
-    if (response?.status !== ResponseStatusEnum.OK) {
-      if (ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK) {
-        return buildMockAlertedProductsPage(filters);
-      }
-
-      throw response;
-    }
-
-    const data = response?.data ?? {};
-    const rows = Array.isArray(data?.productos) ? data.productos : [];
-    const normalizedRows = getNormalizedAlertedProductsRows(rows);
-
-    if (
-      ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK &&
-      normalizedRows.length === 0
-    ) {
-      return buildMockAlertedProductsPage(filters);
-    }
-
-    return {
-      meta: data?.meta ?? {},
-      rows: normalizedRows,
-    };
-  } catch (error) {
-    if (ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK) {
-      return buildMockAlertedProductsPage(filters);
-    }
-
-    throw error;
-  }
 };
 
 export const buildAlertedProductsManagementTypeRequest = ({
@@ -216,43 +141,6 @@ export const buildAlertedProductsManagementTypeRequest = ({
   })),
 });
 
-const updateMockAlertedProductsManagementType = ({
-  managementTypeId,
-  selectedRows = [],
-}) => {
-  const managementTypeLabel = getManagementTypeAssignmentLabel(Number(managementTypeId));
-
-  alertedProductsTableResponseState = {
-    ...alertedProductsTableResponseState,
-    productos: (alertedProductsTableResponseState.productos ?? []).map((row) => {
-      const matchesSelectedRow = selectedRows.some(
-        (selectedRow) => Number(selectedRow?.productId ?? selectedRow?.id) === Number(row?.id_producto)
-      );
-
-      if (!matchesSelectedRow) {
-        return row;
-      }
-
-      return {
-        ...row,
-        tipo_gestion: {
-          codigo: Number(managementTypeId),
-          id: Number(managementTypeId),
-          nombre: managementTypeLabel,
-        },
-      };
-    }),
-  };
-
-  return {
-    tipo_gestion_id: Number(managementTypeId),
-    total_productos_recibidos: selectedRows.length,
-    total_productos_actualizados: selectedRows.length,
-    mensaje: "Tipo de gestión actualizado correctamente.",
-    source: "mock",
-  };
-};
-
 export const assignAlertedProductsManagementType = async ({
   managementTypeId,
   selectedRows = [],
@@ -262,33 +150,11 @@ export const assignAlertedProductsManagementType = async ({
     selectedRows,
   });
 
-  try {
-    const response = await alertedProductsServices.updateProductsManagementType(payload);
+  const response = await alertedProductsServices.updateProductsManagementType(payload);
 
-    if (response?.status !== ResponseStatusEnum.OK) {
-      if (ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK) {
-        return updateMockAlertedProductsManagementType({
-          managementTypeId,
-          selectedRows,
-        });
-      }
-
-      throw response;
-    }
-
-    return response?.data ?? {};
-  } catch (error) {
-    if (ENABLE_ALERTED_PRODUCTS_TABLE_MOCK_FALLBACK) {
-      return updateMockAlertedProductsManagementType({
-        managementTypeId,
-        selectedRows,
-      });
-    }
-
-    throw error;
+  if (response?.status !== ResponseStatusEnum.OK) {
+    throw response;
   }
-};
 
-export const __resetAlertedProductsTableMockStateForTests = () => {
-  alertedProductsTableResponseState = createMockAlertedProductsResponseState();
+  return response?.data ?? {};
 };

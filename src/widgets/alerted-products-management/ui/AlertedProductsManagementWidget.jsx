@@ -121,15 +121,19 @@ export const AlertedProductsManagementWidget = ({
     [alertsData]
   );
 
+  const addedIds = useMemo(
+    () => new Set(alertsData.map((r) => r.id)),
+    [alertsData]
+  );
+
   const modalDataSource = useMemo(() => {
-    const addedIds = new Set(alertsData.map((r) => r.id));
     return modalAllRows.filter((row) => {
-      if (addedIds.has(row.id)) return false;
       if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode)) return false;
+      if (addedIds.has(row.id)) return true;
       const mgmt = (row.alertManagement ?? "").trim().toLowerCase();
       return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
     });
-  }, [modalAllRows, alertsData, managementCategoryCodes]);
+  }, [modalAllRows, addedIds, managementCategoryCodes]);
 
   const handleRemoveAlert = useCallback((record) => {
     setAlertsData((prev) => prev.filter((row) => row.id !== record.id));
@@ -169,18 +173,21 @@ export const AlertedProductsManagementWidget = ({
     {
       title: "Acción",
       key: "action",
-      width: 90,
+      width: 110,
       align: "center",
       fixed: "left",
-      render: (_, record) => (
-        <AddAlertRowButton
-          loading={addingId === record.id}
-          disabled={addingId !== null && addingId !== record.id}
-          onClick={() => handleAddAlert(record)}
-        >
-          Añadir
-        </AddAlertRowButton>
-      ),
+      render: (_, record) => {
+        const isAdded = addedIds.has(record.id);
+        return (
+          <AddAlertRowButton
+            loading={addingId === record.id}
+            disabled={isAdded || (addingId !== null && addingId !== record.id)}
+            onClick={() => !isAdded && handleAddAlert(record)}
+          >
+            {isAdded ? "Ya añadido" : "Añadir"}
+          </AddAlertRowButton>
+        );
+      },
     },
     {
       title: "Categoría",
@@ -243,7 +250,7 @@ export const AlertedProductsManagementWidget = ({
       align: "center",
       render: (v) => v || "—",
     },
-  ], [addingId, handleAddAlert]);
+  ], [addedIds, addingId, handleAddAlert]);
 
   const closePdfViewer = () => {
     if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
@@ -478,7 +485,7 @@ export const AlertedProductsManagementWidget = ({
               icon={<PlusOutlined />}
               onClick={() => setIsAddModalOpen(true)}
             >
-              Añadir alerta
+              Añadir item
             </AlertsAddButton>
           </AlertsSectionHeader>
           <AlertsTableWrapper>
@@ -491,6 +498,7 @@ export const AlertedProductsManagementWidget = ({
               showPagination
               pageSizeOptions={["10", "20", "50"]}
               defaultPageSize="10"
+              enableRowSelection={false}
               showToolbar={false}
               showColumnSettings={false}
               showTableResize={false}

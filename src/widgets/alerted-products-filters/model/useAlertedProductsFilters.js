@@ -13,7 +13,7 @@ const ALERT_CATEGORY_PARAMETER_TYPE_ID = 35;
 const ALERT_MANAGEMENT_PARAMETER_TYPE_ID = 36;
 const MANAGEMENT_TYPE_PARAMETER_TYPE_ID = 39;
 
-export const useAlertedProductsFilters = () => {
+export const useAlertedProductsFilters = ({ initialFilters } = {}) => {
   const [journeyOptions, setJourneyOptions] = useState([]);
   const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
   const [alertManagementOptions, setAlertManagementOptions] = useState([]);
@@ -28,7 +28,7 @@ export const useAlertedProductsFilters = () => {
   const [loadingSupplierOptions, setLoadingSupplierOptions] = useState(false);
   const [loadingDepartmentOptions, setLoadingDepartmentOptions] = useState(false);
   const [loadingMunicipalityOptions, setLoadingMunicipalityOptions] = useState(false);
-  const [filters, setFilters] = useState(defaultAlertedProductsFilters);
+  const [filters, setFilters] = useState(initialFilters ?? defaultAlertedProductsFilters);
 
   const updateFilter = (key) => (nextValue) => {
     setFilters((currentFilters) => ({

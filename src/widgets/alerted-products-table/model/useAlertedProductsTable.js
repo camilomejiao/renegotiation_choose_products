@@ -7,9 +7,6 @@ import {
   managementTypeAssignmentOptions,
 } from "./managementTypeOptions";
 
-const ELIGIBLE_ALERT_CATEGORY = "SIN ALERTA";
-const ELIGIBLE_ALERT_MANAGEMENT = "SIN GESTIÓN";
-
 export const useAlertedProductsTable = ({
   onAssignManagementType,
   onRaiseAlert,
@@ -29,9 +26,7 @@ export const useAlertedProductsTable = ({
     setSelectedRows([]);
   }, [initialDataSource]);
 
-  const isSelectableRow = (row) =>
-    row?.alertCategory !== ELIGIBLE_ALERT_CATEGORY &&
-    row?.alertManagement === ELIGIBLE_ALERT_MANAGEMENT;
+  const isSelectableRow = (row) => row?.alertManagementCode === "sin_gestion";
 
   const handleRowSelectionChange = (keys, rows) => {
     const eligibleRows = rows.filter(isSelectableRow);

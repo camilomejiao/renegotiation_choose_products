@@ -78,18 +78,19 @@ const ALERT_CATEGORY_PILLS = {
 };
 
 const MANAGEMENT_TYPE_PILLS = {
-  5275: "blue",
-  5276: "violet",
-  5277: "cyan",
-  5278: "neutral",
-  5279: "amber",
+  0: "neutral",   // Sin gestión
+  1: "blue",      // Revisión
+  2: "cyan",      // Justificación técnica
+  3: "amber",     // Subsanación
+  4: "violet",    // Acta complementaria
+  5: "green",     // Ajuste de precio
 };
 
 const ALERT_MANAGEMENT_PILLS = {
-  5259: "blue",
-  5260: "amber",
-  5261: "green",
-  5272: "neutral",
+  sin_gestion:    "neutral",
+  en_proceso:     "blue",
+  en_subsanacion: "amber",
+  resuelta:       "green",
 };
 
 const renderPill = (label, tone = "neutral") => {

@@ -135,6 +135,21 @@ export const AlertedProductsPage = () => {
     setHistoryByCategory(documentsResult.historyByCategory);
   };
 
+  const handleRaiseAlertWithValidation = (nextAssignment) => {
+    const hasPdf = historyByCategory.pdf.length > 0;
+    const hasExcel = historyByCategory.excel.length > 0;
+
+    if (!hasPdf || !hasExcel) {
+      AlertComponent.warning(
+        "Documentos requeridos",
+        "La jornada no presenta documentos asociados aún. Para continuar con el levantamiento de la alerta, es necesario adjuntar un archivo PDF y un archivo Excel en la sección de documentos."
+      );
+      return;
+    }
+
+    handleRaiseAlert(nextAssignment);
+  };
+
   const handleAssignManagementType = async ({
     managementTypeId,
     selectedRows,
@@ -201,6 +216,7 @@ export const AlertedProductsPage = () => {
                   onApply={handleApplyFilters}
                   onReset={handleResetFilters}
                   onJourneyChange={handleJourneyChange}
+                  initialFilters={appliedFilters}
                 />
                 {shouldShowTable ? (
                   <AlertedProductsTableWidget
@@ -209,7 +225,7 @@ export const AlertedProductsPage = () => {
                     assigningManagementType={assigningManagementType}
                     loading={tableLoading}
                     onAssignManagementType={handleAssignManagementType}
-                    onRaiseAlert={handleRaiseAlert}
+                    onRaiseAlert={handleRaiseAlertWithValidation}
                   />
                 ) : null}
               </AlertedProductsMainContent>
