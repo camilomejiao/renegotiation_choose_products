@@ -299,6 +299,98 @@ export const ActaDeleteButton = styled(Button)`
   }
 `;
 
+/* ── Alertas a Gestionar ───────────────────────────────── */
+
+export const AlertsSectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+`;
+
+export const AlertsAddButton = styled(Button)`
+  && {
+    height: 36px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.84rem;
+    box-shadow: none;
+    background: #1e3a8a;
+    border-color: #1e3a8a;
+    color: #ffffff;
+  }
+
+  &&:hover,
+  &&:focus {
+    background: #1e40af !important;
+    border-color: #1e40af !important;
+    color: #ffffff !important;
+  }
+`;
+
+export const AlertsTableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
+
+  .ant-table-thead > tr > th {
+    vertical-align: middle;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .ant-table-thead .ant-table-column-title {
+    display: block;
+    width: 100%;
+    white-space: normal;
+    line-height: 1.15;
+    text-align: center;
+  }
+`;
+
+/* ── Modal Añadir alerta ───────────────────────────────── */
+
+export const AddAlertRowButton = styled(Button)`
+  && {
+    height: 36px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    padding: 0 18px;
+    box-shadow: none;
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+  }
+
+  &&:hover,
+  &&:focus {
+    background: #15803d !important;
+    border-color: #15803d !important;
+    color: #ffffff !important;
+  }
+
+  &&:disabled {
+    background: #e2e8f0 !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+  }
+`;
+
+export const ModalInfoBanner = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-bottom: 16px;
+`;
+
 /* ── Acciones ──────────────────────────────────────────── */
 
 export const ActionsRow = styled.div`

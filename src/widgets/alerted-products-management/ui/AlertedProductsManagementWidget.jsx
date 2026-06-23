@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   DeleteOutlined,
   DownloadOutlined,
@@ -7,12 +7,22 @@ import {
   FilePdfOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Tooltip, Upload } from "antd";
+import { Modal, Tooltip, Upload } from "antd";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
+import {
+  assignAlertedProductsManagementType,
+} from "../../../pages/alerted-products/api/alertedProductsTableApi";
 import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
 import { ManagementMetaStrip } from "../../../shared/ui/management-meta-strip";
+import { SmartTable } from "../../../shared/ui/smart-table";
+import { managementTypeAssignmentOptions } from "../../alerted-products-table/model/managementTypeOptions";
+import {
+  getAlertedProductsManagementColumns,
+  renderCategoryPill,
+} from "../model/getAlertedProductsManagementColumns";
+import { useAddAlertModal } from "../model/useAddAlertModal";
 import {
   ActaDeleteButton,
   ActaDownloadButton,
@@ -23,6 +33,10 @@ import {
   ActaUploadZone,
   ActaViewButton,
   ActionsRow,
+  AddAlertRowButton,
+  AlertsAddButton,
+  AlertsSectionHeader,
+  AlertsTableWrapper,
   FieldGroup,
   FieldLabel,
   JourneyDocActions,
@@ -36,6 +50,7 @@ import {
   JourneyDocumentsRow,
   ManagementBody,
   ManagementCard,
+  ModalInfoBanner,
   ObservationTextArea,
   PrimaryActionButton,
   RequiredMark,
@@ -66,8 +81,15 @@ const extractFileName = (name = "") => {
   return parts[2] ?? parts[parts.length - 1] ?? name;
 };
 
+const wrapTitle = (...lines) => (
+  <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
+    {lines.map((line, i) => <span key={i} style={{ display: "block" }}>{line}</span>)}
+  </span>
+);
+
 export const AlertedProductsManagementWidget = ({
   assignment,
+  appliedFilters,
   historyByCategory = { pdf: [], excel: [] },
   onBack,
   onContinue,
@@ -77,9 +99,151 @@ export const AlertedProductsManagementWidget = ({
   const [viewingPdf, setViewingPdf] = useState(false);
   const [downloadingExcel, setDownloadingExcel] = useState(false);
   const [pdfViewer, setPdfViewer] = useState({ isOpen: false, url: null, title: "" });
+  const [alertsData, setAlertsData] = useState(() => assignment?.selectedRows ?? []);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addingId, setAddingId] = useState(null);
 
   const activePdf   = historyByCategory.pdf?.[0]   ?? null;
   const activeExcel = historyByCategory.excel?.[0] ?? null;
+
+  const managementTypeOption = useMemo(
+    () => managementTypeAssignmentOptions.find((opt) => opt.label === assignment?.managementType),
+    [assignment?.managementType]
+  );
+
+  const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
+    isOpen: isAddModalOpen,
+    appliedFilters,
+  });
+
+  const managementCategoryCodes = useMemo(
+    () => new Set(alertsData.map((r) => r.alertCategoryCode).filter(Boolean)),
+    [alertsData]
+  );
+
+  const modalDataSource = useMemo(() => {
+    const addedIds = new Set(alertsData.map((r) => r.id));
+    return modalAllRows.filter((row) => {
+      if (addedIds.has(row.id)) return false;
+      if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode)) return false;
+      const mgmt = (row.alertManagement ?? "").trim().toLowerCase();
+      return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
+    });
+  }, [modalAllRows, alertsData, managementCategoryCodes]);
+
+  const handleRemoveAlert = useCallback((record) => {
+    setAlertsData((prev) => prev.filter((row) => row.id !== record.id));
+  }, []);
+
+  const alertsColumns = useMemo(
+    () => getAlertedProductsManagementColumns({ onRemove: handleRemoveAlert }),
+    [handleRemoveAlert]
+  );
+
+  const handleAddAlert = useCallback(async (product) => {
+    if (!managementTypeOption) return;
+    setAddingId(product.id);
+    try {
+      await assignAlertedProductsManagementType({
+        managementTypeId: managementTypeOption.value,
+        selectedRows: [product],
+      });
+      const enriched = {
+        ...product,
+        managementType: managementTypeOption.label,
+        managementTypeCode: managementTypeOption.value,
+        hasAssignedManagementType: true,
+      };
+      setAlertsData((prev) => [...prev, enriched]);
+    } catch (error) {
+      AlertComponent.error(
+        "Error",
+        error?.data?.mensaje || "No fue posible añadir el producto a la gestión."
+      );
+    } finally {
+      setAddingId(null);
+    }
+  }, [managementTypeOption]);
+
+  const modalColumns = useMemo(() => [
+    {
+      title: "Acción",
+      key: "action",
+      width: 90,
+      align: "center",
+      fixed: "left",
+      render: (_, record) => (
+        <AddAlertRowButton
+          loading={addingId === record.id}
+          disabled={addingId !== null && addingId !== record.id}
+          onClick={() => handleAddAlert(record)}
+        >
+          Añadir
+        </AddAlertRowButton>
+      ),
+    },
+    {
+      title: "Categoría",
+      dataIndex: "alertCategory",
+      key: "alertCategory",
+      width: 180,
+      align: "center",
+      render: (value, record) => renderCategoryPill(value, record?.alertCategoryCode),
+    },
+    {
+      title: wrapTitle("Documento", "Titular"),
+      dataIndex: "documentoTitular",
+      key: "documentoTitular",
+      width: 140,
+      align: "center",
+      render: (v) => v || "—",
+    },
+    {
+      title: "CUB",
+      dataIndex: "cub",
+      key: "cub",
+      width: 100,
+      align: "center",
+      render: (v) => v || "—",
+    },
+    {
+      title: wrapTitle("N° de", "Orden"),
+      dataIndex: "ordenNumero",
+      key: "ordenNumero",
+      width: 110,
+      align: "center",
+      render: (v) => v || "—",
+    },
+    {
+      title: "Proveedor",
+      dataIndex: "supplier",
+      key: "supplier",
+      width: 160,
+      align: "center",
+    },
+    {
+      title: wrapTitle("ID", "Producto"),
+      dataIndex: "productId",
+      key: "productId",
+      width: 110,
+      align: "center",
+    },
+    {
+      title: wrapTitle("Nombre", "producto"),
+      dataIndex: "productName",
+      key: "productName",
+      width: 200,
+      align: "center",
+    },
+    {
+      title: wrapTitle("Gestión", "alerta"),
+      dataIndex: "alertManagement",
+      key: "alertManagement",
+      width: 150,
+      align: "center",
+      render: (v) => v || "—",
+    },
+  ], [addingId, handleAddAlert]);
 
   const closePdfViewer = () => {
     if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
@@ -305,6 +469,38 @@ export const AlertedProductsManagementWidget = ({
           </SolicitudGrid>
         </SectionCard>
 
+        {/* Alertas a Gestionar */}
+        <SectionCard>
+          <AlertsSectionHeader>
+            <SectionTitle>Alertas a Gestionar</SectionTitle>
+            <AlertsAddButton
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Añadir alerta
+            </AlertsAddButton>
+          </AlertsSectionHeader>
+          <AlertsTableWrapper>
+            <SmartTable
+              rowKey="id"
+              columns={alertsColumns}
+              columnWidthMode="fixed"
+              dataSource={alertsData}
+              total={alertsData.length}
+              showPagination
+              pageSizeOptions={["10", "20", "50"]}
+              defaultPageSize="10"
+              showToolbar={false}
+              showColumnSettings={false}
+              showTableResize={false}
+              showReload={false}
+              scroll={{ x: 1900, y: 400 }}
+              emptyText="No hay alertas para el tipo de gestión seleccionado."
+            />
+          </AlertsTableWrapper>
+        </SectionCard>
+
         <ActionsRow>
           <SecondaryActionButton onClick={onBack}>Cancelar</SecondaryActionButton>
           <PrimaryActionButton type="primary" onClick={handleSubmit}>
@@ -321,6 +517,42 @@ export const AlertedProductsManagementWidget = ({
         onClose={closePdfViewer}
         onDownload={handleDownloadFromViewer}
       />
+
+      <Modal
+        open={isAddModalOpen}
+        onCancel={() => setIsAddModalOpen(false)}
+        title="Añadir alerta a la gestión"
+        footer={
+          <SecondaryActionButton onClick={() => setIsAddModalOpen(false)}>
+            Cerrar
+          </SecondaryActionButton>
+        }
+        width={1100}
+        destroyOnClose
+      >
+        <ModalInfoBanner>
+          Solo se listan registros de Productos Alertados que coinciden con la misma
+          categoría de alerta de la gestión actual y cuyo estado de gestión de alerta
+          es <strong>Sin Gestión</strong>.
+        </ModalInfoBanner>
+        <SmartTable
+          rowKey="id"
+          columns={modalColumns}
+          columnWidthMode="fixed"
+          dataSource={modalDataSource}
+          total={modalDataSource.length}
+          loading={modalLoading}
+          showPagination
+          pageSizeOptions={["10", "20", "50"]}
+          defaultPageSize="10"
+          showToolbar={false}
+          showColumnSettings={false}
+          showTableResize={false}
+          showReload={false}
+          scroll={{ x: 1200, y: 400 }}
+          emptyText="No hay productos disponibles para añadir."
+        />
+      </Modal>
     </ManagementCard>
   );
 };

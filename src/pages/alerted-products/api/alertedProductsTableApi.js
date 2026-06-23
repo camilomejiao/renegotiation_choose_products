@@ -113,6 +113,9 @@ const normalizeAlertedProductRow = (row = {}) => ({
   managementTypeCode: row?.tipo_gestion?.id ?? row?.tipo_gestion?.codigo ?? null,
   alertManagementCode: row?.gestion_alerta?.id ?? row?.gestion_alerta?.codigo ?? null,
   hasAssignedManagementType: Boolean(row?.tipo_gestion?.id ?? row?.tipo_gestion?.codigo),
+  documentoTitular: row?.documento_titular ?? "",
+  cub: row?.cub ?? "",
+  ordenNumero: row?.numero_orden ?? "",
 });
 
 const getNormalizedAlertedProductsRows = (rows = []) =>
