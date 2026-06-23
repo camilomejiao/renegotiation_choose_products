@@ -1,13 +1,13 @@
-FROM node:18.19-alpine3.19 as builder
-WORKDIR /source
-COPY package.json /source/
-RUN npm install
-# COPY .env /source/
-COPY . /source/
-RUN npm run build
+# syntax=docker/dockerfile:1
+FROM oven/bun:1.3 as builder
+WORKDIR /build
+COPY package.json /build/
+RUN bun install
+COPY . /build/
+RUN bun run build
 
 FROM nginx:stable-alpine
 RUN cp /usr/share/zoneinfo/America/Bogota /etc/localtime && \
-  echo "America/Bogota" >/etc/timezone
+    echo "America/Bogota" >/etc/timezone
 WORKDIR /app
-COPY --from=builder /source/build/ /app
+COPY --from=builder /build/build/ /app
