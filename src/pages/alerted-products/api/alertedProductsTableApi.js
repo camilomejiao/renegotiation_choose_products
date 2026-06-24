@@ -136,7 +136,7 @@ export const buildAlertedProductsManagementTypeRequest = ({
 }) => ({
   tipo_gestion_id: Number(managementTypeId),
   productos: selectedRows.map((row) => ({
-    id_producto: Number(row?.productId ?? row?.id),
+    id_producto: Number(row?.id),
     categoria_alerta: {
       codigo: Number(row?.alertCategoryCode),
       nombre: row?.alertCategory ?? "",
