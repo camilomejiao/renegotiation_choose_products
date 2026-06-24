@@ -17,6 +17,7 @@ export const SmartTableView = ({
   showPagination = true,
   total,
   currentPage,
+  pageSize,
   defaultText = "---",
   emptyText,
   defaultSelectedRows,
@@ -78,6 +79,7 @@ export const SmartTableView = ({
     pageSizeOptions,
     defaultPageSize,
     currentPage,
+    pageSize,
   });
 
   const resetColumns = () => setColumnConfig(columns);

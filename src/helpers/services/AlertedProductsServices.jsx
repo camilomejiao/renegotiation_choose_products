@@ -17,7 +17,7 @@ class AlertedProductsServices {
   }
 
   updateProductsManagementType(payload) {
-    return authTokenService.fetchWithAuth(this.buildUrl("productos/gestion"), {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/gestion/"), {
       method: "POST",
       body: JSON.stringify(payload),
     });

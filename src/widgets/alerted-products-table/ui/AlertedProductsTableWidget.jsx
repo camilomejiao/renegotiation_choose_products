@@ -3,7 +3,6 @@ import { Radio } from "antd";
 
 import { Modal } from "../../../shared/ui/modal";
 import { SmartTable } from "../../../shared/ui/smart-table";
-import { managementTypeAssignmentOptions } from "../model/managementTypeOptions";
 import { useAlertedProductsTable } from "../model/useAlertedProductsTable";
 import {
   AssignmentAndRaiseButton,
@@ -31,7 +30,7 @@ import {
   TableWidgetRoot,
 } from "./AlertedProductsTableWidget.styles";
 
-const TABLE_SCROLL_X = 1800;
+const TABLE_SCROLL_X = 2194;
 
 export const AlertedProductsTableWidget = ({
   assigningManagementType = false,
@@ -40,6 +39,11 @@ export const AlertedProductsTableWidget = ({
   loading = false,
   onAssignManagementType,
   onRaiseAlert,
+  totalRecords = 0,
+  currentPage,
+  pageSize,
+  onPageChange,
+  managementTypeOptions = [],
 }) => {
   const {
     canRaiseAlert,
@@ -59,6 +63,7 @@ export const AlertedProductsTableWidget = ({
     onAssignManagementType,
     onRaiseAlert,
     initialDataSource: dataSource,
+    managementTypeOptions,
   });
 
   return (
@@ -100,7 +105,10 @@ export const AlertedProductsTableWidget = ({
             columns={columns}
             columnWidthMode="fixed"
             dataSource={dataSource}
-            total={dataSource.length}
+            total={totalRecords}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={onPageChange}
             showPagination
             pageSizeOptions={["10", "20", "50"]}
             defaultPageSize="10"
@@ -146,7 +154,7 @@ export const AlertedProductsTableWidget = ({
             value={selectedManagementType}
             onChange={(event) => setSelectedManagementType(event.target.value)}
           >
-            {managementTypeAssignmentOptions.map((option) => (
+            {managementTypeOptions.map((option) => (
               <AssignmentOptionCard
                 key={option.value}
                 $isActive={selectedManagementType === option.value}

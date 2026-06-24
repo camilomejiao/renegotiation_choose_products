@@ -11,13 +11,12 @@ export const useAlertedProductsTable = ({
   onAssignManagementType,
   onRaiseAlert,
   initialDataSource = alertedProductsTableData,
+  managementTypeOptions = managementTypeAssignmentOptions,
 } = {}) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
-  const [selectedManagementType, setSelectedManagementType] = useState(
-    managementTypeAssignmentOptions[0]?.value || ""
-  );
+  const [selectedManagementType, setSelectedManagementType] = useState(null);
 
   const columns = useMemo(() => getAlertedProductsTableColumns(), []);
 
@@ -26,7 +25,10 @@ export const useAlertedProductsTable = ({
     setSelectedRows([]);
   }, [initialDataSource]);
 
-  const isSelectableRow = (row) => row?.alertManagementCode === "sin_gestion";
+  const isSelectableRow = (row) => {
+    const mgmt = (row?.alertManagement ?? "").trim().toLowerCase();
+    return mgmt === "sin gestión" || mgmt === "sin gestion";
+  };
 
   const handleRowSelectionChange = (keys, rows) => {
     const eligibleRows = rows.filter(isSelectableRow);
@@ -34,10 +36,14 @@ export const useAlertedProductsTable = ({
     setSelectedRows(eligibleRows);
   };
 
+  const getManagementTypeLabel = (value) =>
+    managementTypeOptions.find((o) => o.value === value)?.label ||
+    getManagementTypeAssignmentLabel(value);
+
   const handleConfirmManagementTypeAssignment = async () => {
     await onAssignManagementType?.({
       managementTypeId: selectedManagementType,
-      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+      managementType: getManagementTypeLabel(selectedManagementType),
       selectedRowKeys,
       selectedRows,
     });
@@ -47,7 +53,7 @@ export const useAlertedProductsTable = ({
   const handleAssignAndRaiseAlert = async () => {
     await onAssignManagementType?.({
       managementTypeId: selectedManagementType,
-      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+      managementType: getManagementTypeLabel(selectedManagementType),
       selectedRowKeys,
       selectedRows,
     });

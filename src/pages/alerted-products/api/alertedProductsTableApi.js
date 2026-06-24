@@ -21,6 +21,8 @@ const buildAlertedProductsQuery = ({
   idProducto,
   supplier = [],
   products = [],
+  page = 1,
+  pageSize = 10,
 }) => {
   const params = new URLSearchParams();
 
@@ -76,15 +78,18 @@ const buildAlertedProductsQuery = ({
     products.map((product) => product?.label || product?.value)
   );
 
-  params.set("pagina", "1");
-  params.set("tamano_pagina", "100");
+  params.set("pagina", String(page));
+  params.set("tamano_pagina", String(pageSize));
 
   const queryString = params.toString();
   return queryString ? `?${queryString}` : "";
 };
 
 const normalizeAlertedProductRow = (row = {}) => ({
-  id: String(row?.id_producto ?? ""),
+  id: String(row?.id_orden_detalle ?? ""),
+  jornada: row?.nombre_jornada ?? row?.jornada ?? "",
+  documentoTitular: row?.documento_titular ?? "",
+  ordenNumero: row?.numero_orden ?? "",
   supplier: row?.proveedor ?? "",
   productId: String(row?.id_producto ?? ""),
   productName: row?.nombre_producto ?? "",
@@ -101,9 +106,7 @@ const normalizeAlertedProductRow = (row = {}) => ({
   managementTypeCode: row?.tipo_gestion?.id ?? row?.tipo_gestion?.codigo ?? null,
   alertManagementCode: row?.gestion_alerta?.id ?? row?.gestion_alerta?.codigo ?? null,
   hasAssignedManagementType: Boolean(row?.tipo_gestion?.id ?? row?.tipo_gestion?.codigo),
-  documentoTitular: row?.documento_titular ?? "",
   cub: row?.cub ?? "",
-  ordenNumero: row?.numero_orden ?? "",
 });
 
 const getNormalizedAlertedProductsRows = (rows = []) =>

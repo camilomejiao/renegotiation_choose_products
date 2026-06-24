@@ -78,12 +78,12 @@ const ALERT_CATEGORY_PILLS = {
 };
 
 const MANAGEMENT_TYPE_PILLS = {
-  0: "neutral",   // Sin gestión
-  1: "blue",      // Revisión
-  2: "cyan",      // Justificación técnica
-  3: "amber",     // Subsanación
-  4: "violet",    // Acta complementaria
-  5: "green",     // Ajuste de precio
+  0: "neutral",
+  1: "blue",
+  2: "cyan",
+  3: "amber",
+  4: "violet",
+  5: "green",
 };
 
 const ALERT_MANAGEMENT_PILLS = {
@@ -115,97 +115,145 @@ const renderPill = (label, tone = "neutral") => {
 const renderCatalogPill = (label, code, tonesByCode) =>
   renderPill(label, tonesByCode[code] || "neutral");
 
+const wrapCell = {
+  onCell: () => ({
+    style: { whiteSpace: "normal", wordBreak: "break-word", verticalAlign: "top" },
+  }),
+};
+
+const renderText = (value) => value || "---";
+
 export const getAlertedProductsTableColumns = () => [
+  {
+    title: "Jornada",
+    dataIndex: "jornada",
+    key: "jornada",
+    width: 130,
+    align: "center",
+    render: renderText,
+    ...wrapCell,
+  },
+  {
+    title: wrapColumnTitle("Documento", "Titular"),
+    dataIndex: "documentoTitular",
+    key: "documentoTitular",
+    width: 120,
+    align: "center",
+    render: renderText,
+    ...wrapCell,
+  },
+  {
+    title: "CUB",
+    dataIndex: "cub",
+    key: "cub",
+    width: 110,
+    align: "center",
+    render: renderText,
+    ...wrapCell,
+  },
+  {
+    title: wrapColumnTitle("N° de", "Orden"),
+    dataIndex: "ordenNumero",
+    key: "ordenNumero",
+    width: 110,
+    align: "center",
+    render: renderText,
+    ...wrapCell,
+  },
   {
     title: "Proveedor",
     dataIndex: "supplier",
     key: "supplier",
-    width: 150,
-    align: "center",
-  },
-  {
-    title: wrapColumnTitle("ID", "producto"),
-    dataIndex: "productId",
-    key: "productId",
-    width: 100,
-    align: "center",
-  },
-  {
-    title: wrapColumnTitle("Nombre", "producto"),
-    dataIndex: "productName",
-    key: "productName",
     width: 180,
     align: "center",
+    ...wrapCell,
   },
   {
-    title: wrapColumnTitle("Unidad de", "medida"),
+    title: wrapColumnTitle("ID", "Producto"),
+    dataIndex: "productId",
+    key: "productId",
+    width: 90,
+    align: "center",
+  },
+  {
+    title: wrapColumnTitle("Nombre", "Producto"),
+    dataIndex: "productName",
+    key: "productName",
+    width: 200,
+    align: "center",
+    ...wrapCell,
+  },
+  {
+    title: "Unidad",
     dataIndex: "unitOfMeasure",
     key: "unitOfMeasure",
-    width: 120,
+    width: 90,
     align: "center",
+    ...wrapCell,
   },
   {
-    title: wrapColumnTitle("Marca", "comercial"),
+    title: "Marca",
     dataIndex: "commercialBrand",
     key: "commercialBrand",
-    width: 120,
+    width: 110,
     align: "center",
+    ...wrapCell,
   },
   {
-    title: wrapColumnTitle("Precio", "minimo"),
+    title: wrapColumnTitle("Precio", "mín."),
     dataIndex: "minimumPrice",
     key: "minimumPrice",
-    width: 118,
+    width: 110,
     align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: wrapColumnTitle("Precio", "maximo"),
+    title: wrapColumnTitle("Precio", "máx."),
     dataIndex: "maximumPrice",
     key: "maximumPrice",
-    width: 118,
+    width: 110,
     align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: wrapColumnTitle("Valor unitario", "de venta"),
+    title: wrapColumnTitle("Valor unitario", "venta"),
     dataIndex: "saleUnitValue",
     key: "saleUnitValue",
-    width: 132,
+    width: 125,
     align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: wrapColumnTitle("Valor catalogo", "de feria"),
+    title: wrapColumnTitle("Valor catálogo", "jornada"),
     dataIndex: "fairCatalogValue",
     key: "fairCatalogValue",
-    width: 132,
+    width: 130,
     align: "right",
     render: (value) => formatCurrency(value),
   },
   {
-    title: wrapColumnTitle("Categoria", "de alerta"),
+    title: wrapColumnTitle("Categoría", "alerta"),
     dataIndex: "alertCategory",
     key: "alertCategory",
-    width: 240,
+    width: 160,
     align: "center",
     render: (value, record) =>
       renderCatalogPill(value, record?.alertCategoryCode, ALERT_CATEGORY_PILLS),
   },
   {
-    title: wrapColumnTitle("Tipo de", "gestion"),
+    title: wrapColumnTitle("Tipo", "gestión"),
     dataIndex: "managementType",
     key: "managementType",
-    width: 188,
+    width: 160,
     align: "center",
     render: (value, record) =>
       renderCatalogPill(value, record?.managementTypeCode, MANAGEMENT_TYPE_PILLS),
   },
   {
-    title: wrapColumnTitle("Gestion de", "alerta"),
+    title: wrapColumnTitle("Estado", "Gestión"),
     dataIndex: "alertManagement",
     key: "alertManagement",
-    width: 168,
+    width: 160,
     align: "center",
     render: (value, record) =>
       renderCatalogPill(value, record?.alertManagementCode, ALERT_MANAGEMENT_PILLS),

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
@@ -7,6 +7,7 @@ import { PageNotFound } from "../../../components/layout/page404/PageNotFound";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
 import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocumentsApi";
+import { getAlertedProductsParameterCatalog } from "../api/alertedProductsFiltersApi";
 import {
   assignAlertedProductsManagementType,
   getAlertedProductsPage,
@@ -44,6 +45,22 @@ export const AlertedProductsPage = () => {
   const [tableDataSource, setTableDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [assigningManagementType, setAssigningManagementType] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [managementTypeOptions, setManagementTypeOptions] = useState([]);
+
+  useEffect(() => {
+    getAlertedProductsParameterCatalog(39)
+      .then((options) =>
+        setManagementTypeOptions(
+          options.filter(
+            (o) => o.label?.trim().toLowerCase() !== "sin tipo de gestión"
+          )
+        )
+      )
+      .catch(() => setManagementTypeOptions([]));
+  }, []);
   const [historyByCategory, setHistoryByCategory] = useState({
     pdf: [],
     excel: [],
@@ -75,9 +92,10 @@ export const AlertedProductsPage = () => {
   const shouldShowTable = tableLoading || Boolean(appliedFilters);
   const tableEmptyText = "No hay productos alertados para los filtros aplicados.";
 
-  const reloadAlertedProductsTable = async (filtersToApply) => {
-    const productsResult = await getAlertedProductsPage(filtersToApply);
+  const reloadAlertedProductsTable = async (filtersToApply, page = currentPage, size = pageSize) => {
+    const productsResult = await getAlertedProductsPage({ ...filtersToApply, page, pageSize: size });
     setTableDataSource(productsResult.rows);
+    setTotalRecords(productsResult.meta?.total_registros ?? 0);
     return productsResult;
   };
 
@@ -88,9 +106,10 @@ export const AlertedProductsPage = () => {
 
     setTableLoading(true);
     setAppliedFilters(nextFilters);
+    setCurrentPage(1);
 
     const [productsResult, documentsResult] = await Promise.allSettled([
-      reloadAlertedProductsTable(nextFilters),
+      reloadAlertedProductsTable(nextFilters, 1, pageSize),
       getAlertedProductsJourneyDocuments(nextFilters.operationalDay.value),
     ]);
 
@@ -127,7 +146,23 @@ export const AlertedProductsPage = () => {
   const handleResetFilters = () => {
     setAppliedFilters(null);
     setTableDataSource([]);
+    setTotalRecords(0);
+    setCurrentPage(1);
     setHistoryByCategory({ pdf: [], excel: [] });
+  };
+
+  const handlePageChange = async (page, size) => {
+    if (!appliedFilters) return;
+    setCurrentPage(page);
+    setPageSize(size);
+    setTableLoading(true);
+    try {
+      await reloadAlertedProductsTable(appliedFilters, page, size);
+    } catch {
+      AlertComponent.error("Error", "No fue posible cargar los productos alertados");
+    } finally {
+      setTableLoading(false);
+    }
   };
 
   const reloadJourneyDocuments = async (journeyId) => {
@@ -177,7 +212,6 @@ export const AlertedProductsPage = () => {
         "Error",
         error?.data?.mensaje || "No fue posible actualizar el tipo de gestión."
       );
-      throw error;
     } finally {
       setAssigningManagementType(false);
     }
@@ -226,6 +260,11 @@ export const AlertedProductsPage = () => {
                     loading={tableLoading}
                     onAssignManagementType={handleAssignManagementType}
                     onRaiseAlert={handleRaiseAlertWithValidation}
+                    totalRecords={totalRecords}
+                    currentPage={currentPage}
+                    pageSize={pageSize}
+                    onPageChange={handlePageChange}
+                    managementTypeOptions={managementTypeOptions}
                   />
                 ) : null}
               </AlertedProductsMainContent>

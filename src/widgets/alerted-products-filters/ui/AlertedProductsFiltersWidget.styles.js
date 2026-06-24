@@ -103,23 +103,35 @@ export const FiltersInput = styled(Input)`
 
 export const FiltersMultiSelect = styled(Select)`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
 
   .ant-select-selector {
     min-height: 44px !important;
+    max-height: 112px !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
     padding: 5px 10px !important;
     border-radius: 12px !important;
     border-color: #cbd5e1 !important;
     box-shadow: none !important;
-    align-items: center;
-    transition: all 0.2s ease;
+    align-items: flex-start;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .ant-select-selection-overflow {
     gap: 6px;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    min-width: 0;
+    width: 100%;
   }
 
   .ant-select-selection-item {
     height: 28px;
+    flex-shrink: 0;
+    min-width: 0;
+    white-space: nowrap;
     margin-inline-end: 0 !important;
     padding-inline: 10px 6px !important;
     border-radius: 999px;

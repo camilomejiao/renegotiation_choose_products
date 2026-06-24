@@ -65,6 +65,9 @@ export const AlertedProductsFiltersWidget = ({
 
   const isApplyDisabled = !filters.operationalDay?.value || loading;
 
+  const hasIdProducto = Boolean(filters.idProducto?.trim());
+  const hasSupplierOrProduct = filters.supplier.length > 0 || filters.products.length > 0;
+
   const handleApply = () => {
     if (isApplyDisabled) {
       return;
@@ -234,6 +237,7 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={(e) => updateIdProducto(e.target.value)}
                   placeholder="Identificador del producto"
                   allowClear
+                  disabled={hasSupplierOrProduct}
                 />
               </FiltersFieldGroup>
             </FiltersCol>
@@ -250,6 +254,7 @@ export const AlertedProductsFiltersWidget = ({
                   filterOption={matchesSupplierSelectOption}
                   allowClear
                   loading={loadingSupplierOptions}
+                  disabled={hasIdProducto}
                 />
               </FiltersFieldGroup>
             </FiltersCol>
@@ -264,7 +269,8 @@ export const AlertedProductsFiltersWidget = ({
                   onChange={(_, options) => updateProducts(Array.isArray(options) ? options : [])}
                   placeholder="Selecciona uno o varios productos"
                   showSearch={false}
-                  allowClear={false}
+                  allowClear
+                  disabled={hasIdProducto}
                 />
               </FiltersFieldGroup>
             </FiltersCol>
