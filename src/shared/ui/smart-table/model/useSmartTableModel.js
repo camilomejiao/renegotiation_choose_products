@@ -10,15 +10,19 @@ export const useSmartTableModel = ({
   onRowSelectionChange,
   rowSelectionType = "checkbox",
   enableRowSelection = true,
+  rowSelectionConfig,
   defaultSelectedRows,
   showPagination = true,
   total,
   pageSizeOptions = ["10", "15", "20", "25", "50"],
   defaultPageSize,
   currentPage,
+  pageSize: pageSizeProp,
 }) => {
+  const initialPageSize = Number(defaultPageSize || pageSizeOptions[0] || 10);
   const [tableSize, setTableSize] = useState("middle");
   const [columnConfig, setColumnConfig] = useState(columns);
+  const [controlledPageSize, setControlledPageSize] = useState(initialPageSize);
   const [selectedRowKeys, setSelectedRowKeys] = useState(defaultSelectedRows?.keys || []);
   const [selectedRows, setSelectedRows] = useState(defaultSelectedRows?.records || []);
 
@@ -65,6 +69,7 @@ export const useSmartTableModel = ({
 
   const handlePageChange = useCallback(
     (pageNo, pageSize) => {
+      setControlledPageSize(pageSize);
       onPageChange?.(pageNo, pageSize);
       resetSelection();
     },
@@ -80,8 +85,15 @@ export const useSmartTableModel = ({
       type: rowSelectionType,
       selectedRowKeys,
       onChange: onSelectChange,
+      ...rowSelectionConfig,
     };
-  }, [enableRowSelection, onSelectChange, rowSelectionType, selectedRowKeys]);
+  }, [
+    enableRowSelection,
+    onSelectChange,
+    rowSelectionConfig,
+    rowSelectionType,
+    selectedRowKeys,
+  ]);
 
   const antdColumns = useMemo(
     () => mapToAntdColumns({ columns: columnConfig, defaultText, columnWidthMode }),
@@ -106,10 +118,10 @@ export const useSmartTableModel = ({
     return {
       total: total ?? 0,
       current: currentPage,
+      pageSize: pageSizeProp ?? controlledPageSize,
       showSizeChanger: true,
       hideOnSinglePage: false,
       pageSizeOptions: normalizedPageSizeOptions,
-      defaultPageSize: normalizedDefaultPageSize,
       showTotal: (itemsTotal, range) => `${range[0]} - ${range[1]} de ${itemsTotal} registros`,
       onChange: handlePageChange,
     };
@@ -117,8 +129,9 @@ export const useSmartTableModel = ({
     showPagination,
     total,
     currentPage,
+    pageSizeProp,
+    controlledPageSize,
     pageSizeOptions,
-    defaultPageSize,
     handlePageChange,
   ]);
 

@@ -17,11 +17,13 @@ export const SmartTableView = ({
   showPagination = true,
   total,
   currentPage,
+  pageSize,
   defaultText = "---",
   emptyText,
   defaultSelectedRows,
   rowSelectionType = "checkbox",
   enableRowSelection = true,
+  rowSelectionConfig,
   showTableResize = true,
   showColumnSettings = true,
   toolbarExtensions = null,
@@ -70,12 +72,14 @@ export const SmartTableView = ({
     onRowSelectionChange,
     rowSelectionType,
     enableRowSelection,
+    rowSelectionConfig,
     defaultSelectedRows,
     showPagination,
     total,
     pageSizeOptions,
     defaultPageSize,
     currentPage,
+    pageSize,
   });
 
   const resetColumns = () => setColumnConfig(columns);

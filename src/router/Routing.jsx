@@ -45,6 +45,7 @@ import { ProductUploadTechnical } from "../components/layout/private/products_mo
 import { ListProductsByConvocationPage } from "../pages/catalog-management";
 import { EditProductsByConvocation } from "../pages/catalog-edit-products-by-convocation";
 import { ProductPriceQuotesPage } from "../pages/product-price-quotes";
+import { AlertedProductsPage } from "../pages/alerted-products";
 import {
     ValidationEnvironmental
 } from "../components/layout/private/products_module/validation_environmental/ValidationEnvironmental";
@@ -120,6 +121,7 @@ export const Routing = () => {
                             <Route path={ RouterEnum.ProductsSupervision }  element={ <ValidationSupervision /> }  />
                             <Route path={ RouterEnum.EditProductsByConvocation }  element={ <EditProductsByConvocation /> }  />
                             <Route path={ RouterEnum.ReportByConvocation }  element={ <ReportByConvocation /> }  />
+                            <Route path={ RouterEnum.AlertedProducts }  element={ <AlertedProductsPage /> }  />
 
                             {/* Payments */}
                             <Route path={ RouterEnum.Payments }  element={ <PaymentsMenu /> }  />

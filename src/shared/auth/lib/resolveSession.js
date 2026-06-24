@@ -2,6 +2,7 @@ import {
   buildAuthFromClaims,
   decodeAccessToken,
   getAccessToken,
+  isTokenExpired,
 } from "./authSession";
 
 export const resolveSessionFromToken = () => {
@@ -12,6 +13,11 @@ export const resolveSessionFromToken = () => {
   }
 
   const claims = decodeAccessToken(token);
+
+  if (!claims || isTokenExpired(claims)) {
+    return null;
+  }
+
   const auth = buildAuthFromClaims(claims);
 
   if (!auth?.rol_id || (!auth?.id && !auth?.seg_usuario)) {

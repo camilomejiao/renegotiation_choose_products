@@ -42,6 +42,16 @@ export const decodeAccessToken = (token = getAccessToken()) => {
   }
 };
 
+export const isTokenExpired = (claims) => {
+  const expiration = Number(claims?.exp);
+
+  if (!Number.isFinite(expiration) || expiration <= 0) {
+    return false;
+  }
+
+  return expiration * 1000 <= Date.now();
+};
+
 const coerceBooleanClaim = (value) => {
   if (typeof value === "boolean") {
     return value;

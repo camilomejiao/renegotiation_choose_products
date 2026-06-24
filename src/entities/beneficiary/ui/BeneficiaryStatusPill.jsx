@@ -1,18 +1,8 @@
-import { Tag } from "antd";
-import styled from "@emotion/styled";
 import { getTitularStatusColor } from "../model/selectors";
+import { StatusPill } from "../../../shared/ui/status-pill";
 
 export const BeneficiaryStatusPill = ({ status }) => (
-  <StyledStatusTag color={getTitularStatusColor(status)}>
+  <StatusPill color={getTitularStatusColor(status)} padding="4px 10px">
     {status || "---"}
-  </StyledStatusTag>
+  </StatusPill>
 );
-
-const StyledStatusTag = styled(Tag)`
-  && {
-    margin-inline-end: 0;
-    border-radius: 999px;
-    padding-inline: 10px;
-    font-weight: 600;
-  }
-`;

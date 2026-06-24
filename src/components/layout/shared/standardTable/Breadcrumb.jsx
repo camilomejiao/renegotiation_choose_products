@@ -20,6 +20,7 @@ const routeNames = {
   "/admin/products-supervision": "Catálogo de Productos",
   "/admin/list-products-by-convocation": "Administración de Catálogo",
   "/admin/products-enviromental": "Validación de Catálogo",
+  "/admin/alerted-products": "Productos Alertados",
   "/admin/payments-suppliers/create-collection-account":
     "Crear Cuenta de Cobro",
   "/admin/fiduciary": "Fiduciaria",
@@ -211,4 +212,3 @@ Breadcrumb.propTypes = {
     })
   ),
 };
-
