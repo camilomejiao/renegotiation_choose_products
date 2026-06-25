@@ -9,6 +9,7 @@ import { RolesEnum } from "../../../helpers/GlobalEnum";
 import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocumentsApi";
 import { getAlertedProductsParameterCatalog } from "../api/alertedProductsFiltersApi";
 import {
+  assignAlertedProductsManagementType,
   getAlertedProductsPage,
 } from "../api/alertedProductsTableApi";
 import { AlertedProductsCentralizationWidget } from "../../../widgets/alerted-products-centralization";
@@ -209,6 +210,35 @@ export const AlertedProductsPage = () => {
     handleRaiseAlert(nextAssignment);
   };
 
+  const handleSubmitManagementRequest = async ({
+    managementTypeId,
+    selectedRows,
+  }) => {
+    if (!appliedFilters) {
+      return;
+    }
+
+    try {
+      const response = await assignAlertedProductsManagementType({
+        managementTypeId,
+        selectedRows,
+      });
+
+      setRefreshKey((k) => k + 1);
+
+      AlertComponent.success(
+        "Tipo de gestión actualizado",
+        response?.mensaje || "La actualización se realizó correctamente."
+      );
+    } catch (error) {
+      AlertComponent.error(
+        "Error",
+        error?.data?.mensaje || "No fue posible actualizar el tipo de gestión."
+      );
+      throw error;
+    }
+  };
+
   const handleGoToCentralization = () => {
     goToCentralization();
     setActiveTab(CENTRALIZATION_TAB_KEY);
@@ -235,6 +265,7 @@ export const AlertedProductsPage = () => {
       managementTypeOptions={managementTypeOptions}
       onBack={goToPreparation}
       onContinue={handleGoToCentralization}
+      onSubmitManagementRequest={handleSubmitManagementRequest}
     />
   ) : (
     <AlertedProductsContentGrid>
