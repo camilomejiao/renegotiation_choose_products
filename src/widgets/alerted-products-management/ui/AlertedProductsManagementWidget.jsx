@@ -129,7 +129,7 @@ export const AlertedProductsManagementWidget = ({
   const modalDataSource = useMemo(() => {
     return modalAllRows.filter((row) => {
       if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode)) return false;
-      if (addedIds.has(row.id)) return true;
+      if (addedIds.has(row.id)) return false;
       const mgmt = (row.alertManagement ?? "").trim().toLowerCase();
       return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
     });
@@ -529,7 +529,7 @@ export const AlertedProductsManagementWidget = ({
       <Modal
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
-        title="Añadir alerta a la gestión"
+        title="Añadir item a la gestión"
         footer={
           <SecondaryActionButton onClick={() => setIsAddModalOpen(false)}>
             Cerrar
