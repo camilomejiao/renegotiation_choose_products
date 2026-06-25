@@ -20,7 +20,6 @@ import {
   AssignmentSecondaryButton,
   AssignmentSummary,
   AssignManagementButton,
-  RaiseAlertButton,
   TableCard,
   TableContent,
   TableDescription,
@@ -50,11 +49,9 @@ export const AlertedProductsTableWidget = ({
   onSearchChange,
 }) => {
   const {
-    canRaiseAlert,
     closeAssignmentModal,
     columns,
     handleAssignAndRaiseAlert,
-    handleRaiseAlert,
     isSelectableRow,
     isAssignmentModalOpen,
     openAssignmentModal,
@@ -91,13 +88,6 @@ export const AlertedProductsTableWidget = ({
               >
                 Asignar Tipo de Gestión
               </AssignManagementButton>
-
-              <RaiseAlertButton
-                onClick={handleRaiseAlert}
-                disabled={!canRaiseAlert || assigningManagementType || loading}
-              >
-                Levantar alerta
-              </RaiseAlertButton>
             </TableHeaderActions>
           </TableHeaderTopRow>
         </TableHeader>

@@ -84,15 +84,6 @@ export const AssignManagementButton = styled(Button)`
   }
 `;
 
-export const RaiseAlertButton = styled(Button)`
-  && {
-    height: 42px;
-    border-radius: 12px;
-    font-weight: 700;
-    box-shadow: none;
-  }
-`;
-
 export const AssignmentModalContent = styled.section`
   display: grid;
   gap: 18px;

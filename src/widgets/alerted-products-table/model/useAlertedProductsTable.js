@@ -60,31 +60,9 @@ export const useAlertedProductsTable = ({
     onRaiseAlert?.(buildAssignmentPayload());
   };
 
-  const canRaiseAlert =
-    selectedRowKeys.length > 0 &&
-    initialDataSource
-      .filter((row) => selectedRowKeys.includes(row.id))
-      .every((row) => row.hasAssignedManagementType);
-
-  const handleRaiseAlert = () => {
-    if (!canRaiseAlert) {
-      return;
-    }
-
-    onRaiseAlert?.({
-      selectedRowKeys,
-      selectedRows,
-      managementType:
-        selectedRows[0]?.managementType ||
-        getManagementTypeLabel(selectedManagementType),
-    });
-  };
-
   return {
     columns,
-    canRaiseAlert,
     handleAssignAndRaiseAlert,
-    handleRaiseAlert,
     isSelectableRow,
     isAssignmentModalOpen,
     selectedManagementType,
