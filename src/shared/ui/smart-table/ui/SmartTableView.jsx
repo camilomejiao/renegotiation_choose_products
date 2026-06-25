@@ -28,6 +28,7 @@ export const SmartTableView = ({
   showColumnSettings = true,
   toolbarExtensions = null,
   toolbarExtensionsPosition = "right",
+  leftContent = null,
   leftToolbar = [],
   reload,
   reloadPosition = "right",
@@ -129,6 +130,7 @@ export const SmartTableView = ({
       {showToolbar && (
         <>
           <SmartTableToolbar
+            leftContent={leftContent}
             leftToolbar={leftToolbar}
             toolbarExtensions={toolbarExtensions}
             toolbarExtensionsPosition={toolbarExtensionsPosition}

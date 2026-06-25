@@ -21,6 +21,7 @@ const buildAlertedProductsQuery = ({
   idProducto,
   supplier = [],
   products = [],
+  search = "",
   page = 1,
   pageSize = 10,
 }) => {
@@ -64,6 +65,10 @@ const buildAlertedProductsQuery = ({
 
   if (idProducto?.trim()) {
     params.set("id_producto", idProducto.trim());
+  }
+
+  if (search?.trim()) {
+    params.set("search", search.trim());
   }
 
   appendRepeatedQueryParams(
@@ -155,7 +160,8 @@ export const assignAlertedProductsManagementType = async ({
 
   const response = await alertedProductsServices.updateProductsManagementType(payload);
 
-  if (response?.status !== ResponseStatusEnum.OK) {
+  const isSuccess = response?.status === ResponseStatusEnum.OK || response?.status === ResponseStatusEnum.CREATED;
+  if (!isSuccess) {
     throw response;
   }
 

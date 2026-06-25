@@ -69,29 +69,15 @@ const PILL_TOKENS = {
   },
 };
 
-const ALERT_CATEGORY_PILLS = {
-  5254: "neutral",
-  5255: "amber",
-  5256: "red",
-  5257: "blue",
-  5258: "orange",
-};
+const CATALOG_PILL_TONES = ["blue", "cyan", "amber", "violet", "green", "orange", "red"];
 
-const MANAGEMENT_TYPE_PILLS = {
-  0: "neutral",
-  1: "blue",
-  2: "cyan",
-  3: "amber",
-  4: "violet",
-  5: "green",
-};
-
-const ALERT_MANAGEMENT_PILLS = {
-  sin_gestion:    "neutral",
-  en_proceso:     "blue",
-  en_subsanacion: "amber",
-  resuelta:       "green",
-};
+const buildCatalogPillMap = (options = []) =>
+  Object.fromEntries(
+    options.map((opt, index) => [
+      opt.value,
+      CATALOG_PILL_TONES[index % CATALOG_PILL_TONES.length],
+    ])
+  );
 
 const renderPill = (label, tone = "neutral") => {
   const tokens = PILL_TOKENS[tone] || PILL_TOKENS.neutral;
@@ -123,7 +109,16 @@ const wrapCell = {
 
 const renderText = (value) => value || "---";
 
-export const getAlertedProductsTableColumns = () => [
+export const getAlertedProductsTableColumns = (
+  managementTypeOptions = [],
+  alertCategoryOptions = [],
+  alertManagementOptions = []
+) => {
+  const managementTypePillMap = buildCatalogPillMap(managementTypeOptions);
+  const alertCategoryPillMap = buildCatalogPillMap(alertCategoryOptions);
+  const alertManagementPillMap = buildCatalogPillMap(alertManagementOptions);
+
+  return [
   {
     title: "Jornada",
     dataIndex: "jornada",
@@ -238,7 +233,7 @@ export const getAlertedProductsTableColumns = () => [
     width: 160,
     align: "center",
     render: (value, record) =>
-      renderCatalogPill(value, record?.alertCategoryCode, ALERT_CATEGORY_PILLS),
+      renderCatalogPill(value, record?.alertCategoryCode, alertCategoryPillMap),
   },
   {
     title: wrapColumnTitle("Tipo", "gestión"),
@@ -247,7 +242,7 @@ export const getAlertedProductsTableColumns = () => [
     width: 160,
     align: "center",
     render: (value, record) =>
-      renderCatalogPill(value, record?.managementTypeCode, MANAGEMENT_TYPE_PILLS),
+      renderCatalogPill(value, record?.managementTypeCode, managementTypePillMap),
   },
   {
     title: wrapColumnTitle("Estado", "Gestión"),
@@ -256,6 +251,7 @@ export const getAlertedProductsTableColumns = () => [
     width: 160,
     align: "center",
     render: (value, record) =>
-      renderCatalogPill(value, record?.alertManagementCode, ALERT_MANAGEMENT_PILLS),
+      renderCatalogPill(value, record?.alertManagementCode, alertManagementPillMap),
   },
-];
+  ];
+};

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
@@ -49,7 +49,12 @@ export const AlertedProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchDebounceRef = useRef(null);
   const [managementTypeOptions, setManagementTypeOptions] = useState([]);
+  const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
+  const [alertManagementOptions, setAlertManagementOptions] = useState([]);
 
   useEffect(() => {
     getAlertedProductsParameterCatalog(39)
@@ -61,7 +66,23 @@ export const AlertedProductsPage = () => {
         )
       )
       .catch(() => setManagementTypeOptions([]));
+    getAlertedProductsParameterCatalog(35)
+      .then(setAlertCategoryOptions)
+      .catch(() => setAlertCategoryOptions([]));
+    getAlertedProductsParameterCatalog(36)
+      .then(setAlertManagementOptions)
+      .catch(() => setAlertManagementOptions([]));
   }, []);
+
+  useEffect(() => {
+    clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchValue);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(searchDebounceRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue]);
 
   useEffect(() => {
     if (!appliedFilters) return;
@@ -71,6 +92,7 @@ export const AlertedProductsPage = () => {
       try {
         const productsResult = await getAlertedProductsPage({
           ...appliedFilters,
+          search: debouncedSearch,
           page: currentPage,
           pageSize,
         });
@@ -86,7 +108,7 @@ export const AlertedProductsPage = () => {
 
     fetchTable();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appliedFilters, currentPage, pageSize, refreshKey]);
+  }, [appliedFilters, currentPage, pageSize, refreshKey, debouncedSearch]);
 
   const [historyByCategory, setHistoryByCategory] = useState({
     pdf: [],
@@ -156,6 +178,8 @@ export const AlertedProductsPage = () => {
     setTotalRecords(0);
     setCurrentPage(1);
     setHistoryByCategory({ pdf: [], excel: [] });
+    setSearchValue("");
+    setDebouncedSearch("");
   };
 
   const handlePageChange = (page, size) => {
@@ -263,6 +287,10 @@ export const AlertedProductsPage = () => {
                     pageSize={pageSize}
                     onPageChange={handlePageChange}
                     managementTypeOptions={managementTypeOptions}
+                    alertCategoryOptions={alertCategoryOptions}
+                    alertManagementOptions={alertManagementOptions}
+                    searchValue={searchValue}
+                    onSearchChange={setSearchValue}
                   />
                 ) : null}
               </AlertedProductsMainContent>

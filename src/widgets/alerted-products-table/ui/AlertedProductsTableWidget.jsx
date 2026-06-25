@@ -1,6 +1,8 @@
 import { CheckSquareOutlined } from "@ant-design/icons";
 import { Radio } from "antd";
 
+import { AppSearchInput } from "../../../shared/ui/search-input";
+
 import { Modal } from "../../../shared/ui/modal";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { useAlertedProductsTable } from "../model/useAlertedProductsTable";
@@ -44,6 +46,10 @@ export const AlertedProductsTableWidget = ({
   pageSize,
   onPageChange,
   managementTypeOptions = [],
+  alertCategoryOptions = [],
+  alertManagementOptions = [],
+  searchValue = "",
+  onSearchChange,
 }) => {
   const {
     canRaiseAlert,
@@ -64,6 +70,8 @@ export const AlertedProductsTableWidget = ({
     onRaiseAlert,
     initialDataSource: dataSource,
     managementTypeOptions,
+    alertCategoryOptions,
+    alertManagementOptions,
   });
 
   return (
@@ -121,10 +129,20 @@ export const AlertedProductsTableWidget = ({
             }}
             defaultSelectedRows={{ keys: selectedRowKeys, records: [] }}
             onRowSelectionChange={handleRowSelectionChange}
-            showToolbar={false}
+            showToolbar
             showColumnSettings={false}
             showTableResize={false}
             showReload={false}
+            download={{ enable: false }}
+            leftContent={
+              <AppSearchInput
+                value={searchValue}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                placeholder="Buscar por proveedor, ID producto, orden o titular"
+                disabled={loading}
+                style={{ width: 480 }}
+              />
+            }
             emptyText={emptyText}
             scroll={{ x: TABLE_SCROLL_X, y: undefined }}
           />

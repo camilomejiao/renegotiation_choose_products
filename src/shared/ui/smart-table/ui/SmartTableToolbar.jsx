@@ -16,6 +16,7 @@ import {
 } from "./SmartTable.styles";
 
 export const SmartTableToolbar = ({
+  leftContent,
   leftToolbar,
   toolbarExtensions,
   toolbarExtensionsPosition = "right",
@@ -49,10 +50,12 @@ export const SmartTableToolbar = ({
   return (
     <ToolbarRow>
       <LeftToolbar>
-        {leftToolbar ||
+        {leftContent ||
+        leftToolbar ||
         toolbarExtensionsPosition === "left" ||
         (showReload && reloadPosition === "left") ? (
           <>
+            {leftContent}
             {leftToolbar}
             {toolbarExtensionsPosition === "left"
               ? renderToolbarExtensions()

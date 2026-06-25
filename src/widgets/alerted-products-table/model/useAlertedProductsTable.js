@@ -12,13 +12,18 @@ export const useAlertedProductsTable = ({
   onRaiseAlert,
   initialDataSource = alertedProductsTableData,
   managementTypeOptions = managementTypeAssignmentOptions,
+  alertCategoryOptions = [],
+  alertManagementOptions = [],
 } = {}) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [selectedManagementType, setSelectedManagementType] = useState(null);
 
-  const columns = useMemo(() => getAlertedProductsTableColumns(), []);
+  const columns = useMemo(
+    () => getAlertedProductsTableColumns(managementTypeOptions, alertCategoryOptions, alertManagementOptions),
+    [managementTypeOptions, alertCategoryOptions, alertManagementOptions]
+  );
 
   useEffect(() => {
     setSelectedRowKeys([]);
