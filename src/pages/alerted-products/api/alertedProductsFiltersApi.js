@@ -1,9 +1,39 @@
 import { normalizeParameterOptions } from "../../../entities/parameter";
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { approvedSupplierCatalogService } from "../../../helpers/services/ApprovedSupplierCatalogService";
+import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
 import { convocationProductsServices } from "../../../helpers/services/ConvocationProductsServices";
 import { locationServices } from "../../../helpers/services/LocationServices";
 import { parameterServices } from "../../../helpers/services/ParameterServices";
+
+export const getAlertedProductsOptions = async (jornada) => {
+  if (!jornada) return [];
+
+  const params = new URLSearchParams({
+    jornada: String(jornada),
+    pagina: "1",
+    size: "1000000",
+  });
+
+  const response = await alertedProductsServices.getProducts(`?${params.toString()}`);
+
+  if (response?.status !== ResponseStatusEnum.OK) return [];
+
+  const productos = response?.data?.productos ?? [];
+
+  const seen = new Set();
+  return productos
+    .filter((p) => p.id_producto != null)
+    .filter((p) => {
+      if (seen.has(p.id_producto)) return false;
+      seen.add(p.id_producto);
+      return true;
+    })
+    .map((p) => ({
+      value: p.id_producto,
+      label: `${p.id_producto} - ${p.nombre_producto}`,
+    }));
+};
 
 export const getAlertedProductsJourneys = async () => {
   const { data, status } = await convocationProductsServices.getConvocations();

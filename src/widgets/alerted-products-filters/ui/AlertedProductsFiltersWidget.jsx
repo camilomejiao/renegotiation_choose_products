@@ -1,9 +1,6 @@
 import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 
 import { matchesSupplierSelectOption } from "../../../pages/order-report/model/supplierSelectSearch";
-import {
-  productOptions,
-} from "../model/filterOptions";
 import { useAlertedProductsFilters } from "../model/useAlertedProductsFilters";
 import {
   FiltersActions,
@@ -39,6 +36,7 @@ export const AlertedProductsFiltersWidget = ({
     filters,
     journeyOptions,
     loadingManagementTypeOptions,
+    loadingProductOptions,
     loadingSupplierOptions,
     loadingDepartmentOptions,
     loadingMunicipalityOptions,
@@ -47,6 +45,7 @@ export const AlertedProductsFiltersWidget = ({
     loadingJourneys,
     managementTypeOptions,
     municipalityOptions,
+    productOptions,
     supplierOptions,
     resetFilters,
     updateAlertCategory,
@@ -268,9 +267,9 @@ export const AlertedProductsFiltersWidget = ({
                   options={productOptions}
                   onChange={(_, options) => updateProducts(Array.isArray(options) ? options : [])}
                   placeholder="Selecciona uno o varios productos"
-                  showSearch={false}
+                  loading={loadingProductOptions}
                   allowClear
-                  disabled={hasIdProducto}
+                  disabled={hasIdProducto || !filters.operationalDay?.value}
                 />
               </FiltersFieldGroup>
             </FiltersCol>

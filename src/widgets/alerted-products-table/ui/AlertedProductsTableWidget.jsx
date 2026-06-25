@@ -126,7 +126,7 @@ export const AlertedProductsTableWidget = ({
             showTableResize={false}
             showReload={false}
             emptyText={emptyText}
-            scroll={{ x: TABLE_SCROLL_X, y: 520 }}
+            scroll={{ x: TABLE_SCROLL_X, y: undefined }}
           />
         </TableContent>
       </TableWidgetRoot>

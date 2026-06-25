@@ -48,6 +48,7 @@ export const AlertedProductsPage = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [managementTypeOptions, setManagementTypeOptions] = useState([]);
 
   useEffect(() => {
@@ -61,6 +62,32 @@ export const AlertedProductsPage = () => {
       )
       .catch(() => setManagementTypeOptions([]));
   }, []);
+
+  useEffect(() => {
+    if (!appliedFilters) return;
+
+    const fetchTable = async () => {
+      setTableLoading(true);
+      try {
+        const productsResult = await getAlertedProductsPage({
+          ...appliedFilters,
+          page: currentPage,
+          pageSize,
+        });
+        setTableDataSource(productsResult.rows);
+        setTotalRecords(productsResult.meta?.total_registros ?? 0);
+      } catch {
+        setTableDataSource([]);
+        AlertComponent.error("Error", "No fue posible cargar los productos alertados");
+      } finally {
+        setTableLoading(false);
+      }
+    };
+
+    fetchTable();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters, currentPage, pageSize, refreshKey]);
+
   const [historyByCategory, setHistoryByCategory] = useState({
     pdf: [],
     excel: [],
@@ -92,41 +119,21 @@ export const AlertedProductsPage = () => {
   const shouldShowTable = tableLoading || Boolean(appliedFilters);
   const tableEmptyText = "No hay productos alertados para los filtros aplicados.";
 
-  const reloadAlertedProductsTable = async (filtersToApply, page = currentPage, size = pageSize) => {
-    const productsResult = await getAlertedProductsPage({ ...filtersToApply, page, pageSize: size });
-    setTableDataSource(productsResult.rows);
-    setTotalRecords(productsResult.meta?.total_registros ?? 0);
-    return productsResult;
-  };
-
   const handleApplyFilters = async (nextFilters) => {
     if (!nextFilters?.operationalDay?.value) {
       return;
     }
 
-    setTableLoading(true);
     setAppliedFilters(nextFilters);
     setCurrentPage(1);
 
-    const [productsResult, documentsResult] = await Promise.allSettled([
-      reloadAlertedProductsTable(nextFilters, 1, pageSize),
-      getAlertedProductsJourneyDocuments(nextFilters.operationalDay.value),
-    ]);
-
-    if (productsResult.status === "fulfilled") {
-    } else {
-      setTableDataSource([]);
-      AlertComponent.error("Error", "No fue posible cargar los productos alertados");
-    }
-
-    if (documentsResult.status === "fulfilled") {
-      setHistoryByCategory(documentsResult.value.historyByCategory);
-    } else {
+    try {
+      const documentsResult = await getAlertedProductsJourneyDocuments(nextFilters.operationalDay.value);
+      setHistoryByCategory(documentsResult.historyByCategory);
+    } catch {
       setHistoryByCategory({ pdf: [], excel: [] });
       AlertComponent.error("Error", "No fue posible cargar el historial de documentos");
     }
-
-    setTableLoading(false);
   };
 
   const handleJourneyChange = async (journey) => {
@@ -151,18 +158,9 @@ export const AlertedProductsPage = () => {
     setHistoryByCategory({ pdf: [], excel: [] });
   };
 
-  const handlePageChange = async (page, size) => {
-    if (!appliedFilters) return;
+  const handlePageChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
-    setTableLoading(true);
-    try {
-      await reloadAlertedProductsTable(appliedFilters, page, size);
-    } catch {
-      AlertComponent.error("Error", "No fue posible cargar los productos alertados");
-    } finally {
-      setTableLoading(false);
-    }
   };
 
   const reloadJourneyDocuments = async (journeyId) => {
@@ -201,7 +199,7 @@ export const AlertedProductsPage = () => {
         selectedRows,
       });
 
-      await reloadAlertedProductsTable(appliedFilters);
+      setRefreshKey((k) => k + 1);
 
       AlertComponent.success(
         "Tipo de gestión actualizado",

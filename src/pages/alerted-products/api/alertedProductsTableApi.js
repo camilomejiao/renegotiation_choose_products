@@ -69,17 +69,17 @@ const buildAlertedProductsQuery = ({
   appendRepeatedQueryParams(
     params,
     "proveedor",
-    supplier.map((s) => s?.supplierName || s?.label)
+    supplier.map((s) => s?.value)
   );
 
   appendRepeatedQueryParams(
     params,
     "producto",
-    products.map((product) => product?.label || product?.value)
+    products.map((product) => product?.value)
   );
 
   params.set("pagina", String(page));
-  params.set("tamano_pagina", String(pageSize));
+  params.set("size", String(pageSize));
 
   const queryString = params.toString();
   return queryString ? `?${queryString}` : "";

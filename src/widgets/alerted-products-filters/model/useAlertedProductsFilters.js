@@ -4,6 +4,7 @@ import {
   getAlertedProductsDepartments,
   getAlertedProductsJourneys,
   getAlertedProductsMunicipalities,
+  getAlertedProductsOptions,
   getAlertedProductsParameterCatalog,
   getAlertedProductsSuppliers,
 } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
@@ -28,6 +29,8 @@ export const useAlertedProductsFilters = ({ initialFilters } = {}) => {
   const [loadingSupplierOptions, setLoadingSupplierOptions] = useState(false);
   const [loadingDepartmentOptions, setLoadingDepartmentOptions] = useState(false);
   const [loadingMunicipalityOptions, setLoadingMunicipalityOptions] = useState(false);
+  const [productOptions, setProductOptions] = useState([]);
+  const [loadingProductOptions, setLoadingProductOptions] = useState(false);
   const [filters, setFilters] = useState(initialFilters ?? defaultAlertedProductsFilters);
 
   const updateFilter = (key) => (nextValue) => {
@@ -180,8 +183,22 @@ export const useAlertedProductsFilters = ({ initialFilters } = {}) => {
     loadMunicipalityOptions(filters.department?.value);
   }, [filters.department?.value, loadMunicipalityOptions]);
 
+  useEffect(() => {
+    const jornada = filters.operationalDay?.value;
+    if (!jornada) {
+      setProductOptions([]);
+      return;
+    }
+    setLoadingProductOptions(true);
+    getAlertedProductsOptions(jornada)
+      .then(setProductOptions)
+      .catch(() => setProductOptions([]))
+      .finally(() => setLoadingProductOptions(false));
+  }, [filters.operationalDay?.value]);
+
   const resetFilters = () => {
     setFilters(defaultAlertedProductsFilters);
+    setProductOptions([]);
   };
 
   return {
@@ -215,7 +232,15 @@ export const useAlertedProductsFilters = ({ initialFilters } = {}) => {
     updateIdProducto: updateFilter("idProducto"),
     updateManagementType: updateFilter("managementType"),
     updateMunicipality: updateFilter("municipality"),
-    updateOperationalDay: updateFilter("operationalDay"),
+    loadingProductOptions,
+    productOptions,
+    updateOperationalDay: (nextValue) => {
+      setFilters((currentFilters) => ({
+        ...currentFilters,
+        operationalDay: nextValue,
+        products: [],
+      }));
+    },
     updateOrdenNumero: updateFilter("ordenNumero"),
     updateProducts: updateFilter("products"),
     updateSupplier: updateFilter("supplier"),
