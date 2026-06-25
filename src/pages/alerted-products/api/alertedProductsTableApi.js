@@ -1,5 +1,6 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
+import { buildAlertedProductsRequestFormData } from "../../../widgets/alerted-products-management/model/buildAlertedProductsRequest";
 
 const appendRepeatedQueryParams = (params, key, values = []) => {
   values
@@ -91,7 +92,7 @@ const buildAlertedProductsQuery = ({
 };
 
 const normalizeAlertedProductRow = (row = {}) => ({
-  id: String(row?.id_orden_detalle ?? ""),
+  id: String(row?.id_orden_detalle ?? row?.id_producto ?? ""),
   jornada: row?.nombre_jornada ?? row?.jornada ?? "",
   documentoTitular: row?.documento_titular ?? "",
   ordenNumero: row?.numero_orden ?? "",
@@ -114,8 +115,20 @@ const normalizeAlertedProductRow = (row = {}) => ({
   cub: row?.cub ?? "",
 });
 
-const getNormalizedAlertedProductsRows = (rows = []) =>
-  rows.map(normalizeAlertedProductRow).filter((row) => row.id);
+const getNormalizedAlertedProductsRows = (rows = []) => {
+  const seenIds = new Set();
+
+  return rows
+    .map(normalizeAlertedProductRow)
+    .filter((row) => {
+      if (!row.id || seenIds.has(row.id)) {
+        return false;
+      }
+
+      seenIds.add(row.id);
+      return true;
+    });
+};
 
 export const getAlertedProductsPage = async (filters = {}) => {
   const response = await alertedProductsServices.getProducts(
@@ -141,13 +154,36 @@ export const buildAlertedProductsManagementTypeRequest = ({
 }) => ({
   tipo_gestion_id: Number(managementTypeId),
   productos: selectedRows.map((row) => ({
-    id_producto: Number(row?.id),
+    id_producto: Number(row?.productId ?? row?.id),
     categoria_alerta: {
       codigo: Number(row?.alertCategoryCode),
       nombre: row?.alertCategory ?? "",
     },
   })),
 });
+
+export const createAlertedProductsRequest = async ({
+  observation,
+  pdf,
+  selectedRows = [],
+}) => {
+  const formData = buildAlertedProductsRequestFormData({
+    orderDetailIds: selectedRows.map((row) => row?.id).filter(Boolean),
+    observation: observation?.trim?.() ?? "",
+    pdf,
+  });
+
+  const response = await alertedProductsServices.createProductRequest(formData);
+  const isSuccess =
+    response?.status === ResponseStatusEnum.OK ||
+    response?.status === ResponseStatusEnum.CREATED;
+
+  if (!isSuccess) {
+    throw response;
+  }
+
+  return response?.data ?? {};
+};
 
 export const assignAlertedProductsManagementType = async ({
   managementTypeId,

@@ -39,4 +39,14 @@ export const TabsCard = styled(Card)`
   .ant-tabs-nav-wrap {
     min-width: 0;
   }
+
+  .ant-tabs-content-holder {
+    padding-top: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .ant-tabs-content-holder {
+      padding-top: 12px;
+    }
+  }
 `;

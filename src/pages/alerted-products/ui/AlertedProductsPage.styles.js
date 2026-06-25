@@ -48,12 +48,18 @@ export const AlertedProductsMainContent = styled.section({
   gap: 18,
 });
 
-export const AlertedProductsStepperCard = styled(Card)({
+export const AlertedProductsPlaceholderCard = styled(Card)({
   borderRadius: 20,
-  overflow: "hidden",
+  minHeight: 220,
   background:
     "linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 247, 252, 0.96) 100%)",
   border: "1px solid rgba(21, 40, 84, 0.08)",
   boxShadow: "0 18px 40px rgba(15, 23, 42, 0.06)",
-  padding: "10px 4px",
+  display: "grid",
+  placeItems: "center",
+  textAlign: "center",
+  color: "#44506a",
+  fontSize: 16,
+  lineHeight: 1.6,
+  padding: "24px 32px",
 });

@@ -7,17 +7,14 @@ import {
   FilePdfOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Modal, Tooltip, Upload } from "antd";
+import { Modal as AntdModal, Tooltip, Upload } from "antd";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
-import {
-  assignAlertedProductsManagementType,
-} from "../../../pages/alerted-products/api/alertedProductsTableApi";
 import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
 import { ManagementMetaStrip } from "../../../shared/ui/management-meta-strip";
+import { Modal as AppModal } from "../../../shared/ui/modal";
 import { SmartTable } from "../../../shared/ui/smart-table";
-import { managementTypeAssignmentOptions } from "../../alerted-products-table/model/managementTypeOptions";
 import {
   getAlertedProductsManagementColumns,
   renderCategoryPill,
@@ -87,28 +84,54 @@ const wrapTitle = (...lines) => (
   </span>
 );
 
+const normalizeLabel = (value = "") =>
+  String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
+
 export const AlertedProductsManagementWidget = ({
   assignment,
   appliedFilters,
   historyByCategory = { pdf: [], excel: [] },
+  managementTypeOptions = [],
   onBack,
   onContinue,
+  onSubmitManagementRequest,
 }) => {
   const [observation, setObservation] = useState("");
   const [actaFile, setActaFile] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(false);
   const [downloadingExcel, setDownloadingExcel] = useState(false);
   const [pdfViewer, setPdfViewer] = useState({ isOpen: false, url: null, title: "" });
   const [alertsData, setAlertsData] = useState(() => assignment?.selectedRows ?? []);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [missingRequirementsModal, setMissingRequirementsModal] = useState({
+    isOpen: false,
+    message: "",
+  });
   const [addingId, setAddingId] = useState(null);
 
   const activePdf   = historyByCategory.pdf?.[0]   ?? null;
   const activeExcel = historyByCategory.excel?.[0] ?? null;
+  const assignmentManagementTypeCode = assignment?.selectedRows?.[0]?.managementTypeCode;
 
   const managementTypeOption = useMemo(
-    () => managementTypeAssignmentOptions.find((opt) => opt.label === assignment?.managementType),
-    [assignment?.managementType]
+    () =>
+      managementTypeOptions.find(
+        (opt) =>
+          String(opt.value) === String(assignmentManagementTypeCode) ||
+          normalizeLabel(opt.label) === normalizeLabel(assignment?.managementType)
+      ) ||
+      (assignment?.managementType
+        ? {
+            value: assignmentManagementTypeCode ?? null,
+            label: assignment.managementType,
+          }
+        : null),
+    [assignment?.managementType, assignmentManagementTypeCode, managementTypeOptions]
   );
 
   const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
@@ -145,13 +168,15 @@ export const AlertedProductsManagementWidget = ({
   );
 
   const handleAddAlert = useCallback(async (product) => {
-    if (!managementTypeOption) return;
+    if (!managementTypeOption) {
+      AlertComponent.warning(
+        "Tipo de gestión requerido",
+        "No fue posible identificar el tipo de gestión de la solicitud actual."
+      );
+      return;
+    }
     setAddingId(product.id);
     try {
-      await assignAlertedProductsManagementType({
-        managementTypeId: managementTypeOption.value,
-        selectedRows: [product],
-      });
       const enriched = {
         ...product,
         managementType: managementTypeOption.label,
@@ -243,6 +268,14 @@ export const AlertedProductsManagementWidget = ({
       align: "center",
     },
     {
+      title: wrapTitle("Tipo", "gestión"),
+      dataIndex: "managementType",
+      key: "managementType",
+      width: 160,
+      align: "center",
+      render: (value) => value || managementTypeOption?.label || "—",
+    },
+    {
       title: wrapTitle("Gestión", "alerta"),
       dataIndex: "alertManagement",
       key: "alertManagement",
@@ -250,7 +283,7 @@ export const AlertedProductsManagementWidget = ({
       align: "center",
       render: (v) => v || "—",
     },
-  ], [addedIds, addingId, handleAddAlert]);
+  ], [addedIds, addingId, handleAddAlert, managementTypeOption?.label]);
 
   const closePdfViewer = () => {
     if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
@@ -334,16 +367,61 @@ export const AlertedProductsManagementWidget = ({
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  const handleSubmit = () => {
+  const openMissingRequirementsModal = (message) => {
+    setMissingRequirementsModal({
+      isOpen: true,
+      message,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!observation.trim() && !actaFile) {
+      openMissingRequirementsModal(
+        "Debes diligenciar la observación justificada y adjuntar el archivo PDF antes de enviar."
+      );
+      return;
+    }
+
     if (!observation.trim()) {
-      AlertComponent.warning("Campo requerido", "La observación justificada es obligatoria.");
+      openMissingRequirementsModal(
+        "Debes diligenciar la observación justificada antes de enviar."
+      );
       return;
     }
+
     if (!actaFile) {
-      AlertComponent.warning("Documento requerido", "Debes adjuntar el documento de Acta Complementaria.");
+      openMissingRequirementsModal(
+        "Debes adjuntar el archivo PDF antes de enviar."
+      );
       return;
     }
-    onContinue?.();
+
+    if (!managementTypeOption?.value || alertsData.length === 0) {
+      AlertComponent.warning(
+        "Información incompleta",
+        "No hay productos o tipo de gestión válidos para enviar la solicitud."
+      );
+      return;
+    }
+
+    if (!onSubmitManagementRequest) {
+      onContinue?.();
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await onSubmitManagementRequest({
+        managementTypeId: managementTypeOption.value,
+        selectedRows: alertsData,
+        observation: observation.trim(),
+        pdf: actaFile,
+      });
+      onContinue?.();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -511,7 +589,7 @@ export const AlertedProductsManagementWidget = ({
 
         <ActionsRow>
           <SecondaryActionButton onClick={onBack}>Cancelar</SecondaryActionButton>
-          <PrimaryActionButton type="primary" onClick={handleSubmit}>
+          <PrimaryActionButton type="primary" onClick={handleSubmit} loading={submitting}>
             Enviar
           </PrimaryActionButton>
         </ActionsRow>
@@ -526,7 +604,28 @@ export const AlertedProductsManagementWidget = ({
         onDownload={handleDownloadFromViewer}
       />
 
-      <Modal
+      <AppModal
+        title="Información requerida"
+        isOpen={missingRequirementsModal.isOpen}
+        onCloseModal={() =>
+          setMissingRequirementsModal({ isOpen: false, message: "" })
+        }
+        footer={
+          <SecondaryActionButton
+            onClick={() =>
+              setMissingRequirementsModal({ isOpen: false, message: "" })
+            }
+          >
+            Entendido
+          </SecondaryActionButton>
+        }
+        width={520}
+        centered
+      >
+        <p style={{ margin: 0 }}>{missingRequirementsModal.message}</p>
+      </AppModal>
+
+      <AntdModal
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
         title="Añadir item a la gestión"
@@ -560,7 +659,7 @@ export const AlertedProductsManagementWidget = ({
           scroll={{ x: 1200, y: 400 }}
           emptyText="No hay productos disponibles para añadir."
         />
-      </Modal>
+      </AntdModal>
     </ManagementCard>
   );
 };

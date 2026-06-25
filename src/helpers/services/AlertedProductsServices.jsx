@@ -23,6 +23,13 @@ class AlertedProductsServices {
     });
   }
 
+  createProductRequest(formData) {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/solicitud/"), {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   getJourneyDocuments(journeyId) {
     const params = new URLSearchParams({
       jornada_id: String(journeyId),

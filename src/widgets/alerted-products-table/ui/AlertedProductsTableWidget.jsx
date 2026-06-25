@@ -17,7 +17,6 @@ import {
   AssignmentOptionDescription,
   AssignmentOptionsGroup,
   AssignmentOptionTitle,
-  AssignmentPrimaryButton,
   AssignmentSecondaryButton,
   AssignmentSummary,
   AssignManagementButton,
@@ -39,7 +38,6 @@ export const AlertedProductsTableWidget = ({
   dataSource = [],
   emptyText,
   loading = false,
-  onAssignManagementType,
   onRaiseAlert,
   totalRecords = 0,
   currentPage,
@@ -56,7 +54,6 @@ export const AlertedProductsTableWidget = ({
     closeAssignmentModal,
     columns,
     handleAssignAndRaiseAlert,
-    handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
     isSelectableRow,
     isAssignmentModalOpen,
@@ -66,7 +63,6 @@ export const AlertedProductsTableWidget = ({
     setSelectedManagementType,
     handleRowSelectionChange,
   } = useAlertedProductsTable({
-    onAssignManagementType,
     onRaiseAlert,
     initialDataSource: dataSource,
     managementTypeOptions,
@@ -196,19 +192,11 @@ export const AlertedProductsTableWidget = ({
             <AssignmentSecondaryButton onClick={closeAssignmentModal}>
               Cancelar
             </AssignmentSecondaryButton>
-            <AssignmentPrimaryButton
-              type="primary"
-              onClick={handleConfirmManagementTypeAssignment}
-              loading={assigningManagementType}
-              disabled={assigningManagementType}
-            >
-              Confirmar asignación
-            </AssignmentPrimaryButton>
             <AssignmentAndRaiseButton
               type="primary"
               onClick={handleAssignAndRaiseAlert}
               loading={assigningManagementType}
-              disabled={assigningManagementType}
+              disabled={assigningManagementType || !selectedManagementType}
             >
               Asignar y Levantar Alerta
             </AssignmentAndRaiseButton>

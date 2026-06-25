@@ -8,7 +8,6 @@ import {
 } from "./managementTypeOptions";
 
 export const useAlertedProductsTable = ({
-  onAssignManagementType,
   onRaiseAlert,
   initialDataSource = alertedProductsTableData,
   managementTypeOptions = managementTypeAssignmentOptions,
@@ -42,32 +41,23 @@ export const useAlertedProductsTable = ({
   };
 
   const getManagementTypeLabel = (value) =>
-    managementTypeOptions.find((o) => o.value === value)?.label ||
+    managementTypeOptions.find((option) => option.value === value)?.label ||
     getManagementTypeAssignmentLabel(value);
 
-  const handleConfirmManagementTypeAssignment = async () => {
-    await onAssignManagementType?.({
-      managementTypeId: selectedManagementType,
+  const buildAssignmentPayload = () => ({
+    selectedRowKeys,
+    selectedRows: selectedRows.map((row) => ({
+      ...row,
       managementType: getManagementTypeLabel(selectedManagementType),
-      selectedRowKeys,
-      selectedRows,
-    });
-    setIsAssignmentModalOpen(false);
-  };
+      managementTypeCode: selectedManagementType,
+      hasAssignedManagementType: true,
+    })),
+    managementType: getManagementTypeLabel(selectedManagementType),
+  });
 
-  const handleAssignAndRaiseAlert = async () => {
-    await onAssignManagementType?.({
-      managementTypeId: selectedManagementType,
-      managementType: getManagementTypeLabel(selectedManagementType),
-      selectedRowKeys,
-      selectedRows,
-    });
+  const handleAssignAndRaiseAlert = () => {
     setIsAssignmentModalOpen(false);
-    onRaiseAlert?.({
-      selectedRowKeys,
-      selectedRows,
-      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
-    });
+    onRaiseAlert?.(buildAssignmentPayload());
   };
 
   const canRaiseAlert =
@@ -84,7 +74,9 @@ export const useAlertedProductsTable = ({
     onRaiseAlert?.({
       selectedRowKeys,
       selectedRows,
-      managementType: getManagementTypeAssignmentLabel(selectedManagementType),
+      managementType:
+        selectedRows[0]?.managementType ||
+        getManagementTypeLabel(selectedManagementType),
     });
   };
 
@@ -92,7 +84,6 @@ export const useAlertedProductsTable = ({
     columns,
     canRaiseAlert,
     handleAssignAndRaiseAlert,
-    handleConfirmManagementTypeAssignment,
     handleRaiseAlert,
     isSelectableRow,
     isAssignmentModalOpen,

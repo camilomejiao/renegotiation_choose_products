@@ -9,26 +9,24 @@ import { RolesEnum } from "../../../helpers/GlobalEnum";
 import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocumentsApi";
 import { getAlertedProductsParameterCatalog } from "../api/alertedProductsFiltersApi";
 import {
-  assignAlertedProductsManagementType,
   getAlertedProductsPage,
 } from "../api/alertedProductsTableApi";
 import { AlertedProductsCentralizationWidget } from "../../../widgets/alerted-products-centralization";
 import { Page } from "../../../shared/ui/page";
 import { AlertedProductsDocumentsWidget } from "../../../widgets/alerted-products-documents";
-import { AppStepper } from "../../../shared/ui/stepper";
+import { AppTabs } from "../../../shared/ui/tabs";
 import { AlertedProductsFiltersWidget } from "../../../widgets/alerted-products-filters";
 import { AlertedProductsManagementWidget } from "../../../widgets/alerted-products-management";
 import { AlertedProductsTableWidget } from "../../../widgets/alerted-products-table";
-import { alertedProductsSteps } from "../model/alertedProductsSteps";
 import { useAlertedProductsFlow } from "../model/useAlertedProductsFlow";
 import {
   AlertedProductsContentGrid,
   ContentSection,
   HeaderSection,
   AlertedProductsMainContent,
+  AlertedProductsPlaceholderCard,
   AlertedProductsPageWrapper,
   AlertedProductsSidebar,
-  AlertedProductsStepperCard,
   StyledDivider,
 } from "./AlertedProductsPage.styles";
 
@@ -38,13 +36,16 @@ const allowedRoles = [
   RolesEnum.ADMINISTRATIVA,
 ];
 
+const ALERTED_PRODUCTS_TAB_KEY = "alerted-products";
+const ALERT_MANAGEMENT_TAB_KEY = "alert-management";
+const CENTRALIZATION_TAB_KEY = "centralization";
+
 export const AlertedProductsPage = () => {
   const { userAuth } = useOutletContext();
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [selectedJourney, setSelectedJourney] = useState(null);
   const [tableDataSource, setTableDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
-  const [assigningManagementType, setAssigningManagementType] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -52,6 +53,7 @@ export const AlertedProductsPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const searchDebounceRef = useRef(null);
+  const [activeTab, setActiveTab] = useState(ALERTED_PRODUCTS_TAB_KEY);
   const [managementTypeOptions, setManagementTypeOptions] = useState([]);
   const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
   const [alertManagementOptions, setAlertManagementOptions] = useState([]);
@@ -207,37 +209,71 @@ export const AlertedProductsPage = () => {
     handleRaiseAlert(nextAssignment);
   };
 
-  const handleAssignManagementType = async ({
-    managementTypeId,
-    selectedRows,
-  }) => {
-    if (!appliedFilters) {
-      return;
-    }
+  const handleGoToCentralization = () => {
+    goToCentralization();
+    setActiveTab(CENTRALIZATION_TAB_KEY);
+  };
 
-    setAssigningManagementType(true);
+  const handleGoToManagement = () => {
+    goToManagement();
+    setActiveTab(ALERTED_PRODUCTS_TAB_KEY);
+  };
 
-    try {
-      const response = await assignAlertedProductsManagementType({
-        managementTypeId,
-        selectedRows,
-      });
+  const handleTabChange = (nextTab) => {
+    setActiveTab(nextTab);
 
-      setRefreshKey((k) => k + 1);
-
-      AlertComponent.success(
-        "Tipo de gestión actualizado",
-        response?.mensaje || "La actualización se realizó correctamente."
-      );
-    } catch (error) {
-      AlertComponent.error(
-        "Error",
-        error?.data?.mensaje || "No fue posible actualizar el tipo de gestión."
-      );
-    } finally {
-      setAssigningManagementType(false);
+    if (nextTab === ALERTED_PRODUCTS_TAB_KEY && currentStep === 2) {
+      goToManagement();
     }
   };
+
+  const alertedProductsTabContent = currentStep === 1 ? (
+    <AlertedProductsManagementWidget
+      assignment={assignment}
+      appliedFilters={appliedFilters}
+      historyByCategory={historyByCategory}
+      managementTypeOptions={managementTypeOptions}
+      onBack={goToPreparation}
+      onContinue={handleGoToCentralization}
+    />
+  ) : (
+    <AlertedProductsContentGrid>
+      <AlertedProductsSidebar>
+        <AlertedProductsDocumentsWidget
+          historyByCategory={historyByCategory}
+          journey={selectedJourney}
+          onDocumentsSaved={reloadJourneyDocuments}
+        />
+      </AlertedProductsSidebar>
+
+      <AlertedProductsMainContent>
+        <AlertedProductsFiltersWidget
+          loading={tableLoading}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+          onJourneyChange={handleJourneyChange}
+          initialFilters={appliedFilters}
+        />
+        {shouldShowTable ? (
+          <AlertedProductsTableWidget
+            dataSource={tableDataSource}
+            emptyText={tableEmptyText}
+            loading={tableLoading}
+            onRaiseAlert={handleRaiseAlertWithValidation}
+            totalRecords={totalRecords}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            managementTypeOptions={managementTypeOptions}
+            alertCategoryOptions={alertCategoryOptions}
+            alertManagementOptions={alertManagementOptions}
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+          />
+        ) : null}
+      </AlertedProductsMainContent>
+    </AlertedProductsContentGrid>
+  );
 
   return (
     <Page showPageHeader header={pageHeader} contentPadding="0" minHeight="auto">
@@ -252,67 +288,38 @@ export const AlertedProductsPage = () => {
         <StyledDivider />
 
         <AlertedProductsPageWrapper>
-          <AlertedProductsStepperCard bordered={false}>
-            <AppStepper items={alertedProductsSteps} currentStep={currentStep} />
-          </AlertedProductsStepperCard>
-
-          {currentStep === 0 ? (
-            <AlertedProductsContentGrid>
-              <AlertedProductsSidebar>
-                <AlertedProductsDocumentsWidget
-                  historyByCategory={historyByCategory}
-                  journey={selectedJourney}
-                  onDocumentsSaved={reloadJourneyDocuments}
-                />
-              </AlertedProductsSidebar>
-
-              <AlertedProductsMainContent>
-                <AlertedProductsFiltersWidget
-                  loading={tableLoading}
-                  onApply={handleApplyFilters}
-                  onReset={handleResetFilters}
-                  onJourneyChange={handleJourneyChange}
-                  initialFilters={appliedFilters}
-                />
-                {shouldShowTable ? (
-                  <AlertedProductsTableWidget
-                    dataSource={tableDataSource}
-                    emptyText={tableEmptyText}
-                    assigningManagementType={assigningManagementType}
-                    loading={tableLoading}
-                    onAssignManagementType={handleAssignManagementType}
-                    onRaiseAlert={handleRaiseAlertWithValidation}
-                    totalRecords={totalRecords}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    onPageChange={handlePageChange}
-                    managementTypeOptions={managementTypeOptions}
-                    alertCategoryOptions={alertCategoryOptions}
-                    alertManagementOptions={alertManagementOptions}
-                    searchValue={searchValue}
-                    onSearchChange={setSearchValue}
-                  />
-                ) : null}
-              </AlertedProductsMainContent>
-            </AlertedProductsContentGrid>
-          ) : null}
-
-          {currentStep === 1 ? (
-            <AlertedProductsManagementWidget
-              assignment={assignment}
-              appliedFilters={appliedFilters}
-              historyByCategory={historyByCategory}
-              onBack={goToPreparation}
-              onContinue={goToCentralization}
-            />
-          ) : null}
-
-          {currentStep === 2 ? (
-            <AlertedProductsCentralizationWidget
-              assignment={assignment}
-              onBack={goToManagement}
-            />
-          ) : null}
+          <AppTabs
+            tabsProps={{
+              activeKey: activeTab,
+              onChange: handleTabChange,
+              items: [
+                {
+                  key: ALERTED_PRODUCTS_TAB_KEY,
+                  label: "Productos alertados",
+                  children: alertedProductsTabContent,
+                },
+                {
+                  key: ALERT_MANAGEMENT_TAB_KEY,
+                  label: "Gestión de alertas",
+                  children: (
+                    <AlertedProductsPlaceholderCard bordered={false}>
+                      Esta pestaña queda disponible para el flujo específico de gestión de alertas.
+                    </AlertedProductsPlaceholderCard>
+                  ),
+                },
+                {
+                  key: CENTRALIZATION_TAB_KEY,
+                  label: "Centralización",
+                  children: (
+                    <AlertedProductsCentralizationWidget
+                      assignment={assignment}
+                      onBack={handleGoToManagement}
+                    />
+                  ),
+                },
+              ],
+            }}
+          />
         </AlertedProductsPageWrapper>
       </ContentSection>
     </Page>

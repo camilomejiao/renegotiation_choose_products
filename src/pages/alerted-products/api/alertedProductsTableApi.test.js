@@ -3,12 +3,14 @@ import { alertedProductsServices } from "../../../helpers/services/AlertedProduc
 import {
   assignAlertedProductsManagementType,
   buildAlertedProductsManagementTypeRequest,
+  createAlertedProductsRequest,
   getAlertedProductsPage,
 } from "./alertedProductsTableApi";
 
 jest.mock("../../../helpers/services/AlertedProductsServices", () => ({
   alertedProductsServices: {
     getProducts: jest.fn(),
+    createProductRequest: jest.fn(),
     updateProductsManagementType: jest.fn(),
   },
 }));
@@ -70,6 +72,7 @@ describe("getAlertedProductsPage", () => {
     expect(result.rows).toEqual([
       {
         id: "133458",
+        jornada: "",
         supplier: "AgroCampo S.A.S.",
         productId: "133458",
         productName: "Bomba fumigadora 20L",
@@ -91,6 +94,40 @@ describe("getAlertedProductsPage", () => {
         ordenNumero: "",
       },
     ]);
+  });
+
+  it("deduplicates rows when the backend returns repeated items", async () => {
+    alertedProductsServices.getProducts.mockResolvedValue({
+      status: ResponseStatusEnum.OK,
+      data: {
+        meta: { page: 1, total_registros: 2 },
+        productos: [
+          {
+            id_orden_detalle: 9001,
+            proveedor: "AgroCampo S.A.S.",
+            id_producto: 133458,
+            nombre_producto: "Bomba fumigadora 20L",
+            categoria_alerta: { id: 5256, nombre: "POR ENCIMA PRECIO MAXIMO" },
+            tipo_gestion: { id: 5275, nombre: "ACTA COMPLEMENTARIA" },
+            gestion_alerta: { id: 5272, nombre: "SIN GESTIÓN" },
+          },
+          {
+            id_orden_detalle: 9001,
+            proveedor: "AgroCampo S.A.S.",
+            id_producto: 133458,
+            nombre_producto: "Bomba fumigadora 20L",
+            categoria_alerta: { id: 5256, nombre: "POR ENCIMA PRECIO MAXIMO" },
+            tipo_gestion: { id: 5275, nombre: "ACTA COMPLEMENTARIA" },
+            gestion_alerta: { id: 5272, nombre: "SIN GESTIÓN" },
+          },
+        ],
+      },
+    });
+
+    const result = await getAlertedProductsPage();
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].id).toBe("9001");
   });
 
   it("builds the management type request expected by the service contract", () => {
@@ -119,6 +156,36 @@ describe("getAlertedProductsPage", () => {
     });
   });
 
+  it("creates the alerted products request using multipart form data", async () => {
+    alertedProductsServices.createProductRequest.mockResolvedValue({
+      status: ResponseStatusEnum.CREATED,
+      data: {
+        mensaje: "Solicitud creada correctamente",
+      },
+    });
+
+    const pdf = new File(["mock"], "solicitud-alerta.pdf", {
+      type: "application/pdf",
+    });
+
+    const result = await createAlertedProductsRequest({
+      observation: "Soporte documental",
+      pdf,
+      selectedRows: [{ id: "9001" }, { id: "9002" }],
+    });
+
+    expect(alertedProductsServices.createProductRequest).toHaveBeenCalledTimes(1);
+    const formData = alertedProductsServices.createProductRequest.mock.calls[0][0];
+    const pdfField = formData.get("pdf");
+    expect(formData).toBeInstanceOf(FormData);
+    expect(formData.getAll("orden_detalle_id")).toEqual(["9001", "9002"]);
+    expect(formData.get("observacion")).toBe("Soporte documental");
+    expect(pdfField).toBeInstanceOf(File);
+    expect(pdfField.name).toBe("solicitud-alerta.pdf");
+    expect(pdfField.type).toBe("application/pdf");
+    expect(result).toEqual({ mensaje: "Solicitud creada correctamente" });
+  });
+
   it("throws when assignAlertedProductsManagementType gets a backend error", async () => {
     alertedProductsServices.updateProductsManagementType.mockResolvedValue({
       status: ResponseStatusEnum.NOT_FOUND,
@@ -128,6 +195,22 @@ describe("getAlertedProductsPage", () => {
       assignAlertedProductsManagementType({
         managementTypeId: 5279,
         selectedRows: [{ productId: "133458", alertCategoryCode: 5256, alertCategory: "POR ENCIMA PRECIO MAXIMO" }],
+      })
+    ).rejects.toBeTruthy();
+  });
+
+  it("throws when createAlertedProductsRequest gets a backend error", async () => {
+    alertedProductsServices.createProductRequest.mockResolvedValue({
+      status: ResponseStatusEnum.BAD_REQUEST,
+    });
+
+    await expect(
+      createAlertedProductsRequest({
+        observation: "Soporte documental",
+        pdf: new File(["mock"], "solicitud-alerta.pdf", {
+          type: "application/pdf",
+        }),
+        selectedRows: [{ id: "9001" }],
       })
     ).rejects.toBeTruthy();
   });
