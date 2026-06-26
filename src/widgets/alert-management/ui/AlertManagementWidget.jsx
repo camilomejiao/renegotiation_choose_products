@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  EyeOutlined,
+  FilterOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
@@ -8,10 +13,35 @@ import {
   getAlertedProductsJourneys,
   getAlertedProductsParameterCatalog,
 } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
+import { Modal } from "../../../shared/ui/modal";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { StatusPill } from "../../../shared/ui/status-pill";
 import {
   ActionsCell,
+  DetailBackButton,
+  DetailDocActions,
+  DetailDocButton,
+  DetailDocInfo,
+  DetailDocItem,
+  DetailDocMeta,
+  DetailDocName,
+  DetailDocsList,
+  DetailGrid,
+  DetailMetaCard,
+  DetailMetaLabel,
+  DetailMetaValue,
+  DetailObservationBox,
+  DetailProductsRow,
+  DetailProductsTable,
+  DetailProductsTableHead,
+  DetailSectionCard,
+  DetailSectionTitle,
+  DetailTimeline,
+  DetailTimelineItem,
+  DetailTimelineMeta,
+  DetailTimelineTitle,
+  DetailTopGrid,
+  DetailViewRoot,
   FiltersActions,
   FiltersCard,
   FiltersCol,
@@ -27,6 +57,15 @@ import {
   GestionarButton,
   HistorialButton,
   PrimaryFilterButton,
+  ReviewActionsRow,
+  ReviewFieldLabel,
+  ReviewPanel,
+  ReviewSubmitButton,
+  ReviewSubmitRow,
+  ReviewTextArea,
+  ReviewUploadBox,
+  ReviewUploadInput,
+  ReviewUploadText,
   SecondaryFilterButton,
   SubsanarButton,
   TableCard,
@@ -35,11 +74,14 @@ import {
   TableHeader,
   TableTitle,
   VerButton,
+  WithObservationButton,
+  WithoutObservationButton,
   WidgetRoot,
 } from "./AlertManagementWidget.styles";
 
 const ALERT_CATEGORY_PARAMETER_TYPE_ID = 35;
 const ALERT_MANAGEMENT_PARAMETER_TYPE_ID = 36;
+const MANAGEMENT_TYPE_PARAMETER_TYPE_ID = 39;
 const EN_SUBSANACION_GESTION_ID = 5260;
 
 const GESTIONAR_ROLES = [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.ADMINISTRATIVA];
@@ -129,10 +171,20 @@ const formatDate = (value) => {
 const defaultFilters = {
   operationalDay: null,
   alertCategory: null,
+  managementType: null,
   alertManagement: null,
 };
+const REVIEW_MODE_WITH_OBSERVATION = "with-observation";
+const REVIEW_MODE_WITHOUT_OBSERVATION = "without-observation";
 
 const TABLE_SCROLL_X = 1760;
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0,
+  }).format(Number(value ?? 0));
 
 export const AlertManagementWidget = ({ userAuth } = {}) => {
   const rolId = userAuth?.rol_id;
@@ -142,15 +194,22 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
 
   const [journeyOptions, setJourneyOptions] = useState([]);
   const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
+  const [managementTypeOptions, setManagementTypeOptions] = useState([]);
   const [alertManagementOptions, setAlertManagementOptions] = useState([]);
   const [loadingJourneys, setLoadingJourneys] = useState(false);
   const [loadingAlertCategory, setLoadingAlertCategory] = useState(false);
+  const [loadingManagementType, setLoadingManagementType] = useState(false);
   const [loadingAlertManagement, setLoadingAlertManagement] = useState(false);
 
   const [draftFilters, setDraftFilters] = useState(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [dataSource, setDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
+  const [managingRecord, setManagingRecord] = useState(null);
+  const [reviewMode, setReviewMode] = useState(null);
+  const [reviewObservation, setReviewObservation] = useState("");
+  const [reviewFiles, setReviewFiles] = useState([]);
+  const [isConfirmWithoutObservationOpen, setIsConfirmWithoutObservationOpen] = useState(false);
 
   const loadJourneys = useCallback(async () => {
     setLoadingJourneys(true);
@@ -188,11 +247,24 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     }
   }, []);
 
+  const loadManagementTypes = useCallback(async () => {
+    setLoadingManagementType(true);
+    try {
+      const opts = await getAlertedProductsParameterCatalog(MANAGEMENT_TYPE_PARAMETER_TYPE_ID);
+      setManagementTypeOptions(opts);
+    } catch {
+      setManagementTypeOptions([]);
+    } finally {
+      setLoadingManagementType(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadJourneys();
     loadAlertCategories();
+    loadManagementTypes();
     loadAlertManagements();
-  }, [loadJourneys, loadAlertCategories, loadAlertManagements]);
+  }, [loadJourneys, loadAlertCategories, loadManagementTypes, loadAlertManagements]);
 
   useEffect(() => {
     if (!appliedFilters) return;
@@ -218,11 +290,107 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     () => buildManagementPillMap(alertManagementOptions),
     [alertManagementOptions]
   );
-  // Placeholder handlers — cada botón abrirá su flujo correspondiente
-  const handleGestionar  = useCallback((_record) => {}, []);
+  const managementDetailDocuments = useMemo(() => {
+    if (!managingRecord) return [];
+
+    const journeySlug = String(managingRecord?.jornada || "jornada")
+      .replace(/\s+/g, "_")
+      .replace(/[^\w-]/g, "");
+
+    return [
+      {
+        id: "journey-pdf",
+        name: `Acta_Mesa_Tecnica_${journeySlug}.pdf`,
+        meta: "Documento de jornada vigente",
+        actions: ["view", "download"],
+      },
+      {
+        id: "support-pdf",
+        name: `Soporte_Solicitud_${journeySlug}.pdf`,
+        meta: "Documento soporte de la solicitud",
+        actions: ["view", "download"],
+      },
+    ];
+  }, [managingRecord]);
+
+  const managementTimeline = useMemo(() => {
+    if (!managingRecord) return [];
+
+    return [
+      {
+        id: "journey-docs",
+        title: "Documentos de jornada asociados",
+        meta: `${formatDate(managingRecord?.fechaRegistro)} · Sistema`,
+        tone: "blue",
+      },
+      {
+        id: "request-created",
+        title: "Solicitud enviada por Implementación",
+        meta: `${formatDate(managingRecord?.fechaRegistro)} · ${managingRecord?.rolRevisor || "Implementación"}`,
+        tone: "orange",
+      },
+    ];
+  }, [managingRecord]);
+
+  const handleGestionar = useCallback((record) => {
+    setManagingRecord(record);
+    setReviewMode(null);
+    setReviewObservation("");
+    setReviewFiles([]);
+    setIsConfirmWithoutObservationOpen(false);
+  }, []);
   const handleSubsanar   = useCallback((_record) => {}, []);
   const handleVer        = useCallback((_record) => {}, []);
   const handleHistorial  = useCallback((_record) => {}, []);
+
+  const handleBackToTable = useCallback(() => {
+    setManagingRecord(null);
+    setReviewMode(null);
+    setReviewObservation("");
+    setReviewFiles([]);
+    setIsConfirmWithoutObservationOpen(false);
+  }, []);
+
+  const handleSelectWithObservation = useCallback(() => {
+    setReviewMode(REVIEW_MODE_WITH_OBSERVATION);
+    if (reviewObservation === "Sin observación") {
+      setReviewObservation("");
+    }
+  }, [reviewObservation]);
+
+  const handleSelectWithoutObservation = useCallback(() => {
+    setReviewMode(REVIEW_MODE_WITHOUT_OBSERVATION);
+    setReviewObservation("Sin observación");
+    setIsConfirmWithoutObservationOpen(true);
+  }, []);
+
+  const handleReviewFilesChange = useCallback((event) => {
+    const nextFiles = Array.from(event?.target?.files ?? []);
+    setReviewFiles(nextFiles);
+  }, []);
+
+  const handleSubmitWithObservation = useCallback(() => {
+    if (reviewMode === REVIEW_MODE_WITH_OBSERVATION && !reviewObservation.trim()) {
+      AlertComponent.warning(
+        "Observación requerida",
+        "Debe diligenciar la observación del revisor para continuar."
+      );
+      return;
+    }
+
+    AlertComponent.info(
+      "Recurso pendiente",
+      "La integración del recurso para esta acción aún no ha sido definida."
+    );
+  }, [reviewMode, reviewObservation]);
+
+  const handleConfirmWithoutObservation = useCallback(() => {
+    setIsConfirmWithoutObservationOpen(false);
+    AlertComponent.info(
+      "Recurso pendiente",
+      "La integración del recurso para esta acción aún no ha sido definida."
+    );
+  }, []);
 
   const columns = useMemo(() => [
     {
@@ -342,7 +510,171 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     setDataSource([]);
   };
 
-  const shouldShowTable = tableLoading || Boolean(appliedFilters);
+  const shouldShowTable = !managingRecord && (tableLoading || Boolean(appliedFilters));
+
+  if (managingRecord) {
+    return (
+      <DetailViewRoot>
+        <DetailBackButton onClick={handleBackToTable}>Volver</DetailBackButton>
+
+        <DetailTopGrid>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Estado de solicitud</DetailMetaLabel>
+            <div>{renderPill(managingRecord?.gestionAlerta, managingRecord?.gestionAlertaCodigo, alertManagementPillMap)}</div>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Usuario origen</DetailMetaLabel>
+            <DetailMetaValue>{managingRecord?.rolRevisor || "Implementación"}</DetailMetaValue>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Fecha implementación</DetailMetaLabel>
+            <DetailMetaValue>{formatDate(managingRecord?.fechaRegistro)}</DetailMetaValue>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Jornada</DetailMetaLabel>
+            <DetailMetaValue>{managingRecord?.jornada || "—"}</DetailMetaValue>
+          </DetailMetaCard>
+        </DetailTopGrid>
+
+        <DetailGrid>
+          <div style={{ display: "grid", gap: 16 }}>
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Documentos de jornada y soporte</DetailSectionTitle>
+              <DetailDocsList>
+                {managementDetailDocuments.map((doc) => (
+                  <DetailDocItem key={doc.id}>
+                    <DetailDocInfo>
+                      <DetailDocName>{doc.name}</DetailDocName>
+                      <DetailDocMeta>{doc.meta}</DetailDocMeta>
+                    </DetailDocInfo>
+                    <DetailDocActions>
+                      {doc.actions.includes("view") && (
+                        <DetailDocButton icon={<EyeOutlined />} />
+                      )}
+                      {doc.actions.includes("download") && (
+                        <DetailDocButton icon={<DownloadOutlined />} />
+                      )}
+                    </DetailDocActions>
+                  </DetailDocItem>
+                ))}
+              </DetailDocsList>
+            </DetailSectionCard>
+
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Productos asociados</DetailSectionTitle>
+              <DetailProductsTable>
+                <DetailProductsTableHead>
+                  <span>ID producto</span>
+                  <span>Nombre</span>
+                  <span>Precio mín.</span>
+                  <span>Precio máx.</span>
+                  <span>Valor venta</span>
+                  <span>Resultado</span>
+                </DetailProductsTableHead>
+                <DetailProductsRow>
+                  <span>{managingRecord?.id || "—"}</span>
+                  <span>{managingRecord?.tipoGestion || "Producto asociado"}</span>
+                  <span>{formatCurrency(95000)}</span>
+                  <span>{formatCurrency(120000)}</span>
+                  <span>{formatCurrency(128500)}</span>
+                  <span>{formatCurrency(115000)}</span>
+                </DetailProductsRow>
+              </DetailProductsTable>
+
+              <ReviewActionsRow>
+                <WithObservationButton onClick={handleSelectWithObservation}>
+                  Con observación
+                </WithObservationButton>
+                <WithoutObservationButton onClick={handleSelectWithoutObservation}>
+                  Sin observación
+                </WithoutObservationButton>
+              </ReviewActionsRow>
+            </DetailSectionCard>
+          </div>
+
+          <div style={{ display: "grid", gap: 16 }}>
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Observación justificativa</DetailSectionTitle>
+              <DetailObservationBox>
+                {managingRecord?.observacionJustificativa || "Sin observación justificativa registrada."}
+              </DetailObservationBox>
+            </DetailSectionCard>
+
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Traza de eventos</DetailSectionTitle>
+              <DetailTimeline>
+                {managementTimeline.map((item) => (
+                  <DetailTimelineItem key={item.id} $tone={item.tone}>
+                    <DetailTimelineTitle>{item.title}</DetailTimelineTitle>
+                    <DetailTimelineMeta>{item.meta}</DetailTimelineMeta>
+                  </DetailTimelineItem>
+                ))}
+              </DetailTimeline>
+            </DetailSectionCard>
+
+            {reviewMode === REVIEW_MODE_WITH_OBSERVATION && (
+              <ReviewPanel bordered={false}>
+                <DetailSectionTitle>Observación del revisor</DetailSectionTitle>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <ReviewFieldLabel>
+                    Observación <span style={{ color: "#dc2626" }}>*</span>
+                  </ReviewFieldLabel>
+                  <ReviewTextArea
+                    value={reviewObservation}
+                    onChange={(event) => setReviewObservation(event.target.value)}
+                    placeholder="Registra la observación del revisor"
+                  />
+                </div>
+
+                <div style={{ display: "grid", gap: 8 }}>
+                  <ReviewFieldLabel>Adjuntos del revisor</ReviewFieldLabel>
+                  <ReviewUploadBox>
+                    <ReviewUploadInput type="file" multiple onChange={handleReviewFilesChange} />
+                    <ReviewUploadText>
+                      {reviewFiles.length
+                        ? reviewFiles.map((file) => file.name).join(", ")
+                        : "Elegir archivos"}
+                    </ReviewUploadText>
+                  </ReviewUploadBox>
+                </div>
+
+                <ReviewSubmitRow>
+                  <ReviewSubmitButton onClick={handleSubmitWithObservation}>
+                    Enviar a Subsanación
+                  </ReviewSubmitButton>
+                </ReviewSubmitRow>
+              </ReviewPanel>
+            )}
+          </div>
+        </DetailGrid>
+
+        <Modal
+          isOpen={isConfirmWithoutObservationOpen}
+          onCloseModal={() => setIsConfirmWithoutObservationOpen(false)}
+          title="Confirmar levantamiento sin observación"
+          footer={null}
+          width={760}
+          centered
+        >
+          <div style={{ display: "grid", gap: 20 }}>
+            <p style={{ margin: 0, color: "#0f172a", lineHeight: 1.6 }}>
+              ¿Está seguro de levantar la alerta? La solicitud quedará en estado <strong>Resuelta</strong>,
+              la categoría de alerta actual pasará a <strong>0 - Sin alerta</strong> y la categoría anterior
+              quedará registrada en el histórico.
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <SecondaryFilterButton onClick={() => setIsConfirmWithoutObservationOpen(false)}>
+                Cancelar
+              </SecondaryFilterButton>
+              <WithoutObservationButton onClick={handleConfirmWithoutObservation}>
+                Confirmar
+              </WithoutObservationButton>
+            </div>
+          </div>
+        </Modal>
+      </DetailViewRoot>
+    );
+  }
 
   return (
     <WidgetRoot>
@@ -357,7 +689,7 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
 
           <FiltersForm>
             <FiltersGrid gutter={[16, 16]}>
-              <FiltersCol xs={24} sm={12} lg={8}>
+              <FiltersCol xs={24} sm={12} lg={6}>
                 <FiltersFieldGroup>
                   <FiltersFieldLabel>Jornada</FiltersFieldLabel>
                   <FiltersSelect
@@ -372,7 +704,7 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
                 </FiltersFieldGroup>
               </FiltersCol>
 
-              <FiltersCol xs={24} sm={12} lg={8}>
+              <FiltersCol xs={24} sm={12} lg={6}>
                 <FiltersFieldGroup>
                   <FiltersFieldLabel>Categoría de alerta</FiltersFieldLabel>
                   <FiltersSelect
@@ -387,7 +719,22 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
                 </FiltersFieldGroup>
               </FiltersCol>
 
-              <FiltersCol xs={24} sm={12} lg={8}>
+              <FiltersCol xs={24} sm={12} lg={6}>
+                <FiltersFieldGroup>
+                  <FiltersFieldLabel>Tipo de gestión</FiltersFieldLabel>
+                  <FiltersSelect
+                    value={draftFilters.managementType}
+                    options={managementTypeOptions}
+                    onChange={updateDraft("managementType")}
+                    placeholder="Selecciona un tipo"
+                    showSearch={false}
+                    isClearable
+                    isLoading={loadingManagementType}
+                  />
+                </FiltersFieldGroup>
+              </FiltersCol>
+
+              <FiltersCol xs={24} sm={12} lg={6}>
                 <FiltersFieldGroup>
                   <FiltersFieldLabel>Gestión de alerta</FiltersFieldLabel>
                   <FiltersSelect

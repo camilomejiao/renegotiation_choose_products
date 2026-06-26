@@ -1,7 +1,12 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
 
-const buildSolicitudesQuery = ({ operationalDay, alertCategory, alertManagement } = {}) => {
+const buildSolicitudesQuery = ({
+  operationalDay,
+  alertCategory,
+  managementType,
+  alertManagement,
+} = {}) => {
   const params = new URLSearchParams();
 
   if (operationalDay?.value) {
@@ -10,6 +15,10 @@ const buildSolicitudesQuery = ({ operationalDay, alertCategory, alertManagement 
 
   if (alertCategory?.value != null) {
     params.set("categoria_alerta", String(alertCategory.value));
+  }
+
+  if (managementType?.value != null) {
+    params.set("tipo_gestion", String(managementType.value));
   }
 
   if (alertManagement?.value != null) {

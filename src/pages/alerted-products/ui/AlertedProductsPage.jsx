@@ -98,6 +98,10 @@ const buildServiceResult = (label, response, fallbackMessages) => {
 
 export const AlertedProductsPage = () => {
   const { userAuth } = useOutletContext();
+  const hasRestrictedAlertedProductsTabs = [
+    RolesEnum.ADMINISTRATIVA,
+    RolesEnum.SUPERVISION,
+  ].includes(userAuth?.rol_id);
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [selectedJourney, setSelectedJourney] = useState(null);
   const [tableDataSource, setTableDataSource] = useState([]);
@@ -109,7 +113,11 @@ export const AlertedProductsPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const searchDebounceRef = useRef(null);
-  const [activeTab, setActiveTab] = useState(ALERTED_PRODUCTS_TAB_KEY);
+  const [activeTab, setActiveTab] = useState(
+    hasRestrictedAlertedProductsTabs
+      ? ALERT_MANAGEMENT_TAB_KEY
+      : ALERTED_PRODUCTS_TAB_KEY
+  );
   const [managementTypeOptions, setManagementTypeOptions] = useState([]);
   const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
   const [alertManagementOptions, setAlertManagementOptions] = useState([]);
@@ -131,6 +139,15 @@ export const AlertedProductsPage = () => {
       .then(setAlertManagementOptions)
       .catch(() => setAlertManagementOptions([]));
   }, []);
+
+  useEffect(() => {
+    if (
+      hasRestrictedAlertedProductsTabs &&
+      activeTab === ALERTED_PRODUCTS_TAB_KEY
+    ) {
+      setActiveTab(ALERT_MANAGEMENT_TAB_KEY);
+    }
+  }, [activeTab, hasRestrictedAlertedProductsTabs]);
 
   useEffect(() => {
     clearTimeout(searchDebounceRef.current);
@@ -348,12 +365,44 @@ export const AlertedProductsPage = () => {
   };
 
   const handleTabChange = (nextTab) => {
+    if (
+      hasRestrictedAlertedProductsTabs &&
+      ![ALERT_MANAGEMENT_TAB_KEY, CENTRALIZATION_TAB_KEY].includes(nextTab)
+    ) {
+      return;
+    }
+
     setActiveTab(nextTab);
 
     if (nextTab === ALERTED_PRODUCTS_TAB_KEY && currentStep === 2) {
       goToManagement();
     }
   };
+
+  const tabItems = [
+    !hasRestrictedAlertedProductsTabs
+      ? {
+          key: ALERTED_PRODUCTS_TAB_KEY,
+          label: "Productos alertados",
+          children: alertedProductsTabContent,
+        }
+      : null,
+    {
+      key: ALERT_MANAGEMENT_TAB_KEY,
+      label: "Gestión de alertas",
+      children: <AlertManagementWidget userAuth={userAuth} />,
+    },
+    {
+      key: CENTRALIZATION_TAB_KEY,
+      label: "Centralización",
+      children: (
+        <AlertedProductsCentralizationWidget
+          assignment={assignment}
+          onBack={handleGoToManagement}
+        />
+      ),
+    },
+  ].filter(Boolean);
 
   const alertedProductsTabContent = currentStep === 1 ? (
     shouldUseCurrentManagementView ? (
@@ -463,28 +512,7 @@ export const AlertedProductsPage = () => {
             tabsProps={{
               activeKey: activeTab,
               onChange: handleTabChange,
-              items: [
-                {
-                  key: ALERTED_PRODUCTS_TAB_KEY,
-                  label: "Productos alertados",
-                  children: alertedProductsTabContent,
-                },
-                {
-                  key: ALERT_MANAGEMENT_TAB_KEY,
-                  label: "Gestión de alertas",
-                  children: <AlertManagementWidget userAuth={userAuth} />,
-                },
-                {
-                  key: CENTRALIZATION_TAB_KEY,
-                  label: "Centralización",
-                  children: (
-                    <AlertedProductsCentralizationWidget
-                      assignment={assignment}
-                      onBack={handleGoToManagement}
-                    />
-                  ),
-                },
-              ],
+              items: tabItems,
             }}
           />
         </AlertedProductsPageWrapper>
