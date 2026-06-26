@@ -8,7 +8,12 @@ import {
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
-import { getAlertedProductsSolicitudes } from "../../../pages/alerted-products/api/alertedProductsSolicitudesApi";
+import {
+  getAlertedProductsSolicitudes,
+  getAlertedProductsSolicitudDetalle,
+} from "../../../pages/alerted-products/api/alertedProductsSolicitudesApi";
+import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
+import { filesServices } from "../../../helpers/services/FilesServices";
 import {
   getAlertedProductsJourneys,
   getAlertedProductsParameterCatalog,
@@ -206,6 +211,10 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
   const [reviewObservation, setReviewObservation] = useState("");
   const [reviewFiles, setReviewFiles] = useState([]);
   const [isConfirmWithoutObservationOpen, setIsConfirmWithoutObservationOpen] = useState(false);
+  const [detailData, setDetailData] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
+  const [pdfViewer, setPdfViewer] = useState({ isOpen: false, url: null, title: "" });
 
   const loadJourneys = useCallback(async () => {
     setLoadingJourneys(true);
@@ -273,30 +282,21 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     () => buildManagementPillMap(alertManagementOptions),
     [alertManagementOptions]
   );
-  const managementDetailDocuments = useMemo(() => {
-    if (!managingRecord) return [];
-
-    const journeySlug = String(managingRecord?.jornada || "jornada")
-      .replace(/\s+/g, "_")
-      .replace(/[^\w-]/g, "");
-
-    return [
-      {
-        id: "journey-pdf",
-        name: `Acta_Mesa_Tecnica_${journeySlug}.pdf`,
-        meta: "Documento de jornada vigente",
-        actions: ["view", "download"],
-      },
-      {
-        id: "support-pdf",
-        name: `Soporte_Solicitud_${journeySlug}.pdf`,
-        meta: "Documento soporte de la solicitud",
-        actions: ["view", "download"],
-      },
-    ];
-  }, [managingRecord]);
+  const managementDetailDocuments = useMemo(
+    () => detailData?.documentos ?? [],
+    [detailData]
+  );
 
   const managementTimeline = useMemo(() => {
+    if (detailData?.trazaEventos?.length) {
+      return detailData.trazaEventos.map((evento, index) => ({
+        id: `evento-${index}`,
+        title: evento.titulo,
+        meta: `${formatDate(evento.fecha_evento)} · ${evento.usuario}`,
+        tone: evento.variante === "informacion" ? "blue" : "orange",
+      }));
+    }
+
     if (!managingRecord) return [];
 
     return [
@@ -313,26 +313,52 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         tone: "orange",
       },
     ];
-  }, [managingRecord]);
+  }, [detailData, managingRecord]);
 
-  const handleGestionar = useCallback((record) => {
+  const loadDetalle = useCallback(async (record) => {
+    setDetailData(null);
+    if (!record?.id) return;
+    setDetailLoading(true);
+    try {
+      const detalle = await getAlertedProductsSolicitudDetalle(record.id);
+      setDetailData(detalle);
+    } catch {
+      AlertComponent.error("Error", "No fue posible cargar el detalle de la solicitud.");
+    } finally {
+      setDetailLoading(false);
+    }
+  }, []);
+
+  const handleGestionar = useCallback(async (record) => {
     setManagingRecord(record);
+    setIsViewMode(false);
     setReviewMode(null);
     setReviewObservation("");
     setReviewFiles([]);
     setIsConfirmWithoutObservationOpen(false);
-  }, []);
-  const handleSubsanar   = useCallback((_record) => {}, []);
-  const handleVer        = useCallback((_record) => {}, []);
-  const handleHistorial  = useCallback((_record) => {}, []);
+    loadDetalle(record);
+  }, [loadDetalle]);
+
+  const handleSubsanar  = useCallback((_record) => {}, []);
+  const handleVer       = useCallback(async (record) => {
+    setManagingRecord(record);
+    setIsViewMode(true);
+    setDetailData(null);
+    loadDetalle(record);
+  }, [loadDetalle]);
+  const handleHistorial = useCallback((_record) => {}, []);
 
   const handleBackToTable = useCallback(() => {
     setManagingRecord(null);
+    setDetailData(null);
+    setIsViewMode(false);
     setReviewMode(null);
     setReviewObservation("");
     setReviewFiles([]);
     setIsConfirmWithoutObservationOpen(false);
-  }, []);
+    if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
+    setPdfViewer({ isOpen: false, url: null, title: "" });
+  }, [pdfViewer.url]);
 
   const handleSelectWithObservation = useCallback(() => {
     setReviewMode(REVIEW_MODE_WITH_OBSERVATION);
@@ -346,6 +372,51 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     setReviewObservation("Sin observación");
     setIsConfirmWithoutObservationOpen(true);
   }, []);
+
+  const handleViewDocument = useCallback(async (doc) => {
+    if (!doc?.rutaArchivo) return;
+    try {
+      const response = await filesServices.downloadFile(doc.rutaArchivo);
+      if (!response?.blob) return;
+      const url = URL.createObjectURL(response.blob);
+      setPdfViewer({ isOpen: true, url, title: doc.nombre || "documento.pdf" });
+    } catch {
+      AlertComponent.error("Error", "No fue posible abrir el documento.");
+    }
+  }, []);
+
+  const handleDownloadDocument = useCallback(async (doc) => {
+    if (!doc?.rutaArchivo) return;
+    try {
+      const response = await filesServices.downloadFile(doc.rutaArchivo);
+      if (!response?.blob) return;
+      const url = URL.createObjectURL(response.blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = doc.nombre || "documento";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      AlertComponent.error("Error", "No fue posible descargar el documento.");
+    }
+  }, []);
+
+  const closePdfViewer = useCallback(() => {
+    if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
+    setPdfViewer({ isOpen: false, url: null, title: "" });
+  }, [pdfViewer.url]);
+
+  const handleDownloadFromViewer = useCallback(() => {
+    if (!pdfViewer.url) return;
+    const anchor = document.createElement("a");
+    anchor.href = pdfViewer.url;
+    anchor.download = pdfViewer.title;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  }, [pdfViewer]);
 
   const handleReviewFilesChange = useCallback((event) => {
     const nextFiles = Array.from(event?.target?.files ?? []);
@@ -493,7 +564,95 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     setDataSource([]);
   };
 
-  const shouldShowTable = !managingRecord && (tableLoading || Boolean(appliedFilters));
+  const shouldShowTable = !managingRecord && !isViewMode && (tableLoading || Boolean(appliedFilters));
+
+  if (managingRecord && isViewMode) {
+    return (
+      <DetailViewRoot>
+        <DetailBackButton onClick={handleBackToTable}>Volver</DetailBackButton>
+
+        <DetailTopGrid>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Estado de solicitud</DetailMetaLabel>
+            <div>{renderPill(managingRecord?.gestionAlerta, managingRecord?.gestionAlertaCodigo, alertManagementPillMap)}</div>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Usuario origen</DetailMetaLabel>
+            <DetailMetaValue>{managingRecord?.rolRevisor || "Implementación"}</DetailMetaValue>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Fecha implementación</DetailMetaLabel>
+            <DetailMetaValue>{formatDate(managingRecord?.fechaRegistro)}</DetailMetaValue>
+          </DetailMetaCard>
+          <DetailMetaCard bordered={false}>
+            <DetailMetaLabel>Jornada</DetailMetaLabel>
+            <DetailMetaValue>{managingRecord?.jornada || "—"}</DetailMetaValue>
+          </DetailMetaCard>
+        </DetailTopGrid>
+
+        <DetailGrid>
+          <div style={{ display: "grid", gap: 16 }}>
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Documentos de jornada y soporte</DetailSectionTitle>
+              {detailLoading ? (
+                <div style={{ padding: "16px 0", color: "#64748b" }}>Cargando documentos...</div>
+              ) : (
+                <DetailDocsList>
+                  {managementDetailDocuments.length === 0 && (
+                    <div style={{ color: "#94a3b8", fontSize: 13 }}>Sin documentos registrados.</div>
+                  )}
+                  {managementDetailDocuments.map((doc) => (
+                    <DetailDocItem key={doc.id}>
+                      <DetailDocInfo>
+                        <DetailDocName>{doc.nombre}</DetailDocName>
+                        <DetailDocMeta>{doc.descripcion || (doc.esPdf ? "Documento PDF" : "Documento Excel")}</DetailDocMeta>
+                      </DetailDocInfo>
+                      <DetailDocActions>
+                        {doc.puedeVer && (
+                          <DetailDocButton
+                            icon={<EyeOutlined />}
+                            title="Visualizar"
+                            onClick={() => handleViewDocument(doc)}
+                          />
+                        )}
+                        {doc.puedeDescargar && (
+                          <DetailDocButton
+                            icon={<DownloadOutlined />}
+                            title="Descargar"
+                            onClick={() => handleDownloadDocument(doc)}
+                          />
+                        )}
+                      </DetailDocActions>
+                    </DetailDocItem>
+                  ))}
+                </DetailDocsList>
+              )}
+            </DetailSectionCard>
+          </div>
+
+          <div style={{ display: "grid", gap: 16 }}>
+            <DetailSectionCard bordered={false}>
+              <DetailSectionTitle>Resumen</DetailSectionTitle>
+              <DetailObservationBox>
+                <p style={{ margin: 0, color: "#0f172a", lineHeight: 1.6 }}>
+                  {detailData?.resumen || "Sin resumen disponible."}
+                </p>
+              </DetailObservationBox>
+            </DetailSectionCard>
+          </div>
+        </DetailGrid>
+
+        <DocumentViewerModal
+          isOpen={pdfViewer.isOpen}
+          title="Visor de documento"
+          subtitle={pdfViewer.title}
+          documentUrl={pdfViewer.url}
+          onClose={closePdfViewer}
+          onDownload={handleDownloadFromViewer}
+        />
+      </DetailViewRoot>
+    );
+  }
 
   if (managingRecord) {
     return (
@@ -523,24 +682,39 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
           <div style={{ display: "grid", gap: 16 }}>
             <DetailSectionCard bordered={false}>
               <DetailSectionTitle>Documentos de jornada y soporte</DetailSectionTitle>
-              <DetailDocsList>
-                {managementDetailDocuments.map((doc) => (
-                  <DetailDocItem key={doc.id}>
-                    <DetailDocInfo>
-                      <DetailDocName>{doc.name}</DetailDocName>
-                      <DetailDocMeta>{doc.meta}</DetailDocMeta>
-                    </DetailDocInfo>
-                    <DetailDocActions>
-                      {doc.actions.includes("view") && (
-                        <DetailDocButton icon={<EyeOutlined />} />
-                      )}
-                      {doc.actions.includes("download") && (
-                        <DetailDocButton icon={<DownloadOutlined />} />
-                      )}
-                    </DetailDocActions>
-                  </DetailDocItem>
-                ))}
-              </DetailDocsList>
+              {detailLoading ? (
+                <div style={{ padding: "16px 0", color: "#64748b" }}>Cargando documentos...</div>
+              ) : (
+                <DetailDocsList>
+                  {managementDetailDocuments.length === 0 && (
+                    <div style={{ color: "#94a3b8", fontSize: 13 }}>Sin documentos registrados.</div>
+                  )}
+                  {managementDetailDocuments.map((doc) => (
+                    <DetailDocItem key={doc.id}>
+                      <DetailDocInfo>
+                        <DetailDocName>{doc.nombre}</DetailDocName>
+                        <DetailDocMeta>{doc.descripcion || (doc.esPdf ? "Documento PDF" : "Documento Excel")}</DetailDocMeta>
+                      </DetailDocInfo>
+                      <DetailDocActions>
+                        {doc.puedeVer && (
+                          <DetailDocButton
+                            icon={<EyeOutlined />}
+                            title="Visualizar"
+                            onClick={() => handleViewDocument(doc)}
+                          />
+                        )}
+                        {doc.puedeDescargar && (
+                          <DetailDocButton
+                            icon={<DownloadOutlined />}
+                            title="Descargar"
+                            onClick={() => handleDownloadDocument(doc)}
+                          />
+                        )}
+                      </DetailDocActions>
+                    </DetailDocItem>
+                  ))}
+                </DetailDocsList>
+              )}
             </DetailSectionCard>
 
             <DetailSectionCard bordered={false}>
@@ -655,6 +829,15 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
             </div>
           </div>
         </Modal>
+
+        <DocumentViewerModal
+          isOpen={pdfViewer.isOpen}
+          title="Visor de documento"
+          subtitle={pdfViewer.title}
+          documentUrl={pdfViewer.url}
+          onClose={closePdfViewer}
+          onDownload={handleDownloadFromViewer}
+        />
       </DetailViewRoot>
     );
   }

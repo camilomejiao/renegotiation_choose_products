@@ -30,7 +30,7 @@ const buildSolicitudesQuery = ({
 };
 
 const normalizeSolicitudRow = (row = {}, index) => ({
-  id: `${row?.jornada ?? ""}-${row?.fecha_registro ?? ""}-${row?.tipo_gestion?.codigo ?? ""}-${index}`,
+  id: row?.id ?? `${row?.jornada ?? ""}-${row?.fecha_registro ?? ""}-${row?.tipo_gestion?.codigo ?? ""}-${index}`,
   jornada: row?.jornada ?? "",
   tipoGestion: row?.tipo_gestion?.nombre ?? "",
   tipoGestionCodigo: row?.tipo_gestion?.codigo ?? null,
@@ -43,6 +43,44 @@ const normalizeSolicitudRow = (row = {}, index) => ({
   gestionAlerta: row?.gestion_alerta?.nombre ?? "",
   gestionAlertaCodigo: row?.gestion_alerta?.codigo ?? null,
 });
+
+const normalizeDocumento = (doc = {}) => {
+  const isPdf = String(doc?.nombre_archivo ?? "").toLowerCase().endsWith(".pdf");
+  const acciones = Array.isArray(doc?.acciones_disponibles) ? doc.acciones_disponibles : [];
+  return {
+    id: doc?.id,
+    nombre: doc?.nombre_archivo ?? "",
+    descripcion: doc?.descripcion ?? "",
+    usuarioCreador: doc?.usuario_creador ?? "",
+    fechaCreacion: doc?.fecha_creacion ?? "",
+    rutaArchivo: doc?.ruta_archivo ?? "",
+    esPdf: isPdf,
+    puedeVer: acciones.includes("ver"),
+    puedeDescargar: acciones.includes("descargar"),
+  };
+};
+
+export const getAlertedProductsSolicitudDetalle = async (idSolicitud) => {
+  const response = await alertedProductsServices.getSolicitudDetalle(idSolicitud);
+
+  if (response?.status !== ResponseStatusEnum.OK) {
+    throw response;
+  }
+
+  const data = response?.data ?? {};
+  return {
+    idSolicitud: data?.id_solicitud,
+    resumen: data?.resumen ?? "",
+    estadoSolicitud: data?.estado_solicitud ?? null,
+    usuarioOrigen: data?.usuario_origen ?? "",
+    fechaImplementacion: data?.fecha_implementacion ?? "",
+    jornada: data?.jornada ?? "",
+    observacionJustificativa: data?.observacion_justificativa ?? "",
+    documentos: Array.isArray(data?.documentos) ? data.documentos.map(normalizeDocumento) : [],
+    trazaEventos: Array.isArray(data?.traza_eventos) ? data.traza_eventos : [],
+    productosAsociados: Array.isArray(data?.productos_asociados) ? data.productos_asociados : [],
+  };
+};
 
 export const getAlertedProductsSolicitudes = async (filters = {}) => {
   const response = await alertedProductsServices.getSolicitudes(

@@ -8,8 +8,34 @@ server.use(jsonServer.bodyParser)
 
 // Estado mutable en memoria para que el POST se refleje en el siguiente GET
 let productos = JSON.parse(JSON.stringify(require('./productos.json')))
+const DETALLE_DOCUMENTOS = [
+  {
+    id: 22,
+    tipo_archivo: 5280,
+    nombre_archivo: '43_20260624233802_ACTA MESA TÉCNICA (PDF).pdf',
+    descripcion: 'Documento de jornada vigente',
+    usuario_creador: 'edward.oviedo+implementacion@renovacionterritorio.gov.co',
+    fecha_creacion: '2026-06-24T23:38:03.177000+00:00',
+    activo: true,
+    ruta_archivo: 'productos_alertados/jornadas/43_20260624233802_ACTA%20MESA%20T%C3%89CNICA%20%28PDF%29.pdf',
+    acciones_disponibles: ['ver', 'descargar'],
+  },
+  {
+    id: 21,
+    tipo_archivo: 5281,
+    nombre_archivo: '43_20260624233802_GESTIONAR PRODUCTOS (EXCEL).xlsx',
+    descripcion: 'Documento de jornada vigente',
+    usuario_creador: 'edward.oviedo+implementacion@renovacionterritorio.gov.co',
+    fecha_creacion: '2026-06-24T23:38:03.163000+00:00',
+    activo: true,
+    ruta_archivo: 'productos_alertados/jornadas/43_20260624233802_GESTIONAR%20PRODUCTOS%20%28EXCEL%29.xlsx',
+    acciones_disponibles: ['descargar'],
+  },
+]
+
 const solicitudesBase = [
   {
+    id: 1,
     jornada_id: 43,
     jornada_codigo: 43,
     orden_detalle_id: [],
@@ -23,6 +49,7 @@ const solicitudesBase = [
     gestion_alerta: { codigo: 5259, nombre: 'EN PROCESO' },
   },
   {
+    id: 2,
     jornada_id: 43,
     jornada_codigo: 43,
     orden_detalle_id: [],
@@ -36,6 +63,7 @@ const solicitudesBase = [
     gestion_alerta: { codigo: 5260, nombre: 'EN SUBSANACION' },
   },
   {
+    id: 3,
     jornada_id: 43,
     jornada_codigo: 43,
     orden_detalle_id: [],
@@ -49,6 +77,7 @@ const solicitudesBase = [
     gestion_alerta: { codigo: 5261, nombre: 'RESUELTA' },
   },
   {
+    id: 4,
     jornada_id: 44,
     jornada_codigo: 44,
     orden_detalle_id: [],
@@ -328,6 +357,7 @@ server.get(
 
     res.json({
       solicitudes: result.map((solicitud) => ({
+        id: solicitud.id,
         jornada: solicitud.jornada,
         tipo_gestion: solicitud.tipo_gestion,
         categoria_alerta: solicitud.categoria_alerta,
@@ -341,11 +371,47 @@ server.get(
   }
 )
 
+// GET /api/alertas/productos/solicitud/detalle/
+// Retorna siempre el mismo mock fijo hasta que el backend real exponga un id por solicitud.
+server.get(
+  ['/api/alertas/productos/solicitud/detalle', '/api/alertas/productos/solicitud/detalle/'],
+  (req, res) => {
+    const MOCK_SOLICITUD = solicitudesBase[0]
+
+    res.json({
+      id_solicitud: req.query.id_solicitud || MOCK_SOLICITUD.id,
+      resumen: `Solicitud documental asociada a la jornada ${MOCK_SOLICITUD.jornada} para validación de alerta de productos.`,
+      estado_solicitud: { codigo: MOCK_SOLICITUD.gestion_alerta.codigo, nombre: MOCK_SOLICITUD.gestion_alerta.nombre },
+      usuario_origen: MOCK_SOLICITUD.rol_revisor || 'Implementación',
+      fecha_implementacion: MOCK_SOLICITUD.fecha_registro,
+      jornada: MOCK_SOLICITUD.jornada,
+      observacion_justificativa: MOCK_SOLICITUD.observacion_justificativa,
+      documentos: DETALLE_DOCUMENTOS,
+      traza_eventos: [
+        {
+          titulo: 'Documentos de jornada asociados',
+          fecha_evento: MOCK_SOLICITUD.fecha_registro,
+          usuario: 'Sistema',
+          variante: 'informacion',
+        },
+        {
+          titulo: 'Solicitud enviada por Implementación',
+          fecha_evento: MOCK_SOLICITUD.fecha_registro,
+          usuario: MOCK_SOLICITUD.rol_revisor || 'Implementación',
+          variante: 'alerta',
+        },
+      ],
+      productos_asociados: [],
+    })
+  }
+)
+
 const PORT = process.env.MOCK_PORT || 3001
 server.listen(PORT, () => {
   console.log(`Mock corriendo en http://localhost:${PORT}`)
-  console.log(`  GET  /api/alertas/productos/          → ${productos.length} productos`)
-  console.log(`  POST /api/alertas/productos/solicitud/ → crea solicitudes en memoria`)
-  console.log(`  POST /api/alertas/productos/gestion/  → actualiza tipo_gestion en memoria`)
-  console.log(`  GET  /api/alertas/productos/solicitud/ → ${solicitudes.length} solicitudes fake`)
+  console.log(`  GET  /api/alertas/productos/                    → ${productos.length} productos`)
+  console.log(`  POST /api/alertas/productos/solicitud/          → crea solicitudes en memoria`)
+  console.log(`  POST /api/alertas/productos/gestion/            → actualiza tipo_gestion en memoria`)
+  console.log(`  GET  /api/alertas/productos/solicitud/          → ${solicitudes.length} solicitudes fake`)
+  console.log(`  GET  /api/alertas/productos/solicitud/detalle/  → detalle de solicitud por id_solicitud`)
 })

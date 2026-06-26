@@ -48,6 +48,14 @@ class AlertedProductsServices {
     });
   }
 
+  getSolicitudDetalle(idSolicitud) {
+    const params = new URLSearchParams({ id_solicitud: String(idSolicitud) });
+    return authTokenService.fetchWithAuth(
+      this.buildUrl(`productos/solicitud/detalle?${params.toString()}`),
+      { method: "GET" }
+    );
+  }
+
   getSolicitudes(queryString = "") {
     const normalizedQuery = queryString
       ? `/${String(queryString).replace(/^\//, "").replace(/^\?/, "?")}`
