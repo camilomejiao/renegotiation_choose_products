@@ -162,15 +162,26 @@ export const buildAlertedProductsManagementTypeRequest = ({
   })),
 });
 
+export const buildAlertedProductsRequestPayload = ({
+  observation,
+  pdf,
+  selectedRows = [],
+}) =>
+  buildAlertedProductsRequestFormData({
+    orderDetailIds: selectedRows.map((row) => row?.id).filter(Boolean),
+    observation,
+    pdf,
+  });
+
 export const createAlertedProductsRequest = async ({
   observation,
   pdf,
   selectedRows = [],
 }) => {
-  const formData = buildAlertedProductsRequestFormData({
-    orderDetailIds: selectedRows.map((row) => row?.id).filter(Boolean),
-    observation: observation?.trim?.() ?? "",
+  const formData = buildAlertedProductsRequestPayload({
+    observation,
     pdf,
+    selectedRows,
   });
 
   const response = await alertedProductsServices.createProductRequest(formData);

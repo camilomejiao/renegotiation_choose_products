@@ -3,6 +3,7 @@ import { alertedProductsServices } from "../../../helpers/services/AlertedProduc
 import {
   assignAlertedProductsManagementType,
   buildAlertedProductsManagementTypeRequest,
+  buildAlertedProductsRequestPayload,
   createAlertedProductsRequest,
   getAlertedProductsPage,
 } from "./alertedProductsTableApi";
@@ -156,26 +157,17 @@ describe("getAlertedProductsPage", () => {
     });
   });
 
-  it("creates the alerted products request using multipart form data", async () => {
-    alertedProductsServices.createProductRequest.mockResolvedValue({
-      status: ResponseStatusEnum.CREATED,
-      data: {
-        mensaje: "Solicitud creada correctamente",
-      },
-    });
-
+  it("builds the solicitud payload expected by the swagger contract", () => {
     const pdf = new File(["mock"], "solicitud-alerta.pdf", {
       type: "application/pdf",
     });
 
-    const result = await createAlertedProductsRequest({
+    const formData = buildAlertedProductsRequestPayload({
       observation: "Soporte documental",
       pdf,
       selectedRows: [{ id: "9001" }, { id: "9002" }],
     });
 
-    expect(alertedProductsServices.createProductRequest).toHaveBeenCalledTimes(1);
-    const formData = alertedProductsServices.createProductRequest.mock.calls[0][0];
     const pdfField = formData.get("pdf");
     expect(formData).toBeInstanceOf(FormData);
     expect(formData.getAll("orden_detalle_id")).toEqual(["9001", "9002"]);
@@ -183,6 +175,25 @@ describe("getAlertedProductsPage", () => {
     expect(pdfField).toBeInstanceOf(File);
     expect(pdfField.name).toBe("solicitud-alerta.pdf");
     expect(pdfField.type).toBe("application/pdf");
+  });
+
+  it("creates the alerted products request when the backend responds with success", async () => {
+    alertedProductsServices.createProductRequest.mockResolvedValue({
+      status: ResponseStatusEnum.CREATED,
+      data: {
+        mensaje: "Solicitud creada correctamente",
+      },
+    });
+
+    const result = await createAlertedProductsRequest({
+      observation: "Soporte documental",
+      pdf: new File(["mock"], "solicitud-alerta.pdf", {
+        type: "application/pdf",
+      }),
+      selectedRows: [{ id: "9001" }],
+    });
+
+    expect(alertedProductsServices.createProductRequest).toHaveBeenCalledTimes(1);
     expect(result).toEqual({ mensaje: "Solicitud creada correctamente" });
   });
 

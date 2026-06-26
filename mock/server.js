@@ -8,7 +8,62 @@ server.use(jsonServer.bodyParser)
 
 // Estado mutable en memoria para que el POST se refleje en el siguiente GET
 let productos = JSON.parse(JSON.stringify(require('./productos.json')))
-let solicitudes = []
+const solicitudesBase = [
+  {
+    jornada_id: 43,
+    jornada_codigo: 43,
+    orden_detalle_id: [],
+    jornada: 'Feria PNIS Antioquia 2026',
+    tipo_gestion: { codigo: 5275, nombre: 'ACTA COMPLEMENTARIA' },
+    categoria_alerta: { codigo: 5254, nombre: 'SIN ALERTA' },
+    fecha_registro: '2026-06-24T09:15:00-05:00',
+    observacion_justificativa: 'Se adjunta soporte para revisar la novedad detectada en el producto.',
+    observacion_revisor: 'Pendiente validacion documental por parte del equipo tecnico.',
+    rol_revisor: 'Profesional tecnico',
+    gestion_alerta: { codigo: 5259, nombre: 'EN PROCESO' },
+  },
+  {
+    jornada_id: 43,
+    jornada_codigo: 43,
+    orden_detalle_id: [],
+    jornada: 'Feria PNIS Antioquia 2026',
+    tipo_gestion: { codigo: 5271, nombre: 'REVISION' },
+    categoria_alerta: { codigo: 5255, nombre: 'ALERTA MEDIA' },
+    fecha_registro: '2026-06-23T15:42:00-05:00',
+    observacion_justificativa: 'El proveedor reporta diferencia en el valor de referencia de catalogo.',
+    observacion_revisor: 'Solicitud recibida. Se requiere verificacion con el acta original.',
+    rol_revisor: 'Revisor financiero',
+    gestion_alerta: { codigo: 5260, nombre: 'EN SUBSANACION' },
+  },
+  {
+    jornada_id: 43,
+    jornada_codigo: 43,
+    orden_detalle_id: [],
+    jornada: 'Feria PNIS Antioquia 2026',
+    tipo_gestion: { codigo: 5273, nombre: 'SUBSANACION' },
+    categoria_alerta: { codigo: 5256, nombre: 'ALERTA ALTA' },
+    fecha_registro: '2026-06-20T11:05:00-05:00',
+    observacion_justificativa: 'Se solicita subsanar inconsistencia en la evidencia PDF cargada.',
+    observacion_revisor: 'Documento revisado y marcado para ajuste.',
+    rol_revisor: 'Analista documental',
+    gestion_alerta: { codigo: 5261, nombre: 'RESUELTA' },
+  },
+  {
+    jornada_id: 44,
+    jornada_codigo: 44,
+    orden_detalle_id: [],
+    jornada: 'Feria PNIS Meta 2026',
+    tipo_gestion: { codigo: 5272, nombre: 'JUSTIFICACION TECNICA' },
+    categoria_alerta: { codigo: 5255, nombre: 'ALERTA MEDIA' },
+    fecha_registro: '2026-06-18T08:30:00-05:00',
+    observacion_justificativa: 'Se remite justificacion tecnica asociada al cambio de proveedor.',
+    observacion_revisor: '',
+    rol_revisor: '',
+    gestion_alerta: { codigo: 5272, nombre: 'SIN GESTIÓN' },
+  },
+]
+
+let solicitudes = JSON.parse(JSON.stringify(solicitudesBase))
 
 const MANAGEMENT_TYPE_NAMES = {
   1: 'Revisión',
@@ -167,7 +222,7 @@ server.post(['/api/alertas/productos/gestion/', '/api/alertas/productos/gestion/
 })
 
 // POST /api/alertas/productos/solicitud/
-server.post(['/api/alertas/productos/solicitud/', '/api/alertas/productos/solicitud/'], async (req, res) => {
+server.post(['/api/alertas/productos/solicitud', '/api/alertas/productos/solicitud/'], async (req, res) => {
   const { fields, files } = await parseMultipartFormData(req)
   const ordenDetalleIds = []
     .concat(fields.orden_detalle_id ?? [])
@@ -195,6 +250,7 @@ server.post(['/api/alertas/productos/solicitud/', '/api/alertas/productos/solici
   }
 
   const alreadyRequested = solicitudes.some((solicitud) =>
+    Array.isArray(solicitud.orden_detalle_id) &&
     solicitud.orden_detalle_id.some((id) => ordenDetalleIds.includes(id))
   )
 
@@ -210,6 +266,8 @@ server.post(['/api/alertas/productos/solicitud/', '/api/alertas/productos/solici
   const createdAt = new Date().toISOString()
   const solicitud = {
     id: solicitudId,
+    jornada_id: firstMatch?.jornada_id ?? 43,
+    jornada_codigo: firstMatch?.jornada_id ?? 43,
     orden_detalle_id: ordenDetalleIds,
     observacion,
     estado: 'guardado',
@@ -246,36 +304,42 @@ server.post(['/api/alertas/productos/solicitud/', '/api/alertas/productos/solici
 })
 
 // GET /api/alertas/productos/solicitud/
-server.get(['/api/alertas/productos/solicitud/', '/api/alertas/productos/solicitud/'], (req, res) => {
-  const q = req.query
+server.get(
+  ['/api/alertas/productos/solicitud', '/api/alertas/productos/solicitud/'],
+  (req, res) => {
+    const q = req.query
 
-  const result = solicitudes.filter((solicitud) => {
-    const jornadaOk = !q.jornada || normalize(solicitud.jornada) === normalize(q.jornada)
-    const categoriaOk =
-      q.categoria_alerta == null ||
-      q.categoria_alerta === '' ||
-      String(solicitud.categoria_alerta?.codigo ?? '') === String(q.categoria_alerta)
-    const gestionOk =
-      q.gestion_alerta == null ||
-      q.gestion_alerta === '' ||
-      String(solicitud.gestion_alerta?.codigo ?? '') === String(q.gestion_alerta)
+    const result = solicitudes.filter((item) => {
+      const jornadaOk =
+        !q.jornada ||
+        String(item.jornada_id ?? '') === String(q.jornada) ||
+        String(item.jornada_codigo ?? '') === String(q.jornada)
+      const categoriaOk =
+        q.categoria_alerta == null ||
+        q.categoria_alerta === '' ||
+        String(item.categoria_alerta?.codigo ?? '') === String(q.categoria_alerta)
+      const gestionOk =
+        q.gestion_alerta == null ||
+        q.gestion_alerta === '' ||
+        String(item.gestion_alerta?.codigo ?? '') === String(q.gestion_alerta)
 
-    return jornadaOk && categoriaOk && gestionOk
-  })
+      return jornadaOk && categoriaOk && gestionOk
+    })
 
-  res.json({
-    solicitudes: result.map((solicitud) => ({
-      jornada: solicitud.jornada,
-      tipo_gestion: solicitud.tipo_gestion,
-      categoria_alerta: solicitud.categoria_alerta,
-      fecha_registro: solicitud.fecha_registro,
-      observacion_justificativa: solicitud.observacion_justificativa,
-      observacion_revisor: solicitud.observacion_revisor,
-      rol_revisor: solicitud.rol_revisor,
-      gestion_alerta: solicitud.gestion_alerta,
-    })),
-  })
-})
+    res.json({
+      solicitudes: result.map((solicitud) => ({
+        jornada: solicitud.jornada,
+        tipo_gestion: solicitud.tipo_gestion,
+        categoria_alerta: solicitud.categoria_alerta,
+        fecha_registro: solicitud.fecha_registro,
+        observacion_justificativa: solicitud.observacion_justificativa,
+        observacion_revisor: solicitud.observacion_revisor,
+        rol_revisor: solicitud.rol_revisor,
+        gestion_alerta: solicitud.gestion_alerta,
+      })),
+    })
+  }
+)
 
 const PORT = process.env.MOCK_PORT || 3001
 server.listen(PORT, () => {
@@ -283,4 +347,5 @@ server.listen(PORT, () => {
   console.log(`  GET  /api/alertas/productos/          → ${productos.length} productos`)
   console.log(`  POST /api/alertas/productos/solicitud/ → crea solicitudes en memoria`)
   console.log(`  POST /api/alertas/productos/gestion/  → actualiza tipo_gestion en memoria`)
+  console.log(`  GET  /api/alertas/productos/solicitud/ → ${solicitudes.length} solicitudes fake`)
 })

@@ -10,6 +10,7 @@ import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocume
 import { getAlertedProductsParameterCatalog } from "../api/alertedProductsFiltersApi";
 import {
   assignAlertedProductsManagementType,
+  createAlertedProductsRequest,
   getAlertedProductsPage,
 } from "../api/alertedProductsTableApi";
 import { AlertedProductsCentralizationWidget } from "../../../widgets/alerted-products-centralization";
@@ -19,13 +20,13 @@ import { AppTabs } from "../../../shared/ui/tabs";
 import { AlertedProductsFiltersWidget } from "../../../widgets/alerted-products-filters";
 import { AlertedProductsManagementWidget } from "../../../widgets/alerted-products-management";
 import { AlertedProductsTableWidget } from "../../../widgets/alerted-products-table";
+import { AlertManagementWidget } from "../../../widgets/alert-management";
 import { useAlertedProductsFlow } from "../model/useAlertedProductsFlow";
 import {
   AlertedProductsContentGrid,
   ContentSection,
   HeaderSection,
   AlertedProductsMainContent,
-  AlertedProductsPlaceholderCard,
   AlertedProductsPageWrapper,
   AlertedProductsSidebar,
   StyledDivider,
@@ -40,6 +41,46 @@ const allowedRoles = [
 const ALERTED_PRODUCTS_TAB_KEY = "alerted-products";
 const ALERT_MANAGEMENT_TAB_KEY = "alert-management";
 const CENTRALIZATION_TAB_KEY = "centralization";
+
+const MANAGEMENT_ERROR_MESSAGES = {
+  SOLICITUD_INVALIDA: "Se requieren tipo_gestion_id y al menos un producto.",
+  PRODUCTOS_NO_ENCONTRADOS:
+    "Uno o más productos no existen o no pertenecen a la jornada consultada.",
+  CAMBIO_GESTION_NO_PERMITIDO:
+    "El cambio de tipo de gestión no está permitido para uno o más productos.",
+  ERROR_INTERNO: "Ocurrió un error inesperado al actualizar el tipo de gestión.",
+};
+
+const REQUEST_ERROR_MESSAGES = {
+  SOLICITUD_INVALIDA: "Se requieren orden_detalle_id, observacion y pdf.",
+  ORDEN_DETALLE_NO_ENCONTRADO:
+    "No existen items alertados asociados a los identificadores enviados.",
+  DOCUMENTO_YA_REGISTRADO:
+    "Ya existe una solicitud registrada para uno o más items enviados.",
+  ARCHIVO_DEMASIADO_GRANDE: "El archivo PDF supera el tamaño máximo permitido.",
+  TIPO_ARCHIVO_NO_SOPORTADO: "El archivo pdf no tiene un content-type permitido.",
+  ARCHIVO_INVALIDO:
+    "El archivo PDF está corrupto o no corresponde a los items indicados.",
+  ERROR_INTERNO: "No se pudo registrar la solicitud.",
+};
+
+const buildServiceResult = (label, response, fallbackMessages) => {
+  const code = response?.data?.codigo || null;
+  const message =
+    response?.data?.mensaje ||
+    (code ? fallbackMessages[code] : null) ||
+    (response?.status === 404
+      ? "El endpoint aún no está disponible en el backend."
+      : "Ocurrió un error inesperado al procesar la solicitud.");
+
+  return {
+    label,
+    ok: false,
+    status: response?.status ?? null,
+    code,
+    message,
+  };
+};
 
 export const AlertedProductsPage = () => {
   const { userAuth } = useOutletContext();
@@ -212,31 +253,68 @@ export const AlertedProductsPage = () => {
 
   const handleSubmitManagementRequest = async ({
     managementTypeId,
+    observation,
+    pdf,
     selectedRows,
   }) => {
     if (!appliedFilters) {
       return;
     }
 
+    const result = {
+      management: null,
+      request: null,
+      success: false,
+    };
+
     try {
-      const response = await assignAlertedProductsManagementType({
+      const managementResponse = await assignAlertedProductsManagementType({
         managementTypeId,
         selectedRows,
       });
 
       setRefreshKey((k) => k + 1);
-
-      AlertComponent.success(
-        "Tipo de gestión actualizado",
-        response?.mensaje || "La actualización se realizó correctamente."
-      );
+      result.management = {
+        label: "Gestión de alertas",
+        ok: true,
+        status: 200,
+        code: null,
+        message:
+          managementResponse?.mensaje || "Tipo de gestión actualizado correctamente.",
+      };
     } catch (error) {
-      AlertComponent.error(
-        "Error",
-        error?.data?.mensaje || "No fue posible actualizar el tipo de gestión."
+      result.management = buildServiceResult(
+        "Gestión de alertas",
+        error,
+        MANAGEMENT_ERROR_MESSAGES
       );
-      throw error;
     }
+
+    try {
+      const requestResponse = await createAlertedProductsRequest({
+        observation,
+        pdf,
+        selectedRows,
+      });
+
+      result.request = {
+        label: "Solicitud documental",
+        ok: true,
+        status: 201,
+        code: null,
+        message: requestResponse?.mensaje || "Solicitud creada correctamente.",
+      };
+    } catch (error) {
+      result.request = buildServiceResult(
+        "Solicitud documental",
+        error,
+        REQUEST_ERROR_MESSAGES
+      );
+    }
+
+    result.success = Boolean(result.management?.ok && result.request?.ok);
+
+    return result;
   };
 
   const handleGoToCentralization = () => {
@@ -332,11 +410,7 @@ export const AlertedProductsPage = () => {
                 {
                   key: ALERT_MANAGEMENT_TAB_KEY,
                   label: "Gestión de alertas",
-                  children: (
-                    <AlertedProductsPlaceholderCard bordered={false}>
-                      Esta pestaña queda disponible para el flujo específico de gestión de alertas.
-                    </AlertedProductsPlaceholderCard>
-                  ),
+                  children: <AlertManagementWidget userAuth={userAuth} />,
                 },
                 {
                   key: CENTRALIZATION_TAB_KEY,

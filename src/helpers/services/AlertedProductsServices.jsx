@@ -47,6 +47,16 @@ class AlertedProductsServices {
       body: formData,
     });
   }
+
+  getSolicitudes(queryString = "") {
+    const normalizedQuery = queryString
+      ? `/${String(queryString).replace(/^\//, "").replace(/^\?/, "?")}`
+      : "/";
+
+    return authTokenService.fetchWithAuth(this.buildUrl(`productos/solicitud${normalizedQuery}`), {
+      method: "GET",
+    });
+  }
 }
 
 export const alertedProductsServices = new AlertedProductsServices();

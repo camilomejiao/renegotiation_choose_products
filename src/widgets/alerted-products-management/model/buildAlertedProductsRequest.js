@@ -13,7 +13,7 @@ export const buildAlertedProductsRequestFormData = ({
     formData.append("orden_detalle_id", String(id));
   });
 
-  formData.append("observacion", observation);
+  formData.append("observacion", String(observation ?? "").trim());
 
   if (pdf) {
     formData.append("pdf", pdf, pdf.name);

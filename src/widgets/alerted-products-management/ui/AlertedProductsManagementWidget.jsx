@@ -112,6 +112,10 @@ export const AlertedProductsManagementWidget = ({
     isOpen: false,
     message: "",
   });
+  const [servicesResponseModal, setServicesResponseModal] = useState({
+    isOpen: false,
+    result: null,
+  });
   const [addingId, setAddingId] = useState(null);
 
   const activePdf   = historyByCategory.pdf?.[0]   ?? null;
@@ -374,6 +378,19 @@ export const AlertedProductsManagementWidget = ({
     });
   };
 
+  const closeServicesResponseModal = () => {
+    const shouldContinue = Boolean(servicesResponseModal.result?.success);
+
+    setServicesResponseModal({
+      isOpen: false,
+      result: null,
+    });
+
+    if (shouldContinue) {
+      onContinue?.();
+    }
+  };
+
   const handleSubmit = async () => {
     if (!observation.trim() && !actaFile) {
       openMissingRequirementsModal(
@@ -412,13 +429,17 @@ export const AlertedProductsManagementWidget = ({
     setSubmitting(true);
 
     try {
-      await onSubmitManagementRequest({
+      const result = await onSubmitManagementRequest({
         managementTypeId: managementTypeOption.value,
         selectedRows: alertsData,
         observation: observation.trim(),
         pdf: actaFile,
       });
-      onContinue?.();
+
+      setServicesResponseModal({
+        isOpen: true,
+        result,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -623,6 +644,51 @@ export const AlertedProductsManagementWidget = ({
         centered
       >
         <p style={{ margin: 0 }}>{missingRequirementsModal.message}</p>
+      </AppModal>
+
+      <AppModal
+        title={
+          servicesResponseModal.result?.success
+            ? "Servicios procesados correctamente"
+            : "Resultado del procesamiento"
+        }
+        isOpen={servicesResponseModal.isOpen}
+        onCloseModal={closeServicesResponseModal}
+        footer={
+          <SecondaryActionButton onClick={closeServicesResponseModal}>
+            {servicesResponseModal.result?.success ? "Continuar" : "Cerrar"}
+          </SecondaryActionButton>
+        }
+        width={640}
+        centered
+      >
+        <div style={{ display: "grid", gap: 16 }}>
+          {[servicesResponseModal.result?.management, servicesResponseModal.result?.request]
+            .filter(Boolean)
+            .map((serviceResult) => (
+              <div
+                key={serviceResult.label}
+                style={{
+                  border: "1px solid #dbe4f0",
+                  borderRadius: 12,
+                  padding: 16,
+                  background: serviceResult.ok ? "#f0fdf4" : "#fff7ed",
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                  {serviceResult.label}
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  Estado: {serviceResult.ok ? "OK" : "Error"}
+                  {serviceResult.status ? ` (${serviceResult.status})` : ""}
+                </div>
+                {serviceResult.code ? (
+                  <div style={{ marginBottom: 6 }}>Código: {serviceResult.code}</div>
+                ) : null}
+                <div>{serviceResult.message}</div>
+              </div>
+            ))}
+        </div>
       </AppModal>
 
       <AntdModal
