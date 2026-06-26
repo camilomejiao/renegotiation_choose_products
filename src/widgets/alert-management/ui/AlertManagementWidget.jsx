@@ -81,7 +81,6 @@ import {
 
 const ALERT_CATEGORY_PARAMETER_TYPE_ID = 35;
 const ALERT_MANAGEMENT_PARAMETER_TYPE_ID = 36;
-const MANAGEMENT_TYPE_PARAMETER_TYPE_ID = 39;
 const EN_SUBSANACION_GESTION_ID = 5260;
 
 const GESTIONAR_ROLES = [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.ADMINISTRATIVA];
@@ -171,7 +170,6 @@ const formatDate = (value) => {
 const defaultFilters = {
   operationalDay: null,
   alertCategory: null,
-  managementType: null,
   alertManagement: null,
 };
 const REVIEW_MODE_WITH_OBSERVATION = "with-observation";
@@ -194,11 +192,9 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
 
   const [journeyOptions, setJourneyOptions] = useState([]);
   const [alertCategoryOptions, setAlertCategoryOptions] = useState([]);
-  const [managementTypeOptions, setManagementTypeOptions] = useState([]);
   const [alertManagementOptions, setAlertManagementOptions] = useState([]);
   const [loadingJourneys, setLoadingJourneys] = useState(false);
   const [loadingAlertCategory, setLoadingAlertCategory] = useState(false);
-  const [loadingManagementType, setLoadingManagementType] = useState(false);
   const [loadingAlertManagement, setLoadingAlertManagement] = useState(false);
 
   const [draftFilters, setDraftFilters] = useState(defaultFilters);
@@ -247,24 +243,11 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
     }
   }, []);
 
-  const loadManagementTypes = useCallback(async () => {
-    setLoadingManagementType(true);
-    try {
-      const opts = await getAlertedProductsParameterCatalog(MANAGEMENT_TYPE_PARAMETER_TYPE_ID);
-      setManagementTypeOptions(opts);
-    } catch {
-      setManagementTypeOptions([]);
-    } finally {
-      setLoadingManagementType(false);
-    }
-  }, []);
-
   useEffect(() => {
     loadJourneys();
     loadAlertCategories();
-    loadManagementTypes();
     loadAlertManagements();
-  }, [loadJourneys, loadAlertCategories, loadManagementTypes, loadAlertManagements]);
+  }, [loadJourneys, loadAlertCategories, loadAlertManagements]);
 
   useEffect(() => {
     if (!appliedFilters) return;
@@ -715,21 +698,6 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
                     showSearch={false}
                     isClearable
                     isLoading={loadingAlertCategory}
-                  />
-                </FiltersFieldGroup>
-              </FiltersCol>
-
-              <FiltersCol xs={24} sm={12} lg={6}>
-                <FiltersFieldGroup>
-                  <FiltersFieldLabel>Tipo de gestión</FiltersFieldLabel>
-                  <FiltersSelect
-                    value={draftFilters.managementType}
-                    options={managementTypeOptions}
-                    onChange={updateDraft("managementType")}
-                    placeholder="Selecciona un tipo"
-                    showSearch={false}
-                    isClearable
-                    isLoading={loadingManagementType}
                   />
                 </FiltersFieldGroup>
               </FiltersCol>

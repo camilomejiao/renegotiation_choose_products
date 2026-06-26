@@ -379,31 +379,6 @@ export const AlertedProductsPage = () => {
     }
   };
 
-  const tabItems = [
-    !hasRestrictedAlertedProductsTabs
-      ? {
-          key: ALERTED_PRODUCTS_TAB_KEY,
-          label: "Productos alertados",
-          children: alertedProductsTabContent,
-        }
-      : null,
-    {
-      key: ALERT_MANAGEMENT_TAB_KEY,
-      label: "Gestión de alertas",
-      children: <AlertManagementWidget userAuth={userAuth} />,
-    },
-    {
-      key: CENTRALIZATION_TAB_KEY,
-      label: "Centralización",
-      children: (
-        <AlertedProductsCentralizationWidget
-          assignment={assignment}
-          onBack={handleGoToManagement}
-        />
-      ),
-    },
-  ].filter(Boolean);
-
   const alertedProductsTabContent = currentStep === 1 ? (
     shouldUseCurrentManagementView ? (
       <AlertedProductsManagementWidget
@@ -494,6 +469,31 @@ export const AlertedProductsPage = () => {
       </AlertedProductsMainContent>
     </AlertedProductsContentGrid>
   );
+
+  const tabItems = [
+    !hasRestrictedAlertedProductsTabs
+      ? {
+          key: ALERTED_PRODUCTS_TAB_KEY,
+          label: "Productos alertados",
+          children: alertedProductsTabContent,
+        }
+      : null,
+    {
+      key: ALERT_MANAGEMENT_TAB_KEY,
+      label: "Gestión de alertas",
+      children: <AlertManagementWidget userAuth={userAuth} />,
+    },
+    {
+      key: CENTRALIZATION_TAB_KEY,
+      label: "Centralización",
+      children: (
+        <AlertedProductsCentralizationWidget
+          assignment={assignment}
+          onBack={handleGoToManagement}
+        />
+      ),
+    },
+  ].filter(Boolean);
 
   return (
     <Page showPageHeader header={pageHeader} contentPadding="0" minHeight="auto">
