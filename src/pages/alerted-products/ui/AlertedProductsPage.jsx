@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import { Card } from "antd";
 
 import imgPeople from "../../../assets/image/addProducts/people1.jpg";
 import { HeaderImage } from "../../../components/layout/shared/header_image/HeaderImage";
@@ -41,6 +42,19 @@ const allowedRoles = [
 const ALERTED_PRODUCTS_TAB_KEY = "alerted-products";
 const ALERT_MANAGEMENT_TAB_KEY = "alert-management";
 const CENTRALIZATION_TAB_KEY = "centralization";
+const SUPPORTED_MANAGEMENT_VIEW_CODES = new Set([5275, 5272]);
+
+const normalizeManagementLabel = (value = "") =>
+  String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
+
+const SUPPORTED_MANAGEMENT_VIEW_LABELS = new Set([
+  "ACTA COMPLEMENTARIA",
+  "JUSTIFICACION TECNICA",
+]);
 
 const MANAGEMENT_ERROR_MESSAGES = {
   SOLICITUD_INVALIDA: "Se requieren tipo_gestion_id y al menos un producto.",
@@ -184,6 +198,12 @@ export const AlertedProductsPage = () => {
 
   const shouldShowTable = tableLoading || Boolean(appliedFilters);
   const tableEmptyText = "No hay productos alertados para los filtros aplicados.";
+  const assignmentManagementTypeCode = assignment?.selectedRows?.[0]?.managementTypeCode;
+  const shouldUseCurrentManagementView =
+    SUPPORTED_MANAGEMENT_VIEW_CODES.has(Number(assignmentManagementTypeCode)) ||
+    SUPPORTED_MANAGEMENT_VIEW_LABELS.has(
+      normalizeManagementLabel(assignment?.managementType)
+    );
 
   const handleApplyFilters = async (nextFilters) => {
     if (!nextFilters?.operationalDay?.value) {
@@ -336,15 +356,57 @@ export const AlertedProductsPage = () => {
   };
 
   const alertedProductsTabContent = currentStep === 1 ? (
-    <AlertedProductsManagementWidget
-      assignment={assignment}
-      appliedFilters={appliedFilters}
-      historyByCategory={historyByCategory}
-      managementTypeOptions={managementTypeOptions}
-      onBack={goToPreparation}
-      onContinue={handleGoToCentralization}
-      onSubmitManagementRequest={handleSubmitManagementRequest}
-    />
+    shouldUseCurrentManagementView ? (
+      <AlertedProductsManagementWidget
+        assignment={assignment}
+        appliedFilters={appliedFilters}
+        historyByCategory={historyByCategory}
+        managementTypeOptions={managementTypeOptions}
+        onBack={goToPreparation}
+        onContinue={handleGoToCentralization}
+        onSubmitManagementRequest={handleSubmitManagementRequest}
+      />
+    ) : (
+      <Card
+        bordered={false}
+        style={{
+          borderRadius: 20,
+          border: "1px solid #dbe4f0",
+          boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
+        }}
+        bodyStyle={{ padding: 24 }}
+      >
+        <div style={{ display: "grid", gap: 10 }}>
+          <h3 style={{ margin: 0, color: "#0f172a", fontSize: "1rem", fontWeight: 800 }}>
+            Vista en construcción
+          </h3>
+          <p style={{ margin: 0, color: "#475569", lineHeight: 1.6 }}>
+            El flujo para el tipo de gestión{" "}
+            <strong>{assignment?.managementType || "seleccionado"}</strong> tendrá
+            una vista diferente. Por ahora solo están habilitadas las vistas de
+            <strong> Acta complementaria</strong> y <strong>Justificación técnica</strong>.
+          </p>
+          <div>
+            <button
+              type="button"
+              onClick={goToPreparation}
+              style={{
+                height: 42,
+                minWidth: 120,
+                borderRadius: 12,
+                border: "1px solid #cbd5e1",
+                background: "#ffffff",
+                color: "#334155",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Volver
+            </button>
+          </div>
+        </div>
+      </Card>
+    )
   ) : (
     <AlertedProductsContentGrid>
       <AlertedProductsSidebar>

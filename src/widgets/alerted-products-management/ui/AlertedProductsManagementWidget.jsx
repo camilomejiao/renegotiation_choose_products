@@ -57,12 +57,7 @@ import {
   SolicitudGrid,
 } from "./AlertedProductsManagementWidget.styles";
 
-const ACTA_COMPLEMENTARIA_META = [
-  { label: "Tipo de gestión", value: "ACTA COMPLEMENTARIA", variant: "type" },
-  { label: "Rol Responsable", value: "Implementación" },
-  { label: "Rol Revisor",     value: "Supervisión" },
-  { label: "Estado",          value: "Sin Gestión", variant: "status", statusColor: "default" },
-];
+const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
 
 const formatTimestamp = (timestamp) => {
   if (!timestamp) return "";
@@ -90,6 +85,28 @@ const normalizeLabel = (value = "") =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toUpperCase();
+
+const buildManagementMetaItems = (managementTypeLabel = "") => {
+  const normalizedType = normalizeLabel(managementTypeLabel);
+  const reviewerRole =
+    normalizedType === JUSTIFICACION_TECNICA_LABEL ? "Sub. Operativa" : "Supervisión";
+
+  return [
+    {
+      label: "Tipo de gestión",
+      value: managementTypeLabel || "—",
+      variant: "type",
+    },
+    { label: "Rol Responsable", value: "Implementación" },
+    { label: "Rol Revisor", value: reviewerRole },
+    {
+      label: "Estado",
+      value: "Sin Gestión",
+      variant: "status",
+      statusColor: "default",
+    },
+  ];
+};
 
 export const AlertedProductsManagementWidget = ({
   assignment,
@@ -136,6 +153,10 @@ export const AlertedProductsManagementWidget = ({
           }
         : null),
     [assignment?.managementType, assignmentManagementTypeCode, managementTypeOptions]
+  );
+  const managementMetaItems = useMemo(
+    () => buildManagementMetaItems(managementTypeOption?.label || assignment?.managementType || ""),
+    [assignment?.managementType, managementTypeOption?.label]
   );
 
   const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
@@ -448,7 +469,7 @@ export const AlertedProductsManagementWidget = ({
   return (
     <ManagementCard bordered={false}>
       <ManagementBody>
-        <ManagementMetaStrip items={ACTA_COMPLEMENTARIA_META} />
+        <ManagementMetaStrip items={managementMetaItems} />
 
         {/* Documentos de Gestión de la Jornada */}
         <SectionCard>
