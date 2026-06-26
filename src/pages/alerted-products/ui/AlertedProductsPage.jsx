@@ -364,6 +364,11 @@ export const AlertedProductsPage = () => {
     setActiveTab(ALERTED_PRODUCTS_TAB_KEY);
   };
 
+  const handleSubmitSuccess = () => {
+    goToPreparation();
+    setActiveTab(ALERT_MANAGEMENT_TAB_KEY);
+  };
+
   const handleTabChange = (nextTab) => {
     if (
       hasRestrictedAlertedProductsTabs &&
@@ -387,7 +392,7 @@ export const AlertedProductsPage = () => {
         historyByCategory={historyByCategory}
         managementTypeOptions={managementTypeOptions}
         onBack={goToPreparation}
-        onContinue={handleGoToCentralization}
+        onContinue={handleSubmitSuccess}
         onSubmitManagementRequest={handleSubmitManagementRequest}
       />
     ) : (
