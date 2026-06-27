@@ -24,7 +24,8 @@ export const RolesEnum = {
     LEGAL: 10,
     ADMINISTRATIVA: 11,
     LIDER_TECNICO_AGRO: 12,
-    LIDER_TECNICO_NO_AGRO: 13
+    LIDER_TECNICO_NO_AGRO: 13,
+    SUB_OPERATIVA: 14,
 
 }
 

@@ -1,5 +1,6 @@
 ﻿import { useNavigate, useOutletContext } from "react-router-dom";
 import { useEffect } from "react";
+import { RolesEnum } from "../../../../helpers/GlobalEnum";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
@@ -112,9 +113,14 @@ export const _Dashboard = () => {
     const { userAuth } = useOutletContext?.() || {};
     const nombre = userAuth?.nombres || userAuth?.name || "proveedor/a";
 
+    const DEFAULT_ROUTES = {
+        [RolesEnum.SUB_OPERATIVA]: "/admin/alerted-products",
+    };
+
     // //Quitar cuando ya se pueda ver
     useEffect(() => {
-        navigate("/admin/search-user", { replace: true });
+        const destination = DEFAULT_ROUTES[userAuth?.rol_id] ?? "/admin/search-user";
+        navigate(destination, { replace: true });
     }, []);
 
     return (

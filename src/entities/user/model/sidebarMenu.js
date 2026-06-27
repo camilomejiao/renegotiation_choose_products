@@ -116,6 +116,9 @@ export const getSidebarMenu = (role, id) => {
       { path: "/admin/management", iconKey: "people", label: "Gestión integral del beneficiario" },
       { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },
     ],
+    [RolesEnum.SUB_OPERATIVA]: [
+      alertedProductsItem,
+    ],
   };
 
   return config[role] || [];
