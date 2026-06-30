@@ -45,7 +45,8 @@ const normalizeSolicitudRow = (row = {}, index) => ({
 });
 
 const normalizeDocumento = (doc = {}) => {
-  const isPdf = doc?.tipo_archivo === 2;
+  const isPdf = Number(doc?.tipo_archivo) === 2
+    || String(doc?.nombre_archivo ?? "").toLowerCase().endsWith(".pdf");
   return {
     id: doc?.id,
     nombre: doc?.nombre_archivo ?? "",
