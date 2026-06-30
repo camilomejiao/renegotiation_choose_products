@@ -48,21 +48,7 @@ export const DetailTimelineItem = styled.div`
   border-left: 4px solid ${({ $tone }) => ($tone === "orange" ? "#f97316" : "#1d4ed8")};
 `;
 export const DetailTimelineTitle = styled.span`color: #0f172a; font-size: 0.95rem; font-weight: 800;`;
-export const DetailTimelineMeta = styled.span`color: #64748b; font-size: 0.78rem; font-weight: 700;`;
-export const DetailProductsTable = styled.div`border: 1px solid #dbe4f0; border-radius: 16px; overflow: hidden; background: #ffffff;`;
-export const DetailProductsTableHead = styled.div`
-  display: grid; grid-template-columns: 1.15fr 1.8fr 1fr 1fr 1fr 1fr; gap: 16px;
-  padding: 14px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
-  color: #1e3a8a; font-size: 0.82rem; font-weight: 800;
-  @media (max-width: 920px) { display: none; }
-`;
-export const DetailProductsRow = styled.div`
-  display: grid; grid-template-columns: 1.15fr 1.8fr 1fr 1fr 1fr 1fr; gap: 16px;
-  padding: 14px 16px; color: #0f172a; font-size: 0.86rem; border-bottom: 1px solid #e2e8f0;
-  &:last-child { border-bottom: none; }
-  @media (max-width: 920px) { grid-template-columns: 1fr; gap: 8px; }
-`;
-export const ReviewActionsRow = styled.div`display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;`;
+export const DetailTimelineMeta = styled.span`color: #64748b; font-size: 0.78rem; font-weight: 700;`;export const ReviewActionsRow = styled.div`display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;`;
 const reviewBase = `&& { height: 40px; min-width: 140px; border-radius: 12px; font-weight: 800; box-shadow: none; }`;
 export const WithObservationButton = styled(Button)`${reviewBase} && { border-color: #f97316; background: #f97316; color: #ffffff; }`;
 export const WithoutObservationButton = styled(Button)`${reviewBase} && { border-color: #16a34a; background: #16a34a; color: #ffffff; }`;
@@ -80,4 +66,29 @@ export const ReviewUploadText = styled.span`color: #475569; font-size: 0.84rem;`
 export const ReviewSubmitRow = styled.div`display: flex; justify-content: flex-end;`;
 export const ReviewSubmitButton = styled(Button)`
   && { height: 40px; min-width: 180px; border-radius: 12px; border-color: #f97316; background: #f97316; color: #ffffff; font-weight: 800; box-shadow: none; }
+`;
+export const SubsanarFormGrid = styled.div`
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+`;
+export const SubsanarDocCard = styled.div`
+  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  border: 1px solid #dbe4f0; border-radius: 14px; padding: 14px 16px; background: #f8fafc;
+`;
+export const SubsanarDocActions = styled.div`display: flex; gap: 8px; flex-shrink: 0;`;
+export const ReemplazarButton = styled(Button)`
+  && { height: 36px; border-radius: 10px; border-color: #1d4ed8; background: #ffffff; color: #1d4ed8; font-weight: 700; font-size: 0.82rem; box-shadow: none; }
+  &&:hover, &&:focus { background: #eff6ff; border-color: #1e40af; color: #1e40af; }
+`;
+export const SubsanarProductsHeader = styled.div`
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+`;
+export const SubsanarProductsActions = styled.div`display: flex; gap: 8px;`;
+export const SubsanarBottomRow = styled.div`display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;`;
+export const CancelButton = styled(Button)`
+  && { height: 40px; min-width: 120px; border-radius: 12px; border-color: #cbd5e1; background: #ffffff; color: #334155; font-weight: 800; box-shadow: none; }
+`;
+export const ReenviarButton = styled(Button)`
+  && { height: 40px; min-width: 190px; border-radius: 12px; border-color: #16a34a; background: #16a34a; color: #ffffff; font-weight: 800; box-shadow: none; }
+  &&:hover, &&:focus { border-color: #15803d; background: #15803d; }
 `;

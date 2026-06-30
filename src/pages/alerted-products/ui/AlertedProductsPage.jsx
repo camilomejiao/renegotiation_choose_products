@@ -34,6 +34,7 @@ import {
 } from "./AlertedProductsPage.styles";
 
 const allowedRoles = [
+  RolesEnum.ADMIN,
   RolesEnum.TECHNICAL,
   RolesEnum.SUPERVISION,
   RolesEnum.ADMINISTRATIVA,

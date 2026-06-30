@@ -31,6 +31,7 @@ export const getSidebarMenu = (role, id) => {
     [RolesEnum.ADMIN]: [
       { path: "/", iconKey: "home", label: "Inicio" },
       catalogAdministrationMenu,
+      alertedProductsItem,
       { path: "/admin/search-user-for-renegociation", iconKey: "handshake", label: "Renegociación" },
       { path: "/admin/search-user", iconKey: "addressBook", label: "Gestión integral del beneficiario" },
       { path: "/admin/search-beneficiary-information", iconKey: "searchPlus", label: "Consultar Titular" },

@@ -60,6 +60,43 @@ const normalizeDocumento = (doc = {}) => {
   };
 };
 
+export const subsanarAlertedProductsSolicitud = async ({ idEncabezado, observacion, documento = null }) => {
+  const formData = new FormData();
+  formData.append("id_encabezado", String(idEncabezado));
+  formData.append("observacion", observacion);
+  if (documento) formData.append("documento", documento);
+
+  const response = await alertedProductsServices.subsanarSolicitud(formData);
+
+  if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED
+  ) {
+    throw response;
+  }
+
+  return response?.data ?? {};
+};
+
+export const gestionarAlertedProductsSolicitud = async ({ idEncabezado, idEstado, observacion, documento = null }) => {
+  const formData = new FormData();
+  formData.append("id_encabezado", String(idEncabezado));
+  formData.append("id_estado", String(idEstado));
+  formData.append("observacion", observacion);
+  if (documento) formData.append("documento_observacion", documento);
+
+  const response = await alertedProductsServices.gestionarSolicitud(formData);
+
+  if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED
+  ) {
+    throw response;
+  }
+
+  return response?.data ?? {};
+};
+
 export const getAlertedProductsSolicitudDetalle = async (idEncabezado) => {
   const response = await alertedProductsServices.getSolicitudDetalle(idEncabezado);
 

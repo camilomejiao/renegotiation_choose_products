@@ -18,6 +18,7 @@ export const useAlertManagementFilters = () => {
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [dataSource, setDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const loadJourneys = useCallback(async () => {
     setLoadingJourneys(true);
@@ -62,20 +63,21 @@ export const useAlertManagementFilters = () => {
       } finally { setTableLoading(false); }
     };
     fetch();
-  }, [appliedFilters]);
+  }, [appliedFilters, refreshKey]);
 
   const alertCategoryPillMap   = useMemo(() => buildPillMap(alertCategoryOptions), [alertCategoryOptions]);
   const alertManagementPillMap = useMemo(() => buildManagementPillMap(alertManagementOptions), [alertManagementOptions]);
 
-  const updateDraft  = (key) => (val) => setDraftFilters((prev) => ({ ...prev, [key]: val }));
-  const handleSearch = () => setAppliedFilters({ ...draftFilters });
-  const handleClear  = () => { setDraftFilters(defaultFilters); setAppliedFilters(null); setDataSource([]); };
+  const updateDraft    = (key) => (val) => setDraftFilters((prev) => ({ ...prev, [key]: val }));
+  const handleSearch   = () => setAppliedFilters({ ...draftFilters });
+  const handleClear    = () => { setDraftFilters(defaultFilters); setAppliedFilters(null); setDataSource([]); };
+  const refreshTable   = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   return {
     journeyOptions, alertCategoryOptions, alertManagementOptions,
     loadingJourneys, loadingAlertCategory, loadingAlertManagement,
     draftFilters, appliedFilters, dataSource, tableLoading,
     alertCategoryPillMap, alertManagementPillMap,
-    updateDraft, handleSearch, handleClear,
+    updateDraft, handleSearch, handleClear, refreshTable,
   };
 };

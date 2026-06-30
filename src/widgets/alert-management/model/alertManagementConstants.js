@@ -4,6 +4,7 @@ import { StatusPill } from "../../../shared/ui/status-pill";
 export const ALERT_CATEGORY_PARAMETER_TYPE_ID = 35;
 export const ALERT_MANAGEMENT_PARAMETER_TYPE_ID = 36;
 export const EN_SUBSANACION_GESTION_ID = 5260;
+export const RESUELTA_GESTION_ID = 5261;
 
 export const GESTIONAR_ROLES = [RolesEnum.ADMIN, RolesEnum.SUPERVISION, RolesEnum.ADMINISTRATIVA];
 export const SUBSANAR_ROLES  = [RolesEnum.ADMIN, RolesEnum.TECHNICAL];

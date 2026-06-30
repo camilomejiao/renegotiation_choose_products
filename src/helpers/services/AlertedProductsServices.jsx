@@ -48,6 +48,20 @@ class AlertedProductsServices {
     });
   }
 
+  subsanarSolicitud(formData) {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/solicitud/subsanar/"), {
+      method: "POST",
+      body: formData,
+    });
+  }
+
+  gestionarSolicitud(formData) {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/solicitud/gestionar/"), {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   getSolicitudDetalle(idEncabezado) {
     const params = new URLSearchParams({ id_encabezado: String(idEncabezado) });
     return authTokenService.fetchWithAuth(

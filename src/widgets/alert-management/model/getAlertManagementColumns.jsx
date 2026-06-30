@@ -1,7 +1,7 @@
 import {
   ActionsCell, GestionarButton, SubsanarButton, VerButton, HistorialButton,
 } from "../ui/table.styles";
-import { EN_SUBSANACION_GESTION_ID, formatDate, renderPill, wrapCell, wrapTitle } from "./alertManagementConstants";
+import { EN_SUBSANACION_GESTION_ID, RESUELTA_GESTION_ID, formatDate, renderPill, wrapCell, wrapTitle } from "./alertManagementConstants";
 
 export const getAlertManagementColumns = ({
   alertCategoryPillMap,
@@ -31,12 +31,13 @@ export const getAlertManagementColumns = ({
     render: (v, r) => renderPill(v, r?.gestionAlertaCodigo, alertManagementPillMap),
   },
   {
-    title: "Acciones", key: "actions", width: 160, align: "center", fixed: "right",
+    title: "Acciones", key: "actions", width: 300, align: "center", fixed: "right",
     render: (_, record) => {
       const isEnSubsanacion = Number(record?.gestionAlertaCodigo) === EN_SUBSANACION_GESTION_ID;
+      const isResuelta      = Number(record?.gestionAlertaCodigo) === RESUELTA_GESTION_ID;
       return (
         <ActionsCell>
-          {canGestionar && <GestionarButton onClick={() => onGestionar(record)}>Gestionar</GestionarButton>}
+          {canGestionar && <GestionarButton disabled={isResuelta} onClick={() => onGestionar(record)}>Gestionar</GestionarButton>}
           {canSubsanar && isEnSubsanacion && <SubsanarButton onClick={() => onSubsanar(record)}>Subsanar</SubsanarButton>}
           {canVerHistorial && <VerButton onClick={() => onVer(record)}>Ver</VerButton>}
           {canVerHistorial && <HistorialButton onClick={() => onHistorial(record)}>Historial</HistorialButton>}

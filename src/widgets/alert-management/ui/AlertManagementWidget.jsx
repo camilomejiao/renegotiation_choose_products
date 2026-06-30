@@ -5,6 +5,7 @@ import { useAlertManagementFilters } from "../model/useAlertManagementFilters";
 import { useAlertManagementRecord } from "../model/useAlertManagementRecord";
 import { AlertManagementFilters } from "./AlertManagementFilters";
 import { AlertManagementGestionView } from "./AlertManagementGestionView";
+import { AlertManagementSubsanarView } from "./AlertManagementSubsanarView";
 import { AlertManagementTable } from "./AlertManagementTable";
 import { AlertManagementVerView } from "./AlertManagementVerView";
 import { WidgetRoot } from "./filters.styles";
@@ -16,7 +17,7 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
   const canVerHistorial = VER_ROLES.includes(rolId);
 
   const filters = useAlertManagementFilters();
-  const record  = useAlertManagementRecord();
+  const record  = useAlertManagementRecord({ onGestionSuccess: filters.refreshTable });
 
   const columns = useMemo(
     () => getAlertManagementColumns({
@@ -32,6 +33,28 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
      canGestionar, canSubsanar, canVerHistorial,
      record.handleGestionar, record.handleSubsanar, record.handleVer, record.handleHistorial]
   );
+
+  if (record.managingRecord && record.isSubsanarMode) {
+    return (
+      <AlertManagementSubsanarView
+        record={record.managingRecord}
+        pillMap={filters.alertManagementPillMap}
+        detailData={record.detailData}
+        detailLoading={record.detailLoading}
+        submitting={record.subsanarSubmitting}
+        subsanarObservacion={record.subsanarObservacion}
+        onObservacionChange={record.setSubsanarObservacion}
+        subsanarDocumento={record.subsanarDocumento}
+        onDocumentoChange={record.setSubsanarDocumento}
+        onBack={record.handleBackToTable}
+        onSubmit={record.handleSubsanarSubmit}
+        onDownloadDocument={record.handleDownloadDocument}
+        pdfViewer={record.pdfViewer}
+        onClosePdfViewer={record.closePdfViewer}
+        onDownloadFromViewer={record.handleDownloadFromViewer}
+      />
+    );
+  }
 
   if (record.managingRecord && record.isViewMode) {
     return (
@@ -58,6 +81,7 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         pillMap={filters.alertManagementPillMap}
         documents={record.documents}
         detailLoading={record.detailLoading}
+        productosAsociados={record.detailData?.productosAsociados ?? []}
         timeline={record.timeline}
         reviewMode={record.reviewMode}
         reviewObservation={record.reviewObservation}

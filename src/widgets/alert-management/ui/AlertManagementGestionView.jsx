@@ -1,21 +1,23 @@
 import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
 import { Modal } from "../../../shared/ui/modal";
+import { SmartTable } from "../../../shared/ui/smart-table";
 import { REVIEW_MODE_WITH_OBSERVATION } from "../model/alertManagementConstants";
+import { getProductosGestionColumns } from "../model/getProductosAsociadosColumns";
 import { AlertManagementDetailHeader } from "./AlertManagementDetailHeader";
 import { AlertManagementDocsList } from "./AlertManagementDocsList";
 import { AlertManagementReviewPanel } from "./AlertManagementReviewPanel";
 import { AlertManagementTimeline } from "./AlertManagementTimeline";
 import {
-  DetailBackButton, DetailGrid, DetailObservationBox, DetailProductsRow,
-  DetailProductsTable, DetailProductsTableHead, DetailSectionCard,
+  DetailBackButton, DetailGrid, DetailObservationBox, DetailSectionCard,
   DetailSectionTitle, DetailViewRoot, ReviewActionsRow,
   WithObservationButton, WithoutObservationButton,
 } from "./detail.styles";
 import { SecondaryFilterButton } from "./filters.styles";
-import { formatCurrency } from "../model/alertManagementConstants";
+
+const PRODUCTOS_COLUMNS = getProductosGestionColumns();
 
 export const AlertManagementGestionView = ({
-  record, pillMap, documents, detailLoading, timeline,
+  record, pillMap, documents, detailLoading, productosAsociados, timeline,
   reviewMode, reviewObservation, reviewFiles, isConfirmOpen,
   onBack, onViewDocument, onDownloadDocument,
   onSelectWithObservation, onSelectWithoutObservation,
@@ -34,18 +36,16 @@ export const AlertManagementGestionView = ({
         />
         <DetailSectionCard bordered={false}>
           <DetailSectionTitle>Productos asociados</DetailSectionTitle>
-          <DetailProductsTable>
-            <DetailProductsTableHead>
-              <span>ID producto</span><span>Nombre</span><span>Precio mín.</span>
-              <span>Precio máx.</span><span>Valor venta</span><span>Resultado</span>
-            </DetailProductsTableHead>
-            <DetailProductsRow>
-              <span>{record?.id || "—"}</span>
-              <span>{record?.tipoGestion || "Producto asociado"}</span>
-              <span>{formatCurrency(95000)}</span><span>{formatCurrency(120000)}</span>
-              <span>{formatCurrency(128500)}</span><span>{formatCurrency(115000)}</span>
-            </DetailProductsRow>
-          </DetailProductsTable>
+          <SmartTable
+            rowKey="id_producto"
+            columns={PRODUCTOS_COLUMNS}
+            dataSource={productosAsociados ?? []}
+            showPagination={false}
+            showToolbar={false}
+            enableRowSelection={false}
+            showColumnSettings={false}
+            emptyText="Sin productos asociados."
+          />
           <ReviewActionsRow>
             <WithObservationButton onClick={onSelectWithObservation}>Con observación</WithObservationButton>
             <WithoutObservationButton onClick={onSelectWithoutObservation}>Sin observación</WithoutObservationButton>
