@@ -48,10 +48,10 @@ class AlertedProductsServices {
     });
   }
 
-  getSolicitudDetalle(idSolicitud) {
-    const params = new URLSearchParams({ id_solicitud: String(idSolicitud) });
+  getSolicitudDetalle(idEncabezado) {
+    const params = new URLSearchParams({ id_encabezado: String(idEncabezado) });
     return authTokenService.fetchWithAuth(
-      this.buildUrl(`productos/solicitud/detalle?${params.toString()}`),
+      this.buildUrl(`productos/solicitud/detalle/?${params.toString()}`),
       { method: "GET" }
     );
   }

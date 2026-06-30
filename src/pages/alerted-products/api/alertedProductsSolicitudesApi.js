@@ -30,7 +30,7 @@ const buildSolicitudesQuery = ({
 };
 
 const normalizeSolicitudRow = (row = {}, index) => ({
-  id: row?.id ?? `${row?.jornada ?? ""}-${row?.fecha_registro ?? ""}-${row?.tipo_gestion?.codigo ?? ""}-${index}`,
+  id: row?.id_encabezado ?? row?.id ?? `${row?.jornada ?? ""}-${row?.fecha_registro ?? ""}-${row?.tipo_gestion?.codigo ?? ""}-${index}`,
   jornada: row?.jornada ?? "",
   tipoGestion: row?.tipo_gestion?.nombre ?? "",
   tipoGestionCodigo: row?.tipo_gestion?.codigo ?? null,
@@ -45,8 +45,7 @@ const normalizeSolicitudRow = (row = {}, index) => ({
 });
 
 const normalizeDocumento = (doc = {}) => {
-  const isPdf = String(doc?.nombre_archivo ?? "").toLowerCase().endsWith(".pdf");
-  const acciones = Array.isArray(doc?.acciones_disponibles) ? doc.acciones_disponibles : [];
+  const isPdf = doc?.tipo_archivo === 2;
   return {
     id: doc?.id,
     nombre: doc?.nombre_archivo ?? "",
@@ -55,13 +54,13 @@ const normalizeDocumento = (doc = {}) => {
     fechaCreacion: doc?.fecha_creacion ?? "",
     rutaArchivo: doc?.ruta_archivo ?? "",
     esPdf: isPdf,
-    puedeVer: acciones.includes("ver"),
-    puedeDescargar: acciones.includes("descargar"),
+    puedeVer: isPdf,
+    puedeDescargar: true,
   };
 };
 
-export const getAlertedProductsSolicitudDetalle = async (idSolicitud) => {
-  const response = await alertedProductsServices.getSolicitudDetalle(idSolicitud);
+export const getAlertedProductsSolicitudDetalle = async (idEncabezado) => {
+  const response = await alertedProductsServices.getSolicitudDetalle(idEncabezado);
 
   if (response?.status !== ResponseStatusEnum.OK) {
     throw response;
@@ -69,7 +68,7 @@ export const getAlertedProductsSolicitudDetalle = async (idSolicitud) => {
 
   const data = response?.data ?? {};
   return {
-    idSolicitud: data?.id_solicitud,
+    idEncabezado: data?.id_encabezado,
     resumen: data?.resumen ?? "",
     estadoSolicitud: data?.estado_solicitud ?? null,
     usuarioOrigen: data?.usuario_origen ?? "",
