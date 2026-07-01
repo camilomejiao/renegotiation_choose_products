@@ -84,7 +84,7 @@ const buildAlertedProductsQuery = ({
     products.map((product) => product?.value)
   );
 
-  params.set("pagina", String(page));
+  params.set("page", String(page));
   params.set("size", String(pageSize));
 
   const queryString = params.toString();
@@ -98,6 +98,7 @@ const normalizeAlertedProductRow = (row = {}) => ({
   ordenNumero: row?.numero_orden ?? "",
   supplier: row?.proveedor ?? "",
   productId: String(row?.id_producto ?? ""),
+  journeyProductId: String(row?.id_jornada_producto ?? ""),
   productName: row?.nombre_producto ?? "",
   unitOfMeasure: row?.unidad_medida ?? "",
   commercialBrand: row?.marca_comercial ?? "",

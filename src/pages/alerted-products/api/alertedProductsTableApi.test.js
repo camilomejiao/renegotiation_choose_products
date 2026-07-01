@@ -52,6 +52,7 @@ describe("getAlertedProductsPage", () => {
           {
             proveedor: "AgroCampo S.A.S.",
             id_producto: 133458,
+            id_jornada_producto: 778899,
             nombre_producto: "Bomba fumigadora 20L",
             unidad_medida: "Unidad",
             marca_comercial: "Guarany",
@@ -76,6 +77,7 @@ describe("getAlertedProductsPage", () => {
         jornada: "",
         supplier: "AgroCampo S.A.S.",
         productId: "133458",
+        journeyProductId: "778899",
         productName: "Bomba fumigadora 20L",
         unitOfMeasure: "Unidad",
         commercialBrand: "Guarany",

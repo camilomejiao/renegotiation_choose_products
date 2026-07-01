@@ -11,7 +11,7 @@ export const getAlertedProductsOptions = async (jornada) => {
 
   const params = new URLSearchParams({
     jornada: String(jornada),
-    pagina: "1",
+    page: "1",
     size: "1000000",
   });
 

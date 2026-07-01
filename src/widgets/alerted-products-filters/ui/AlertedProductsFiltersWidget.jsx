@@ -116,7 +116,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Categoría de alerta</FiltersFieldLabel>
                 <FiltersSelect
@@ -131,7 +131,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Tipo de gestión</FiltersFieldLabel>
                 <FiltersSelect
@@ -146,7 +146,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Gestión de alerta</FiltersFieldLabel>
                 <FiltersSelect
@@ -161,7 +161,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Documento titular</FiltersFieldLabel>
                 <FiltersInput
@@ -173,7 +173,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>CUB</FiltersFieldLabel>
                 <FiltersInput
@@ -185,7 +185,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>N° de orden</FiltersFieldLabel>
                 <FiltersInput
@@ -197,7 +197,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Departamento</FiltersFieldLabel>
                 <FiltersSelect
@@ -212,7 +212,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Municipio</FiltersFieldLabel>
                 <FiltersSelect
@@ -228,9 +228,9 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol xs={24} sm={12} lg={8}>
               <FiltersFieldGroup>
-                <FiltersFieldLabel>ID producto</FiltersFieldLabel>
+                <FiltersFieldLabel>ID jornada producto</FiltersFieldLabel>
                 <FiltersInput
                   value={filters.idProducto}
                   onChange={(e) => updateIdProducto(e.target.value)}
@@ -241,7 +241,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol span={24}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Proveedor</FiltersFieldLabel>
                 <FiltersMultiSelect
@@ -258,7 +258,7 @@ export const AlertedProductsFiltersWidget = ({
               </FiltersFieldGroup>
             </FiltersCol>
 
-            <FiltersCol xs={24} sm={12} lg={8} xl={6}>
+            <FiltersCol span={24}>
               <FiltersFieldGroup>
                 <FiltersFieldLabel>Producto</FiltersFieldLabel>
                 <FiltersMultiSelect

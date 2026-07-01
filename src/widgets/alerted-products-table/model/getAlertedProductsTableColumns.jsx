@@ -161,6 +161,7 @@ export const getAlertedProductsTableColumns = (
     key: "supplier",
     width: 180,
     align: "center",
+    render: renderText,
     ...wrapCell,
   },
   {
@@ -169,6 +170,15 @@ export const getAlertedProductsTableColumns = (
     key: "productId",
     width: 90,
     align: "center",
+    render: renderText,
+  },
+  {
+    title: wrapColumnTitle("Id jornada", "producto"),
+    dataIndex: "journeyProductId",
+    key: "journeyProductId",
+    width: 110,
+    align: "center",
+    render: renderText,
   },
   {
     title: wrapColumnTitle("Nombre", "Producto"),
@@ -176,6 +186,7 @@ export const getAlertedProductsTableColumns = (
     key: "productName",
     width: 200,
     align: "center",
+    render: renderText,
     ...wrapCell,
   },
   {
@@ -184,6 +195,7 @@ export const getAlertedProductsTableColumns = (
     key: "unitOfMeasure",
     width: 90,
     align: "center",
+    render: renderText,
     ...wrapCell,
   },
   {
@@ -192,6 +204,7 @@ export const getAlertedProductsTableColumns = (
     key: "commercialBrand",
     width: 110,
     align: "center",
+    render: renderText,
     ...wrapCell,
   },
   {
