@@ -10,6 +10,8 @@ import {
   formatDate,
   REVIEW_MODE_WITH_OBSERVATION, REVIEW_MODE_WITHOUT_OBSERVATION,
 } from "./alertManagementConstants";
+import { mapPickedProductToAsociado } from "./getProductosAsociadosColumns";
+import { useAddProductModal } from "./useAddProductModal";
 
 export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
   const [managingRecord, setManagingRecord] = useState(null);
@@ -25,12 +27,14 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
   const [subsanarObservacion, setSubsanarObservacion] = useState("");
   const [subsanarDocumento, setSubsanarDocumento] = useState(null);
   const [subsanarSubmitting, setSubsanarSubmitting] = useState(false);
+  const [addedProductos, setAddedProductos] = useState([]);
 
   const resetRecord = useCallback((pdfUrl) => {
     setManagingRecord(null); setDetailData(null); setIsViewMode(false); setIsSubsanarMode(false);
     setReviewMode(null); setReviewObservation(""); setReviewFiles([]);
     setIsConfirmOpen(false);
     setSubsanarObservacion(""); setSubsanarDocumento(null); setSubsanarSubmitting(false);
+    setAddedProductos([]);
     if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     setPdfViewer({ isOpen: false, url: null, title: "" });
   }, []);
@@ -58,9 +62,29 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
 
   const handleSubsanar = useCallback((record) => {
     setManagingRecord(record); setIsViewMode(false); setIsSubsanarMode(true);
-    setSubsanarObservacion(""); setSubsanarDocumento(null);
+    setSubsanarObservacion(""); setSubsanarDocumento(null); setAddedProductos([]);
     loadDetalle(record);
   }, [loadDetalle]);
+
+  const handleAddProducto = useCallback((product) => {
+    setAddedProductos((prev) => [...prev, mapPickedProductToAsociado(product)]);
+  }, []);
+
+  const subsanarProductos = useMemo(
+    () => [...(detailData?.productosAsociados ?? []), ...addedProductos],
+    [detailData, addedProductos]
+  );
+
+  const addedOrderDetailIds = useMemo(
+    () => subsanarProductos.map((p) => p.id_orden_detalle).filter(Boolean),
+    [subsanarProductos]
+  );
+
+  const addProductModal = useAddProductModal({
+    jornadaId: detailData?.jornada?.id ?? null,
+    addedOrderDetailIds,
+    onAdd: handleAddProducto,
+  });
 
   const handleSubsanarSubmit = useCallback(async () => {
     if (!subsanarObservacion.trim()) {
@@ -189,6 +213,7 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
     managingRecord, detailData, detailLoading, isViewMode, isSubsanarMode, pdfViewer,
     reviewMode, reviewObservation, setReviewObservation, reviewFiles, isConfirmOpen, documents, timeline,
     subsanarObservacion, setSubsanarObservacion, subsanarDocumento, setSubsanarDocumento, subsanarSubmitting,
+    subsanarProductos, addProductModal,
     handleGestionar, handleVer, handleSubsanar, handleSubsanarSubmit, handleHistorial, handleBackToTable,
     handleViewDocument, handleDownloadDocument, closePdfViewer, handleDownloadFromViewer,
     handleSelectWithObservation, handleSelectWithoutObservation,

@@ -2,7 +2,16 @@ import { SmartTable } from "../../../shared/ui/smart-table";
 import { TABLE_SCROLL_X } from "../model/alertManagementConstants";
 import { TableCard, TableContent, TableDescription, TableHeader, TableTitle } from "./table.styles";
 
-export const AlertManagementTable = ({ columns, dataSource, loading, visible }) => {
+export const AlertManagementTable = ({
+  columns,
+  dataSource,
+  loading,
+  visible,
+  totalRecords = 0,
+  currentPage,
+  pageSize,
+  onPageChange,
+}) => {
   if (!visible) return null;
   return (
     <TableCard bordered={false}>
@@ -17,7 +26,13 @@ export const AlertManagementTable = ({ columns, dataSource, loading, visible }) 
           loading={loading}
           rowKey="id"
           scroll={{ x: TABLE_SCROLL_X }}
-          pagination={{ pageSize: 10, showSizeChanger: false }}
+          total={totalRecords}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+          showPagination
+          pageSizeOptions={["10", "20", "50"]}
+          defaultPageSize="10"
           showToolbar={false}
           enableRowSelection={false}
         />

@@ -46,6 +46,8 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         onObservacionChange={record.setSubsanarObservacion}
         subsanarDocumento={record.subsanarDocumento}
         onDocumentoChange={record.setSubsanarDocumento}
+        subsanarProductos={record.subsanarProductos}
+        addProductModal={record.addProductModal}
         onBack={record.handleBackToTable}
         onSubmit={record.handleSubsanarSubmit}
         onDownloadDocument={record.handleDownloadDocument}
@@ -124,6 +126,10 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         dataSource={filters.dataSource}
         loading={filters.tableLoading}
         visible={filters.tableLoading || Boolean(filters.appliedFilters)}
+        totalRecords={filters.totalRecords}
+        currentPage={filters.currentPage}
+        pageSize={filters.pageSize}
+        onPageChange={filters.handlePageChange}
       />
     </WidgetRoot>
   );

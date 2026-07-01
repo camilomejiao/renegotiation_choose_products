@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
@@ -6,12 +6,13 @@ import { DocumentViewerModal } from "../../../features/beneficiary-document-repo
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { renderPill } from "../model/alertManagementConstants";
 import { getProductosSubsanarColumns } from "../model/getProductosAsociadosColumns";
+import { AddProductModal } from "./AddProductModal";
 import {
-  CancelButton, DetailBackButton, DetailDocButton, DetailMetaCard, DetailMetaLabel,
+  AddProductButton, CancelButton, DetailBackButton, DetailDocButton, DetailMetaCard, DetailMetaLabel,
   DetailMetaValue, DetailObservationBox, DetailSectionCard, DetailSectionTitle,
   DetailTopGrid, DetailViewRoot, ReemplazarButton, ReenviarButton,
   ReviewFieldLabel, ReviewTextArea, SubsanarBottomRow, SubsanarDocActions,
-  SubsanarDocCard, SubsanarFormGrid, SubsanarProductsHeader,
+  SubsanarDocCard, SubsanarFormGrid, SubsanarProductsActions, SubsanarProductsHeader,
 } from "./detail.styles";
 
 const getLastPart = (nombre = "") => {
@@ -29,12 +30,11 @@ const getVersionedName = (baseName = "") => {
   return `${nameNoExt}_v1${ext}`;
 };
 
-const PRODUCTOS_COLUMNS = getProductosSubsanarColumns();
-
 export const AlertManagementSubsanarView = ({
   record, pillMap, detailData, detailLoading, submitting,
   subsanarObservacion, onObservacionChange,
   subsanarDocumento, onDocumentoChange,
+  subsanarProductos, addProductModal,
   onBack, onSubmit,
   onDownloadDocument,
   pdfViewer, onClosePdfViewer, onDownloadFromViewer,
@@ -44,7 +44,15 @@ export const AlertManagementSubsanarView = ({
 
   const pdfDocs = (detailData?.documentos ?? []).filter((d) => d.esPdf);
   const mainDoc = pdfDocs[0] ?? null;
-  const productos = detailData?.productosAsociados ?? [];
+  const productos = subsanarProductos ?? detailData?.productosAsociados ?? [];
+
+  const estadoLabel = detailData?.estadoSolicitud?.nombre ?? record?.gestionAlerta;
+  const estadoCode = detailData?.estadoSolicitud?.codigo ?? record?.gestionAlertaCodigo;
+
+  const productosColumns = useMemo(
+    () => getProductosSubsanarColumns({ estadoLabel, estadoCode, pillMap, onDelete: () => {} }),
+    [estadoLabel, estadoCode, pillMap]
+  );
 
   const shownDocName = subsanarDocumento
     ? (replacementDisplayName ?? getLastPart(mainDoc?.nombre ?? ""))
@@ -79,11 +87,7 @@ export const AlertManagementSubsanarView = ({
       <DetailTopGrid>
         <DetailMetaCard bordered={false}>
           <DetailMetaLabel>Estado</DetailMetaLabel>
-          <div>
-            {detailData
-              ? renderPill(detailData.estadoSolicitud?.nombre, detailData.estadoSolicitud?.codigo, pillMap)
-              : renderPill(record?.gestionAlerta, record?.gestionAlertaCodigo, pillMap)}
-          </div>
+          <div>{renderPill(estadoLabel, estadoCode, pillMap)}</div>
         </DetailMetaCard>
         <DetailMetaCard bordered={false}>
           <DetailMetaLabel>Solicitado por</DetailMetaLabel>
@@ -95,7 +99,7 @@ export const AlertManagementSubsanarView = ({
         </DetailMetaCard>
         <DetailMetaCard bordered={false}>
           <DetailMetaLabel>Jornada</DetailMetaLabel>
-          <DetailMetaValue>{detailData?.jornada || record?.jornada || "—"}</DetailMetaValue>
+          <DetailMetaValue>{detailData?.jornada?.nombre || record?.jornada || "—"}</DetailMetaValue>
         </DetailMetaCard>
       </DetailTopGrid>
 
@@ -174,10 +178,18 @@ export const AlertManagementSubsanarView = ({
       <DetailSectionCard bordered={false}>
         <SubsanarProductsHeader>
           <DetailSectionTitle style={{ margin: 0 }}>Productos asociados</DetailSectionTitle>
+          <SubsanarProductsActions>
+            <AddProductButton
+              onClick={addProductModal?.openModal}
+              disabled={detailLoading}
+            >
+              Adicionar producto
+            </AddProductButton>
+          </SubsanarProductsActions>
         </SubsanarProductsHeader>
         <SmartTable
-          rowKey="id_producto"
-          columns={PRODUCTOS_COLUMNS}
+          rowKey={(row) => row.id_orden_detalle ?? row.id_producto}
+          columns={productosColumns}
           dataSource={productos}
           loading={detailLoading}
           showPagination={false}
@@ -187,6 +199,18 @@ export const AlertManagementSubsanarView = ({
           emptyText="Sin productos asociados."
         />
       </DetailSectionCard>
+
+      <AddProductModal
+        isOpen={addProductModal?.isOpen}
+        onClose={addProductModal?.closeModal}
+        rows={addProductModal?.rows}
+        loading={addProductModal?.loading}
+        currentPage={addProductModal?.currentPage}
+        pageSize={addProductModal?.pageSize}
+        totalRecords={addProductModal?.totalRecords}
+        onPageChange={addProductModal?.handlePageChange}
+        onAdd={addProductModal?.handleAdd}
+      />
 
       <SubsanarBottomRow>
         <CancelButton onClick={onBack}>Cancelar</CancelButton>

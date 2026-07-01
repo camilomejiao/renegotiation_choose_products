@@ -6,6 +6,8 @@ const buildSolicitudesQuery = ({
   alertCategory,
   managementType,
   alertManagement,
+  page = 1,
+  pageSize = 10,
 } = {}) => {
   const params = new URLSearchParams();
 
@@ -25,12 +27,16 @@ const buildSolicitudesQuery = ({
     params.set("gestion_alerta", String(alertManagement.value));
   }
 
+  params.set("page", String(page));
+  params.set("size", String(pageSize));
+
   const queryString = params.toString();
   return queryString ? `?${queryString}` : "";
 };
 
 const normalizeSolicitudRow = (row = {}, index) => ({
   id: row?.id_encabezado ?? row?.id ?? `${row?.jornada ?? ""}-${row?.fecha_registro ?? ""}-${row?.tipo_gestion?.codigo ?? ""}-${index}`,
+  jornadaId: row?.jornada_id ?? null,
   jornada: row?.jornada ?? "",
   tipoGestion: row?.tipo_gestion?.nombre ?? "",
   tipoGestionCodigo: row?.tipo_gestion?.codigo ?? null,
@@ -111,7 +117,13 @@ export const getAlertedProductsSolicitudDetalle = async (idEncabezado) => {
     estadoSolicitud: data?.estado_solicitud ?? null,
     usuarioOrigen: data?.usuario_origen ?? "",
     fechaImplementacion: data?.fecha_implementacion ?? "",
-    jornada: data?.jornada ?? "",
+    // El backend enviará jornada como objeto { id, nombre }. Mientras tanto puede
+    // llegar como primitivo (ej. jornada: 43); en ese caso el id es ese valor y el
+    // nombre queda como "---".
+    jornada:
+      data?.jornada && typeof data.jornada === "object"
+        ? { id: data.jornada.id ?? null, nombre: data.jornada.nombre ?? "---" }
+        : { id: data?.jornada ?? null, nombre: "---" },
     observacionJustificativa: data?.observacion_justificativa ?? "",
     documentos: Array.isArray(data?.documentos) ? data.documentos.map(normalizeDocumento) : [],
     trazaEventos: Array.isArray(data?.traza_eventos) ? data.traza_eventos : [],
@@ -128,6 +140,11 @@ export const getAlertedProductsSolicitudes = async (filters = {}) => {
     throw response;
   }
 
-  const solicitudes = Array.isArray(response?.data?.solicitudes) ? response.data.solicitudes : [];
-  return solicitudes.map(normalizeSolicitudRow);
+  const data = response?.data ?? {};
+  const solicitudes = Array.isArray(data?.solicitudes) ? data.solicitudes : [];
+
+  return {
+    meta: data?.meta ?? {},
+    rows: solicitudes.map(normalizeSolicitudRow),
+  };
 };

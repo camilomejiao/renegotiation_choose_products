@@ -19,6 +19,9 @@ export const useAlertManagementFilters = () => {
   const [dataSource, setDataSource] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const loadJourneys = useCallback(async () => {
     setLoadingJourneys(true);
@@ -55,29 +58,46 @@ export const useAlertManagementFilters = () => {
     const fetch = async () => {
       setTableLoading(true);
       try {
-        const rows = await getAlertedProductsSolicitudes(appliedFilters);
-        setDataSource(rows);
+        const result = await getAlertedProductsSolicitudes({
+          ...appliedFilters,
+          page: currentPage,
+          pageSize,
+        });
+        setDataSource(result.rows);
+        setTotalRecords(result.meta?.total_registros ?? 0);
       } catch {
         setDataSource([]);
+        setTotalRecords(0);
         AlertComponent.error("Error", "No fue posible cargar las gestiones de alertas.");
       } finally { setTableLoading(false); }
     };
     fetch();
-  }, [appliedFilters, refreshKey]);
+  }, [appliedFilters, currentPage, pageSize, refreshKey]);
 
   const alertCategoryPillMap   = useMemo(() => buildPillMap(alertCategoryOptions), [alertCategoryOptions]);
   const alertManagementPillMap = useMemo(() => buildManagementPillMap(alertManagementOptions), [alertManagementOptions]);
 
   const updateDraft    = (key) => (val) => setDraftFilters((prev) => ({ ...prev, [key]: val }));
-  const handleSearch   = () => setAppliedFilters({ ...draftFilters });
-  const handleClear    = () => { setDraftFilters(defaultFilters); setAppliedFilters(null); setDataSource([]); };
+  const handleSearch   = () => { setAppliedFilters({ ...draftFilters }); setCurrentPage(1); };
+  const handleClear    = () => {
+    setDraftFilters(defaultFilters);
+    setAppliedFilters(null);
+    setDataSource([]);
+    setTotalRecords(0);
+    setCurrentPage(1);
+  };
   const refreshTable   = useCallback(() => setRefreshKey((k) => k + 1), []);
+  const handlePageChange = (page, size) => {
+    setCurrentPage(page);
+    setPageSize(size);
+  };
 
   return {
     journeyOptions, alertCategoryOptions, alertManagementOptions,
     loadingJourneys, loadingAlertCategory, loadingAlertManagement,
     draftFilters, appliedFilters, dataSource, tableLoading,
     alertCategoryPillMap, alertManagementPillMap,
-    updateDraft, handleSearch, handleClear, refreshTable,
+    currentPage, pageSize, totalRecords,
+    updateDraft, handleSearch, handleClear, refreshTable, handlePageChange,
   };
 };

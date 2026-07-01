@@ -355,9 +355,17 @@ server.get(
       return jornadaOk && categoriaOk && gestionOk
     })
 
+    const page = Math.max(1, parseInt(q.page ?? q.pagina ?? '1', 10) || 1)
+    const size = Math.min(100, Math.max(1, parseInt(q.size ?? q.tamano_pagina ?? '10', 10) || 10))
+    const total = result.length
+    const total_pages = Math.ceil(total / size) || 0
+    const paged = result.slice((page - 1) * size, page * size)
+
     res.json({
-      solicitudes: result.map((solicitud) => ({
+      meta: { page, size, total_registros: total, total_pages },
+      solicitudes: paged.map((solicitud) => ({
         id: solicitud.id,
+        jornada_id: solicitud.jornada_id,
         jornada: solicitud.jornada,
         tipo_gestion: solicitud.tipo_gestion,
         categoria_alerta: solicitud.categoria_alerta,
@@ -384,7 +392,7 @@ server.get(
       estado_solicitud: { codigo: MOCK_SOLICITUD.gestion_alerta.codigo, nombre: MOCK_SOLICITUD.gestion_alerta.nombre },
       usuario_origen: MOCK_SOLICITUD.rol_revisor || 'Implementación',
       fecha_implementacion: MOCK_SOLICITUD.fecha_registro,
-      jornada: MOCK_SOLICITUD.jornada,
+      jornada: { id: MOCK_SOLICITUD.jornada_id, nombre: MOCK_SOLICITUD.jornada },
       observacion_justificativa: MOCK_SOLICITUD.observacion_justificativa,
       documentos: DETALLE_DOCUMENTOS,
       traza_eventos: [

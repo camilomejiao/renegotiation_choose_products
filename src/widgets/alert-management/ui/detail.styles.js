@@ -84,6 +84,10 @@ export const SubsanarProductsHeader = styled.div`
   display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
 `;
 export const SubsanarProductsActions = styled.div`display: flex; gap: 8px;`;
+export const AddProductButton = styled(Button)`
+  && { height: 38px; border-radius: 10px; border-color: #1d4ed8; background: #1d4ed8; color: #ffffff; font-weight: 700; box-shadow: none; }
+  &&:hover, &&:focus { background: #1e40af; border-color: #1e40af; color: #ffffff; }
+`;
 export const SubsanarBottomRow = styled.div`display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;`;
 export const CancelButton = styled(Button)`
   && { height: 40px; min-width: 120px; border-radius: 12px; border-color: #cbd5e1; background: #ffffff; color: #334155; font-weight: 800; box-shadow: none; }
