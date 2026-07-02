@@ -8,13 +8,14 @@ export const AddProductModal = ({
   onClose,
   rows = [],
   loading = false,
+  addingId,
   currentPage,
   pageSize,
   totalRecords = 0,
   onPageChange,
   onAdd,
 }) => {
-  const columns = useMemo(() => getAddProductColumns({ onAdd }), [onAdd]);
+  const columns = useMemo(() => getAddProductColumns({ onAdd, addingId }), [onAdd, addingId]);
 
   return (
     <Modal

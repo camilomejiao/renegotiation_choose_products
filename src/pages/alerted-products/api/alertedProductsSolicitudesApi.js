@@ -50,6 +50,16 @@ const normalizeSolicitudRow = (row = {}, index) => ({
   gestionAlertaCodigo: row?.gestion_alerta?.codigo ?? null,
 });
 
+const normalizeProductoAsociado = (producto = {}) => ({
+  ...producto,
+  id_orden_detalle:
+    producto?.id_orden_detalle ??
+    producto?.orden_detalle_id ??
+    producto?.id_detalle ??
+    producto?.id ??
+    null,
+});
+
 const normalizeDocumento = (doc = {}) => {
   const isPdf = Number(doc?.tipo_archivo) === 2
     || String(doc?.nombre_archivo ?? "").toLowerCase().endsWith(".pdf");
@@ -77,6 +87,39 @@ export const subsanarAlertedProductsSolicitud = async ({ idEncabezado, observaci
   if (
     response?.status !== ResponseStatusEnum.OK &&
     response?.status !== ResponseStatusEnum.CREATED
+  ) {
+    throw response;
+  }
+
+  return response?.data ?? {};
+};
+
+export const agregarProductoAlertedProductsSolicitud = async ({ idEncabezado, idOrdenDetalle }) => {
+  const response = await alertedProductsServices.agregarProductoSolicitud({
+    id_encabezado: idEncabezado,
+    id_orden_detalle: idOrdenDetalle,
+  });
+
+  if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED
+  ) {
+    throw response;
+  }
+
+  return response?.data ?? {};
+};
+
+export const eliminarProductoAlertedProductsSolicitud = async ({ idEncabezado, idOrdenDetalle }) => {
+  const response = await alertedProductsServices.eliminarProductoSolicitud({
+    id_encabezado: idEncabezado,
+    id_orden_detalle: idOrdenDetalle,
+  });
+
+  if (
+    response?.status !== ResponseStatusEnum.OK &&
+    response?.status !== ResponseStatusEnum.CREATED &&
+    response?.status !== ResponseStatusEnum.NO_CONTENT
   ) {
     throw response;
   }
@@ -127,7 +170,9 @@ export const getAlertedProductsSolicitudDetalle = async (idEncabezado) => {
     observacionJustificativa: data?.observacion_justificativa ?? "",
     documentos: Array.isArray(data?.documentos) ? data.documentos.map(normalizeDocumento) : [],
     trazaEventos: Array.isArray(data?.traza_eventos) ? data.traza_eventos : [],
-    productosAsociados: Array.isArray(data?.productos_asociados) ? data.productos_asociados : [],
+    productosAsociados: Array.isArray(data?.productos_asociados)
+      ? data.productos_asociados.map(normalizeProductoAsociado)
+      : [],
   };
 };
 

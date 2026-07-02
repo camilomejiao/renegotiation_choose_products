@@ -35,6 +35,7 @@ export const AlertManagementSubsanarView = ({
   subsanarObservacion, onObservacionChange,
   subsanarDocumento, onDocumentoChange,
   subsanarProductos, addProductModal,
+  onDeleteProducto, deletingOrderDetailId,
   onBack, onSubmit,
   onDownloadDocument,
   pdfViewer, onClosePdfViewer, onDownloadFromViewer,
@@ -50,8 +51,15 @@ export const AlertManagementSubsanarView = ({
   const estadoCode = detailData?.estadoSolicitud?.codigo ?? record?.gestionAlertaCodigo;
 
   const productosColumns = useMemo(
-    () => getProductosSubsanarColumns({ estadoLabel, estadoCode, pillMap, onDelete: () => {} }),
-    [estadoLabel, estadoCode, pillMap]
+    () =>
+      getProductosSubsanarColumns({
+        estadoLabel,
+        estadoCode,
+        pillMap,
+        onDelete: onDeleteProducto,
+        deletingOrderDetailId,
+      }),
+    [estadoLabel, estadoCode, pillMap, onDeleteProducto, deletingOrderDetailId]
   );
 
   const shownDocName = subsanarDocumento
@@ -205,6 +213,7 @@ export const AlertManagementSubsanarView = ({
         onClose={addProductModal?.closeModal}
         rows={addProductModal?.rows}
         loading={addProductModal?.loading}
+        addingId={addProductModal?.addingId}
         currentPage={addProductModal?.currentPage}
         pageSize={addProductModal?.pageSize}
         totalRecords={addProductModal?.totalRecords}

@@ -16,7 +16,7 @@ export const getProductosGestionColumns = () => [
   BASE_COLUMNS[4],
 ];
 
-export const getProductosSubsanarColumns = ({ estadoLabel, estadoCode, pillMap = {}, onDelete } = {}) => [
+export const getProductosSubsanarColumns = ({ estadoLabel, estadoCode, pillMap = {}, onDelete, deletingOrderDetailId } = {}) => [
   { title: "ID producto", dataIndex: "id_producto", key: "id_producto", render: (v) => v || "—" },
   { title: "Nombre", dataIndex: "nombre", key: "nombre", render: (v) => v || "—" },
   {
@@ -36,7 +36,14 @@ export const getProductosSubsanarColumns = ({ estadoLabel, estadoCode, pillMap =
     key: "accion",
     align: "center",
     render: (_, record) => (
-      <Button danger type="text" icon={<DeleteOutlined />} onClick={() => onDelete?.(record)} />
+      <Button
+        danger
+        type="text"
+        icon={<DeleteOutlined />}
+        loading={deletingOrderDetailId != null && deletingOrderDetailId === record.id_orden_detalle}
+        disabled={deletingOrderDetailId != null && deletingOrderDetailId !== record.id_orden_detalle}
+        onClick={() => onDelete?.(record)}
+      />
     ),
   },
 ];

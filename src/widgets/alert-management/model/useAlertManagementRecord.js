@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
 import {
+  agregarProductoAlertedProductsSolicitud,
+  eliminarProductoAlertedProductsSolicitud,
   gestionarAlertedProductsSolicitud,
   getAlertedProductsSolicitudDetalle,
   subsanarAlertedProductsSolicitud,
@@ -28,13 +30,15 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
   const [subsanarDocumento, setSubsanarDocumento] = useState(null);
   const [subsanarSubmitting, setSubsanarSubmitting] = useState(false);
   const [addedProductos, setAddedProductos] = useState([]);
+  const [deletedOrderDetailIds, setDeletedOrderDetailIds] = useState([]);
+  const [deletingOrderDetailId, setDeletingOrderDetailId] = useState(null);
 
   const resetRecord = useCallback((pdfUrl) => {
     setManagingRecord(null); setDetailData(null); setIsViewMode(false); setIsSubsanarMode(false);
     setReviewMode(null); setReviewObservation(""); setReviewFiles([]);
     setIsConfirmOpen(false);
     setSubsanarObservacion(""); setSubsanarDocumento(null); setSubsanarSubmitting(false);
-    setAddedProductos([]);
+    setAddedProductos([]); setDeletedOrderDetailIds([]); setDeletingOrderDetailId(null);
     if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     setPdfViewer({ isOpen: false, url: null, title: "" });
   }, []);
@@ -62,17 +66,50 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
 
   const handleSubsanar = useCallback((record) => {
     setManagingRecord(record); setIsViewMode(false); setIsSubsanarMode(true);
-    setSubsanarObservacion(""); setSubsanarDocumento(null); setAddedProductos([]);
+    setSubsanarObservacion(""); setSubsanarDocumento(null);
+    setAddedProductos([]); setDeletedOrderDetailIds([]); setDeletingOrderDetailId(null);
     loadDetalle(record);
   }, [loadDetalle]);
 
-  const handleAddProducto = useCallback((product) => {
-    setAddedProductos((prev) => [...prev, mapPickedProductToAsociado(product)]);
-  }, []);
+  const handleAddProducto = useCallback(async (product) => {
+    if (!managingRecord?.id || !product?.id) return;
+    try {
+      await agregarProductoAlertedProductsSolicitud({
+        idEncabezado: managingRecord.id,
+        idOrdenDetalle: product.id,
+      });
+      setAddedProductos((prev) => [...prev, mapPickedProductToAsociado(product)]);
+      AlertComponent.success("Producto agregado", "El producto fue agregado a la solicitud correctamente.");
+    } catch {
+      AlertComponent.error("Error", "No fue posible agregar el producto a la solicitud.");
+    }
+  }, [managingRecord]);
+
+  const handleDeleteProducto = useCallback(async (product) => {
+    const idOrdenDetalle = product?.id_orden_detalle;
+    if (!managingRecord?.id || idOrdenDetalle == null) return;
+    setDeletingOrderDetailId(idOrdenDetalle);
+    try {
+      await eliminarProductoAlertedProductsSolicitud({
+        idEncabezado: managingRecord.id,
+        idOrdenDetalle,
+      });
+      setAddedProductos((prev) => prev.filter((p) => p.id_orden_detalle !== idOrdenDetalle));
+      setDeletedOrderDetailIds((prev) => [...prev, idOrdenDetalle]);
+      AlertComponent.success("Producto eliminado", "El producto fue eliminado de la solicitud correctamente.");
+    } catch {
+      AlertComponent.error("Error", "No fue posible eliminar el producto de la solicitud.");
+    } finally {
+      setDeletingOrderDetailId(null);
+    }
+  }, [managingRecord]);
 
   const subsanarProductos = useMemo(
-    () => [...(detailData?.productosAsociados ?? []), ...addedProductos],
-    [detailData, addedProductos]
+    () =>
+      [...(detailData?.productosAsociados ?? []), ...addedProductos].filter(
+        (p) => !deletedOrderDetailIds.includes(p.id_orden_detalle)
+      ),
+    [detailData, addedProductos, deletedOrderDetailIds]
   );
 
   const addedOrderDetailIds = useMemo(
@@ -213,7 +250,7 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
     managingRecord, detailData, detailLoading, isViewMode, isSubsanarMode, pdfViewer,
     reviewMode, reviewObservation, setReviewObservation, reviewFiles, isConfirmOpen, documents, timeline,
     subsanarObservacion, setSubsanarObservacion, subsanarDocumento, setSubsanarDocumento, subsanarSubmitting,
-    subsanarProductos, addProductModal,
+    subsanarProductos, addProductModal, handleDeleteProducto, deletingOrderDetailId,
     handleGestionar, handleVer, handleSubsanar, handleSubsanarSubmit, handleHistorial, handleBackToTable,
     handleViewDocument, handleDownloadDocument, closePdfViewer, handleDownloadFromViewer,
     handleSelectWithObservation, handleSelectWithoutObservation,

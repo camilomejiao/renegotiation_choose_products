@@ -48,6 +48,8 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         onDocumentoChange={record.setSubsanarDocumento}
         subsanarProductos={record.subsanarProductos}
         addProductModal={record.addProductModal}
+        onDeleteProducto={record.handleDeleteProducto}
+        deletingOrderDetailId={record.deletingOrderDetailId}
         onBack={record.handleBackToTable}
         onSubmit={record.handleSubsanarSubmit}
         onDownloadDocument={record.handleDownloadDocument}

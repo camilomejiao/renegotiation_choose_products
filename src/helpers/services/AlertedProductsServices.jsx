@@ -30,6 +30,20 @@ class AlertedProductsServices {
     });
   }
 
+  agregarProductoSolicitud(payload) {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/solicitud/"), {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  eliminarProductoSolicitud(payload) {
+    return authTokenService.fetchWithAuth(this.buildUrl("productos/solicitud/"), {
+      method: "DELETE",
+      body: JSON.stringify(payload),
+    });
+  }
+
   getJourneyDocuments(journeyId) {
     const params = new URLSearchParams({
       jornada_id: String(journeyId),

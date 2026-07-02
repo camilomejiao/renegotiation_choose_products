@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { formatCurrency } from "./alertManagementConstants";
 
-export const getAddProductColumns = ({ onAdd }) => [
+export const getAddProductColumns = ({ onAdd, addingId }) => [
   {
     title: "",
     dataIndex: "actions",
@@ -9,7 +9,13 @@ export const getAddProductColumns = ({ onAdd }) => [
     width: 110,
     align: "center",
     render: (_, record) => (
-      <Button type="primary" size="small" onClick={() => onAdd(record)}>
+      <Button
+        type="primary"
+        size="small"
+        loading={addingId === record.id}
+        disabled={addingId != null && addingId !== record.id}
+        onClick={() => onAdd(record)}
+      >
         Agregar
       </Button>
     ),

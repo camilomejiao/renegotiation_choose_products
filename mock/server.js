@@ -250,6 +250,42 @@ server.post(['/api/alertas/productos/gestion/', '/api/alertas/productos/gestion/
   })
 })
 
+// PATCH /api/alertas/productos/solicitud/ → agrega un producto (item) a la solicitud
+server.patch(['/api/alertas/productos/solicitud', '/api/alertas/productos/solicitud/'], (req, res) => {
+  const { id_encabezado, id_orden_detalle } = req.body ?? {}
+
+  if (id_encabezado == null || id_orden_detalle == null) {
+    return res.status(400).json({
+      codigo: 'SOLICITUD_INVALIDA',
+      mensaje: 'Se requieren id_encabezado e id_orden_detalle.',
+    })
+  }
+
+  return res.status(200).json({
+    id_encabezado,
+    id_orden_detalle,
+    mensaje: 'Producto agregado a la solicitud correctamente.',
+  })
+})
+
+// DELETE /api/alertas/productos/solicitud/ → elimina un producto (item) de la solicitud
+server.delete(['/api/alertas/productos/solicitud', '/api/alertas/productos/solicitud/'], (req, res) => {
+  const { id_encabezado, id_orden_detalle } = req.body ?? {}
+
+  if (id_encabezado == null || id_orden_detalle == null) {
+    return res.status(400).json({
+      codigo: 'SOLICITUD_INVALIDA',
+      mensaje: 'Se requieren id_encabezado e id_orden_detalle.',
+    })
+  }
+
+  return res.status(200).json({
+    id_encabezado,
+    id_orden_detalle,
+    mensaje: 'Producto eliminado de la solicitud correctamente.',
+  })
+})
+
 // POST /api/alertas/productos/solicitud/
 server.post(['/api/alertas/productos/solicitud', '/api/alertas/productos/solicitud/'], async (req, res) => {
   const { fields, files } = await parseMultipartFormData(req)

@@ -12,6 +12,7 @@ export const useAddProductModal = ({ jornadaId, addedOrderDetailIds = [], onAdd 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [addingId, setAddingId] = useState(null);
 
   const fetchProducts = useCallback(
     async (page, size) => {
@@ -56,8 +57,13 @@ export const useAddProductModal = ({ jornadaId, addedOrderDetailIds = [], onAdd 
   );
 
   const handleAdd = useCallback(
-    (record) => {
-      onAdd?.(record);
+    async (record) => {
+      setAddingId(record.id);
+      try {
+        await onAdd?.(record);
+      } finally {
+        setAddingId(null);
+      }
     },
     [onAdd]
   );
@@ -73,6 +79,7 @@ export const useAddProductModal = ({ jornadaId, addedOrderDetailIds = [], onAdd 
     closeModal,
     rows: visibleRows,
     loading,
+    addingId,
     currentPage,
     pageSize,
     totalRecords,
