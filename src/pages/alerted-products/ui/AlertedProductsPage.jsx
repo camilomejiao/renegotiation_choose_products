@@ -52,9 +52,12 @@ const normalizeManagementLabel = (value = "") =>
     .trim()
     .toUpperCase();
 
+const PRICE_ADJUSTMENT_LABEL = "AJUSTE DE PRECIO";
+
 const SUPPORTED_MANAGEMENT_VIEW_LABELS = new Set([
   "ACTA COMPLEMENTARIA",
   "JUSTIFICACION TECNICA",
+  PRICE_ADJUSTMENT_LABEL,
 ]);
 
 const MANAGEMENT_ERROR_MESSAGES = {
@@ -222,6 +225,10 @@ export const AlertedProductsPage = () => {
     SUPPORTED_MANAGEMENT_VIEW_LABELS.has(
       normalizeManagementLabel(assignment?.managementType)
     );
+  const managementVariant =
+    normalizeManagementLabel(assignment?.managementType) === PRICE_ADJUSTMENT_LABEL
+      ? "price-adjustment"
+      : "default";
 
   const handleApplyFilters = async (nextFilters) => {
     if (!nextFilters?.operationalDay?.value) {
@@ -392,6 +399,7 @@ export const AlertedProductsPage = () => {
         appliedFilters={appliedFilters}
         historyByCategory={historyByCategory}
         managementTypeOptions={managementTypeOptions}
+        variant={managementVariant}
         onBack={goToPreparation}
         onContinue={handleSubmitSuccess}
         onSubmitManagementRequest={handleSubmitManagementRequest}

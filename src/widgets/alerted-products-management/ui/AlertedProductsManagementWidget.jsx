@@ -48,6 +48,7 @@ import {
   ManagementBody,
   ManagementCard,
   ModalInfoBanner,
+  NewPriceInput,
   ObservationTextArea,
   PrimaryActionButton,
   RequiredMark,
@@ -55,9 +56,20 @@ import {
   SectionCard,
   SectionTitle,
   SolicitudGrid,
+  TableValidationBanner,
 } from "./AlertedProductsManagementWidget.styles";
 
 const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
+const PRICE_ADJUSTMENT_VARIANT = "price-adjustment";
+
+const isValidNewSalePrice = (value, record) => {
+  if (value == null || value === "") return false;
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return false;
+  const min = Number(record?.minimumPrice ?? 0);
+  const max = Number(record?.maximumPrice ?? 0);
+  return numeric >= min && numeric <= max;
+};
 
 const formatTimestamp = (timestamp) => {
   if (!timestamp) return "";
@@ -86,7 +98,7 @@ const normalizeLabel = (value = "") =>
     .trim()
     .toUpperCase();
 
-const buildManagementMetaItems = (managementTypeLabel = "") => {
+const buildManagementMetaItems = (managementTypeLabel = "", isPriceAdjustment = false) => {
   const normalizedType = normalizeLabel(managementTypeLabel);
   const reviewerRole =
     normalizedType === JUSTIFICACION_TECNICA_LABEL ? "Sub. Operativa" : "Supervisión";
@@ -97,10 +109,10 @@ const buildManagementMetaItems = (managementTypeLabel = "") => {
       value: managementTypeLabel || "—",
       variant: "type",
     },
-    { label: "Rol Responsable", value: "Implementación" },
-    { label: "Rol Revisor", value: reviewerRole },
+    { label: "Rol responsable", value: "Implementación" },
+    { label: "Rol revisor", value: reviewerRole },
     {
-      label: "Estado",
+      label: isPriceAdjustment ? "Estado inicial" : "Estado",
       value: "Sin Gestión",
       variant: "status",
       statusColor: "default",
@@ -113,10 +125,12 @@ export const AlertedProductsManagementWidget = ({
   appliedFilters,
   historyByCategory = { pdf: [], excel: [] },
   managementTypeOptions = [],
+  variant = "default",
   onBack,
   onContinue,
   onSubmitManagementRequest,
 }) => {
+  const isPriceAdjustment = variant === PRICE_ADJUSTMENT_VARIANT;
   const [observation, setObservation] = useState("");
   const [actaFile, setActaFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -134,6 +148,8 @@ export const AlertedProductsManagementWidget = ({
     result: null,
   });
   const [addingId, setAddingId] = useState(null);
+  const [newSalePrices, setNewSalePrices] = useState({});
+  const [priceTouched, setPriceTouched] = useState(false);
 
   const activePdf   = historyByCategory.pdf?.[0]   ?? null;
   const activeExcel = historyByCategory.excel?.[0] ?? null;
@@ -155,8 +171,12 @@ export const AlertedProductsManagementWidget = ({
     [assignment?.managementType, assignmentManagementTypeCode, managementTypeOptions]
   );
   const managementMetaItems = useMemo(
-    () => buildManagementMetaItems(managementTypeOption?.label || assignment?.managementType || ""),
-    [assignment?.managementType, managementTypeOption?.label]
+    () =>
+      buildManagementMetaItems(
+        managementTypeOption?.label || assignment?.managementType || "",
+        isPriceAdjustment
+      ),
+    [assignment?.managementType, managementTypeOption?.label, isPriceAdjustment]
   );
 
   const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
@@ -185,11 +205,53 @@ export const AlertedProductsManagementWidget = ({
 
   const handleRemoveAlert = useCallback((record) => {
     setAlertsData((prev) => prev.filter((row) => row.id !== record.id));
+    setNewSalePrices((prev) => {
+      if (!(record.id in prev)) return prev;
+      const next = { ...prev };
+      delete next[record.id];
+      return next;
+    });
   }, []);
 
+  const handleNewSalePriceChange = useCallback((id, value) => {
+    setNewSalePrices((prev) => ({ ...prev, [id]: value }));
+  }, []);
+
+  const priceColumn = useMemo(() => {
+    if (!isPriceAdjustment) return null;
+
+    return {
+      title: (
+        <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
+          <span style={{ display: "block" }}>Nuevo Precio</span>
+          <span style={{ display: "block" }}>
+            de Venta <RequiredMark>*</RequiredMark>
+          </span>
+        </span>
+      ),
+      key: "newSalePrice",
+      width: 170,
+      align: "center",
+      render: (_, record) => (
+        <NewPriceInput
+          value={newSalePrices[record.id] ?? null}
+          min={0}
+          controls={false}
+          placeholder="0"
+          status={
+            priceTouched && !isValidNewSalePrice(newSalePrices[record.id], record)
+              ? "error"
+              : ""
+          }
+          onChange={(value) => handleNewSalePriceChange(record.id, value)}
+        />
+      ),
+    };
+  }, [isPriceAdjustment, newSalePrices, priceTouched, handleNewSalePriceChange]);
+
   const alertsColumns = useMemo(
-    () => getAlertedProductsManagementColumns({ onRemove: handleRemoveAlert }),
-    [handleRemoveAlert]
+    () => getAlertedProductsManagementColumns({ onRemove: handleRemoveAlert, priceColumn }),
+    [handleRemoveAlert, priceColumn]
   );
 
   const handleAddAlert = useCallback(async (product) => {
@@ -367,11 +429,13 @@ export const AlertedProductsManagementWidget = ({
       AlertComponent.error("Formato inválido", "Solo se permite archivos PDF.");
       return false;
     }
-    const baseName = (assignment?.managementType || "Acta_Complementaria")
-      .trim()
-      .split(/\s+/)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join("_");
+    const baseName = isPriceAdjustment
+      ? "Formato_Novedad_Ajuste"
+      : (assignment?.managementType || "Acta_Complementaria")
+          .trim()
+          .split(/\s+/)
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join("_");
     setActaFile(new File([file], `${baseName}.pdf`, { type: file.type }));
     return false;
   };
@@ -442,6 +506,19 @@ export const AlertedProductsManagementWidget = ({
       return;
     }
 
+    if (isPriceAdjustment) {
+      const allPricesValid = alertsData.every((row) =>
+        isValidNewSalePrice(newSalePrices[row.id], row)
+      );
+      if (!allPricesValid) {
+        setPriceTouched(true);
+        openMissingRequirementsModal(
+          "Debes diligenciar el Nuevo Precio de Venta de cada producto. El valor debe ser numérico, mayor o igual al Precio mínimo y menor o igual al Precio máximo."
+        );
+        return;
+      }
+    }
+
     if (!onSubmitManagementRequest) {
       onContinue?.();
       return;
@@ -449,10 +526,14 @@ export const AlertedProductsManagementWidget = ({
 
     setSubmitting(true);
 
+    const selectedRows = isPriceAdjustment
+      ? alertsData.map((row) => ({ ...row, newSalePrice: newSalePrices[row.id] }))
+      : alertsData;
+
     try {
       const result = await onSubmitManagementRequest({
         managementTypeId: managementTypeOption.value,
-        selectedRows: alertsData,
+        selectedRows,
         observation: observation.trim(),
         pdf: actaFile,
       });
@@ -560,7 +641,10 @@ export const AlertedProductsManagementWidget = ({
 
             <FieldGroup>
               <FieldLabel>
-                Documento de Acta Complementaria <RequiredMark>*</RequiredMark>
+                {isPriceAdjustment
+                  ? "Documento de Ajuste de Precio"
+                  : "Documento de Acta Complementaria"}{" "}
+                <RequiredMark>*</RequiredMark>
               </FieldLabel>
               {actaFile ? (
                 <ActaFileCard>
@@ -623,10 +707,18 @@ export const AlertedProductsManagementWidget = ({
               showColumnSettings={false}
               showTableResize={false}
               showReload={false}
-              scroll={{ x: 1900, y: 400 }}
+              scroll={{ x: isPriceAdjustment ? 2070 : 1900, y: 400 }}
               emptyText="No hay alertas para el tipo de gestión seleccionado."
             />
           </AlertsTableWrapper>
+          {isPriceAdjustment ? (
+            <TableValidationBanner>
+              <span>
+                <strong>Validación:</strong> el Nuevo Precio de Venta debe ser numérico,
+                mayor o igual al Precio mínimo y menor o igual al Precio máximo.
+              </span>
+            </TableValidationBanner>
+          ) : null}
         </SectionCard>
 
         <ActionsRow>

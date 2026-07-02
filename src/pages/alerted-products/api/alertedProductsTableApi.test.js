@@ -44,27 +44,27 @@ describe("getAlertedProductsPage", () => {
   });
 
   it("normalizes backend rows when the service responds with data", async () => {
+    const backendRow = {
+      proveedor: "AgroCampo S.A.S.",
+      id_producto: 133458,
+      id_jornada_producto: 778899,
+      nombre_producto: "Bomba fumigadora 20L",
+      unidad_medida: "Unidad",
+      marca_comercial: "Guarany",
+      precio_minimo: 120000,
+      precio_maximo: 150000,
+      valor_unitario_venta: 168000,
+      valor_catalogo_jornada: 168000,
+      categoria_alerta: { id: 5256, nombre: "POR ENCIMA PRECIO MAXIMO" },
+      tipo_gestion: { id: 5275, nombre: "ACTA COMPLEMENTARIA" },
+      gestion_alerta: { id: 5272, nombre: "SIN GESTIÓN" },
+    };
+
     alertedProductsServices.getProducts.mockResolvedValue({
       status: ResponseStatusEnum.OK,
       data: {
         meta: { page: 1, total_registros: 1 },
-        productos: [
-          {
-            proveedor: "AgroCampo S.A.S.",
-            id_producto: 133458,
-            id_jornada_producto: 778899,
-            nombre_producto: "Bomba fumigadora 20L",
-            unidad_medida: "Unidad",
-            marca_comercial: "Guarany",
-            precio_minimo: 120000,
-            precio_maximo: 150000,
-            valor_unitario_venta: 168000,
-            valor_catalogo_jornada: 168000,
-            categoria_alerta: { id: 5256, nombre: "POR ENCIMA PRECIO MAXIMO" },
-            tipo_gestion: { id: 5275, nombre: "ACTA COMPLEMENTARIA" },
-            gestion_alerta: { id: 5272, nombre: "SIN GESTIÓN" },
-          },
-        ],
+        productos: [backendRow],
       },
     });
 
@@ -86,6 +86,7 @@ describe("getAlertedProductsPage", () => {
         saleUnitValue: 168000,
         fairCatalogValue: 168000,
         alertCategory: "POR ENCIMA PRECIO MAXIMO",
+        raw: backendRow,
         managementType: "ACTA COMPLEMENTARIA",
         alertManagement: "SIN GESTIÓN",
         alertCategoryCode: 5256,
@@ -156,6 +157,39 @@ describe("getAlertedProductsPage", () => {
           },
         },
       ],
+    });
+  });
+
+  it("sends the complete selected item and overrides valor_unitario_venta for price adjustment", () => {
+    const backendRow = {
+      id_orden_detalle: 9001,
+      id_producto: 133458,
+      nombre_producto: "Bomba fumigadora 20L",
+      valor_unitario_venta: 168000,
+      categoria_alerta: { id: 987, codigo: 5254, nombre: "SIN ALERTA" },
+      tipo_gestion: { codigo: 5271, nombre: "REVISION" },
+      gestion_alerta: { codigo: 5272, nombre: "SIN GESTIÓN" },
+    };
+
+    const request = buildAlertedProductsManagementTypeRequest({
+      managementTypeId: 5274,
+      selectedRows: [{ raw: backendRow, newSalePrice: 115000 }],
+    });
+
+    expect(request).toEqual({
+      tipo_gestion_id: 5274,
+      productos: [
+        {
+          ...backendRow,
+          valor_unitario_venta: 115000,
+        },
+      ],
+    });
+    // La categoría del ítem viaja intacta (código 5254, no el id 987).
+    expect(request.productos[0].categoria_alerta).toEqual({
+      id: 987,
+      codigo: 5254,
+      nombre: "SIN ALERTA",
     });
   });
 

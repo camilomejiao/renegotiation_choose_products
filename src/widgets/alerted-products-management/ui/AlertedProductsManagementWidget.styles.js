@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, Card, Input } from "antd";
+import { Button, Card, Input, InputNumber } from "antd";
 
 export const ManagementCard = styled(Card)`
   border-radius: 20px;
@@ -345,6 +345,46 @@ export const AlertsTableWrapper = styled.div`
     white-space: normal;
     line-height: 1.15;
     text-align: center;
+  }
+`;
+
+export const NewPriceInput = styled(InputNumber)`
+  && {
+    width: 130px;
+    border-radius: 8px;
+  }
+
+  &&:not(.ant-input-number-status-error) {
+    border-color: #cbd5e1;
+  }
+
+  &&:hover:not(.ant-input-number-status-error),
+  &&.ant-input-number-focused:not(.ant-input-number-status-error) {
+    border-color: #2563eb;
+    box-shadow: none;
+  }
+
+  && .ant-input-number-input {
+    text-align: right;
+    font-weight: 700;
+    color: #0f172a;
+  }
+`;
+
+export const TableValidationBanner = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  font-size: 0.84rem;
+  line-height: 1.5;
+
+  strong {
+    font-weight: 800;
   }
 `;
 

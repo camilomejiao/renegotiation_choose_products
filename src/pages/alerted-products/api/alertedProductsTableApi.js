@@ -107,6 +107,7 @@ const normalizeAlertedProductRow = (row = {}) => ({
   saleUnitValue: Number(row?.valor_unitario_venta ?? 0),
   fairCatalogValue: Number(row?.valor_catalogo_jornada ?? row?.valor_catalogo_feria ?? 0),
   alertCategory: row?.categoria_alerta?.nombre ?? "",
+  raw: row,
   managementType: row?.tipo_gestion?.nombre ?? "",
   alertManagement: row?.gestion_alerta?.nombre ?? "",
   alertCategoryCode: row?.categoria_alerta?.id ?? row?.categoria_alerta?.codigo ?? null,
@@ -149,18 +150,33 @@ export const getAlertedProductsPage = async (filters = {}) => {
   };
 };
 
+const buildProductoPayload = (row) => {
+  // Se reenvía el ítem seleccionado completo tal como lo entregó el backend.
+  const producto =
+    row?.raw && typeof row.raw === "object"
+      ? { ...row.raw }
+      : {
+          id_producto: Number(row?.productId ?? row?.id),
+          categoria_alerta: {
+            codigo: row?.alertCategoryCode != null ? Number(row.alertCategoryCode) : null,
+            nombre: row?.alertCategory ?? "",
+          },
+        };
+
+  // Para "Ajuste de precio", el nuevo precio reemplaza el valor unitario de venta.
+  if (row?.newSalePrice != null && row?.newSalePrice !== "") {
+    producto.valor_unitario_venta = Number(row.newSalePrice);
+  }
+
+  return producto;
+};
+
 export const buildAlertedProductsManagementTypeRequest = ({
   managementTypeId,
   selectedRows = [],
 }) => ({
   tipo_gestion_id: Number(managementTypeId),
-  productos: selectedRows.map((row) => ({
-    id_producto: Number(row?.productId ?? row?.id),
-    categoria_alerta: {
-      codigo: Number(row?.alertCategoryCode),
-      nombre: row?.alertCategory ?? "",
-    },
-  })),
+  productos: selectedRows.map(buildProductoPayload),
 });
 
 export const buildAlertedProductsRequestPayload = ({

@@ -73,7 +73,7 @@ const RemoveButton = styled(Button)`
   }
 `;
 
-export const getAlertedProductsManagementColumns = ({ onRemove } = {}) => [
+export const getAlertedProductsManagementColumns = ({ onRemove, priceColumn } = {}) => [
   {
     title: wrapTitle("Categoría", "alerta"),
     dataIndex: "alertCategory",
@@ -173,6 +173,7 @@ export const getAlertedProductsManagementColumns = ({ onRemove } = {}) => [
     align: "right",
     render: formatCurrency,
   },
+  ...(priceColumn ? [priceColumn] : []),
   {
     title: "Acciones",
     key: "actions",
