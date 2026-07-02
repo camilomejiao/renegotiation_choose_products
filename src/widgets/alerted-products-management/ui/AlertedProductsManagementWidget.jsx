@@ -62,6 +62,16 @@ import {
 const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
 const PRICE_ADJUSTMENT_VARIANT = "price-adjustment";
 
+// Formato COP solo visual; el valor almacenado y enviado sigue siendo numérico.
+const formatCopInput = (value) => {
+  if (value == null || value === "") return "";
+  const numeric = Number(String(value).replace(/[^\d]/g, ""));
+  if (!Number.isFinite(numeric)) return "";
+  return `$ ${numeric.toLocaleString("es-CO")}`;
+};
+
+const parseCopInput = (value) => (value ? value.replace(/[^\d]/g, "") : "");
+
 const isValidNewSalePrice = (value, record) => {
   if (value == null || value === "") return false;
   const numeric = Number(value);
@@ -237,7 +247,9 @@ export const AlertedProductsManagementWidget = ({
           value={newSalePrices[record.id] ?? null}
           min={0}
           controls={false}
-          placeholder="0"
+          placeholder="$ 0"
+          formatter={formatCopInput}
+          parser={parseCopInput}
           status={
             priceTouched && !isValidNewSalePrice(newSalePrices[record.id], record)
               ? "error"

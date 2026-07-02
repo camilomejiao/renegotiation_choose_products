@@ -350,7 +350,7 @@ export const AlertsTableWrapper = styled.div`
 
 export const NewPriceInput = styled(InputNumber)`
   && {
-    width: 130px;
+    width: 150px;
     border-radius: 8px;
   }
 

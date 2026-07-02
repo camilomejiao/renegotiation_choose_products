@@ -335,26 +335,29 @@ export const AlertedProductsPage = () => {
       );
     }
 
-    try {
-      const requestResponse = await createAlertedProductsRequest({
-        observation,
-        pdf,
-        selectedRows,
-      });
+    // La solicitud documental se consume únicamente si la gestión respondió OK.
+    if (result.management?.ok) {
+      try {
+        const requestResponse = await createAlertedProductsRequest({
+          observation,
+          pdf,
+          selectedRows,
+        });
 
-      result.request = {
-        label: "Solicitud documental",
-        ok: true,
-        status: 201,
-        code: null,
-        message: requestResponse?.mensaje || "Solicitud creada correctamente.",
-      };
-    } catch (error) {
-      result.request = buildServiceResult(
-        "Solicitud documental",
-        error,
-        REQUEST_ERROR_MESSAGES
-      );
+        result.request = {
+          label: "Solicitud documental",
+          ok: true,
+          status: 201,
+          code: null,
+          message: requestResponse?.mensaje || "Solicitud creada correctamente.",
+        };
+      } catch (error) {
+        result.request = buildServiceResult(
+          "Solicitud documental",
+          error,
+          REQUEST_ERROR_MESSAGES
+        );
+      }
     }
 
     result.success = Boolean(result.management?.ok && result.request?.ok);

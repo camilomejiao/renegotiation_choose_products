@@ -107,7 +107,6 @@ const normalizeAlertedProductRow = (row = {}) => ({
   saleUnitValue: Number(row?.valor_unitario_venta ?? 0),
   fairCatalogValue: Number(row?.valor_catalogo_jornada ?? row?.valor_catalogo_feria ?? 0),
   alertCategory: row?.categoria_alerta?.nombre ?? "",
-  raw: row,
   managementType: row?.tipo_gestion?.nombre ?? "",
   alertManagement: row?.gestion_alerta?.nombre ?? "",
   alertCategoryCode: row?.categoria_alerta?.id ?? row?.categoria_alerta?.codigo ?? null,
@@ -151,17 +150,14 @@ export const getAlertedProductsPage = async (filters = {}) => {
 };
 
 const buildProductoPayload = (row) => {
-  // Se reenvía el ítem seleccionado completo tal como lo entregó el backend.
-  const producto =
-    row?.raw && typeof row.raw === "object"
-      ? { ...row.raw }
-      : {
-          id_producto: Number(row?.productId ?? row?.id),
-          categoria_alerta: {
-            codigo: row?.alertCategoryCode != null ? Number(row.alertCategoryCode) : null,
-            nombre: row?.alertCategory ?? "",
-          },
-        };
+  // El contrato (ProductoGestionRequest) solo acepta id_producto y categoria_alerta.
+  const producto = {
+    id_producto: Number(row?.productId ?? row?.id),
+    categoria_alerta: {
+      codigo: row?.alertCategoryCode != null ? Number(row.alertCategoryCode) : null,
+      nombre: row?.alertCategory ?? "",
+    },
+  };
 
   // Para "Ajuste de precio", el nuevo precio reemplaza el valor unitario de venta.
   if (row?.newSalePrice != null && row?.newSalePrice !== "") {
@@ -200,6 +196,26 @@ export const createAlertedProductsRequest = async ({
     pdf,
     selectedRows,
   });
+
+  // Diagnóstico (solo desarrollo): el multipart/form-data no se ve como JSON en Network.
+  if (process.env.NODE_ENV !== "production") {
+    const pdfFile = formData.get("pdf");
+    // eslint-disable-next-line no-console
+    console.groupCollapsed("[POST /api/alertas/productos/solicitud/] multipart/form-data");
+    // eslint-disable-next-line no-console
+    console.log("orden_detalle_id:", formData.getAll("orden_detalle_id"));
+    // eslint-disable-next-line no-console
+    console.log("observacion:", formData.get("observacion"));
+    // eslint-disable-next-line no-console
+    console.log(
+      "pdf:",
+      pdfFile instanceof File
+        ? { name: pdfFile.name, type: pdfFile.type, size: pdfFile.size }
+        : pdfFile
+    );
+    // eslint-disable-next-line no-console
+    console.groupEnd();
+  }
 
   const response = await alertedProductsServices.createProductRequest(formData);
   const isSuccess =

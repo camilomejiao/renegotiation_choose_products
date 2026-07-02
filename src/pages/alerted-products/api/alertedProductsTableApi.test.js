@@ -86,7 +86,6 @@ describe("getAlertedProductsPage", () => {
         saleUnitValue: 168000,
         fairCatalogValue: 168000,
         alertCategory: "POR ENCIMA PRECIO MAXIMO",
-        raw: backendRow,
         managementType: "ACTA COMPLEMENTARIA",
         alertManagement: "SIN GESTIÓN",
         alertCategoryCode: 5256,
@@ -160,36 +159,29 @@ describe("getAlertedProductsPage", () => {
     });
   });
 
-  it("sends the complete selected item and overrides valor_unitario_venta for price adjustment", () => {
-    const backendRow = {
-      id_orden_detalle: 9001,
-      id_producto: 133458,
-      nombre_producto: "Bomba fumigadora 20L",
-      valor_unitario_venta: 168000,
-      categoria_alerta: { id: 987, codigo: 5254, nombre: "SIN ALERTA" },
-      tipo_gestion: { codigo: 5271, nombre: "REVISION" },
-      gestion_alerta: { codigo: 5272, nombre: "SIN GESTIÓN" },
-    };
-
+  it("adds valor_unitario_venta only for price adjustment without extra fields", () => {
     const request = buildAlertedProductsManagementTypeRequest({
       managementTypeId: 5274,
-      selectedRows: [{ raw: backendRow, newSalePrice: 115000 }],
+      selectedRows: [
+        {
+          productId: "133458",
+          alertCategoryCode: 5254,
+          alertCategory: "SIN ALERTA",
+          newSalePrice: 115000,
+        },
+      ],
     });
 
+    // El payload respeta el contrato: id_producto + categoria_alerta (+ valor_unitario_venta).
     expect(request).toEqual({
       tipo_gestion_id: 5274,
       productos: [
         {
-          ...backendRow,
+          id_producto: 133458,
+          categoria_alerta: { codigo: 5254, nombre: "SIN ALERTA" },
           valor_unitario_venta: 115000,
         },
       ],
-    });
-    // La categoría del ítem viaja intacta (código 5254, no el id 987).
-    expect(request.productos[0].categoria_alerta).toEqual({
-      id: 987,
-      codigo: 5254,
-      nombre: "SIN ALERTA",
     });
   });
 
