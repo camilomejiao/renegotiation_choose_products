@@ -3,29 +3,16 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Modal as AntdModal, Input, Select } from "antd";
 
 import { SmartTable } from "../../../shared/ui/smart-table";
+import { wrapTitle } from "../../../shared/ui/lib/wrapTitle";
+import { formatCurrency } from "../lib/format";
 import {
   AddAlertRowButton,
   FieldGroup,
   FieldLabel,
-  HomologationSearchGrid,
   ModalInfoBanner,
-  SearchButton,
   SecondaryActionButton,
-} from "./AlertedProductsManagementWidget.styles";
-
-const wrapTitle = (...lines) => (
-  <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
-    {lines.map((line, i) => <span key={i} style={{ display: "block" }}>{line}</span>)}
-  </span>
-);
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value || 0);
+} from "./common.styles";
+import { HomologationSearchGrid, SearchButton } from "./HomologationSearchModal.styles";
 
 const EMPTY_FILTERS = {
   plan: undefined,
@@ -33,6 +20,14 @@ const EMPTY_FILTERS = {
   nombreProducto: "",
   codigoProducto: "",
 };
+
+const PLAN_OPTIONS = [
+  { value: "AGRICOLA", label: "AGRÍCOLA" },
+  { value: "PECUARIO", label: "PECUARIO" },
+];
+
+const matches = (value, term) =>
+  !term || String(value ?? "").toLowerCase().includes(term.toLowerCase().trim());
 
 // TODO(endpoint): la fuente de datos real de este buscador (catálogo / estudio de
 // mercado) se conectará luego. Por ahora se filtra en cliente sobre `dataSource`.
@@ -47,15 +42,10 @@ export const HomologationSearchModal = ({
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [applied, setApplied] = useState(null);
 
-  const setFilter = (key, value) =>
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const setFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
 
   const results = useMemo(() => {
     if (!applied) return dataSource;
-
-    const matches = (value, term) =>
-      !term || String(value ?? "").toLowerCase().includes(term.toLowerCase().trim());
-
     return dataSource.filter(
       (row) =>
         matches(row.supplier, applied.proveedor) &&
@@ -81,9 +71,7 @@ export const HomologationSearchModal = ({
         align: "center",
         fixed: "left",
         render: (_, record) => (
-          <AddAlertRowButton onClick={() => onSelect?.(record)}>
-            Añadir
-          </AddAlertRowButton>
+          <AddAlertRowButton onClick={() => onSelect?.(record)}>Añadir</AddAlertRowButton>
         ),
       },
       {
@@ -167,17 +155,13 @@ export const HomologationSearchModal = ({
       open={isOpen}
       onCancel={handleClose}
       title="Búsqueda avanzada de producto homologado"
-      footer={
-        <SecondaryActionButton onClick={handleClose}>
-          Cerrar
-        </SecondaryActionButton>
-      }
+      footer={<SecondaryActionButton onClick={handleClose}>Cerrar</SecondaryActionButton>}
       width={1100}
       destroyOnClose
     >
       <ModalInfoBanner>
-        Busque y seleccione un producto previamente existente en el catálogo o
-        estudio de mercado para asignarlo como producto homologado.
+        Busque y seleccione un producto previamente existente en el catálogo o estudio
+        de mercado para asignarlo como producto homologado.
       </ModalInfoBanner>
 
       <HomologationSearchGrid>
@@ -200,10 +184,7 @@ export const HomologationSearchModal = ({
             onChange={(value) => setFilter("plan", value)}
             allowClear
             style={{ width: "100%" }}
-            options={[
-              { value: "AGRICOLA", label: "AGRÍCOLA" },
-              { value: "PECUARIO", label: "PECUARIO" },
-            ]}
+            options={PLAN_OPTIONS}
           />
         </FieldGroup>
 

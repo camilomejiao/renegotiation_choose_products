@@ -1,158 +1,40 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EyeOutlined,
-  FileExcelOutlined,
-  FilePdfOutlined,
-  PlusOutlined,
-  SwapOutlined,
-} from "@ant-design/icons";
-import { Modal as AntdModal, Tooltip, Upload } from "antd";
 
 import AlertComponent from "../../../helpers/alert/AlertComponent";
-import { filesServices } from "../../../helpers/services/FilesServices";
 import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
 import { ManagementMetaStrip } from "../../../shared/ui/management-meta-strip";
-import { Modal as AppModal } from "../../../shared/ui/modal";
-import { SmartTable } from "../../../shared/ui/smart-table";
-import {
-  getAlertedProductsManagementColumns,
-  renderCategoryPill,
-} from "../model/getAlertedProductsManagementColumns";
+import { triggerDownload } from "../lib/fileDownload";
+import { normalizeLabel } from "../lib/labels";
+import { MANAGEMENT_VARIANT } from "../model/constants";
+import { buildManagementMetaItems } from "../model/buildManagementMetaItems";
+import { getAlertedProductsManagementColumns } from "../model/getAlertedProductsManagementColumns";
+import { buildAddAlertColumns } from "../model/columns/buildAddAlertColumns";
+import { buildHomologationColumn } from "../model/columns/buildHomologationColumn";
+import { buildPriceColumn } from "../model/columns/buildPriceColumn";
 import { useAddAlertModal } from "../model/useAddAlertModal";
+import { useActaFile } from "../model/useActaFile";
+import { useHomologation } from "../model/useHomologation";
+import { useManagementSubmit } from "../model/useManagementSubmit";
+import { usePdfViewer } from "../model/usePdfViewer";
+import { usePriceAdjustment } from "../model/usePriceAdjustment";
+import { AddAlertModal } from "./AddAlertModal";
+import { AlertsTableSection } from "./AlertsTableSection";
 import { HomologationSearchModal } from "./HomologationSearchModal";
+import { JourneyDocumentsSection } from "./JourneyDocumentsSection";
+import { MissingRequirementsModal } from "./MissingRequirementsModal";
+import { ServicesResponseModal } from "./ServicesResponseModal";
+import { SolicitudForm } from "./SolicitudForm";
 import {
-  ActaDeleteButton,
-  ActaDownloadButton,
-  ActaFileActions,
-  ActaFileCard,
-  ActaFileName,
-  ActaFileTop,
-  ActaUploadZone,
-  ActaViewButton,
   ActionsRow,
-  AddAlertRowButton,
-  AlertsAddButton,
-  AlertsSectionHeader,
-  AlertsTableWrapper,
-  FieldGroup,
-  FieldLabel,
-  HomologateButton,
-  HomologationEmptyText,
-  HomologationLinkButton,
-  HomologationNameBox,
-  HomologationSummary,
-  HomologationSummaryActions,
-  HomologationSummaryMeta,
-  HomologationSummaryPrimary,
-  JourneyDocActions,
-  JourneyDocButton,
-  JourneyDocEmpty,
-  JourneyDocIcon,
-  JourneyDocInfo,
-  JourneyDocItem,
-  JourneyDocMeta,
-  JourneyDocName,
-  JourneyDocumentsRow,
   ManagementBody,
   ManagementCard,
-  ModalInfoBanner,
-  NewPriceInput,
-  ObservationTextArea,
   PrimaryActionButton,
-  RequiredMark,
   SecondaryActionButton,
-  SectionCard,
-  SectionTitle,
-  SolicitudGrid,
-  TableValidationBanner,
-} from "./AlertedProductsManagementWidget.styles";
+} from "./common.styles";
 
-const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
-const PRICE_ADJUSTMENT_VARIANT = "price-adjustment";
-const HOMOLOGATION_VARIANT = "homologation";
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value || 0);
-
-// Formato COP solo visual; el valor almacenado y enviado sigue siendo numérico.
-const formatCopInput = (value) => {
-  if (value == null || value === "") return "";
-  const numeric = Number(String(value).replace(/[^\d]/g, ""));
-  if (!Number.isFinite(numeric)) return "";
-  return `$ ${numeric.toLocaleString("es-CO")}`;
-};
-
-const parseCopInput = (value) => (value ? value.replace(/[^\d]/g, "") : "");
-
-const isValidNewSalePrice = (value, record) => {
-  if (value == null || value === "") return false;
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return false;
-  const min = Number(record?.minimumPrice ?? 0);
-  const max = Number(record?.maximumPrice ?? 0);
-  return numeric >= min && numeric <= max;
-};
-
-const formatTimestamp = (timestamp) => {
-  if (!timestamp) return "";
-  return new Intl.DateTimeFormat("es-CO", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(timestamp));
-};
-
-const extractFileName = (name = "") => {
-  const withoutExt = name.replace(/\.[^.]+$/, "");
-  const parts = withoutExt.split("_");
-  return parts[2] ?? parts[parts.length - 1] ?? name;
-};
-
-const wrapTitle = (...lines) => (
-  <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
-    {lines.map((line, i) => <span key={i} style={{ display: "block" }}>{line}</span>)}
-  </span>
-);
-
-const normalizeLabel = (value = "") =>
-  String(value)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toUpperCase();
-
-const buildManagementMetaItems = (
-  managementTypeLabel = "",
-  { isPriceAdjustment = false, isHomologation = false } = {}
-) => {
-  const normalizedType = normalizeLabel(managementTypeLabel);
-  const reviewerRole = isHomologation
-    ? "No aplica"
-    : normalizedType === JUSTIFICACION_TECNICA_LABEL
-    ? "Sub. Operativa"
-    : "Supervisión";
-
-  return [
-    {
-      label: "Tipo de gestión",
-      value: managementTypeLabel || "—",
-      variant: "type",
-    },
-    { label: "Rol responsable", value: "Implementación" },
-    { label: "Rol revisor", value: reviewerRole },
-    {
-      label: isPriceAdjustment || isHomologation ? "Estado inicial" : "Estado",
-      value: "Sin Gestión",
-      variant: "status",
-      statusColor: "default",
-    },
-  ];
+const isSinGestion = (value = "") => {
+  const mgmt = value.trim().toLowerCase();
+  return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
 };
 
 export const AlertedProductsManagementWidget = ({
@@ -160,40 +42,30 @@ export const AlertedProductsManagementWidget = ({
   appliedFilters,
   historyByCategory = { pdf: [], excel: [] },
   managementTypeOptions = [],
-  variant = "default",
+  variant = MANAGEMENT_VARIANT.DEFAULT,
   onBack,
   onContinue,
   onSubmitManagementRequest,
 }) => {
-  const isPriceAdjustment = variant === PRICE_ADJUSTMENT_VARIANT;
-  const isHomologation = variant === HOMOLOGATION_VARIANT;
-  const [observation, setObservation] = useState("");
-  const [actaFile, setActaFile] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [viewingPdf, setViewingPdf] = useState(false);
-  const [downloadingExcel, setDownloadingExcel] = useState(false);
-  const [pdfViewer, setPdfViewer] = useState({ isOpen: false, url: null, title: "" });
-  const [alertsData, setAlertsData] = useState(() => assignment?.selectedRows ?? []);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [missingRequirementsModal, setMissingRequirementsModal] = useState({
-    isOpen: false,
-    message: "",
-  });
-  const [servicesResponseModal, setServicesResponseModal] = useState({
-    isOpen: false,
-    result: null,
-  });
-  const [addingId, setAddingId] = useState(null);
-  const [newSalePrices, setNewSalePrices] = useState({});
-  const [priceTouched, setPriceTouched] = useState(false);
-  const [homologatedByRow, setHomologatedByRow] = useState({});
-  const [homologationTouched, setHomologationTouched] = useState(false);
-  const [homologationModal, setHomologationModal] = useState({
-    isOpen: false,
-    rowId: null,
-  });
+  const isPriceAdjustment = variant === MANAGEMENT_VARIANT.PRICE_ADJUSTMENT;
+  const isHomologation = variant === MANAGEMENT_VARIANT.HOMOLOGATION;
 
-  const activePdf   = historyByCategory.pdf?.[0]   ?? null;
+  const [observation, setObservation] = useState("");
+  const [alertsData, setAlertsData] = useState(() => assignment?.selectedRows ?? []);
+  const [addingId, setAddingId] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [missing, setMissing] = useState({ isOpen: false, message: "" });
+  const [servicesResult, setServicesResult] = useState({ isOpen: false, result: null });
+
+  const pdf = usePdfViewer();
+  const acta = useActaFile({
+    isPriceAdjustment,
+    managementTypeLabel: assignment?.managementType,
+  });
+  const priceAdjustment = usePriceAdjustment(isPriceAdjustment);
+  const homologation = useHomologation(isHomologation);
+
+  const activePdf = historyByCategory.pdf?.[0] ?? null;
   const activeExcel = historyByCategory.excel?.[0] ?? null;
   const assignmentManagementTypeCode = assignment?.selectedRows?.[0]?.managementTypeCode;
 
@@ -205,839 +77,217 @@ export const AlertedProductsManagementWidget = ({
           normalizeLabel(opt.label) === normalizeLabel(assignment?.managementType)
       ) ||
       (assignment?.managementType
-        ? {
-            value: assignmentManagementTypeCode ?? null,
-            label: assignment.managementType,
-          }
+        ? { value: assignmentManagementTypeCode ?? null, label: assignment.managementType }
         : null),
     [assignment?.managementType, assignmentManagementTypeCode, managementTypeOptions]
   );
+
   const managementMetaItems = useMemo(
     () =>
-      buildManagementMetaItems(
-        managementTypeOption?.label || assignment?.managementType || "",
-        { isPriceAdjustment, isHomologation }
-      ),
+      buildManagementMetaItems(managementTypeOption?.label || assignment?.managementType || "", {
+        isPriceAdjustment,
+        isHomologation,
+      }),
     [assignment?.managementType, managementTypeOption?.label, isPriceAdjustment, isHomologation]
   );
 
   const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
-    isOpen: isAddModalOpen || homologationModal.isOpen,
+    isOpen: isAddModalOpen || homologation.modal.isOpen,
     appliedFilters,
   });
 
+  const addedIds = useMemo(() => new Set(alertsData.map((r) => r.id)), [alertsData]);
   const managementCategoryCodes = useMemo(
     () => new Set(alertsData.map((r) => r.alertCategoryCode).filter(Boolean)),
     [alertsData]
   );
 
-  const addedIds = useMemo(
-    () => new Set(alertsData.map((r) => r.id)),
-    [alertsData]
-  );
-
-  const modalDataSource = useMemo(() => {
-    return modalAllRows.filter((row) => {
-      if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode)) return false;
-      if (addedIds.has(row.id)) return false;
-      const mgmt = (row.alertManagement ?? "").trim().toLowerCase();
-      return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
-    });
-  }, [modalAllRows, addedIds, managementCategoryCodes]);
-
-  const handleRemoveAlert = useCallback((record) => {
-    setAlertsData((prev) => prev.filter((row) => row.id !== record.id));
-    setNewSalePrices((prev) => {
-      if (!(record.id in prev)) return prev;
-      const next = { ...prev };
-      delete next[record.id];
-      return next;
-    });
-    setHomologatedByRow((prev) => {
-      if (!(record.id in prev)) return prev;
-      const next = { ...prev };
-      delete next[record.id];
-      return next;
-    });
-  }, []);
-
-  const handleNewSalePriceChange = useCallback((id, value) => {
-    setNewSalePrices((prev) => ({ ...prev, [id]: value }));
-  }, []);
-
-  const openHomologationModal = useCallback((rowId) => {
-    setHomologationModal({ isOpen: true, rowId });
-  }, []);
-
-  const closeHomologationModal = useCallback(() => {
-    setHomologationModal({ isOpen: false, rowId: null });
-  }, []);
-
-  const handleSelectHomologated = useCallback(
-    (product) => {
-      setHomologationModal((current) => {
-        if (current.rowId != null) {
-          setHomologatedByRow((prev) => ({ ...prev, [current.rowId]: product }));
-        }
-        return { isOpen: false, rowId: null };
-      });
-    },
-    []
-  );
-
-  const handleRemoveHomologated = useCallback((rowId) => {
-    setHomologatedByRow((prev) => {
-      if (!(rowId in prev)) return prev;
-      const next = { ...prev };
-      delete next[rowId];
-      return next;
-    });
-  }, []);
-
-  const priceColumn = useMemo(() => {
-    if (!isPriceAdjustment) return null;
-
-    return {
-      title: (
-        <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
-          <span style={{ display: "block" }}>Nuevo Precio</span>
-          <span style={{ display: "block" }}>
-            de Venta <RequiredMark>*</RequiredMark>
-          </span>
-        </span>
-      ),
-      key: "newSalePrice",
-      width: 170,
-      align: "center",
-      render: (_, record) => (
-        <NewPriceInput
-          value={newSalePrices[record.id] ?? null}
-          min={0}
-          controls={false}
-          placeholder="$ 0"
-          formatter={formatCopInput}
-          parser={parseCopInput}
-          status={
-            priceTouched && !isValidNewSalePrice(newSalePrices[record.id], record)
-              ? "error"
-              : ""
-          }
-          onChange={(value) => handleNewSalePriceChange(record.id, value)}
-        />
-      ),
-    };
-  }, [isPriceAdjustment, newSalePrices, priceTouched, handleNewSalePriceChange]);
-
-  const homologationColumn = useMemo(() => {
-    if (!isHomologation) return null;
-
-    return {
-      title: wrapTitle("Producto a", "Homologar"),
-      key: "homologatedProduct",
-      width: 320,
-      align: "center",
-      ellipsis: false,
-      onCell: () => ({
-        style: {
-          whiteSpace: "normal",
-          wordBreak: "break-word",
-          verticalAlign: "top",
-        },
+  const modalDataSource = useMemo(
+    () =>
+      modalAllRows.filter((row) => {
+        if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode))
+          return false;
+        if (addedIds.has(row.id)) return false;
+        return isSinGestion(row.alertManagement ?? "");
       }),
-      render: (_, record) => {
-        const selected = homologatedByRow[record.id];
+    [modalAllRows, addedIds, managementCategoryCodes]
+  );
 
-        if (!selected) {
-          return (
-            <div>
-              <HomologateButton
-                icon={<SwapOutlined />}
-                onClick={() => openHomologationModal(record.id)}
-              >
-                Homologar por
-              </HomologateButton>
-              <HomologationEmptyText $error={homologationTouched}>
-                {homologationTouched
-                  ? "Debes asignar un producto homologado."
-                  : "Sin producto homologado asignado."}
-              </HomologationEmptyText>
-            </div>
-          );
-        }
+  const handleRemoveAlert = useCallback(
+    (record) => {
+      setAlertsData((prev) => prev.filter((row) => row.id !== record.id));
+      priceAdjustment.clearRow(record.id);
+      homologation.clearRow(record.id);
+    },
+    [priceAdjustment, homologation]
+  );
 
-        return (
-          <HomologationSummary>
-            <HomologationNameBox>
-              {selected.productId ? `${selected.productId} - ` : ""}
-              {selected.productName || "—"}
-            </HomologationNameBox>
-            <HomologationSummaryPrimary>
-              {selected.unitOfMeasure || "—"} · {selected.commercialBrand || "—"}
-            </HomologationSummaryPrimary>
-            <HomologationSummaryMeta>
-              Rango: {formatCurrency(selected.minimumPrice)} a{" "}
-              {formatCurrency(selected.maximumPrice)} · Venta:{" "}
-              {formatCurrency(selected.saleUnitValue)} · Catálogo:{" "}
-              {formatCurrency(selected.fairCatalogValue)}
-            </HomologationSummaryMeta>
-            <HomologationSummaryActions>
-              <HomologationLinkButton
-                type="button"
-                onClick={() => openHomologationModal(record.id)}
-              >
-                Cambiar
-              </HomologationLinkButton>
-              <HomologationLinkButton
-                type="button"
-                $variant="danger"
-                onClick={() => handleRemoveHomologated(record.id)}
-              >
-                Quitar
-              </HomologationLinkButton>
-            </HomologationSummaryActions>
-          </HomologationSummary>
+  const handleAddAlert = useCallback(
+    (product) => {
+      if (!managementTypeOption) {
+        AlertComponent.warning(
+          "Tipo de gestión requerido",
+          "No fue posible identificar el tipo de gestión de la solicitud actual."
         );
-      },
-    };
-  }, [
-    isHomologation,
-    homologatedByRow,
-    homologationTouched,
-    openHomologationModal,
-    handleRemoveHomologated,
-  ]);
+        return;
+      }
+      setAddingId(product.id);
+      setAlertsData((prev) => [
+        ...prev,
+        {
+          ...product,
+          managementType: managementTypeOption.label,
+          managementTypeCode: managementTypeOption.value,
+          hasAssignedManagementType: true,
+        },
+      ]);
+      setAddingId(null);
+    },
+    [managementTypeOption]
+  );
 
   const alertsColumns = useMemo(
     () =>
       getAlertedProductsManagementColumns({
         onRemove: handleRemoveAlert,
-        priceColumn,
-        homologationColumn,
+        priceColumn: isPriceAdjustment
+          ? buildPriceColumn({
+              prices: priceAdjustment.newSalePrices,
+              touched: priceAdjustment.touched,
+              onChange: priceAdjustment.setPrice,
+            })
+          : null,
+        homologationColumn: isHomologation
+          ? buildHomologationColumn({
+              byRow: homologation.byRow,
+              touched: homologation.touched,
+              onAssign: homologation.openModal,
+              onRemove: homologation.removeRow,
+            })
+          : null,
       }),
-    [handleRemoveAlert, priceColumn, homologationColumn]
+    [
+      handleRemoveAlert,
+      isPriceAdjustment,
+      isHomologation,
+      priceAdjustment.newSalePrices,
+      priceAdjustment.touched,
+      priceAdjustment.setPrice,
+      homologation.byRow,
+      homologation.touched,
+      homologation.openModal,
+      homologation.removeRow,
+    ]
   );
 
-  const handleAddAlert = useCallback(async (product) => {
-    if (!managementTypeOption) {
-      AlertComponent.warning(
-        "Tipo de gestión requerido",
-        "No fue posible identificar el tipo de gestión de la solicitud actual."
-      );
-      return;
-    }
-    setAddingId(product.id);
-    try {
-      const enriched = {
-        ...product,
-        managementType: managementTypeOption.label,
-        managementTypeCode: managementTypeOption.value,
-        hasAssignedManagementType: true,
-      };
-      setAlertsData((prev) => [...prev, enriched]);
-    } catch (error) {
-      AlertComponent.error(
-        "Error",
-        error?.data?.mensaje || "No fue posible añadir el producto a la gestión."
-      );
-    } finally {
-      setAddingId(null);
-    }
-  }, [managementTypeOption]);
+  const addAlertColumns = useMemo(
+    () =>
+      buildAddAlertColumns({
+        addedIds,
+        addingId,
+        onAdd: handleAddAlert,
+        managementTypeLabel: managementTypeOption?.label,
+      }),
+    [addedIds, addingId, handleAddAlert, managementTypeOption?.label]
+  );
 
-  const modalColumns = useMemo(() => [
-    {
-      title: "Acción",
-      key: "action",
-      width: 110,
-      align: "center",
-      fixed: "left",
-      render: (_, record) => {
-        const isAdded = addedIds.has(record.id);
-        return (
-          <AddAlertRowButton
-            loading={addingId === record.id}
-            disabled={isAdded || (addingId !== null && addingId !== record.id)}
-            onClick={() => !isAdded && handleAddAlert(record)}
-          >
-            {isAdded ? "Ya añadido" : "Añadir"}
-          </AddAlertRowButton>
-        );
-      },
-    },
-    {
-      title: "Categoría",
-      dataIndex: "alertCategory",
-      key: "alertCategory",
-      width: 180,
-      align: "center",
-      render: (value, record) => renderCategoryPill(value, record?.alertCategoryCode),
-    },
-    {
-      title: wrapTitle("Documento", "Titular"),
-      dataIndex: "documentoTitular",
-      key: "documentoTitular",
-      width: 140,
-      align: "center",
-      render: (v) => v || "—",
-    },
-    {
-      title: "CUB",
-      dataIndex: "cub",
-      key: "cub",
-      width: 100,
-      align: "center",
-      render: (v) => v || "—",
-    },
-    {
-      title: wrapTitle("N° de", "Orden"),
-      dataIndex: "ordenNumero",
-      key: "ordenNumero",
-      width: 110,
-      align: "center",
-      render: (v) => v || "—",
-    },
-    {
-      title: "Proveedor",
-      dataIndex: "supplier",
-      key: "supplier",
-      width: 160,
-      align: "center",
-    },
-    {
-      title: wrapTitle("ID", "Producto"),
-      dataIndex: "productId",
-      key: "productId",
-      width: 110,
-      align: "center",
-    },
-    {
-      title: wrapTitle("Nombre", "producto"),
-      dataIndex: "productName",
-      key: "productName",
-      width: 200,
-      align: "center",
-    },
-    {
-      title: wrapTitle("Tipo", "gestión"),
-      dataIndex: "managementType",
-      key: "managementType",
-      width: 160,
-      align: "center",
-      render: (value) => value || managementTypeOption?.label || "—",
-    },
-    {
-      title: wrapTitle("Gestión", "alerta"),
-      dataIndex: "alertManagement",
-      key: "alertManagement",
-      width: 150,
-      align: "center",
-      render: (v) => v || "—",
-    },
-  ], [addedIds, addingId, handleAddAlert, managementTypeOption?.label]);
-
-  const closePdfViewer = () => {
-    if (pdfViewer.url) URL.revokeObjectURL(pdfViewer.url);
-    setPdfViewer({ isOpen: false, url: null, title: "" });
-  };
-
-  const handleDownloadFromViewer = () => {
-    if (!pdfViewer.url) return;
-    const anchor = document.createElement("a");
-    anchor.href = pdfViewer.url;
-    anchor.download = pdfViewer.title;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  };
-
-  const handleViewJourneyPdf = async () => {
-    if (!activePdf?.route) return;
-    setViewingPdf(true);
-    try {
-      const response = await filesServices.downloadFile(activePdf.route);
-      if (!response?.blob) return;
-      const url = URL.createObjectURL(response.blob);
-      setPdfViewer({ isOpen: true, url, title: activePdf.name || "documento.pdf" });
-    } catch {
-      AlertComponent.error("Error", "No fue posible abrir el documento.");
-    } finally {
-      setViewingPdf(false);
-    }
-  };
-
-  const handleDownloadJourneyExcel = async () => {
-    if (!activeExcel?.route) return;
-    setDownloadingExcel(true);
-    try {
-      const response = await filesServices.downloadFile(activeExcel.route);
-      if (!response?.blob) return;
-      const url = URL.createObjectURL(response.blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = activeExcel.name || "documento.xlsx";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch {
-      AlertComponent.error("Error", "No fue posible descargar el documento.");
-    } finally {
-      setDownloadingExcel(false);
-    }
-  };
-
-  const handleBeforeUploadActa = (file) => {
-    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-    if (!isPdf) {
-      AlertComponent.error("Formato inválido", "Solo se permite archivos PDF.");
-      return false;
-    }
-    const baseName = isPriceAdjustment
-      ? "Formato_Novedad_Ajuste"
-      : (assignment?.managementType || "Acta_Complementaria")
-          .trim()
-          .split(/\s+/)
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-          .join("_");
-    setActaFile(new File([file], `${baseName}.pdf`, { type: file.type }));
-    return false;
-  };
-
-  const handleViewActa = () => {
-    const url = URL.createObjectURL(actaFile);
-    setPdfViewer({ isOpen: true, url, title: actaFile.name });
-  };
-
-  const handleDownloadActa = () => {
-    const url = URL.createObjectURL(actaFile);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = actaFile.name;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+  const handleDownloadActa = useCallback(() => {
+    if (!acta.actaFile) return;
+    const url = URL.createObjectURL(acta.actaFile);
+    triggerDownload(url, acta.actaFile.name);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [acta.actaFile]);
+
+  const closeServicesResult = () => {
+    const shouldContinue = Boolean(servicesResult.result?.success);
+    setServicesResult({ isOpen: false, result: null });
+    if (shouldContinue) onContinue?.();
   };
 
-  const openMissingRequirementsModal = (message) => {
-    setMissingRequirementsModal({
-      isOpen: true,
-      message,
-    });
-  };
-
-  const closeServicesResponseModal = () => {
-    const shouldContinue = Boolean(servicesResponseModal.result?.success);
-
-    setServicesResponseModal({
-      isOpen: false,
-      result: null,
-    });
-
-    if (shouldContinue) {
-      onContinue?.();
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!observation.trim() && !actaFile) {
-      openMissingRequirementsModal(
-        "Debes diligenciar la observación justificada y adjuntar el archivo PDF antes de enviar."
-      );
-      return;
-    }
-
-    if (!observation.trim()) {
-      openMissingRequirementsModal(
-        "Debes diligenciar la observación justificada antes de enviar."
-      );
-      return;
-    }
-
-    if (!actaFile) {
-      openMissingRequirementsModal(
-        "Debes adjuntar el archivo PDF antes de enviar."
-      );
-      return;
-    }
-
-    if (!managementTypeOption?.value || alertsData.length === 0) {
-      AlertComponent.warning(
-        "Información incompleta",
-        "No hay productos o tipo de gestión válidos para enviar la solicitud."
-      );
-      return;
-    }
-
-    if (isPriceAdjustment) {
-      const allPricesValid = alertsData.every((row) =>
-        isValidNewSalePrice(newSalePrices[row.id], row)
-      );
-      if (!allPricesValid) {
-        setPriceTouched(true);
-        openMissingRequirementsModal(
-          "Debes diligenciar el Nuevo Precio de Venta de cada producto. El valor debe ser numérico, mayor o igual al Precio mínimo y menor o igual al Precio máximo."
-        );
-        return;
-      }
-    }
-
-    if (isHomologation) {
-      const allHomologated = alertsData.every((row) => homologatedByRow[row.id]);
-      if (!allHomologated) {
-        setHomologationTouched(true);
-        openMissingRequirementsModal(
-          "Debes asignar un producto homologado a cada ítem antes de enviar."
-        );
-        return;
-      }
-    }
-
-    if (!onSubmitManagementRequest) {
-      onContinue?.();
-      return;
-    }
-
-    setSubmitting(true);
-
-    const selectedRows = isPriceAdjustment
-      ? alertsData.map((row) => ({ ...row, newSalePrice: newSalePrices[row.id] }))
-      : isHomologation
-      ? alertsData.map((row) => {
-          const homologated = homologatedByRow[row.id];
-          return {
-            ...row,
-            homologatedProduct: homologated ?? null,
-            producto_homologado_id: homologated?.productId ?? null,
-          };
-        })
-      : alertsData;
-
-    try {
-      const result = await onSubmitManagementRequest({
-        managementTypeId: managementTypeOption.value,
-        selectedRows,
-        observation: observation.trim(),
-        pdf: actaFile,
-      });
-
-      setServicesResponseModal({
-        isOpen: true,
-        result,
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const { submitting, submit } = useManagementSubmit({
+    observation,
+    actaFile: acta.actaFile,
+    alertsData,
+    managementTypeOption,
+    priceAdjustment,
+    homologation,
+    onSubmitManagementRequest,
+    onContinue,
+    onMissing: (message) => setMissing({ isOpen: true, message }),
+    onResult: (result) => setServicesResult({ isOpen: true, result }),
+  });
 
   return (
     <ManagementCard bordered={false}>
       <ManagementBody>
         <ManagementMetaStrip items={managementMetaItems} />
 
-        {/* Documentos de Gestión de la Jornada */}
-        <SectionCard>
-          <SectionTitle>Documentos de Gestión de la Jornada</SectionTitle>
-          <JourneyDocumentsRow>
-            {activePdf ? (
-              <JourneyDocItem>
-                <JourneyDocIcon>
-                  <FilePdfOutlined />
-                </JourneyDocIcon>
-                <JourneyDocInfo>
-                  <JourneyDocName>{extractFileName(activePdf.name)}</JourneyDocName>
-                  <JourneyDocMeta>{formatTimestamp(activePdf.uploadedAt)}</JourneyDocMeta>
-                </JourneyDocInfo>
-                <JourneyDocActions>
-                  <Tooltip title="Visualizar">
-                    <JourneyDocButton
-                      icon={<EyeOutlined />}
-                      loading={viewingPdf}
-                      onClick={handleViewJourneyPdf}
-                    />
-                  </Tooltip>
-                  <Tooltip title="Descargar">
-                    <JourneyDocButton
-                      icon={<DownloadOutlined />}
-                      onClick={async () => {
-                        const response = await filesServices.downloadFile(activePdf.route);
-                        if (!response?.blob) return;
-                        const url = URL.createObjectURL(response.blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = activePdf.name || "documento.pdf";
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        setTimeout(() => URL.revokeObjectURL(url), 1000);
-                      }}
-                    />
-                  </Tooltip>
-                </JourneyDocActions>
-              </JourneyDocItem>
-            ) : (
-              <JourneyDocEmpty>Sin documento PDF activo</JourneyDocEmpty>
-            )}
+        <JourneyDocumentsSection
+          activePdf={activePdf}
+          activeExcel={activeExcel}
+          viewingPdf={pdf.loadingRoute}
+          onViewPdf={() => pdf.openFromRoute(activePdf?.route, activePdf?.name)}
+        />
 
-            {activeExcel ? (
-              <JourneyDocItem>
-                <JourneyDocIcon $type="excel">
-                  <FileExcelOutlined />
-                </JourneyDocIcon>
-                <JourneyDocInfo>
-                  <JourneyDocName>{extractFileName(activeExcel.name)}</JourneyDocName>
-                  <JourneyDocMeta>{formatTimestamp(activeExcel.uploadedAt)}</JourneyDocMeta>
-                </JourneyDocInfo>
-                <JourneyDocActions>
-                  <Tooltip title="Descargar">
-                    <JourneyDocButton
-                      icon={<DownloadOutlined />}
-                      loading={downloadingExcel}
-                      onClick={handleDownloadJourneyExcel}
-                    />
-                  </Tooltip>
-                </JourneyDocActions>
-              </JourneyDocItem>
-            ) : (
-              <JourneyDocEmpty>Sin documento Excel activo</JourneyDocEmpty>
-            )}
-          </JourneyDocumentsRow>
-        </SectionCard>
+        <SolicitudForm
+          isPriceAdjustment={isPriceAdjustment}
+          observation={observation}
+          onObservationChange={setObservation}
+          actaFile={acta.actaFile}
+          onBeforeUploadActa={acta.beforeUpload}
+          onViewActa={() => pdf.openFromFile(acta.actaFile)}
+          onDownloadActa={handleDownloadActa}
+          onRemoveActa={acta.clear}
+        />
 
-        {/* Solicitud de Levantamiento */}
-        <SectionCard>
-          <SectionTitle>Solicitud de Levantamiento</SectionTitle>
-          <SolicitudGrid>
-            <FieldGroup>
-              <FieldLabel>
-                Observación justificada <RequiredMark>*</RequiredMark>
-              </FieldLabel>
-              <ObservationTextArea
-                placeholder="Escribe el fundamento del levantamiento de la alerta con los soportes y análisis pertinentes en la mesa técnica."
-                value={observation}
-                onChange={(e) => setObservation(e.target.value)}
-                rows={6}
-                maxLength={1000}
-                showCount
-              />
-            </FieldGroup>
-
-            <FieldGroup>
-              <FieldLabel>
-                {isPriceAdjustment
-                  ? "Documento de Ajuste de Precio"
-                  : "Documento de Acta Complementaria"}{" "}
-                <RequiredMark>*</RequiredMark>
-              </FieldLabel>
-              {actaFile ? (
-                <ActaFileCard>
-                  <ActaFileTop>
-                    <FilePdfOutlined style={{ color: "#dc2626", fontSize: "1.25rem", flexShrink: 0 }} />
-                    <ActaFileName>{actaFile.name}</ActaFileName>
-                  </ActaFileTop>
-                  <ActaFileActions>
-                    <ActaViewButton icon={<EyeOutlined />} onClick={handleViewActa}>
-                      Ver
-                    </ActaViewButton>
-                    <ActaDownloadButton icon={<DownloadOutlined />} onClick={handleDownloadActa}>
-                      Descargar
-                    </ActaDownloadButton>
-                    <ActaDeleteButton icon={<DeleteOutlined />} onClick={() => setActaFile(null)}>
-                      Eliminar
-                    </ActaDeleteButton>
-                  </ActaFileActions>
-                </ActaFileCard>
-              ) : (
-                <Upload
-                  accept=".pdf"
-                  showUploadList={false}
-                  beforeUpload={handleBeforeUploadActa}
-                >
-                  <ActaUploadZone>
-                    <PlusOutlined />
-                    <span>Adjuntar PDF</span>
-                  </ActaUploadZone>
-                </Upload>
-              )}
-            </FieldGroup>
-          </SolicitudGrid>
-        </SectionCard>
-
-        {/* Alertas a Gestionar */}
-        <SectionCard>
-          <AlertsSectionHeader>
-            <SectionTitle>Alertas a Gestionar</SectionTitle>
-            <AlertsAddButton
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              Añadir item
-            </AlertsAddButton>
-          </AlertsSectionHeader>
-          <AlertsTableWrapper>
-            <SmartTable
-              rowKey="id"
-              columns={alertsColumns}
-              columnWidthMode="fixed"
-              dataSource={alertsData}
-              total={alertsData.length}
-              showPagination
-              pageSizeOptions={["10", "20", "50"]}
-              defaultPageSize="10"
-              enableRowSelection={false}
-              showToolbar={false}
-              showColumnSettings={false}
-              showTableResize={false}
-              showReload={false}
-              scroll={{
-                x: isPriceAdjustment ? 2070 : isHomologation ? 2220 : 1900,
-                y: 400,
-              }}
-              emptyText="No hay alertas para el tipo de gestión seleccionado."
-            />
-          </AlertsTableWrapper>
-          {isPriceAdjustment ? (
-            <TableValidationBanner>
-              <span>
-                <strong>Validación:</strong> el Nuevo Precio de Venta debe ser numérico,
-                mayor o igual al Precio mínimo y menor o igual al Precio máximo.
-              </span>
-            </TableValidationBanner>
-          ) : null}
-          {isHomologation ? (
-            <TableValidationBanner>
-              <span>
-                <strong>Validación:</strong> cada ítem debe tener un producto homologado
-                asignado mediante el botón <strong>Homologar por</strong>.
-              </span>
-            </TableValidationBanner>
-          ) : null}
-        </SectionCard>
+        <AlertsTableSection
+          variant={variant}
+          columns={alertsColumns}
+          dataSource={alertsData}
+          onAddItem={() => setIsAddModalOpen(true)}
+        />
 
         <ActionsRow>
           <SecondaryActionButton onClick={onBack}>Cancelar</SecondaryActionButton>
-          <PrimaryActionButton type="primary" onClick={handleSubmit} loading={submitting}>
+          <PrimaryActionButton type="primary" onClick={submit} loading={submitting}>
             Enviar
           </PrimaryActionButton>
         </ActionsRow>
       </ManagementBody>
 
       <DocumentViewerModal
-        isOpen={pdfViewer.isOpen}
+        isOpen={pdf.viewer.isOpen}
         title="Visor de documento"
-        subtitle={pdfViewer.title}
-        documentUrl={pdfViewer.url}
-        onClose={closePdfViewer}
-        onDownload={handleDownloadFromViewer}
+        subtitle={pdf.viewer.title}
+        documentUrl={pdf.viewer.url}
+        onClose={pdf.close}
+        onDownload={pdf.downloadCurrent}
       />
 
-      <AppModal
-        title="Información requerida"
-        isOpen={missingRequirementsModal.isOpen}
-        onCloseModal={() =>
-          setMissingRequirementsModal({ isOpen: false, message: "" })
-        }
-        footer={
-          <SecondaryActionButton
-            onClick={() =>
-              setMissingRequirementsModal({ isOpen: false, message: "" })
-            }
-          >
-            Entendido
-          </SecondaryActionButton>
-        }
-        width={520}
-        centered
-      >
-        <p style={{ margin: 0 }}>{missingRequirementsModal.message}</p>
-      </AppModal>
+      <MissingRequirementsModal
+        isOpen={missing.isOpen}
+        message={missing.message}
+        onClose={() => setMissing({ isOpen: false, message: "" })}
+      />
 
-      <AppModal
-        title={
-          servicesResponseModal.result?.success
-            ? "Servicios procesados correctamente"
-            : "Resultado del procesamiento"
-        }
-        isOpen={servicesResponseModal.isOpen}
-        onCloseModal={closeServicesResponseModal}
-        footer={
-          <SecondaryActionButton onClick={closeServicesResponseModal}>
-            {servicesResponseModal.result?.success ? "Continuar" : "Cerrar"}
-          </SecondaryActionButton>
-        }
-        width={640}
-        centered
-      >
-        <div style={{ display: "grid", gap: 16 }}>
-          {[servicesResponseModal.result?.management, servicesResponseModal.result?.request]
-            .filter(Boolean)
-            .map((serviceResult) => (
-              <div
-                key={serviceResult.label}
-                style={{
-                  border: "1px solid #dbe4f0",
-                  borderRadius: 12,
-                  padding: 16,
-                  background: serviceResult.ok ? "#f0fdf4" : "#fff7ed",
-                }}
-              >
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>
-                  {serviceResult.label}
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  Estado: {serviceResult.ok ? "OK" : "Error"}
-                  {serviceResult.status ? ` (${serviceResult.status})` : ""}
-                </div>
-                {serviceResult.code ? (
-                  <div style={{ marginBottom: 6 }}>Código: {serviceResult.code}</div>
-                ) : null}
-                <div>{serviceResult.message}</div>
-              </div>
-            ))}
-        </div>
-      </AppModal>
+      <ServicesResponseModal
+        isOpen={servicesResult.isOpen}
+        result={servicesResult.result}
+        onClose={closeServicesResult}
+      />
 
-      <AntdModal
-        open={isAddModalOpen}
-        onCancel={() => setIsAddModalOpen(false)}
-        title="Añadir item a la gestión"
-        footer={
-          <SecondaryActionButton onClick={() => setIsAddModalOpen(false)}>
-            Cerrar
-          </SecondaryActionButton>
-        }
-        width={1100}
-        destroyOnClose
-      >
-        <ModalInfoBanner>
-          Solo se listan registros de Productos Alertados que coinciden con la misma
-          categoría de alerta de la gestión actual y cuyo estado de gestión de alerta
-          es <strong>Sin Gestión</strong>.
-        </ModalInfoBanner>
-        <SmartTable
-          rowKey="id"
-          columns={modalColumns}
-          columnWidthMode="fixed"
-          dataSource={modalDataSource}
-          total={modalDataSource.length}
-          loading={modalLoading}
-          showPagination
-          pageSizeOptions={["10", "20", "50"]}
-          defaultPageSize="10"
-          showToolbar={false}
-          showColumnSettings={false}
-          showTableResize={false}
-          showReload={false}
-          scroll={{ x: 1200, y: 400 }}
-          emptyText="No hay productos disponibles para añadir."
-        />
-      </AntdModal>
+      <AddAlertModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        columns={addAlertColumns}
+        dataSource={modalDataSource}
+        loading={modalLoading}
+      />
 
       <HomologationSearchModal
-        isOpen={homologationModal.isOpen}
-        onClose={closeHomologationModal}
-        onSelect={handleSelectHomologated}
+        isOpen={homologation.modal.isOpen}
+        onClose={homologation.closeModal}
+        onSelect={homologation.select}
         dataSource={modalAllRows}
         loading={modalLoading}
         journeyLabel={appliedFilters?.operationalDay?.label || ""}

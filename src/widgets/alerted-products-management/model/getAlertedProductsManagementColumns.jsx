@@ -3,12 +3,7 @@ import { Button, Tooltip } from "antd";
 import styled from "@emotion/styled";
 
 import { StatusPill } from "../../../shared/ui/status-pill";
-
-const wrapTitle = (...lines) => (
-  <span style={{ display: "inline-block", width: "100%", whiteSpace: "normal", lineHeight: 1.15, textAlign: "center" }}>
-    {lines.map((line, i) => <span key={i} style={{ display: "block" }}>{line}</span>)}
-  </span>
-);
+import { wrapTitle } from "../../../shared/ui/lib/wrapTitle";
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("es-CO", {
