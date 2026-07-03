@@ -2,12 +2,10 @@ import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 
 import { matchesSupplierSelectOption } from "../../../shared/lib/supplierSelectSearch";
 import { useAlertedProductsFilters } from "../model/useAlertedProductsFilters";
+import { FULL_COL, FilterField } from "./FilterField";
 import {
   FiltersActions,
   FiltersCard,
-  FiltersCol,
-  FiltersFieldGroup,
-  FiltersFieldLabel,
   FiltersForm,
   FiltersGrid,
   FiltersHeader,
@@ -18,7 +16,6 @@ import {
   FiltersSelect,
   FiltersTitle,
   PrimaryFilterButton,
-  RequiredMark,
   SecondaryFilterButton,
 } from "./AlertedProductsFiltersWidget.styles";
 
@@ -63,15 +60,11 @@ export const AlertedProductsFiltersWidget = ({
   } = useAlertedProductsFilters({ initialFilters });
 
   const isApplyDisabled = !filters.operationalDay?.value || loading;
-
   const hasIdProducto = Boolean(filters.idProducto?.trim());
   const hasSupplierOrProduct = filters.supplier.length > 0 || filters.products.length > 0;
 
   const handleApply = () => {
-    if (isApplyDisabled) {
-      return;
-    }
-
+    if (isApplyDisabled) return;
     onApply?.(filters);
   };
 
@@ -98,181 +91,142 @@ export const AlertedProductsFiltersWidget = ({
 
         <FiltersForm>
           <FiltersGrid gutter={[16, 16]}>
-            <FiltersCol span={24}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>
-                  Jornada
-                  <RequiredMark>*</RequiredMark>
-                </FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.operationalDay}
-                  options={journeyOptions}
-                  onChange={handleJourneyChange}
-                  placeholder="Selecciona una jornada"
-                  isLoading={loadingJourneys}
-                  isClearable={true}
-                  showSearch={false}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Jornada" required colProps={FULL_COL}>
+              <FiltersSelect
+                value={filters.operationalDay}
+                options={journeyOptions}
+                onChange={handleJourneyChange}
+                placeholder="Selecciona una jornada"
+                isLoading={loadingJourneys}
+                isClearable
+                showSearch={false}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Categoría de alerta</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.alertCategory}
-                  options={alertCategoryOptions}
-                  onChange={updateAlertCategory}
-                  placeholder="Selecciona una categoría"
-                  showSearch={false}
-                  isClearable={true}
-                  isLoading={loadingAlertCategoryOptions}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Categoría de alerta">
+              <FiltersSelect
+                value={filters.alertCategory}
+                options={alertCategoryOptions}
+                onChange={updateAlertCategory}
+                placeholder="Selecciona una categoría"
+                showSearch={false}
+                isClearable
+                isLoading={loadingAlertCategoryOptions}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Tipo de gestión</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.managementType}
-                  options={managementTypeOptions}
-                  onChange={updateManagementType}
-                  placeholder="Selecciona un tipo"
-                  showSearch={false}
-                  isClearable={true}
-                  isLoading={loadingManagementTypeOptions}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Tipo de gestión">
+              <FiltersSelect
+                value={filters.managementType}
+                options={managementTypeOptions}
+                onChange={updateManagementType}
+                placeholder="Selecciona un tipo"
+                showSearch={false}
+                isClearable
+                isLoading={loadingManagementTypeOptions}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Gestión de alerta</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.alertManagement}
-                  options={alertManagementOptions}
-                  onChange={updateAlertManagement}
-                  placeholder="Selecciona una gestión"
-                  showSearch={false}
-                  isClearable={true}
-                  isLoading={loadingAlertManagementOptions}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Gestión de alerta">
+              <FiltersSelect
+                value={filters.alertManagement}
+                options={alertManagementOptions}
+                onChange={updateAlertManagement}
+                placeholder="Selecciona una gestión"
+                showSearch={false}
+                isClearable
+                isLoading={loadingAlertManagementOptions}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Documento titular</FiltersFieldLabel>
-                <FiltersInput
-                  value={filters.documentoTitular}
-                  onChange={(e) => updateDocumentoTitular(e.target.value)}
-                  placeholder="Nº documento del titular"
-                  allowClear
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Documento titular">
+              <FiltersInput
+                value={filters.documentoTitular}
+                onChange={(e) => updateDocumentoTitular(e.target.value)}
+                placeholder="Nº documento del titular"
+                allowClear
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>CUB</FiltersFieldLabel>
-                <FiltersInput
-                  value={filters.cub}
-                  onChange={(e) => updateCub(e.target.value)}
-                  placeholder="Código único de beneficiario"
-                  allowClear
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="CUB">
+              <FiltersInput
+                value={filters.cub}
+                onChange={(e) => updateCub(e.target.value)}
+                placeholder="Código único de beneficiario"
+                allowClear
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>N° de orden</FiltersFieldLabel>
-                <FiltersInput
-                  value={filters.ordenNumero}
-                  onChange={(e) => updateOrdenNumero(e.target.value)}
-                  placeholder="Número de orden"
-                  allowClear
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="N° de orden">
+              <FiltersInput
+                value={filters.ordenNumero}
+                onChange={(e) => updateOrdenNumero(e.target.value)}
+                placeholder="Número de orden"
+                allowClear
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Departamento</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.department}
-                  options={departmentOptions}
-                  onChange={updateDepartment}
-                  placeholder="Selecciona un departamento"
-                  showSearch={false}
-                  isClearable={true}
-                  isLoading={loadingDepartmentOptions}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Departamento">
+              <FiltersSelect
+                value={filters.department}
+                options={departmentOptions}
+                onChange={updateDepartment}
+                placeholder="Selecciona un departamento"
+                showSearch={false}
+                isClearable
+                isLoading={loadingDepartmentOptions}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Municipio</FiltersFieldLabel>
-                <FiltersSelect
-                  value={filters.municipality}
-                  options={municipalityOptions}
-                  onChange={updateMunicipality}
-                  placeholder="Selecciona un municipio"
-                  showSearch={false}
-                  isClearable={true}
-                  isLoading={loadingMunicipalityOptions}
-                  isDisabled={!filters.department?.value}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Municipio">
+              <FiltersSelect
+                value={filters.municipality}
+                options={municipalityOptions}
+                onChange={updateMunicipality}
+                placeholder="Selecciona un municipio"
+                showSearch={false}
+                isClearable
+                isLoading={loadingMunicipalityOptions}
+                isDisabled={!filters.department?.value}
+              />
+            </FilterField>
 
-            <FiltersCol xs={24} sm={12} lg={8}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>ID jornada producto</FiltersFieldLabel>
-                <FiltersInput
-                  value={filters.idProducto}
-                  onChange={(e) => updateIdProducto(e.target.value)}
-                  placeholder="Identificador del producto"
-                  allowClear
-                  disabled={hasSupplierOrProduct}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="ID jornada producto">
+              <FiltersInput
+                value={filters.idProducto}
+                onChange={(e) => updateIdProducto(e.target.value)}
+                placeholder="Identificador del producto"
+                allowClear
+                disabled={hasSupplierOrProduct}
+              />
+            </FilterField>
 
-            <FiltersCol span={24}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Proveedor</FiltersFieldLabel>
-                <FiltersMultiSelect
-                  mode="multiple"
-                  value={filters.supplier.map((s) => s.value)}
-                  options={supplierOptions}
-                  onChange={(_, options) => updateSupplier(Array.isArray(options) ? options : [])}
-                  placeholder="Proveedor (nombre o NIT)"
-                  filterOption={matchesSupplierSelectOption}
-                  allowClear
-                  loading={loadingSupplierOptions}
-                  disabled={hasIdProducto}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Proveedor" colProps={FULL_COL}>
+              <FiltersMultiSelect
+                mode="multiple"
+                value={filters.supplier.map((s) => s.value)}
+                options={supplierOptions}
+                onChange={(_, options) => updateSupplier(Array.isArray(options) ? options : [])}
+                placeholder="Proveedor (nombre o NIT)"
+                filterOption={matchesSupplierSelectOption}
+                allowClear
+                loading={loadingSupplierOptions}
+                disabled={hasIdProducto}
+              />
+            </FilterField>
 
-            <FiltersCol span={24}>
-              <FiltersFieldGroup>
-                <FiltersFieldLabel>Producto</FiltersFieldLabel>
-                <FiltersMultiSelect
-                  mode="multiple"
-                  value={filters.products.map((product) => product.value)}
-                  options={productOptions}
-                  onChange={(_, options) => updateProducts(Array.isArray(options) ? options : [])}
-                  placeholder="Selecciona uno o varios productos"
-                  loading={loadingProductOptions}
-                  allowClear
-                  disabled={hasIdProducto || !filters.operationalDay?.value}
-                />
-              </FiltersFieldGroup>
-            </FiltersCol>
+            <FilterField label="Producto" colProps={FULL_COL}>
+              <FiltersMultiSelect
+                mode="multiple"
+                value={filters.products.map((product) => product.value)}
+                options={productOptions}
+                onChange={(_, options) => updateProducts(Array.isArray(options) ? options : [])}
+                placeholder="Selecciona uno o varios productos"
+                loading={loadingProductOptions}
+                allowClear
+                disabled={hasIdProducto || !filters.operationalDay?.value}
+              />
+            </FilterField>
           </FiltersGrid>
 
           <FiltersActions>
