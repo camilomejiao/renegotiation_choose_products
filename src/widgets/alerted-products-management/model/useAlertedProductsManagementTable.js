@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getAlertedProductsPage } from "../../../pages/alerted-products/api/alertedProductsTableApi";
+import { getAlertedProductsPage } from "../../../entities/alerted-product";
 import { managementTypeAssignmentOptions } from "../../alerted-products-table/model/managementTypeOptions";
 
 export const useAlertedProductsManagementTable = ({

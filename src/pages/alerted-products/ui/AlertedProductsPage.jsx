@@ -7,13 +7,13 @@ import { HeaderImage } from "../../../components/layout/shared/header_image/Head
 import { PageNotFound } from "../../../components/layout/page404/PageNotFound";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { RolesEnum } from "../../../helpers/GlobalEnum";
-import { getAlertedProductsJourneyDocuments } from "../api/alertedProductsDocumentsApi";
-import { getAlertedProductsParameterCatalog } from "../api/alertedProductsFiltersApi";
 import {
   assignAlertedProductsManagementType,
   createAlertedProductsRequest,
+  getAlertedProductsJourneyDocuments,
   getAlertedProductsPage,
-} from "../api/alertedProductsTableApi";
+  getAlertedProductsParameterCatalog,
+} from "../../../entities/alerted-product";
 import { AlertedProductsCentralizationWidget } from "../../../widgets/alerted-products-centralization";
 import { Page } from "../../../shared/ui/page";
 import { AlertedProductsDocumentsWidget } from "../../../widgets/alerted-products-documents";

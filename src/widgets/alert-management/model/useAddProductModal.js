@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
-import { getAlertedProductsPage } from "../../../pages/alerted-products/api/alertedProductsTableApi";
+import { getAlertedProductsPage } from "../../../entities/alerted-product";
 import { SIN_GESTION_ALERTA_ID, SIN_TIPO_GESTION_ID } from "./alertManagementConstants";
 
 const DEFAULT_PAGE_SIZE = 10;

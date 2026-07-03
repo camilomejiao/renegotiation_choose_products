@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createAlertedProductsDocumentsRequest,
+  getAlertedProductsDocumentFileNames,
   persistAlertedProductsJourneyDocuments,
-} from "../../../pages/alerted-products/api/alertedProductsDocumentsApi";
-import { getAlertedProductsDocumentFileNames } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
+} from "../../../entities/alerted-product";
 
 const getFileCategory = (file) => {
   const extension = file.name?.split(".").pop()?.toLowerCase();

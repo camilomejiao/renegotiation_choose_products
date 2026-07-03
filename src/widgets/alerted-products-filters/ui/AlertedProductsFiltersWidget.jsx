@@ -1,6 +1,6 @@
 import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 
-import { matchesSupplierSelectOption } from "../../../pages/order-report/model/supplierSelectSearch";
+import { matchesSupplierSelectOption } from "../../../shared/lib/supplierSelectSearch";
 import { useAlertedProductsFilters } from "../model/useAlertedProductsFilters";
 import {
   FiltersActions,

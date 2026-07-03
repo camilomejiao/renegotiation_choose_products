@@ -7,7 +7,7 @@ import {
   getAlertedProductsOptions,
   getAlertedProductsParameterCatalog,
   getAlertedProductsSuppliers,
-} from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
+} from "../../../entities/alerted-product";
 import { defaultAlertedProductsFilters } from "./filterOptions";
 
 const ALERT_CATEGORY_PARAMETER_TYPE_ID = 35;

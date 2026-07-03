@@ -1,7 +1,7 @@
 import {
   buildAlertedProductsDocumentsFormData,
   buildAlertedProductsDocumentsPayload,
-} from "../../../widgets/alerted-products-documents/model/buildAlertedProductsDocumentsRequest";
+} from "../model/buildAlertedProductsDocumentsRequest";
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
 

@@ -7,7 +7,7 @@ import {
   gestionarAlertedProductsSolicitud,
   getAlertedProductsSolicitudDetalle,
   subsanarAlertedProductsSolicitud,
-} from "../../../pages/alerted-products/api/alertedProductsSolicitudesApi";
+} from "../../../entities/alerted-product";
 import {
   formatDate,
   REVIEW_MODE_WITH_OBSERVATION, REVIEW_MODE_WITHOUT_OBSERVATION,

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AlertComponent from "../../../helpers/alert/AlertComponent";
-import { getAlertedProductsJourneys, getAlertedProductsParameterCatalog } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
-import { getAlertedProductsSolicitudes } from "../../../pages/alerted-products/api/alertedProductsSolicitudesApi";
+import {
+  getAlertedProductsJourneys,
+  getAlertedProductsParameterCatalog,
+  getAlertedProductsSolicitudes,
+} from "../../../entities/alerted-product";
 import {
   ALERT_CATEGORY_PARAMETER_TYPE_ID, ALERT_MANAGEMENT_PARAMETER_TYPE_ID,
   buildManagementPillMap, buildPillMap, defaultFilters,

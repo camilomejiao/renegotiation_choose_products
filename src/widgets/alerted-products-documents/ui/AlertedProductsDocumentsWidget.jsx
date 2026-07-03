@@ -15,7 +15,7 @@ import AlertComponent from "../../../helpers/alert/AlertComponent";
 import { filesServices } from "../../../helpers/services/FilesServices";
 import { Modal } from "../../../shared/ui/modal";
 import { DocumentViewerModal } from "../../../features/beneficiary-document-reports/ui/DocumentViewerModal";
-import { getAlertedProductsHistoryTabNames } from "../../../pages/alerted-products/api/alertedProductsFiltersApi";
+import { getAlertedProductsHistoryTabNames } from "../../../entities/alerted-product";
 import { useAlertedProductsDocuments } from "../model/useAlertedProductsDocuments";
 import {
   DocumentsDescription,

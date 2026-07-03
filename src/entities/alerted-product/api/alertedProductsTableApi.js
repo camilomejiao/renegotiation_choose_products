@@ -1,6 +1,6 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
-import { buildAlertedProductsRequestFormData } from "../../../widgets/alerted-products-management/model/buildAlertedProductsRequest";
+import { buildAlertedProductsRequestFormData } from "../model/buildAlertedProductsRequest";
 
 const appendRepeatedQueryParams = (params, key, values = []) => {
   values

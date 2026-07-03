@@ -3,7 +3,7 @@ import { Col, Row } from "antd";
 
 import { AppSearchInput } from "../../../shared/ui/search-input";
 import { AppSelect } from "../../../shared/ui/select";
-import { matchesSupplierSelectOption } from "../model/supplierSelectSearch";
+import { matchesSupplierSelectOption } from "../../../shared/lib/supplierSelectSearch";
 import {
   ToolbarActionButton,
   ToolbarCard,
