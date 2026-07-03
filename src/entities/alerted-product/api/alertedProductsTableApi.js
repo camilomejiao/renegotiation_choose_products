@@ -162,11 +162,10 @@ export const getAlertedProductsPage = async (filters = {}) => {
 };
 
 const buildProductoPayload = (row) => {
-  // El contrato (ProductoGestionRequest) solo acepta id_producto y categoria_alerta.
-  // OJO: el campo se llama id_producto, pero el valor que espera el backend es el
-  // id_orden_detalle del renglón seleccionado (igual que solicitud/), NO el id del producto.
+  // El contrato de gestión identifica cada renglón por id_orden_detalle
+  // (igual que solicitud/), no por el id del producto.
   const producto = {
-    id_producto: Number(row?.orderDetailId),
+    id_orden_detalle: Number(row?.orderDetailId),
     categoria_alerta: {
       codigo: row?.alertCategoryCode != null ? Number(row.alertCategoryCode) : null,
       nombre: row?.alertCategory ?? "",

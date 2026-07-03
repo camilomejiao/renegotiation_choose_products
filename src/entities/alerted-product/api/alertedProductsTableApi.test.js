@@ -143,8 +143,8 @@ describe("getAlertedProductsPage", () => {
       managementTypeId: 5275,
       selectedRows: [
         {
-          // El campo id_producto del payload debe llevar el id_orden_detalle,
-          // no el productId; por eso se envían valores distintos.
+          // El renglón se identifica por id_orden_detalle, no por productId;
+          // por eso se envían valores distintos.
           orderDetailId: "410175",
           productId: "133458",
           alertCategoryCode: 5256,
@@ -157,7 +157,7 @@ describe("getAlertedProductsPage", () => {
       tipo_gestion_id: 5275,
       productos: [
         {
-          id_producto: 410175,
+          id_orden_detalle: 410175,
           categoria_alerta: {
             codigo: 5256,
             nombre: "POR ENCIMA PRECIO MAXIMO",
@@ -181,13 +181,13 @@ describe("getAlertedProductsPage", () => {
       ],
     });
 
-    // El payload respeta el contrato: id_producto (= id_orden_detalle) +
-    // categoria_alerta (+ valor_unitario_venta).
+    // El payload respeta el contrato: id_orden_detalle + categoria_alerta
+    // (+ valor_unitario_venta).
     expect(request).toEqual({
       tipo_gestion_id: 5274,
       productos: [
         {
-          id_producto: 410175,
+          id_orden_detalle: 410175,
           categoria_alerta: { codigo: 5254, nombre: "SIN ALERTA" },
           valor_unitario_venta: 115000,
         },
