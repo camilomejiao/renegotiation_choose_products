@@ -41,13 +41,57 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "mock": "node mock/server.js"
+    "mock": "node mock/server.js",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fsd": "eslint src --ext .js,.jsx --rule '{\"import/no-restricted-paths\": \"error\"}' --quiet"
   },
   "proxy": "https://devproveedorespnis.direccionsustitucion-pnis.gov.co/",
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "rules": {
+      "import/no-restricted-paths": [
+        "error",
+        {
+          "zones": [
+            {
+              "target": "./src/shared",
+              "from": ["./src/app", "./src/pages", "./src/widgets", "./src/features", "./src/entities"],
+              "message": "FSD: 'shared' es la capa más baja y no puede importar de capas superiores."
+            },
+            {
+              "target": "./src/entities",
+              "from": ["./src/app", "./src/pages", "./src/widgets", "./src/features"],
+              "message": "FSD: 'entities' no puede importar de pages/widgets/features."
+            },
+            {
+              "target": "./src/features",
+              "from": ["./src/app", "./src/pages", "./src/widgets"],
+              "message": "FSD: 'features' no puede importar de pages/widgets."
+            },
+            {
+              "target": "./src/widgets",
+              "from": ["./src/app", "./src/pages"],
+              "message": "FSD: los 'widgets' no pueden importar de 'pages'. Usa entities/shared."
+            }
+          ]
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/pages/alerted-products/**",
+          "src/widgets/alerted-products-*/**",
+          "src/widgets/alert-management/**",
+          "src/entities/alerted-product/**"
+        ],
+        "rules": {
+          "max-lines": ["warn", { "max": 500, "skipBlankLines": true, "skipComments": true }]
+        }
+      }
     ]
   },
   "browserslist": {

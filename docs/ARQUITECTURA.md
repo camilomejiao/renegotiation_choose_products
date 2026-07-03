@@ -124,3 +124,47 @@ Cuando se agregue un nuevo módulo:
 - Mantener botones con clases estandarizadas
 - Tablas con DataGrid y header uniforme
 - Inputs y selects con bordes visibles y consistentes
+
+## 14) Arquitectura FSD (módulos nuevos)
+
+> Las secciones 1–13 describen el layout **legacy** (`components/layout/private/*_module`).
+> Los módulos nuevos (p. ej. `pages/alerted-products`) siguen **Feature-Sliced Design (FSD)**.
+> Para código nuevo, seguir FSD; no ampliar el layout legacy.
+
+### Capas (de mayor a menor)
+```
+app → pages → widgets → features → entities → shared
+```
+Regla de oro: **una capa solo puede importar de capas más bajas** (nunca hacia arriba
+ni lateralmente entre slices por rutas internas).
+
+- **pages/**: orquestan una pantalla; componen widgets y hooks. Sin lógica de negocio pesada.
+- **widgets/**: bloques de UI autocontenidos y reutilizables en páginas.
+- **features/**: interacciones concretas del usuario (una acción con valor).
+- **entities/**: modelo de dominio + **data-access** (API). Ej.: `entities/alerted-product`.
+- **shared/**: utilidades, UI base y helpers sin dominio (`shared/ui`, `shared/lib`).
+
+### Segmentos dentro de cada slice
+```
+<slice>/
+  ui/       # componentes visuales (cada uno con su *.styles.js)
+  model/    # hooks, estado, columnas de tabla, constantes
+  lib/      # helpers puros
+  api/      # data-access (solo en entities)
+  index.js  # API pública del slice (lo demás es privado)
+```
+
+### Reglas obligatorias
+- **Importar entre slices solo por su `index.js` público**, nunca rutas internas.
+- **Definiciones de columnas en `model/`** (`build*Column.jsx`), nunca dentro del componente UI.
+- **Estilos separados por componente** (`Componente.styles.js`), no un archivo monolítico.
+- **Un archivo ≤ ~500 líneas** (ideal < 250). Si crece, descomponer en `ui`/`model`/`lib`.
+- La **data-access del dominio vive en `entities/*/api`**; páginas y widgets la consumen
+  vía el `index.js` de la entidad (no vía otra página).
+
+### Guardrails automáticos (ESLint, ver `package.json`)
+- `import/no-restricted-paths`: **prohíbe importar hacia capas superiores** (p. ej. `widgets → pages`).
+- `max-lines` (warning, 500) en el módulo `alerted-products`.
+- Scripts: `npm run lint` (todo) y `npm run lint:fsd` (solo fronteras de capa).
+
+Referencia de un slice bien estructurado en este repo: `widgets/alert-management`.
