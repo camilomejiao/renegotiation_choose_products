@@ -79,6 +79,9 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
   }
 
   if (record.managingRecord) {
+    const isIndeterminate = (record.managingRecord?.tipoGestion || "")
+      .toUpperCase()
+      .includes("INDETERMINADO");
     return (
       <AlertManagementGestionView
         record={record.managingRecord}
@@ -87,6 +90,7 @@ export const AlertManagementWidget = ({ userAuth } = {}) => {
         detailLoading={record.detailLoading}
         productosAsociados={record.detailData?.productosAsociados ?? []}
         timeline={record.timeline}
+        isIndeterminate={isIndeterminate}
         reviewMode={record.reviewMode}
         reviewObservation={record.reviewObservation}
         reviewFiles={record.reviewFiles}

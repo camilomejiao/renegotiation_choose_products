@@ -75,3 +75,13 @@ export const formatDate = (value) => {
 
 export const formatCurrency = (value) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(Number(value ?? 0));
+
+// Formato COP solo visual para inputs; el valor almacenado sigue siendo numérico.
+export const formatCopInput = (value) => {
+  if (value == null || value === "") return "";
+  const numeric = Number(String(value).replace(/[^\d]/g, ""));
+  if (!Number.isFinite(numeric)) return "";
+  return `$ ${numeric.toLocaleString("es-CO")}`;
+};
+
+export const parseCopInput = (value) => (value ? value.replace(/[^\d]/g, "") : "");

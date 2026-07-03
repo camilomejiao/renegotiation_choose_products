@@ -4,6 +4,7 @@ import { SmartTable } from "../../../shared/ui/smart-table";
 import { REVIEW_MODE_WITH_OBSERVATION } from "../model/alertManagementConstants";
 import { getProductosGestionColumns } from "../model/getProductosAsociadosColumns";
 import { AlertManagementDetailHeader } from "./AlertManagementDetailHeader";
+import { AlertManagementIndeterminateRecalc } from "./AlertManagementIndeterminateRecalc";
 import { AlertManagementDocsList } from "./AlertManagementDocsList";
 import { AlertManagementReviewPanel } from "./AlertManagementReviewPanel";
 import { AlertManagementTimeline } from "./AlertManagementTimeline";
@@ -18,7 +19,7 @@ const PRODUCTOS_COLUMNS = getProductosGestionColumns();
 
 export const AlertManagementGestionView = ({
   record, pillMap, documents, detailLoading, productosAsociados, timeline,
-  reviewMode, reviewObservation, reviewFiles, isConfirmOpen,
+  reviewMode, reviewObservation, reviewFiles, isConfirmOpen, isIndeterminate,
   onBack, onViewDocument, onDownloadDocument,
   onSelectWithObservation, onSelectWithoutObservation,
   onObservationChange, onFilesChange, onSubmitWithObservation,
@@ -46,6 +47,11 @@ export const AlertManagementGestionView = ({
             showColumnSettings={false}
             emptyText="Sin productos asociados."
           />
+          {isIndeterminate && (
+            <AlertManagementIndeterminateRecalc
+              productName={productosAsociados?.[0]?.nombre}
+            />
+          )}
           <ReviewActionsRow>
             <WithObservationButton onClick={onSelectWithObservation}>Con observación</WithObservationButton>
             <WithoutObservationButton onClick={onSelectWithoutObservation}>Sin observación</WithoutObservationButton>
