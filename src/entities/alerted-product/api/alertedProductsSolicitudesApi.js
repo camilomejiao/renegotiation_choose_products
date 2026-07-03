@@ -1,5 +1,6 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
+import { nextRowKey } from "../../../shared/lib/rowKey";
 
 const buildSolicitudesQuery = ({
   operationalDay,
@@ -52,6 +53,8 @@ const normalizeSolicitudRow = (row = {}, index) => ({
 
 const normalizeProductoAsociado = (producto = {}) => ({
   ...producto,
+  // Key sintético para la tabla; la identidad real sigue en id_orden_detalle.
+  rowKey: nextRowKey(),
   id_orden_detalle:
     producto?.id_orden_detalle ??
     producto?.orden_detalle_id ??

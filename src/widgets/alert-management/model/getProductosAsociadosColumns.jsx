@@ -1,5 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button } from "antd";
+import { nextRowKey } from "../../../shared/lib/rowKey";
 import { formatCurrency, renderPill } from "./alertManagementConstants";
 
 const BASE_COLUMNS = [
@@ -49,7 +50,8 @@ export const getProductosSubsanarColumns = ({ estadoLabel, estadoCode, pillMap =
 ];
 
 export const mapPickedProductToAsociado = (product = {}) => ({
-  id_orden_detalle: product.id,
+  rowKey: nextRowKey(),
+  id_orden_detalle: product.orderDetailId,
   id_producto: product.productId,
   nombre: product.productName,
   categoria_alerta: { codigo: product.alertCategoryCode, nombre: product.alertCategory },

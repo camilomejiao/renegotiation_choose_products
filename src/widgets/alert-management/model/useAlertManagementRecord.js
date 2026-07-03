@@ -72,11 +72,11 @@ export const useAlertManagementRecord = ({ onGestionSuccess } = {}) => {
   }, [loadDetalle]);
 
   const handleAddProducto = useCallback(async (product) => {
-    if (!managingRecord?.id || !product?.id) return;
+    if (!managingRecord?.id || !product?.orderDetailId) return;
     try {
       await agregarProductoAlertedProductsSolicitud({
         idEncabezado: managingRecord.id,
-        idOrdenDetalle: product.id,
+        idOrdenDetalle: product.orderDetailId,
       });
       setAddedProductos((prev) => [...prev, mapPickedProductToAsociado(product)]);
       AlertComponent.success("Producto agregado", "El producto fue agregado a la solicitud correctamente.");

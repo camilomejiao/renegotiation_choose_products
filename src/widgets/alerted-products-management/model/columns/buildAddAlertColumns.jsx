@@ -10,7 +10,7 @@ export const buildAddAlertColumns = ({ addedIds, addingId, onAdd, managementType
     align: "center",
     fixed: "left",
     render: (_, record) => {
-      const isAdded = addedIds.has(record.id);
+      const isAdded = addedIds.has(record.orderDetailId);
       return (
         <AddAlertRowButton
           loading={addingId === record.id}

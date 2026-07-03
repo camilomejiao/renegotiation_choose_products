@@ -196,7 +196,7 @@ export const AlertManagementSubsanarView = ({
           </SubsanarProductsActions>
         </SubsanarProductsHeader>
         <SmartTable
-          rowKey={(row) => row.id_orden_detalle ?? row.id_producto}
+          rowKey="rowKey"
           columns={productosColumns}
           dataSource={productos}
           loading={detailLoading}

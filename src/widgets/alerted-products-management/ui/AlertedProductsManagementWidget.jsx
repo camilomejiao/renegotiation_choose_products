@@ -96,7 +96,10 @@ export const AlertedProductsManagementWidget = ({
     appliedFilters,
   });
 
-  const addedIds = useMemo(() => new Set(alertsData.map((r) => r.id)), [alertsData]);
+  const addedIds = useMemo(
+    () => new Set(alertsData.map((r) => r.orderDetailId).filter(Boolean)),
+    [alertsData]
+  );
   const managementCategoryCodes = useMemo(
     () => new Set(alertsData.map((r) => r.alertCategoryCode).filter(Boolean)),
     [alertsData]
@@ -107,7 +110,7 @@ export const AlertedProductsManagementWidget = ({
       modalAllRows.filter((row) => {
         if (managementCategoryCodes.size > 0 && !managementCategoryCodes.has(row.alertCategoryCode))
           return false;
-        if (addedIds.has(row.id)) return false;
+        if (row.orderDetailId && addedIds.has(row.orderDetailId)) return false;
         return isSinGestion(row.alertManagement ?? "");
       }),
     [modalAllRows, addedIds, managementCategoryCodes]

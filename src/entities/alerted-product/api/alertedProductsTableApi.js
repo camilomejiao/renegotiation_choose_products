@@ -1,5 +1,6 @@
 import { ResponseStatusEnum } from "../../../helpers/GlobalEnum";
 import { alertedProductsServices } from "../../../helpers/services/AlertedProductsServices";
+import { nextRowKey } from "../../../shared/lib/rowKey";
 import { buildAlertedProductsRequestFormData } from "../model/buildAlertedProductsRequest";
 
 const appendRepeatedQueryParams = (params, key, values = []) => {
@@ -92,7 +93,12 @@ const buildAlertedProductsQuery = ({
 };
 
 const normalizeAlertedProductRow = (row = {}) => ({
-  id: String(row?.id_orden_detalle ?? row?.id_producto ?? ""),
+  // Key sintético para React/antd: nunca proviene del backend (evita keys
+  // duplicadas). La identidad de negocio vive en orderDetailId / productId.
+  id: nextRowKey(),
+  // id_orden_detalle: identidad del renglón de la orden (lo que espera solicitud/).
+  // Sin fallback a id_producto para no enviar un id equivocado.
+  orderDetailId: String(row?.id_orden_detalle ?? ""),
   jornada: row?.nombre_jornada ?? row?.jornada ?? "",
   documentoTitular: row?.documento_titular ?? "",
   ordenNumero: row?.numero_orden ?? "",
@@ -117,16 +123,22 @@ const normalizeAlertedProductRow = (row = {}) => ({
 });
 
 const getNormalizedAlertedProductsRows = (rows = []) => {
-  const seenIds = new Set();
+  const seenOrderDetailIds = new Set();
 
+  // Deduplica por id_orden_detalle (identidad real del renglón). Los renglones
+  // sin id_orden_detalle se conservan: su key generado ya garantiza unicidad.
   return rows
     .map(normalizeAlertedProductRow)
     .filter((row) => {
-      if (!row.id || seenIds.has(row.id)) {
+      if (!row.orderDetailId) {
+        return true;
+      }
+
+      if (seenOrderDetailIds.has(row.orderDetailId)) {
         return false;
       }
 
-      seenIds.add(row.id);
+      seenOrderDetailIds.add(row.orderDetailId);
       return true;
     });
 };
@@ -151,8 +163,10 @@ export const getAlertedProductsPage = async (filters = {}) => {
 
 const buildProductoPayload = (row) => {
   // El contrato (ProductoGestionRequest) solo acepta id_producto y categoria_alerta.
+  // OJO: el campo se llama id_producto, pero el valor que espera el backend es el
+  // id_orden_detalle del renglón seleccionado (igual que solicitud/), NO el id del producto.
   const producto = {
-    id_producto: Number(row?.productId ?? row?.id),
+    id_producto: Number(row?.orderDetailId),
     categoria_alerta: {
       codigo: row?.alertCategoryCode != null ? Number(row.alertCategoryCode) : null,
       nombre: row?.alertCategory ?? "",
@@ -181,7 +195,7 @@ export const buildAlertedProductsRequestPayload = ({
   selectedRows = [],
 }) =>
   buildAlertedProductsRequestFormData({
-    orderDetailIds: selectedRows.map((row) => row?.id).filter(Boolean),
+    orderDetailIds: selectedRows.map((row) => row?.orderDetailId).filter(Boolean),
     observation,
     pdf,
   });

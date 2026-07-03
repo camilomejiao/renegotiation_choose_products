@@ -69,7 +69,7 @@ export const useAddProductModal = ({ jornadaId, addedOrderDetailIds = [], onAdd 
   );
 
   const visibleRows = useMemo(
-    () => rows.filter((row) => !addedOrderDetailIds.includes(row.id)),
+    () => rows.filter((row) => !addedOrderDetailIds.includes(row.orderDetailId)),
     [rows, addedOrderDetailIds]
   );
 

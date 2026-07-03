@@ -71,32 +71,37 @@ describe("getAlertedProductsPage", () => {
     const result = await getAlertedProductsPage();
 
     expect(result.meta).toEqual({ page: 1, total_registros: 1 });
-    expect(result.rows).toEqual([
-      {
-        id: "133458",
-        jornada: "",
-        supplier: "AgroCampo S.A.S.",
-        productId: "133458",
-        journeyProductId: "778899",
-        productName: "Bomba fumigadora 20L",
-        unitOfMeasure: "Unidad",
-        commercialBrand: "Guarany",
-        minimumPrice: 120000,
-        maximumPrice: 150000,
-        saleUnitValue: 168000,
-        fairCatalogValue: 168000,
-        alertCategory: "POR ENCIMA PRECIO MAXIMO",
-        managementType: "ACTA COMPLEMENTARIA",
-        alertManagement: "SIN GESTIÓN",
-        alertCategoryCode: 5256,
-        managementTypeCode: 5275,
-        alertManagementCode: 5272,
-        hasAssignedManagementType: true,
-        documentoTitular: "",
-        cub: "",
-        ordenNumero: "",
-      },
-    ]);
+    expect(result.rows).toHaveLength(1);
+
+    // El id es un key sintético generado (número), no proviene del backend.
+    const { id, ...row } = result.rows[0];
+    expect(typeof id).toBe("number");
+    expect(row).toEqual({
+      // Sin id_orden_detalle en el backend, orderDetailId queda vacío
+      // (nunca cae al id_producto).
+      orderDetailId: "",
+      jornada: "",
+      supplier: "AgroCampo S.A.S.",
+      productId: "133458",
+      journeyProductId: "778899",
+      productName: "Bomba fumigadora 20L",
+      unitOfMeasure: "Unidad",
+      commercialBrand: "Guarany",
+      minimumPrice: 120000,
+      maximumPrice: 150000,
+      saleUnitValue: 168000,
+      fairCatalogValue: 168000,
+      alertCategory: "POR ENCIMA PRECIO MAXIMO",
+      managementType: "ACTA COMPLEMENTARIA",
+      alertManagement: "SIN GESTIÓN",
+      alertCategoryCode: 5256,
+      managementTypeCode: 5275,
+      alertManagementCode: 5272,
+      hasAssignedManagementType: true,
+      documentoTitular: "",
+      cub: "",
+      ordenNumero: "",
+    });
   });
 
   it("deduplicates rows when the backend returns repeated items", async () => {
@@ -130,7 +135,7 @@ describe("getAlertedProductsPage", () => {
     const result = await getAlertedProductsPage();
 
     expect(result.rows).toHaveLength(1);
-    expect(result.rows[0].id).toBe("9001");
+    expect(result.rows[0].orderDetailId).toBe("9001");
   });
 
   it("builds the management type request expected by the service contract", () => {
@@ -138,6 +143,9 @@ describe("getAlertedProductsPage", () => {
       managementTypeId: 5275,
       selectedRows: [
         {
+          // El campo id_producto del payload debe llevar el id_orden_detalle,
+          // no el productId; por eso se envían valores distintos.
+          orderDetailId: "410175",
           productId: "133458",
           alertCategoryCode: 5256,
           alertCategory: "POR ENCIMA PRECIO MAXIMO",
@@ -149,7 +157,7 @@ describe("getAlertedProductsPage", () => {
       tipo_gestion_id: 5275,
       productos: [
         {
-          id_producto: 133458,
+          id_producto: 410175,
           categoria_alerta: {
             codigo: 5256,
             nombre: "POR ENCIMA PRECIO MAXIMO",
@@ -164,6 +172,7 @@ describe("getAlertedProductsPage", () => {
       managementTypeId: 5274,
       selectedRows: [
         {
+          orderDetailId: "410175",
           productId: "133458",
           alertCategoryCode: 5254,
           alertCategory: "SIN ALERTA",
@@ -172,12 +181,13 @@ describe("getAlertedProductsPage", () => {
       ],
     });
 
-    // El payload respeta el contrato: id_producto + categoria_alerta (+ valor_unitario_venta).
+    // El payload respeta el contrato: id_producto (= id_orden_detalle) +
+    // categoria_alerta (+ valor_unitario_venta).
     expect(request).toEqual({
       tipo_gestion_id: 5274,
       productos: [
         {
-          id_producto: 133458,
+          id_producto: 410175,
           categoria_alerta: { codigo: 5254, nombre: "SIN ALERTA" },
           valor_unitario_venta: 115000,
         },
@@ -193,7 +203,7 @@ describe("getAlertedProductsPage", () => {
     const formData = buildAlertedProductsRequestPayload({
       observation: "Soporte documental",
       pdf,
-      selectedRows: [{ id: "9001" }, { id: "9002" }],
+      selectedRows: [{ orderDetailId: "9001" }, { orderDetailId: "9002" }],
     });
 
     const pdfField = formData.get("pdf");
@@ -218,7 +228,7 @@ describe("getAlertedProductsPage", () => {
       pdf: new File(["mock"], "solicitud-alerta.pdf", {
         type: "application/pdf",
       }),
-      selectedRows: [{ id: "9001" }],
+      selectedRows: [{ orderDetailId: "9001" }],
     });
 
     expect(alertedProductsServices.createProductRequest).toHaveBeenCalledTimes(1);
@@ -249,7 +259,7 @@ describe("getAlertedProductsPage", () => {
         pdf: new File(["mock"], "solicitud-alerta.pdf", {
           type: "application/pdf",
         }),
-        selectedRows: [{ id: "9001" }],
+        selectedRows: [{ orderDetailId: "9001" }],
       })
     ).rejects.toBeTruthy();
   });
