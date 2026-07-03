@@ -293,7 +293,7 @@ export const AlertedProductsManagementWidget = ({
         onSelect={homologation.select}
         dataSource={modalAllRows}
         loading={modalLoading}
-        journeyLabel={appliedFilters?.operationalDay?.label || ""}
+        defaultJourney={appliedFilters?.operationalDay ?? null}
       />
     </ManagementCard>
   );

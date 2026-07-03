@@ -5,6 +5,7 @@ import { Modal as AntdModal, Input, Select } from "antd";
 import { SmartTable } from "../../../shared/ui/smart-table";
 import { wrapTitle } from "../../../shared/ui/lib/wrapTitle";
 import { formatCurrency } from "../lib/format";
+import { useHomologationFilters } from "../model/useHomologationFilters";
 import {
   AddAlertRowButton,
   FieldGroup,
@@ -14,50 +15,56 @@ import {
 } from "./common.styles";
 import { HomologationSearchGrid, SearchButton } from "./HomologationSearchModal.styles";
 
-const EMPTY_FILTERS = {
-  plan: undefined,
-  proveedor: "",
-  nombreProducto: "",
-  codigoProducto: "",
-};
-
-const PLAN_OPTIONS = [
-  { value: "AGRICOLA", label: "AGRÍCOLA" },
-  { value: "PECUARIO", label: "PECUARIO" },
-];
-
 const matches = (value, term) =>
   !term || String(value ?? "").toLowerCase().includes(term.toLowerCase().trim());
 
-// TODO(endpoint): la fuente de datos real de este buscador (catálogo / estudio de
-// mercado) se conectará luego. Por ahora se filtra en cliente sobre `dataSource`.
+// TODO(endpoint): la fuente de datos real de la TABLA de resultados (catálogo /
+// estudio de mercado) se conectará luego. Por ahora la tabla se filtra en cliente
+// sobre `dataSource`. Los filtros Jornada/Plan/Proveedor ya consumen sus servicios.
 export const HomologationSearchModal = ({
   isOpen,
   onClose,
   onSelect,
   dataSource = [],
   loading = false,
-  journeyLabel = "",
+  defaultJourney = null,
 }) => {
-  const [filters, setFilters] = useState(EMPTY_FILTERS);
-  const [applied, setApplied] = useState(null);
+  const {
+    journeyOptions,
+    journeyLoading,
+    selectedJourney,
+    changeJourney,
+    planOptions,
+    planLoading,
+    selectedPlan,
+    changePlan,
+    supplierOptions,
+    supplierLoading,
+    selectedSupplier,
+    changeSupplier,
+  } = useHomologationFilters({ isOpen, defaultJourney });
 
-  const setFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }));
+  const [search, setSearch] = useState("");
+  const [applied, setApplied] = useState(null);
 
   const results = useMemo(() => {
     if (!applied) return dataSource;
+    const term = applied.search;
     return dataSource.filter(
       (row) =>
         matches(row.supplier, applied.proveedor) &&
-        matches(row.productName, applied.nombreProducto) &&
-        matches(row.productId, applied.codigoProducto)
+        (!term || matches(row.productName, term) || matches(row.productId, term))
     );
   }, [dataSource, applied]);
 
-  const handleSearch = () => setApplied({ ...filters });
+  const handleSearch = () =>
+    setApplied({
+      proveedor: selectedSupplier?.label ?? "",
+      search: search.trim(),
+    });
 
   const handleClose = () => {
-    setFilters(EMPTY_FILTERS);
+    setSearch("");
     setApplied(null);
     onClose?.();
   };
@@ -168,10 +175,14 @@ export const HomologationSearchModal = ({
         <FieldGroup>
           <FieldLabel>Jornada</FieldLabel>
           <Select
-            value={journeyLabel || undefined}
+            value={selectedJourney?.value}
             placeholder="Seleccione jornada"
-            options={journeyLabel ? [{ value: journeyLabel, label: journeyLabel }] : []}
-            disabled
+            options={journeyOptions}
+            loading={journeyLoading}
+            onChange={(_, option) => changeJourney(option || null)}
+            showSearch
+            optionFilterProp="label"
+            allowClear
             style={{ width: "100%" }}
           />
         </FieldGroup>
@@ -179,41 +190,43 @@ export const HomologationSearchModal = ({
         <FieldGroup>
           <FieldLabel>Plan</FieldLabel>
           <Select
-            value={filters.plan}
+            value={selectedPlan?.value}
             placeholder="Seleccione plan"
-            onChange={(value) => setFilter("plan", value)}
+            options={planOptions}
+            loading={planLoading}
+            onChange={(_, option) => changePlan(option || null)}
+            disabled={!selectedJourney}
+            showSearch
+            optionFilterProp="label"
             allowClear
             style={{ width: "100%" }}
-            options={PLAN_OPTIONS}
           />
         </FieldGroup>
 
         <FieldGroup>
           <FieldLabel>Proveedor</FieldLabel>
-          <Input
-            value={filters.proveedor}
-            placeholder="Nombre del proveedor"
-            onChange={(e) => setFilter("proveedor", e.target.value)}
+          <Select
+            value={selectedSupplier?.value}
+            placeholder="Seleccione proveedor"
+            options={supplierOptions}
+            loading={supplierLoading}
+            onChange={(_, option) => changeSupplier(option || null)}
+            disabled={!selectedJourney}
+            showSearch
+            optionFilterProp="label"
             allowClear
+            style={{ width: "100%" }}
           />
         </FieldGroup>
 
-        <FieldGroup>
-          <FieldLabel>Nombre producto</FieldLabel>
+        <FieldGroup style={{ gridColumn: "span 2" }}>
+          <FieldLabel>Buscar producto</FieldLabel>
           <Input
-            value={filters.nombreProducto}
-            placeholder="Nombre del producto"
-            onChange={(e) => setFilter("nombreProducto", e.target.value)}
-            allowClear
-          />
-        </FieldGroup>
-
-        <FieldGroup>
-          <FieldLabel>Código producto</FieldLabel>
-          <Input
-            value={filters.codigoProducto}
-            placeholder="Ingrese código"
-            onChange={(e) => setFilter("codigoProducto", e.target.value)}
+            value={search}
+            placeholder="Buscar por Nombre de producto o Código de producto"
+            onChange={(e) => setSearch(e.target.value)}
+            onPressEnter={handleSearch}
+            prefix={<SearchOutlined />}
             allowClear
           />
         </FieldGroup>
@@ -237,7 +250,9 @@ export const HomologationSearchModal = ({
         showColumnSettings={false}
         showTableResize={false}
         showReload={false}
+        enableRowSelection={false}
         scroll={{ x: 1370, y: 400 }}
+
         emptyText="No hay productos para los criterios de búsqueda."
       />
     </AntdModal>

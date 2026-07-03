@@ -45,6 +45,56 @@ export const getAlertedProductsJourneys = async () => {
   return data?.data?.jornadas ?? [];
 };
 
+// Jornadas abiertas como opciones { value, label } (GET jornadas/abiertas/).
+export const getAlertedProductsJourneyOptions = async () => {
+  const journeys = await getAlertedProductsJourneys();
+
+  return journeys
+    .filter((item) => item?.id != null)
+    .map((item) => ({ value: item.id, label: item.nombre ?? String(item.id) }));
+};
+
+// Planes activos de una jornada (GET jornadas/planes/?jornada_id=X&activo=true).
+export const getAlertedProductsPlanOptions = async (jornadaId) => {
+  if (jornadaId == null || jornadaId === "") {
+    return [];
+  }
+
+  const { data, status } = await convocationProductsServices.getPlansByConvocation(jornadaId);
+
+  if (status !== ResponseStatusEnum.OK) {
+    return [];
+  }
+
+  const planes = data?.data?.planes ?? [];
+
+  return planes
+    .filter((item) => item?.id != null)
+    .map((item) => ({
+      value: item.id,
+      label: item.plan_nombre ?? item.nombre ?? String(item.id),
+    }));
+};
+
+// Proveedores de una jornada (GET jornadas/proveedores-por-jornada/?jornada_id=X).
+export const getAlertedProductsSuppliersByJourney = async (jornadaId) => {
+  if (jornadaId == null || jornadaId === "") {
+    return [];
+  }
+
+  const { data, status } = await convocationProductsServices.getSupplierByConvocation(jornadaId);
+
+  if (status !== ResponseStatusEnum.OK) {
+    return [];
+  }
+
+  const proveedores = data?.data?.proveedores ?? [];
+
+  return proveedores
+    .filter((item) => item?.id != null)
+    .map((item) => ({ value: item.id, label: item.nombre ?? String(item.id) }));
+};
+
 export const getAlertedProductsParameterCatalog = async (parameterTypeId) => {
   const response = await parameterServices.getByTypeId(parameterTypeId);
 
