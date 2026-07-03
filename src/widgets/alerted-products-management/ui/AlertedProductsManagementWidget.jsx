@@ -6,6 +6,7 @@ import {
   FileExcelOutlined,
   FilePdfOutlined,
   PlusOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 import { Modal as AntdModal, Tooltip, Upload } from "antd";
 
@@ -20,6 +21,7 @@ import {
   renderCategoryPill,
 } from "../model/getAlertedProductsManagementColumns";
 import { useAddAlertModal } from "../model/useAddAlertModal";
+import { HomologationSearchModal } from "./HomologationSearchModal";
 import {
   ActaDeleteButton,
   ActaDownloadButton,
@@ -36,6 +38,14 @@ import {
   AlertsTableWrapper,
   FieldGroup,
   FieldLabel,
+  HomologateButton,
+  HomologationEmptyText,
+  HomologationLinkButton,
+  HomologationNameBox,
+  HomologationSummary,
+  HomologationSummaryActions,
+  HomologationSummaryMeta,
+  HomologationSummaryPrimary,
   JourneyDocActions,
   JourneyDocButton,
   JourneyDocEmpty,
@@ -61,6 +71,15 @@ import {
 
 const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
 const PRICE_ADJUSTMENT_VARIANT = "price-adjustment";
+const HOMOLOGATION_VARIANT = "homologation";
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value || 0);
 
 // Formato COP solo visual; el valor almacenado y enviado sigue siendo numérico.
 const formatCopInput = (value) => {
@@ -108,10 +127,16 @@ const normalizeLabel = (value = "") =>
     .trim()
     .toUpperCase();
 
-const buildManagementMetaItems = (managementTypeLabel = "", isPriceAdjustment = false) => {
+const buildManagementMetaItems = (
+  managementTypeLabel = "",
+  { isPriceAdjustment = false, isHomologation = false } = {}
+) => {
   const normalizedType = normalizeLabel(managementTypeLabel);
-  const reviewerRole =
-    normalizedType === JUSTIFICACION_TECNICA_LABEL ? "Sub. Operativa" : "Supervisión";
+  const reviewerRole = isHomologation
+    ? "No aplica"
+    : normalizedType === JUSTIFICACION_TECNICA_LABEL
+    ? "Sub. Operativa"
+    : "Supervisión";
 
   return [
     {
@@ -122,7 +147,7 @@ const buildManagementMetaItems = (managementTypeLabel = "", isPriceAdjustment = 
     { label: "Rol responsable", value: "Implementación" },
     { label: "Rol revisor", value: reviewerRole },
     {
-      label: isPriceAdjustment ? "Estado inicial" : "Estado",
+      label: isPriceAdjustment || isHomologation ? "Estado inicial" : "Estado",
       value: "Sin Gestión",
       variant: "status",
       statusColor: "default",
@@ -141,6 +166,7 @@ export const AlertedProductsManagementWidget = ({
   onSubmitManagementRequest,
 }) => {
   const isPriceAdjustment = variant === PRICE_ADJUSTMENT_VARIANT;
+  const isHomologation = variant === HOMOLOGATION_VARIANT;
   const [observation, setObservation] = useState("");
   const [actaFile, setActaFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -160,6 +186,12 @@ export const AlertedProductsManagementWidget = ({
   const [addingId, setAddingId] = useState(null);
   const [newSalePrices, setNewSalePrices] = useState({});
   const [priceTouched, setPriceTouched] = useState(false);
+  const [homologatedByRow, setHomologatedByRow] = useState({});
+  const [homologationTouched, setHomologationTouched] = useState(false);
+  const [homologationModal, setHomologationModal] = useState({
+    isOpen: false,
+    rowId: null,
+  });
 
   const activePdf   = historyByCategory.pdf?.[0]   ?? null;
   const activeExcel = historyByCategory.excel?.[0] ?? null;
@@ -184,13 +216,13 @@ export const AlertedProductsManagementWidget = ({
     () =>
       buildManagementMetaItems(
         managementTypeOption?.label || assignment?.managementType || "",
-        isPriceAdjustment
+        { isPriceAdjustment, isHomologation }
       ),
-    [assignment?.managementType, managementTypeOption?.label, isPriceAdjustment]
+    [assignment?.managementType, managementTypeOption?.label, isPriceAdjustment, isHomologation]
   );
 
   const { allRows: modalAllRows, loading: modalLoading } = useAddAlertModal({
-    isOpen: isAddModalOpen,
+    isOpen: isAddModalOpen || homologationModal.isOpen,
     appliedFilters,
   });
 
@@ -221,10 +253,45 @@ export const AlertedProductsManagementWidget = ({
       delete next[record.id];
       return next;
     });
+    setHomologatedByRow((prev) => {
+      if (!(record.id in prev)) return prev;
+      const next = { ...prev };
+      delete next[record.id];
+      return next;
+    });
   }, []);
 
   const handleNewSalePriceChange = useCallback((id, value) => {
     setNewSalePrices((prev) => ({ ...prev, [id]: value }));
+  }, []);
+
+  const openHomologationModal = useCallback((rowId) => {
+    setHomologationModal({ isOpen: true, rowId });
+  }, []);
+
+  const closeHomologationModal = useCallback(() => {
+    setHomologationModal({ isOpen: false, rowId: null });
+  }, []);
+
+  const handleSelectHomologated = useCallback(
+    (product) => {
+      setHomologationModal((current) => {
+        if (current.rowId != null) {
+          setHomologatedByRow((prev) => ({ ...prev, [current.rowId]: product }));
+        }
+        return { isOpen: false, rowId: null };
+      });
+    },
+    []
+  );
+
+  const handleRemoveHomologated = useCallback((rowId) => {
+    setHomologatedByRow((prev) => {
+      if (!(rowId in prev)) return prev;
+      const next = { ...prev };
+      delete next[rowId];
+      return next;
+    });
   }, []);
 
   const priceColumn = useMemo(() => {
@@ -261,9 +328,93 @@ export const AlertedProductsManagementWidget = ({
     };
   }, [isPriceAdjustment, newSalePrices, priceTouched, handleNewSalePriceChange]);
 
+  const homologationColumn = useMemo(() => {
+    if (!isHomologation) return null;
+
+    return {
+      title: wrapTitle("Producto a", "Homologar"),
+      key: "homologatedProduct",
+      width: 320,
+      align: "center",
+      ellipsis: false,
+      onCell: () => ({
+        style: {
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+          verticalAlign: "top",
+        },
+      }),
+      render: (_, record) => {
+        const selected = homologatedByRow[record.id];
+
+        if (!selected) {
+          return (
+            <div>
+              <HomologateButton
+                icon={<SwapOutlined />}
+                onClick={() => openHomologationModal(record.id)}
+              >
+                Homologar por
+              </HomologateButton>
+              <HomologationEmptyText $error={homologationTouched}>
+                {homologationTouched
+                  ? "Debes asignar un producto homologado."
+                  : "Sin producto homologado asignado."}
+              </HomologationEmptyText>
+            </div>
+          );
+        }
+
+        return (
+          <HomologationSummary>
+            <HomologationNameBox>
+              {selected.productId ? `${selected.productId} - ` : ""}
+              {selected.productName || "—"}
+            </HomologationNameBox>
+            <HomologationSummaryPrimary>
+              {selected.unitOfMeasure || "—"} · {selected.commercialBrand || "—"}
+            </HomologationSummaryPrimary>
+            <HomologationSummaryMeta>
+              Rango: {formatCurrency(selected.minimumPrice)} a{" "}
+              {formatCurrency(selected.maximumPrice)} · Venta:{" "}
+              {formatCurrency(selected.saleUnitValue)} · Catálogo:{" "}
+              {formatCurrency(selected.fairCatalogValue)}
+            </HomologationSummaryMeta>
+            <HomologationSummaryActions>
+              <HomologationLinkButton
+                type="button"
+                onClick={() => openHomologationModal(record.id)}
+              >
+                Cambiar
+              </HomologationLinkButton>
+              <HomologationLinkButton
+                type="button"
+                $variant="danger"
+                onClick={() => handleRemoveHomologated(record.id)}
+              >
+                Quitar
+              </HomologationLinkButton>
+            </HomologationSummaryActions>
+          </HomologationSummary>
+        );
+      },
+    };
+  }, [
+    isHomologation,
+    homologatedByRow,
+    homologationTouched,
+    openHomologationModal,
+    handleRemoveHomologated,
+  ]);
+
   const alertsColumns = useMemo(
-    () => getAlertedProductsManagementColumns({ onRemove: handleRemoveAlert, priceColumn }),
-    [handleRemoveAlert, priceColumn]
+    () =>
+      getAlertedProductsManagementColumns({
+        onRemove: handleRemoveAlert,
+        priceColumn,
+        homologationColumn,
+      }),
+    [handleRemoveAlert, priceColumn, homologationColumn]
   );
 
   const handleAddAlert = useCallback(async (product) => {
@@ -531,6 +682,17 @@ export const AlertedProductsManagementWidget = ({
       }
     }
 
+    if (isHomologation) {
+      const allHomologated = alertsData.every((row) => homologatedByRow[row.id]);
+      if (!allHomologated) {
+        setHomologationTouched(true);
+        openMissingRequirementsModal(
+          "Debes asignar un producto homologado a cada ítem antes de enviar."
+        );
+        return;
+      }
+    }
+
     if (!onSubmitManagementRequest) {
       onContinue?.();
       return;
@@ -540,6 +702,15 @@ export const AlertedProductsManagementWidget = ({
 
     const selectedRows = isPriceAdjustment
       ? alertsData.map((row) => ({ ...row, newSalePrice: newSalePrices[row.id] }))
+      : isHomologation
+      ? alertsData.map((row) => {
+          const homologated = homologatedByRow[row.id];
+          return {
+            ...row,
+            homologatedProduct: homologated ?? null,
+            producto_homologado_id: homologated?.productId ?? null,
+          };
+        })
       : alertsData;
 
     try {
@@ -719,7 +890,10 @@ export const AlertedProductsManagementWidget = ({
               showColumnSettings={false}
               showTableResize={false}
               showReload={false}
-              scroll={{ x: isPriceAdjustment ? 2070 : 1900, y: 400 }}
+              scroll={{
+                x: isPriceAdjustment ? 2070 : isHomologation ? 2220 : 1900,
+                y: 400,
+              }}
               emptyText="No hay alertas para el tipo de gestión seleccionado."
             />
           </AlertsTableWrapper>
@@ -728,6 +902,14 @@ export const AlertedProductsManagementWidget = ({
               <span>
                 <strong>Validación:</strong> el Nuevo Precio de Venta debe ser numérico,
                 mayor o igual al Precio mínimo y menor o igual al Precio máximo.
+              </span>
+            </TableValidationBanner>
+          ) : null}
+          {isHomologation ? (
+            <TableValidationBanner>
+              <span>
+                <strong>Validación:</strong> cada ítem debe tener un producto homologado
+                asignado mediante el botón <strong>Homologar por</strong>.
               </span>
             </TableValidationBanner>
           ) : null}
@@ -851,6 +1033,15 @@ export const AlertedProductsManagementWidget = ({
           emptyText="No hay productos disponibles para añadir."
         />
       </AntdModal>
+
+      <HomologationSearchModal
+        isOpen={homologationModal.isOpen}
+        onClose={closeHomologationModal}
+        onSelect={handleSelectHomologated}
+        dataSource={modalAllRows}
+        loading={modalLoading}
+        journeyLabel={appliedFilters?.operationalDay?.label || ""}
+      />
     </ManagementCard>
   );
 };

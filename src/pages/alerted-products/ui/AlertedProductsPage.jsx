@@ -53,6 +53,12 @@ const normalizeManagementLabel = (value = "") =>
     .toUpperCase();
 
 const PRICE_ADJUSTMENT_LABEL = "AJUSTE DE PRECIO";
+// El backend puede rotular este tipo como "HOMOLOGAR" u "HOMOLOGACION": se
+// detecta por prefijo para cubrir ambas variantes.
+const HOMOLOGATION_LABEL_PREFIX = "HOMOLOG";
+
+const isHomologationLabel = (label = "") =>
+  normalizeManagementLabel(label).startsWith(HOMOLOGATION_LABEL_PREFIX);
 
 const SUPPORTED_MANAGEMENT_VIEW_LABELS = new Set([
   "ACTA COMPLEMENTARIA",
@@ -224,10 +230,13 @@ export const AlertedProductsPage = () => {
     SUPPORTED_MANAGEMENT_VIEW_CODES.has(Number(assignmentManagementTypeCode)) ||
     SUPPORTED_MANAGEMENT_VIEW_LABELS.has(
       normalizeManagementLabel(assignment?.managementType)
-    );
+    ) ||
+    isHomologationLabel(assignment?.managementType);
   const managementVariant =
     normalizeManagementLabel(assignment?.managementType) === PRICE_ADJUSTMENT_LABEL
       ? "price-adjustment"
+      : isHomologationLabel(assignment?.managementType)
+      ? "homologation"
       : "default";
 
   const handleApplyFilters = async (nextFilters) => {
