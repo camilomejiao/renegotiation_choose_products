@@ -94,6 +94,19 @@ export const AlertedProductsPage = () => {
       return;
     }
 
+    // INDETERMINADO crea un producto nuevo por solicitud: solo admite un ítem.
+    const isIndeterminate = (nextAssignment?.managementType || "")
+      .trim()
+      .toUpperCase()
+      .includes("INDETERMINADO");
+    if (isIndeterminate && (nextAssignment?.selectedRows?.length ?? 0) !== 1) {
+      AlertComponent.warning(
+        "Selección no válida",
+        "El tipo de gestión INDETERMINADO requiere seleccionar un único producto."
+      );
+      return;
+    }
+
     handleRaiseAlert(nextAssignment);
   };
 

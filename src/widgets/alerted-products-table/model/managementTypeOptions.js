@@ -29,6 +29,12 @@ export const managementTypeAssignmentOptions = [
     description:
       "Aplicable cuando se solicita ajustar precios del producto.",
   },
+  {
+    value: 6,
+    label: "PRODUCTO INDETERMINADO",
+    description:
+      "Aplicable cuando el insumo alertado no está en el catálogo y debe crearse un producto nuevo para la jornada. Se gestiona un producto por ítem seleccionado.",
+  },
 ];
 
 export const getManagementTypeAssignmentLabel = (value) =>

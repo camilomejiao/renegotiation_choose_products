@@ -19,6 +19,7 @@ import { usePdfViewer } from "../model/usePdfViewer";
 import { usePriceAdjustment } from "../model/usePriceAdjustment";
 import { AddAlertModal } from "./AddAlertModal";
 import { AlertsTableSection } from "./AlertsTableSection";
+import { IndeterminateManagementView } from "./IndeterminateManagementView";
 import { HomologationSearchModal } from "./HomologationSearchModal";
 import { JourneyDocumentsSection } from "./JourneyDocumentsSection";
 import { MissingRequirementsModal } from "./MissingRequirementsModal";
@@ -37,7 +38,7 @@ const isSinGestion = (value = "") => {
   return !mgmt || mgmt === "sin gestión" || mgmt === "sin gestion";
 };
 
-export const AlertedProductsManagementWidget = ({
+const StandardManagementWidget = ({
   assignment,
   appliedFilters,
   historyByCategory = { pdf: [], excel: [] },
@@ -298,3 +299,12 @@ export const AlertedProductsManagementWidget = ({
     </ManagementCard>
   );
 };
+
+// La gestión INDETERMINADO usa un formulario rico por producto (acordeón), muy
+// distinto de la tabla única de las demás variantes: se despacha a su propia vista.
+export const AlertedProductsManagementWidget = (props) =>
+  props.variant === MANAGEMENT_VARIANT.INDETERMINATE ? (
+    <IndeterminateManagementView {...props} />
+  ) : (
+    <StandardManagementWidget {...props} />
+  );

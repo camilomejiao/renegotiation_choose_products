@@ -2,9 +2,11 @@ export const MANAGEMENT_VARIANT = {
   DEFAULT: "default",
   PRICE_ADJUSTMENT: "price-adjustment",
   HOMOLOGATION: "homologation",
+  INDETERMINATE: "indeterminate",
 };
 
 export const JUSTIFICACION_TECNICA_LABEL = "JUSTIFICACION TECNICA";
+export const INDETERMINATE_LABEL = "INDETERMINADO";
 
 export const isValidNewSalePrice = (value, record) => {
   if (value == null || value === "") return false;
